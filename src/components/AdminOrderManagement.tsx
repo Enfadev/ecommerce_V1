@@ -1,0 +1,539 @@
+"use client";
+
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, MoreHorizontal, ArrowUpDown, Download, Calendar } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+interface Order {
+  id: string;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  items: {
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
+  total: number;
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  paymentStatus: "pending" | "paid" | "failed";
+  createdAt: string;
+  updatedAt: string;
+  shippingAddress: string;
+}
+
+const mockOrders: Order[] = [
+  {
+    id: "ORD-001",
+    customer: { name: "Ahmad Fajar", email: "ahmad@email.com", phone: "08123456789" },
+    items: [
+      { name: "iPhone 14 Pro", quantity: 1, price: 15000000 },
+      { name: "AirPods Pro", quantity: 1, price: 3500000 },
+    ],
+    total: 18500000,
+    status: "delivered",
+    paymentStatus: "paid",
+    createdAt: "2024-01-15",
+    updatedAt: "2024-01-18",
+    shippingAddress: "Jl. Sudirman No. 123, Jakarta",
+  },
+  {
+    id: "ORD-002",
+    customer: { name: "Siti Nurhaliza", email: "siti@email.com", phone: "08234567890" },
+    items: [{ name: "Samsung Galaxy S23", quantity: 1, price: 12000000 }],
+    total: 12000000,
+    status: "shipped",
+    paymentStatus: "paid",
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-22",
+    shippingAddress: "Jl. Gatot Subroto No. 456, Bandung",
+  },
+  {
+    id: "ORD-003",
+    customer: { name: "Budi Santoso", email: "budi@email.com", phone: "08345678901" },
+    items: [{ name: "MacBook Air M2", quantity: 1, price: 18000000 }],
+    total: 18000000,
+    status: "processing",
+    paymentStatus: "paid",
+    createdAt: "2024-01-22",
+    updatedAt: "2024-01-22",
+    shippingAddress: "Jl. Diponegoro No. 789, Surabaya",
+  },
+  {
+    id: "ORD-004",
+    customer: { name: "Maya Indira", email: "maya@email.com", phone: "08456789012" },
+    items: [
+      { name: "iPad Pro", quantity: 1, price: 15000000 },
+      { name: "Apple Pencil", quantity: 1, price: 2000000 },
+    ],
+    total: 17000000,
+    status: "pending",
+    paymentStatus: "pending",
+    createdAt: "2024-01-25",
+    updatedAt: "2024-01-25",
+    shippingAddress: "Jl. Ahmad Yani No. 321, Yogyakarta",
+  },
+  {
+    id: "ORD-005",
+    customer: { name: "Rudi Hermawan", email: "rudi@email.com", phone: "08567890123" },
+    items: [{ name: "Sony WH-1000XM5", quantity: 2, price: 5000000 }],
+    total: 10000000,
+    status: "cancelled",
+    paymentStatus: "failed",
+    createdAt: "2024-01-20",
+    updatedAt: "2024-01-21",
+    shippingAddress: "Jl. Veteran No. 654, Semarang",
+  },
+];
+
+export default function AdminOrderManagement() {
+  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showOrderDetail, setShowOrderDetail] = useState(false);
+  const [sortBy, setSortBy] = useState<keyof Order>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  // Filter and sort orders
+  const filteredOrders = orders
+    .filter((order) => {
+      const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = selectedStatus === "all" || order.status === selectedStatus;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      const aValue = a[sortBy];
+      const bValue = b[sortBy];
+      const modifier = sortOrder === "asc" ? 1 : -1;
+
+      if (typeof aValue === "string" && typeof bValue === "string") {
+        return aValue.localeCompare(bValue) * modifier;
+      }
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return (aValue - bValue) * modifier;
+      }
+      return 0;
+    });
+
+  const statusOptions = ["all", "pending", "processing", "shipped", "delivered", "cancelled"];
+
+  const handleSort = (field: keyof Order) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const handleStatusChange = (orderId: string, newStatus: Order["status"]) => {
+    setOrders(orders.map((order) => (order.id === orderId ? { ...order, status: newStatus, updatedAt: new Date().toISOString().split("T")[0] } : order)));
+  };
+
+  const handleViewDetail = (order: Order) => {
+    setSelectedOrder(order);
+    setShowOrderDetail(true);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+      case "processing":
+        return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      case "shipped":
+        return "bg-purple-500/10 text-purple-500 border-purple-500/20";
+      case "delivered":
+        return "bg-green-500/10 text-green-500 border-green-500/20";
+      case "cancelled":
+        return "bg-red-500/10 text-red-500 border-red-500/20";
+      default:
+        return "bg-gray-500/10 text-gray-500 border-gray-500/20";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Clock className="w-4 h-4" />;
+      case "processing":
+        return <Package className="w-4 h-4" />;
+      case "shipped":
+        return <Truck className="w-4 h-4" />;
+      case "delivered":
+        return <CheckCircle className="w-4 h-4" />;
+      case "cancelled":
+        return <XCircle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Menunggu";
+      case "processing":
+        return "Diproses";
+      case "shipped":
+        return "Dikirim";
+      case "delivered":
+        return "Selesai";
+      case "cancelled":
+        return "Dibatalkan";
+      default:
+        return status;
+    }
+  };
+
+  const getPaymentStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+      case "paid":
+        return "bg-green-500/10 text-green-500 border-green-500/20";
+      case "failed":
+        return "bg-red-500/10 text-red-500 border-red-500/20";
+      default:
+        return "bg-gray-500/10 text-gray-500 border-gray-500/20";
+    }
+  };
+
+  const getPaymentStatusText = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Menunggu";
+      case "paid":
+        return "Lunas";
+      case "failed":
+        return "Gagal";
+      default:
+        return status;
+    }
+  };
+
+  // Calculate stats
+  const stats = {
+    total: orders.length,
+    pending: orders.filter((o) => o.status === "pending").length,
+    processing: orders.filter((o) => o.status === "processing").length,
+    shipped: orders.filter((o) => o.status === "shipped").length,
+    delivered: orders.filter((o) => o.status === "delivered").length,
+    revenue: orders.filter((o) => o.paymentStatus === "paid").reduce((sum, o) => sum + o.total, 0),
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Manajemen Pesanan</h1>
+          <p className="text-muted-foreground mt-1">Kelola semua pesanan dari pelanggan</p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" className="gap-2">
+            <Download className="w-4 h-4" />
+            Export
+          </Button>
+          <Button variant="outline" className="gap-2">
+            <Calendar className="w-4 h-4" />
+            Filter Tanggal
+          </Button>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+              <Package className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-xl font-bold">{stats.total}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-yellow-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Menunggu</p>
+              <p className="text-xl font-bold">{stats.pending}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+              <Package className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Diproses</p>
+              <p className="text-xl font-bold">{stats.processing}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <Truck className="w-5 h-5 text-purple-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Dikirim</p>
+              <p className="text-xl font-bold">{stats.shipped}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Selesai</p>
+              <p className="text-xl font-bold">{stats.delivered}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-green-500" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Revenue</p>
+              <p className="text-lg font-bold">Rp {stats.revenue.toLocaleString("id-ID")}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <Card className="p-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input placeholder="Cari berdasarkan ID pesanan, nama, atau email..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Filter className="w-4 h-4" />
+                  Status: {selectedStatus === "all" ? "Semua" : getStatusText(selectedStatus)}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Pilih Status</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {statusOptions.map((status) => (
+                  <DropdownMenuItem key={status} onClick={() => setSelectedStatus(status)}>
+                    {status === "all" ? "Semua Status" : getStatusText(status)}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </Card>
+
+      {/* Orders Table */}
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSort("id")} className="gap-1 p-0 h-auto">
+                  ID Pesanan
+                  <ArrowUpDown className="w-4 h-4" />
+                </Button>
+              </TableHead>
+              <TableHead>Pelanggan</TableHead>
+              <TableHead>Produk</TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSort("total")} className="gap-1 p-0 h-auto">
+                  Total
+                  <ArrowUpDown className="w-4 h-4" />
+                </Button>
+              </TableHead>
+              <TableHead>Status Pesanan</TableHead>
+              <TableHead>Status Pembayaran</TableHead>
+              <TableHead>
+                <Button variant="ghost" onClick={() => handleSort("createdAt")} className="gap-1 p-0 h-auto">
+                  Tanggal
+                  <ArrowUpDown className="w-4 h-4" />
+                </Button>
+              </TableHead>
+              <TableHead className="w-12">Aksi</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredOrders.map((order) => (
+              <TableRow key={order.id}>
+                <TableCell>
+                  <div>
+                    <p className="font-medium">{order.id}</p>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div>
+                    <p className="font-medium">{order.customer.name}</p>
+                    <p className="text-sm text-muted-foreground">{order.customer.email}</p>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div>
+                    <p className="font-medium">{order.items.length} item</p>
+                    <p className="text-sm text-muted-foreground">
+                      {order.items[0]?.name}
+                      {order.items.length > 1 && ` +${order.items.length - 1} lainnya`}
+                    </p>
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">Rp {order.total.toLocaleString("id-ID")}</TableCell>
+                <TableCell>
+                  <Badge className={getStatusColor(order.status)}>
+                    <div className="flex items-center gap-1">
+                      {getStatusIcon(order.status)}
+                      {getStatusText(order.status)}
+                    </div>
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge className={getPaymentStatusColor(order.paymentStatus)}>{getPaymentStatusText(order.paymentStatus)}</Badge>
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("id-ID")}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleViewDetail(order)}>
+                        <Eye className="w-4 h-4 mr-2" />
+                        Detail
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel>Ubah Status</DropdownMenuLabel>
+                      {["pending", "processing", "shipped", "delivered", "cancelled"].map((status) => (
+                        <DropdownMenuItem key={status} onClick={() => handleStatusChange(order.id, status as Order["status"])} disabled={order.status === status}>
+                          {getStatusIcon(status)}
+                          <span className="ml-2">{getStatusText(status)}</span>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+
+      {/* Order Detail Dialog */}
+      <Dialog open={showOrderDetail} onOpenChange={setShowOrderDetail}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Detail Pesanan {selectedOrder?.id}</DialogTitle>
+          </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-6">
+              {/* Order Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="p-4">
+                  <h3 className="font-semibold mb-2">Informasi Pesanan</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">ID:</span>
+                      <span>{selectedOrder.id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Status:</span>
+                      <Badge className={getStatusColor(selectedOrder.status)}>{getStatusText(selectedOrder.status)}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Pembayaran:</span>
+                      <Badge className={getPaymentStatusColor(selectedOrder.paymentStatus)}>{getPaymentStatusText(selectedOrder.paymentStatus)}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Tanggal:</span>
+                      <span>{new Date(selectedOrder.createdAt).toLocaleDateString("id-ID")}</span>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4">
+                  <h3 className="font-semibold mb-2">Informasi Pelanggan</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Nama:</span>
+                      <span>{selectedOrder.customer.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Email:</span>
+                      <span>{selectedOrder.customer.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Telepon:</span>
+                      <span>{selectedOrder.customer.phone}</span>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Shipping Address */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-2">Alamat Pengiriman</h3>
+                <p className="text-sm">{selectedOrder.shippingAddress}</p>
+              </Card>
+
+              {/* Order Items */}
+              <Card className="p-4">
+                <h3 className="font-semibold mb-4">Item Pesanan</h3>
+                <div className="space-y-3">
+                  {selectedOrder.items.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center p-3 border border-border rounded-lg">
+                      <div>
+                        <p className="font-medium">{item.name}</p>
+                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">Rp {item.price.toLocaleString("id-ID")}</p>
+                        <p className="text-sm text-muted-foreground">Total: Rp {(item.price * item.quantity).toLocaleString("id-ID")}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="border-t border-border pt-4 mt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold">Total Pesanan:</span>
+                    <span className="text-xl font-bold">Rp {selectedOrder.total.toLocaleString("id-ID")}</span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

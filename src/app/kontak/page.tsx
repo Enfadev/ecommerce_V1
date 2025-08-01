@@ -1,0 +1,280 @@
+"use client";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Mail, Phone, MapPin, Clock, MessageSquare, Send, Headphones, Globe, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    toast.success("Pesan Anda berhasil dikirim! Kami akan merespon dalam 24 jam.");
+    setFormData({ name: "", email: "", subject: "", message: "" });
+    setIsSubmitting(false);
+  };
+
+  const contactMethods = [
+    {
+      icon: Phone,
+      title: "Telepon",
+      subtitle: "Senin - Jumat, 08:00 - 17:00",
+      value: "+62 21 1234 5678",
+      link: "tel:+622112345678",
+      bgColor: "bg-blue-500",
+    },
+    {
+      icon: MessageSquare,
+      title: "WhatsApp",
+      subtitle: "24/7 Fast Response",
+      value: "+62 812 3456 7890",
+      link: "https://wa.me/6281234567890",
+      bgColor: "bg-green-500",
+    },
+    {
+      icon: Mail,
+      title: "Email",
+      subtitle: "Respons dalam 24 jam",
+      value: "support@shopzone.com",
+      link: "mailto:support@shopzone.com",
+      bgColor: "bg-purple-500",
+    },
+    {
+      icon: Headphones,
+      title: "Live Chat",
+      subtitle: "Senin - Sabtu, 08:00 - 22:00",
+      value: "Chat Langsung",
+      link: "#",
+      bgColor: "bg-orange-500",
+    },
+  ];
+
+  const officeLocations = [
+    {
+      city: "Jakarta",
+      address: "Jl. Sudirman No. 123, Jakarta Pusat",
+      phone: "+62 21 1234 5678",
+      isMain: true,
+    },
+    {
+      city: "Surabaya",
+      address: "Jl. Ahmad Yani No. 456, Surabaya",
+      phone: "+62 31 8765 4321",
+      isMain: false,
+    },
+    {
+      city: "Bandung",
+      address: "Jl. Asia Afrika No. 789, Bandung",
+      phone: "+62 22 9876 5432",
+      isMain: false,
+    },
+  ];
+
+  const socialMedia = [
+    { icon: Facebook, name: "Facebook", link: "#", color: "text-blue-600" },
+    { icon: Instagram, name: "Instagram", link: "#", color: "text-pink-600" },
+    { icon: Twitter, name: "Twitter", link: "#", color: "text-blue-400" },
+    { icon: Youtube, name: "YouTube", link: "#", color: "text-red-600" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      {/* Hero Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <Badge variant="secondary" className="mb-4 gap-2">
+            <Headphones className="w-4 h-4" />
+            Hubungi Kami
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Kami Siap Membantu Anda</h1>
+          <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">Punya pertanyaan atau butuh bantuan? Tim customer service kami siap membantu Anda dengan layanan terbaik dan respons yang cepat.</p>
+        </div>
+      </section>
+
+      {/* Contact Methods */}
+      <section className="py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {contactMethods.map((method, index) => (
+              <Card key={index} className="text-center p-6 hover:shadow-lg transition-all hover:-translate-y-1">
+                <CardContent className="p-0">
+                  <div className={`w-16 h-16 ${method.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                    <method.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{method.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{method.subtitle}</p>
+                  <a href={method.link} className="text-primary font-medium hover:underline">
+                    {method.value}
+                  </a>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form & Info */}
+      <section className="py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <Card className="p-8">
+              <CardHeader className="p-0 mb-6">
+                <CardTitle className="text-2xl flex items-center gap-3">
+                  <Send className="w-6 h-6 text-primary" />
+                  Kirim Pesan
+                </CardTitle>
+                <p className="text-muted-foreground">Isi form di bawah ini dan kami akan merespon dalam 24 jam</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium mb-2">
+                        Nama Lengkap *
+                      </label>
+                      <Input id="name" name="name" type="text" value={formData.name} onChange={handleInputChange} placeholder="Masukkan nama lengkap" required className="h-12" />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium mb-2">
+                        Email *
+                      </label>
+                      <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="contoh@email.com" required className="h-12" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="subject" className="block text-sm font-medium mb-2">
+                      Subjek *
+                    </label>
+                    <Input id="subject" name="subject" type="text" value={formData.subject} onChange={handleInputChange} placeholder="Subjek pesan Anda" required className="h-12" />
+                  </div>
+
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium mb-2">
+                      Pesan *
+                    </label>
+                    <Textarea id="message" name="message" value={formData.message} onChange={handleInputChange} placeholder="Tuliskan pesan atau pertanyaan Anda..." rows={6} required className="resize-none" />
+                  </div>
+
+                  <Button type="submit" className="w-full h-12 gap-2" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      "Mengirim..."
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Kirim Pesan
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Office Locations */}
+            <div className="space-y-8">
+              <Card className="p-6">
+                <CardHeader className="p-0 mb-6">
+                  <CardTitle className="text-xl flex items-center gap-3">
+                    <MapPin className="w-6 h-6 text-primary" />
+                    Kantor Kami
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 space-y-6">
+                  {officeLocations.map((office, index) => (
+                    <div key={index} className="flex items-start gap-4 p-4 rounded-lg bg-muted/30">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <MapPin className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold">{office.city}</h3>
+                          {office.isMain && (
+                            <Badge variant="default" className="text-xs">
+                              HQ
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">{office.address}</p>
+                        <p className="text-sm font-medium">{office.phone}</p>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* Business Hours */}
+              <Card className="p-6">
+                <CardHeader className="p-0 mb-6">
+                  <CardTitle className="text-xl flex items-center gap-3">
+                    <Clock className="w-6 h-6 text-primary" />
+                    Jam Operasional
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 space-y-3">
+                  <div className="flex justify-between items-center py-2">
+                    <span>Senin - Jumat</span>
+                    <span className="font-medium">08:00 - 17:00</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span>Sabtu</span>
+                    <span className="font-medium">09:00 - 15:00</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span>Minggu</span>
+                    <span className="text-muted-foreground">Tutup</span>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <Badge variant="secondary" className="gap-2">
+                      <Globe className="w-4 h-4" />
+                      WhatsApp Support 24/7
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Media */}
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">Ikuti Media Sosial Kami</h2>
+          <p className="text-muted-foreground mb-8">Dapatkan update terbaru, promo eksklusif, dan tips belanja menarik</p>
+          <div className="flex justify-center gap-6">
+            {socialMedia.map((social, index) => (
+              <a key={index} href={social.link} className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1">
+                <social.icon className={`w-7 h-7 ${social.color}`} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
