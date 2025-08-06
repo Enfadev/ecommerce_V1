@@ -108,10 +108,10 @@ export default function Contact() {
         <div className="max-w-4xl mx-auto text-center">
           <Badge variant="secondary" className="mb-4 gap-2">
             <Headphones className="w-4 h-4" />
-            Hubungi Kami
+            Contact Us
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Kami Siap Membantu Anda</h1>
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">Punya pertanyaan atau butuh bantuan? Tim customer service kami siap membantu Anda dengan layanan terbaik dan respons yang cepat.</p>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">We Are Ready to Help You</h1>
+          <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">Have a question or need assistance? Our customer service team is ready to help you with the best service and quick response.</p>
         </div>
       </section>
 
