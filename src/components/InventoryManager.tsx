@@ -38,9 +38,9 @@ export default function InventoryManager() {
   };
 
   const getStockStatus = (stock: number) => {
-    if (stock === 0) return { status: "out", text: "Habis", color: "bg-red-500/10 text-red-500 border-red-500/20", icon: AlertTriangle };
-    if (stock < 10) return { status: "low", text: "Rendah", color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", icon: AlertTriangle };
-    return { status: "good", text: "Baik", color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle };
+    if (stock === 0) return { status: "out", text: "Out of Stock", color: "bg-red-500/10 text-red-500 border-red-500/20", icon: AlertTriangle };
+    if (stock < 10) return { status: "low", text: "Low", color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", icon: AlertTriangle };
+    return { status: "good", text: "Good", color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle };
   };
 
   // Filter products
@@ -66,8 +66,8 @@ export default function InventoryManager() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Manajemen Inventaris</h1>
-          <p className="text-muted-foreground mt-1">Monitor dan kelola stok produk</p>
+          <h1 className="text-3xl font-bold">Inventory Management</h1>
+          <p className="text-muted-foreground mt-1">Monitor and manage product stock</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" className="gap-2">
@@ -89,7 +89,7 @@ export default function InventoryManager() {
               <Package className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Produk</p>
+              <p className="text-sm text-muted-foreground">Total Products</p>
               <p className="text-xl font-bold">{stats.total}</p>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function InventoryManager() {
               <AlertTriangle className="w-5 h-5 text-red-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Habis Stok</p>
+              <p className="text-sm text-muted-foreground">Out of Stock</p>
               <p className="text-xl font-bold">{stats.outOfStock}</p>
             </div>
           </div>
@@ -111,7 +111,7 @@ export default function InventoryManager() {
               <AlertTriangle className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Stok Rendah</p>
+              <p className="text-sm text-muted-foreground">Low Stock</p>
               <p className="text-xl font-bold">{stats.lowStock}</p>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function InventoryManager() {
               <CheckCircle className="w-5 h-5 text-green-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Stok Baik</p>
+              <p className="text-sm text-muted-foreground">Good Stock</p>
               <p className="text-xl font-bold">{stats.goodStock}</p>
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function InventoryManager() {
               <Package className="w-5 h-5 text-purple-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Nilai Inventaris</p>
+              <p className="text-sm text-muted-foreground">Inventory Value</p>
               <p className="text-lg font-bold">Rp {stats.totalValue.toLocaleString("id-ID")}</p>
             </div>
           </div>
@@ -146,12 +146,12 @@ export default function InventoryManager() {
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Cari produk..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input placeholder="Search product..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
           </div>
           <div className="flex gap-2">
             <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="px-3 py-2 border border-border rounded-md bg-background">
-              <option value="all">Semua Kategori</option>
+              <option value="all">All Categories</option>
               {categories
                 .filter((c) => c !== "all")
                 .map((category) => (
@@ -170,14 +170,14 @@ export default function InventoryManager() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">#</TableHead>
-              <TableHead className="w-20">Gambar</TableHead>
-              <TableHead>Nama Produk</TableHead>
-              <TableHead>Kategori</TableHead>
-              <TableHead>Harga</TableHead>
-              <TableHead>Stok Saat Ini</TableHead>
+              <TableHead className="w-20">Image</TableHead>
+              <TableHead>Product Name</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Current Stock</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Nilai</TableHead>
-              <TableHead>Aksi</TableHead>
+              <TableHead>Value</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -227,15 +227,15 @@ export default function InventoryManager() {
                     {editId === product.id ? (
                       <div className="flex gap-2">
                         <Button size="sm" onClick={() => handleSaveStock(product.id)}>
-                          Simpan
+                          Save
                         </Button>
                         <Button size="sm" variant="outline" onClick={() => setEditId(null)}>
-                          Batal
+                          Cancel
                         </Button>
                       </div>
                     ) : (
                       <Button size="sm" variant="outline" onClick={() => handleEditStock(product.id)}>
-                        Edit Stok
+                        Edit Stock
                       </Button>
                     )}
                   </TableCell>
