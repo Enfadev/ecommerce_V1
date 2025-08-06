@@ -102,23 +102,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (name: string, email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock registration - in real app, this would be an API call
-      const mockUser: User = {
-        id: Date.now().toString(),
-        name,
-        email,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff`,
-        role: "user",
-        createdAt: new Date().toISOString(),
-      };
-      setUser(mockUser);
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      if (!res.ok) {
+        setIsLoading(false);
+        return false;
+      }
+      const user = await res.json();
+      setUser({
+        id: user.id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role === "ADMIN" ? "admin" : "user",
+        createdAt: user.createdAt,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`,
+      });
       setIsLoading(false);
       return true;
     } catch (error) {
-      console.error("Sign up error:", error);
       setIsLoading(false);
       return false;
     }
