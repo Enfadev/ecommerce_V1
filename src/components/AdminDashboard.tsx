@@ -16,52 +16,52 @@ const salesData = [
 ];
 
 const categoryData = [
-  { name: "Elektronik", value: 400, color: "#8884d8" },
+  { name: "Electronics", value: 400, color: "#8884d8" },
   { name: "Fashion", value: 300, color: "#82ca9d" },
-  { name: "Rumah Tangga", value: 200, color: "#ffc658" },
-  { name: "Olahraga", value: 100, color: "#ff7300" },
+  { name: "Home & Living", value: 200, color: "#ffc658" },
+  { name: "Sports", value: 100, color: "#ff7300" },
 ];
 
 const statsCards = [
   {
-    title: "Total Penjualan",
+    title: "Total Sales",
     value: "Rp 28,000,000",
     change: "+12.5%",
     trend: "up",
     icon: DollarSign,
-    description: "dari bulan lalu",
+    description: "from last month",
   },
   {
-    title: "Total Pesanan",
+    title: "Total Orders",
     value: "1,234",
     change: "+8.2%",
     trend: "up",
     icon: ShoppingCart,
-    description: "pesanan baru",
+    description: "new orders",
   },
   {
-    title: "Total Produk",
+    title: "Total Products",
     value: "456",
     change: "+2.1%",
     trend: "up",
     icon: Package,
-    description: "produk aktif",
+    description: "active products",
   },
   {
-    title: "Total Pelanggan",
+    title: "Total Customers",
     value: "2,345",
     change: "-1.2%",
     trend: "down",
     icon: Users,
-    description: "pelanggan aktif",
+    description: "active customers",
   },
 ];
 
 const recentOrders = [
-  { id: "ORD-001", customer: "Ahmad Fajar", amount: "Rp 450,000", status: "completed", date: "2 jam lalu" },
-  { id: "ORD-002", customer: "Siti Nurhaliza", amount: "Rp 280,000", status: "processing", date: "4 jam lalu" },
-  { id: "ORD-003", customer: "Budi Santoso", amount: "Rp 320,000", status: "pending", date: "6 jam lalu" },
-  { id: "ORD-004", customer: "Maya Indira", amount: "Rp 150,000", status: "completed", date: "8 jam lalu" },
+  { id: "ORD-001", customer: "Ahmad Fajar", amount: "Rp 450,000", status: "completed", date: "2 hours ago" },
+  { id: "ORD-002", customer: "Siti Nurhaliza", amount: "Rp 280,000", status: "processing", date: "4 hours ago" },
+  { id: "ORD-003", customer: "Budi Santoso", amount: "Rp 320,000", status: "pending", date: "6 hours ago" },
+  { id: "ORD-004", customer: "Maya Indira", amount: "Rp 150,000", status: "completed", date: "8 hours ago" },
 ];
 
 const topProducts = [
@@ -91,11 +91,11 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Selamat datang kembali! Berikut ringkasan toko Anda hari ini.</p>
+          <p className="text-muted-foreground mt-1">Welcome back! Here is your store summary for today.</p>
         </div>
         <Button className="gap-2">
           <Eye className="w-4 h-4" />
-          Lihat Laporan
+          View Reports
         </Button>
       </div>
 
@@ -132,12 +132,12 @@ export default function AdminDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold">Penjualan Bulanan</h3>
-              <p className="text-sm text-muted-foreground">Trend penjualan 6 bulan terakhir</p>
+              <h3 className="text-lg font-semibold">Monthly Sales</h3>
+              <p className="text-sm text-muted-foreground">Sales trend for the last 6 months</p>
             </div>
             <Button variant="outline" size="sm" className="gap-2">
               <ArrowUpRight className="w-4 h-4" />
-              Detail
+              Details
             </Button>
           </div>
           <div className="h-80">
@@ -163,12 +163,12 @@ export default function AdminDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold">Distribusi Kategori</h3>
-              <p className="text-sm text-muted-foreground">Penjualan berdasarkan kategori</p>
+              <h3 className="text-lg font-semibold">Category Distribution</h3>
+              <p className="text-sm text-muted-foreground">Sales by category</p>
             </div>
             <Button variant="outline" size="sm" className="gap-2">
               <ArrowUpRight className="w-4 h-4" />
-              Detail
+              Details
             </Button>
           </div>
           <div className="h-80">
@@ -192,11 +192,11 @@ export default function AdminDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold">Pesanan Terbaru</h3>
-              <p className="text-sm text-muted-foreground">Daftar pesanan yang masuk hari ini</p>
+              <h3 className="text-lg font-semibold">Recent Orders</h3>
+              <p className="text-sm text-muted-foreground">List of orders received today</p>
             </div>
             <Button variant="outline" size="sm">
-              Lihat Semua
+              View All
             </Button>
           </div>
           <div className="space-y-4">
@@ -205,7 +205,7 @@ export default function AdminDashboard() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium">{order.id}</p>
-                    <Badge className={getStatusColor(order.status)}>{order.status === "completed" ? "Selesai" : order.status === "processing" ? "Diproses" : "Pending"}</Badge>
+                    <Badge className={getStatusColor(order.status)}>{order.status === "completed" ? "Completed" : order.status === "processing" ? "Processing" : "Pending"}</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{order.customer}</p>
                   <p className="text-xs text-muted-foreground">{order.date}</p>
@@ -222,11 +222,11 @@ export default function AdminDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold">Produk Terlaris</h3>
-              <p className="text-sm text-muted-foreground">Produk dengan penjualan tertinggi</p>
+              <h3 className="text-lg font-semibold">Top Products</h3>
+              <p className="text-sm text-muted-foreground">Products with the highest sales</p>
             </div>
             <Button variant="outline" size="sm">
-              Lihat Semua
+              View All
             </Button>
           </div>
           <div className="space-y-4">
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">{product.sales} terjual</p>
+                    <p className="text-sm text-muted-foreground">{product.sales} sold</p>
                   </div>
                 </div>
                 <div className="text-right">
