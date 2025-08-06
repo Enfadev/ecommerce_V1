@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "./ui/input";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Label } from "./ui/label";
@@ -32,9 +33,23 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     defaultValues: product || { name: "", price: 0, image: "", description: "" },
   });
 
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const onSubmit = (data: any) => {
-    onSave({ ...product, ...data });
+    onSave({ ...product, ...data, imageFile });
     reset();
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   return (
@@ -43,11 +58,13 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
         <Label>Nama Produk</Label>
         <Input {...register("name")} />
         {errors.name && <p className="text-red-500 text-xs">{errors.name.message as string}</p>}
-      </div>
       <div>
-        <Label>Harga</Label>
-        <Input type="number" {...register("price", { valueAsNumber: true })} />
-        {errors.price && <p className="text-red-500 text-xs">{errors.price.message as string}</p>}
+        <Label>Upload Gambar</Label>
+        <Input type="file" accept="image/*" onChange={onImageChange} />
+        {imagePreview && (
+          <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover mt-2 rounded" />
+        )}
+      </div>
       </div>
       <div>
         <Label>URL Gambar</Label>

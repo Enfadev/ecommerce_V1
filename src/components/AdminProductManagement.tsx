@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, ArrowUpDown, Download } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { products as initialProducts } from "../data/products";
+// import { products as initialProducts } from "../data/products";
 import { ProductForm } from "./ProductForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -24,14 +24,23 @@ interface Product {
 }
 
 export default function AdminProductManagement() {
-  const [products, setProducts] = useState<Product[]>(
-    initialProducts.map((p) => ({
-      ...p,
-      stock: p.stock || Math.floor(Math.random() * 100),
-      status: p.stock && p.stock > 0 ? "active" : "inactive",
-      createdAt: new Date().toLocaleDateString("id-ID"),
-    }))
-  );
+  const [products, setProducts] = useState<Product[]>([]);
+  // Fetch produk dari database saat komponen mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await fetch("/api/product");
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(data.map((p: any) => ({
+          ...p,
+          image: p.imageUrl,
+          status: "active",
+          createdAt: new Date(p.createdAt).toLocaleDateString("id-ID"),
+        })));
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -86,17 +95,34 @@ export default function AdminProductManagement() {
     setProducts(products.filter((p) => p.id !== id));
   };
 
-  const handleSave = (productData: any) => {
+  const handleSave = async (productData: any) => {
     if (editingProduct) {
+      // TODO: update produk ke database jika fitur edit diaktifkan
       setProducts(products.map((p) => (p.id === productData.id ? { ...productData, updatedAt: new Date().toLocaleDateString("id-ID") } : p)));
     } else {
-      const newProduct = {
-        ...productData,
-        id: Math.max(...products.map((p) => p.id)) + 1,
-        createdAt: new Date().toLocaleDateString("id-ID"),
-        status: productData.stock > 0 ? "active" : "inactive",
-      };
-      setProducts([newProduct, ...products]);
+      // Tambah produk ke database
+      try {
+        const res = await fetch("/api/product", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: productData.name,
+            price: productData.price,
+            imageUrl: productData.image,
+            description: productData.description,
+          }),
+        });
+        if (!res.ok) throw new Error("Gagal menambah produk");
+        const newProduct = await res.json();
+        setProducts([{
+          ...newProduct,
+          image: newProduct.imageUrl,
+          status: "active",
+          createdAt: new Date(newProduct.createdAt).toLocaleDateString("id-ID"),
+        }, ...products]);
+      } catch {
+        alert("Gagal menambah produk");
+      }
     }
     setShowForm(false);
     setEditingProduct(null);
