@@ -146,48 +146,48 @@ export default function Contact() {
               <CardHeader className="p-0 mb-6">
                 <CardTitle className="text-2xl flex items-center gap-3">
                   <Send className="w-6 h-6 text-primary" />
-                  Kirim Pesan
+                  Send Message
                 </CardTitle>
-                <p className="text-muted-foreground">Isi form di bawah ini dan kami akan merespon dalam 24 jam</p>
+                <p className="text-muted-foreground">Fill out the form below and we will respond within 24 hours</p>
               </CardHeader>
               <CardContent className="p-0">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium mb-2">
-                        Nama Lengkap *
+                        Full Name *
                       </label>
-                      <Input id="name" name="name" type="text" value={formData.name} onChange={handleInputChange} placeholder="Masukkan nama lengkap" required className="h-12" />
+                      <Input id="name" name="name" type="text" value={formData.name} onChange={handleInputChange} placeholder="Enter your full name" required className="h-12" />
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium mb-2">
                         Email *
                       </label>
-                      <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="contoh@email.com" required className="h-12" />
+                      <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="example@email.com" required className="h-12" />
                     </div>
                   </div>
 
                   <div>
                     <label htmlFor="subject" className="block text-sm font-medium mb-2">
-                      Subjek *
+                      Subject *
                     </label>
-                    <Input id="subject" name="subject" type="text" value={formData.subject} onChange={handleInputChange} placeholder="Subjek pesan Anda" required className="h-12" />
+                    <Input id="subject" name="subject" type="text" value={formData.subject} onChange={handleInputChange} placeholder="Your message subject" required className="h-12" />
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium mb-2">
-                      Pesan *
+                      Message *
                     </label>
-                    <Textarea id="message" name="message" value={formData.message} onChange={handleInputChange} placeholder="Tuliskan pesan atau pertanyaan Anda..." rows={6} required className="resize-none" />
+                    <Textarea id="message" name="message" value={formData.message} onChange={handleInputChange} placeholder="Write your message or question..." rows={6} required className="resize-none" />
                   </div>
 
                   <Button type="submit" className="w-full h-12 gap-2" disabled={isSubmitting}>
                     {isSubmitting ? (
-                      "Mengirim..."
+                      "Sending..."
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        Kirim Pesan
+                        Send Message
                       </>
                     )}
                   </Button>
@@ -201,7 +201,7 @@ export default function Contact() {
                 <CardHeader className="p-0 mb-6">
                   <CardTitle className="text-xl flex items-center gap-3">
                     <MapPin className="w-6 h-6 text-primary" />
-                    Kantor Kami
+                    Our Offices
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 space-y-6">
@@ -232,21 +232,21 @@ export default function Contact() {
                 <CardHeader className="p-0 mb-6">
                   <CardTitle className="text-xl flex items-center gap-3">
                     <Clock className="w-6 h-6 text-primary" />
-                    Jam Operasional
+                    Business Hours
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 space-y-3">
                   <div className="flex justify-between items-center py-2">
-                    <span>Senin - Jumat</span>
+                    <span>Monday - Friday</span>
                     <span className="font-medium">08:00 - 17:00</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span>Sabtu</span>
+                    <span>Saturday</span>
                     <span className="font-medium">09:00 - 15:00</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span>Minggu</span>
-                    <span className="text-muted-foreground">Tutup</span>
+                    <span>Sunday</span>
+                    <span className="text-muted-foreground">Closed</span>
                   </div>
                   <div className="pt-4 border-t">
                     <Badge variant="secondary" className="gap-2">
@@ -264,8 +264,8 @@ export default function Contact() {
       {/* Social Media */}
       <section className="py-16 px-4 bg-muted/30">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Ikuti Media Sosial Kami</h2>
-          <p className="text-muted-foreground mb-8">Dapatkan update terbaru, promo eksklusif, dan tips belanja menarik</p>
+          <h2 className="text-3xl font-bold mb-4">Follow Our Social Media</h2>
+          <p className="text-muted-foreground mb-8">Get the latest updates, exclusive promos, and shopping tips</p>
           <div className="flex justify-center gap-6">
             {socialMedia.map((social, index) => (
               <a key={index} href={social.link} className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1">

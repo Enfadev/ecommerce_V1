@@ -10,6 +10,9 @@ All new UI implementations must always use Next.js as the framework, following i
 ## Additional Rule: Honest and Objective Answers
 Always answer all user questions and requests honestly and objectively, without the need to justify or agree with the user's opinions or answers. Responses should be direct, factual, and unbiased.
 
+## Additional Rule: English-Only UI
+All UI elements (text, labels, buttons, messages, etc.) must be written in English.
+
 ## Universal Project Vision & Requirements
 
 ### Vision & Purpose
