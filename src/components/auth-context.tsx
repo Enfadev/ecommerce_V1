@@ -56,44 +56,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock authentication - in real app, this would be an API call
-      if (email === "admin@example.com" && password === "admin123") {
-        const mockUser: User = {
-          id: "1",
-          name: "Admin User",
-          email: "admin@example.com",
-          avatar: "https://ui-avatars.com/api/?name=Admin+User&background=3b82f6&color=fff",
-          role: "admin",
-          phoneNumber: "+62 812 3456 7890",
-          address: "Jakarta, Indonesia",
-          createdAt: new Date().toISOString(),
-        };
-        setUser(mockUser);
-        setIsLoading(false);
-        return true;
-      } else if (email === "user@example.com" && password === "user123") {
-        const mockUser: User = {
-          id: "2",
-          name: "Regular User",
-          email: "user@example.com",
-          avatar: "https://ui-avatars.com/api/?name=Regular+User&background=10b981&color=fff",
-          role: "user",
-          phoneNumber: "+62 811 2345 6789",
-          address: "Bandung, Indonesia",
-          createdAt: new Date().toISOString(),
-        };
-        setUser(mockUser);
-        setIsLoading(false);
-        return true;
-      } else {
+      const res = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
         setIsLoading(false);
         return false;
       }
+      const user = await res.json();
+      setUser({
+        id: user.id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role === "ADMIN" ? "admin" : "user",
+        createdAt: user.createdAt,
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`,
+      });
+      setIsLoading(false);
+      return true;
     } catch (error) {
-      console.error("Sign in error:", error);
       setIsLoading(false);
       return false;
     }

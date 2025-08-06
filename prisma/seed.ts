@@ -23,7 +23,7 @@ async function main() {
     where: { email: userEmail },
     update: {},
     create: {
-      name: 'User Biasa',
+      name: 'User',
       email: userEmail,
       password: await hash('User1234', 10),
       role: 'USER',
