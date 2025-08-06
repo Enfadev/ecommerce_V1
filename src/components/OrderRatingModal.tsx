@@ -37,7 +37,7 @@ export default function OrderRatingModal({ orderNumber, items, isOpen, onClose }
   const handleSubmit = async () => {
     setLoading(true);
 
-    // Simulate API call
+    
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     toast.success("Ulasan berhasil dikirim! Terima kasih atas feedback Anda.");

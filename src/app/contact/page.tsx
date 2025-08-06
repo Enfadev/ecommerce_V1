@@ -30,7 +30,7 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
+    
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     toast.success("Your message has been sent! We will respond within 24 hours.");

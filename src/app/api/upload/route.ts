@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     await mkdir(uploadDir, { recursive: true });
-    // Konversi ke webp
+    
     const webpBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
     const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-');
     const filename = `${Date.now()}-${baseName}.webp`;

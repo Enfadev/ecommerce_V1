@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-// Star rating component
+
 interface StarRatingProps {
   rating: number;
   setRating: (rating: number) => void;
@@ -25,7 +25,7 @@ function StarRating({ rating, setRating, readOnly = false }: StarRatingProps) {
   );
 }
 
-// Review form
+
 interface ReviewFormProps {
   productId: number;
   onSubmitted: () => void;

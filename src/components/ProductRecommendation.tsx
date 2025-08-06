@@ -13,7 +13,7 @@ interface ProductRecommendationProps {
   maxItems?: number;
 }
 
-// Helper: Get recommended products
+
 function getRecommendedProducts({ userId, wishlist, orderHistory, currentProductId, maxItems = 6 }: ProductRecommendationProps) {
   // Prioritas: Wishlist > OrderHistory > Popular > Same Category
   let recommended: typeof products = [];
