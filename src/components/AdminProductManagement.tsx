@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, ArrowUpDown, Download } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-// import { products as initialProducts } from "../data/products";
+
 import { ProductForm } from "./ProductForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -25,7 +25,7 @@ interface Product {
 
 export default function AdminProductManagement() {
   const [products, setProducts] = useState<Product[]>([]);
-  // Fetch produk dari database saat komponen mount
+  
   useEffect(() => {
     const fetchProducts = async () => {
       const res = await fetch("/api/product");
@@ -49,7 +49,7 @@ export default function AdminProductManagement() {
   const [sortBy, setSortBy] = useState<keyof Product>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  // Filter and sort products
+  
   const filteredProducts = products
     .filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -108,7 +108,7 @@ export default function AdminProductManagement() {
 
   const handleSave = async (productData: any) => {
     if (editingProduct) {
-      // TODO: update produk ke database jika fitur edit diaktifkan
+      
       setProducts(products.map((p) => (p.id === productData.id ? { ...productData, updatedAt: new Date().toLocaleDateString("id-ID") } : p)));
     } else {
       try {

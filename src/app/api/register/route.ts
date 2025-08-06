@@ -9,16 +9,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Data tidak lengkap' }, { status: 400 });
     }
 
-    // Cek apakah email sudah terdaftar
+    
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json({ error: 'Email sudah terdaftar' }, { status: 409 });
     }
 
-    // Hash password
+    
     const hashedPassword = await hash(password, 10);
 
-    // Buat user baru dengan role USER
+    
     const user = await prisma.user.create({
       data: {
         name,

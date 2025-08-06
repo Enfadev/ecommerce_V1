@@ -7,14 +7,14 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json({ error: 'ID produk wajib diisi' }, { status: 400 });
     }
-    // Cari produk dan ambil url gambar
+    
     const product = await prisma.product.findUnique({ where: { id: Number(id) } });
     if (!product) {
       return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 });
     }
-    // Hapus produk di database
+    
     await prisma.product.delete({ where: { id: Number(id) } });
-    // Hapus file gambar jika ada dan file di folder uploads
+    
     if (product.imageUrl && product.imageUrl.startsWith('/uploads/')) {
       const filePath = path.join(process.cwd(), 'public', product.imageUrl);
       try {
@@ -29,7 +29,7 @@ export async function DELETE(req: Request) {
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// Contoh API route untuk mengambil semua produk
+
 type Product = {
   id: number;
   name: string;
@@ -43,7 +43,7 @@ type Product = {
 export async function GET() {
   try {
     const products = await prisma.product.findMany();
-    // pastikan hasil sesuai tipe Product
+    
     const result: Product[] = products.map((p) => ({
       id: p.id,
       name: p.name,

@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load user data from localStorage on mount
+  
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  // Save user data to localStorage whenever user changes
+  
   useEffect(() => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Simulate API call
+      
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const updatedUser = { ...user, ...userData };

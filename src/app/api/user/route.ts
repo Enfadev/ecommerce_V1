@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// API route untuk mengambil semua user tanpa field password
 export async function GET() {
   try {
     const users = await prisma.user.findMany({
