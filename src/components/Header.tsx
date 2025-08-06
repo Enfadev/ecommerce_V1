@@ -62,7 +62,7 @@ export function Header() {
           <Link href="/event" className="text-sm font-medium hover:text-primary transition-colors">
             Events
           </Link>
-          <Link href="/kontak" className="text-sm font-medium hover:text-primary transition-colors">
+          <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors">
             Contact
           </Link>
           {user?.role === "admin" && (
@@ -209,7 +209,7 @@ export function Header() {
                 <Link href="/event" className="text-sm font-medium py-2 hover:text-primary transition-colors">
                   Events
                 </Link>
-                <Link href="/kontak" className="text-sm font-medium py-2 hover:text-primary transition-colors">
+                <Link href="/contact" className="text-sm font-medium py-2 hover:text-primary transition-colors">
                   Contact
                 </Link>
 

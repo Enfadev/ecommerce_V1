@@ -70,7 +70,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <NextLink href="/kontak" className="text-muted-foreground hover:text-primary transition-colors">
+                <NextLink href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
                   Contact Us
                 </NextLink>
               </li>
