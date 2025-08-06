@@ -71,8 +71,8 @@ export default function ProductPage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center py-12 mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">Koleksi Produk Terlengkap</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Temukan produk pilihan terbaik dengan kualitas premium dan harga yang kompetitif</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">Complete Product Collection</h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Discover the best selected products with premium quality and competitive prices</p>
         </div>
 
         {/* Search & Filter Section */}

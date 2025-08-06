@@ -33,7 +33,7 @@ export default function Contact() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    toast.success("Pesan Anda berhasil dikirim! Kami akan merespon dalam 24 jam.");
+    toast.success("Your message has been sent! We will respond within 24 hours.");
     setFormData({ name: "", email: "", subject: "", message: "" });
     setIsSubmitting(false);
   };
@@ -41,8 +41,8 @@ export default function Contact() {
   const contactMethods = [
     {
       icon: Phone,
-      title: "Telepon",
-      subtitle: "Senin - Jumat, 08:00 - 17:00",
+      title: "Phone",
+      subtitle: "Monday - Friday, 08:00 - 17:00",
       value: "+62 21 1234 5678",
       link: "tel:+622112345678",
       bgColor: "bg-blue-500",
@@ -58,7 +58,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email",
-      subtitle: "Respons dalam 24 jam",
+      subtitle: "Response within 24 hours",
       value: "support@shopzone.com",
       link: "mailto:support@shopzone.com",
       bgColor: "bg-purple-500",
@@ -66,8 +66,8 @@ export default function Contact() {
     {
       icon: Headphones,
       title: "Live Chat",
-      subtitle: "Senin - Sabtu, 08:00 - 22:00",
-      value: "Chat Langsung",
+      subtitle: "Monday - Saturday, 08:00 - 22:00",
+      value: "Live Chat",
       link: "#",
       bgColor: "bg-orange-500",
     },

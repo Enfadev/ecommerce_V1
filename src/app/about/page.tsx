@@ -5,32 +5,32 @@ import { Users, Target, Award, Heart, Shield, Truck, Clock, Star, MapPin, Phone,
 
 export default function About() {
   const stats = [
-    { label: "Pelanggan Setia", value: "50K+", icon: Users },
-    { label: "Produk Berkualitas", value: "10K+", icon: Award },
-    { label: "Rating Kepuasan", value: "4.8", icon: Star },
-    { label: "Kota Terjangkau", value: "100+", icon: MapPin },
+    { label: "Loyal Customers", value: "50K+", icon: Users },
+    { label: "Quality Products", value: "10K+", icon: Award },
+    { label: "Satisfaction Rating", value: "4.8", icon: Star },
+    { label: "Cities Reached", value: "100+", icon: MapPin },
   ];
 
   const features = [
     {
       icon: Shield,
-      title: "Belanja Aman",
-      description: "Sistem keamanan berlapis dan perlindungan data pelanggan",
+      title: "Secure Shopping",
+      description: "Multi-layered security system and customer data protection",
     },
     {
       icon: Truck,
-      title: "Pengiriman Cepat",
-      description: "Gratis ongkir ke seluruh Indonesia dengan pengiriman express",
+      title: "Fast Delivery",
+      description: "Free shipping across Indonesia with express delivery",
     },
     {
       icon: Clock,
-      title: "Support 24/7",
-      description: "Customer service yang siap membantu Anda kapan saja",
+      title: "24/7 Support",
+      description: "Customer service ready to help you anytime",
     },
     {
       icon: Heart,
-      title: "Produk Berkualitas",
-      description: "Hanya menjual produk original dan bergaransi resmi",
+      title: "Quality Products",
+      description: "Only selling original products with official warranty",
     },
   ];
 
@@ -61,19 +61,19 @@ export default function About() {
       <section className="relative py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <Badge variant="secondary" className="mb-4">
-            Tentang ShopZone
+            About ShopZone
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Membangun Masa Depan Belanja Online Indonesia</h1>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Building the Future of Online Shopping in Indonesia</h1>
           <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
-            ShopZone hadir sebagai platform e-commerce terpercaya yang menghadirkan pengalaman belanja online terbaik dengan produk berkualitas, harga kompetitif, dan layanan pelanggan yang luar biasa.
+            ShopZone is a trusted e-commerce platform delivering the best online shopping experience with quality products, competitive prices, and outstanding customer service.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gap-2">
               <Heart className="w-5 h-5" />
-              Mulai Belanja
+              Start Shopping
             </Button>
             <Button variant="outline" size="lg">
-              Hubungi Kami
+              Contact Us
             </Button>
           </div>
         </div>

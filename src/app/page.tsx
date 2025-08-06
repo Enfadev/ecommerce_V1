@@ -19,10 +19,10 @@ export default function Home() {
                   <div className="relative h-64 md:h-80 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-between px-8 md:px-16">
                     <div className="text-white space-y-4 z-10">
                       <Badge className="bg-yellow-500 text-black font-semibold">🔥 FLASH SALE</Badge>
-                      <h1 className="text-2xl md:text-4xl font-bold">Diskon hingga 70%</h1>
-                      <p className="text-blue-100 max-w-md">Dapatkan produk terbaik dengan harga terbaik. Promo terbatas!</p>
+                      <h1 className="text-2xl md:text-4xl font-bold">Up to 70% Off</h1>
+                      <p className="text-blue-100 max-w-md">Get the best products at the best prices. Limited time offer!</p>
                       <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
-                        Belanja Sekarang <ArrowRight className="ml-2 h-4 w-4" />
+                        Shop Now <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
                     <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
@@ -37,11 +37,11 @@ export default function Home() {
                 <Card className="border-0 overflow-hidden">
                   <div className="relative h-64 md:h-80 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 flex items-center justify-between px-8 md:px-16">
                     <div className="text-white space-y-4 z-10">
-                      <Badge className="bg-emerald-400 text-emerald-900 font-semibold">📦 GRATIS ONGKIR</Badge>
-                      <h1 className="text-2xl md:text-4xl font-bold">Bebas Ongkir ke Seluruh Indonesia</h1>
-                      <p className="text-emerald-100 max-w-md">Minimum pembelian Rp 250.000. Berlaku untuk semua produk.</p>
+                      <Badge className="bg-emerald-400 text-emerald-900 font-semibold">📦 FREE SHIPPING</Badge>
+                      <h1 className="text-2xl md:text-4xl font-bold">Free Shipping Across Indonesia</h1>
+                      <p className="text-emerald-100 max-w-md">Minimum purchase of Rp 250,000. Applies to all products.</p>
                       <Button size="lg" className="bg-white text-emerald-600 hover:bg-emerald-50">
-                        Lihat Syarat & Ketentuan <ArrowRight className="ml-2 h-4 w-4" />
+                        View Terms & Conditions <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
                     <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
@@ -56,11 +56,11 @@ export default function Home() {
                 <Card className="border-0 overflow-hidden">
                   <div className="relative h-64 md:h-80 bg-gradient-to-br from-pink-600 via-rose-600 to-pink-800 flex items-center justify-between px-8 md:px-16">
                     <div className="text-white space-y-4 z-10">
-                      <Badge className="bg-pink-400 text-pink-900 font-semibold">⭐ MEMBER BARU</Badge>
-                      <h1 className="text-2xl md:text-4xl font-bold">Cashback 20% untuk Member Baru</h1>
-                      <p className="text-pink-100 max-w-md">Daftar sekarang dan nikmati cashback untuk pembelian pertama.</p>
+                      <Badge className="bg-pink-400 text-pink-900 font-semibold">⭐ NEW MEMBER</Badge>
+                      <h1 className="text-2xl md:text-4xl font-bold">20% Cashback for New Members</h1>
+                      <p className="text-pink-100 max-w-md">Register now and enjoy cashback on your first purchase.</p>
                       <Button size="lg" className="bg-white text-pink-600 hover:bg-pink-50">
-                        Daftar Sekarang <ArrowRight className="ml-2 h-4 w-4" />
+                        Register Now <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
                     <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
