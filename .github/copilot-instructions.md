@@ -1,75 +1,74 @@
-# Copilot Instructions (Short Version)
+
+# Copilot Instructions (General Version)
 
 ## Purpose
-Copilot must always generate complete, ready-to-use feature code using the project's existing stack/libraries.
+Copilot must always generate complete, ready-to-use feature code using the project's existing stack, libraries, and conventions.
 
+## Next.js Requirement for New UI
+All new UI implementations must always use Next.js as the framework, following its best practices and conventions.
 
 ## Additional Rule: Honest and Objective Answers
-
 Always answer all user questions and requests honestly and objectively, without the need to justify or agree with the user's opinions or answers. Responses should be direct, factual, and unbiased.
 
-
-## Universal E-Commerce Vision & Requirements (User Addition)
+## Universal Project Vision & Requirements
 
 ### Vision & Purpose
-- A universal e-commerce website that can be used by any brand to sell any type of product.
-- Unlike marketplaces such as Tokopedia, Shopee, or Amazon—the focus is on brand storytelling, company information, and product details.
-- Clean, elegant, modern look with default dark mode (similar to xiaomi.com).
-- Homepage highlights the brand story, vision, and uniqueness.
-- Dedicated pages for company information, team, history, and achievements.
-- Product pages show detailed specifications, brand story, curated reviews, video presentations, and product comparison features.
-- Core features: shopping cart, checkout, wishlist, order history, product reviews, customer testimonials.
+- Build a flexible, modern web application that can be adapted for any brand, company, or use case.
+- Focus on clean, elegant, and modern design with a customizable theme (dark mode, light mode, or others as needed).
+- Homepage and main sections should highlight the unique story, vision, and information relevant to the brand or project.
+- Provide dedicated pages for company/brand information, team, history, and achievements if relevant.
+- Product or content pages should show detailed information, curated reviews, media presentations, and comparison features if applicable.
+- Core features: shopping cart, checkout, wishlist, order history, reviews, testimonials, or other features as required by the project.
 - Smooth transition/interaction animations, innovative UX, and intuitive navigation.
-- Flexible and easily customizable platform for any brand and product.
-- Avoid crowded/generic appearance, prioritize brand storytelling.
+- Platform must be flexible and easily customizable for any brand, product, or content type.
+- Avoid crowded/generic appearance, prioritize storytelling and clarity.
 - Use the stack, components, and structure already present in the project.
-- Follow Next.js best practices and ensure all features are ready to use immediately.
+- Follow Next.js (or project framework) best practices and ensure all features are ready to use immediately.
 
 ### Implementation Principles
 - All features must be immediately usable and connected to existing components.
 - Do not add new libraries without permission.
-- Default to dark mode and minimalist design.
-- Animations and UX innovation on main sections (brand story, product, testimonial).
+- Default to a clean, minimalist design. Theme (dark/light/custom) should be flexible and follow user or project requirements.
+- Animations and UX innovation on main sections (story, product/content, testimonial, etc.).
 - Brief testing and documentation for complex logic.
 
 ---
 
-
-## E-Commerce Project Vision & Feature Guidelines
+## Project Feature Guidelines
 
 **Purpose:**  
-Build a universal e-commerce website that empowers brands to sell any product, while focusing on brand storytelling and product information. The site should avoid the cluttered look of typical marketplaces (Tokopedia, Shopee, Amazon) and instead offer a clean, elegant, and modern experience—similar to xiaomi.com.
+Build a universal, brand-adaptable web application that empowers any company or project to present their story, products, or content, while focusing on information clarity and storytelling. The site should avoid a cluttered look and instead offer a clean, elegant, and modern experience.
 
 ### Key Principles
 
-1. **Brand-Centric Design**
-   - Homepage highlights the brand story, vision, and unique selling points.
-   - Provide dedicated sections for company information, team, history, and achievements.
-   - Product pages offer detailed information, including specifications, brand story, and curated reviews.
+1. **Brand/Project-Centric Design**
+   - Homepage highlights the story, vision, and unique selling points.
+   - Provide dedicated sections for company/brand information, team, history, and achievements if needed.
+   - Product/content pages offer detailed information, including specifications, story, and curated reviews.
 
 2. **Minimalist & Modern UI**
-   - Default to dark mode.
+   - Theme (dark, light, or custom) should be flexible and follow project/user requirements.
    - Use a clean, spacious layout with clear typography.
-   - Avoid excessive product listings, ads, or categories.
+   - Avoid excessive listings, ads, or categories.
    - Prioritize visual storytelling with high-quality images and videos.
 
 3. **Universal & Flexible**
-   - The platform should be usable by any brand, regardless of product type.
+   - The platform should be usable by any brand or project, regardless of type.
    - All features must be generic and easily customizable.
 
-4. **Complete E-Commerce Features**
-   - Shopping cart, checkout, wishlist, order history, and product reviews.
+4. **Complete Features**
+   - Shopping cart, checkout, wishlist, order history, reviews, testimonials, or other features as required.
    - Simple, intuitive navigation.
 
 5. **Innovative UX**
    - Smooth animations for transitions and interactions.
-   - “Brand Story” section with animated reveals.
-   - Product comparison feature.
-   - Video presentations for brands/products.
-   - Curated customer testimonials and reviews.
+   - Story section with animated reveals.
+   - Comparison features if relevant.
+   - Video/media presentations for brands/products/content.
+   - Curated testimonials and reviews.
 
-6. **Next.js Best Practices**
-   - Follow Next.js conventions for routing, server/client components, and folder structure.
+6. **Framework Best Practices**
+   - Follow project conventions for routing, server/client components, and folder structure.
    - Reuse existing components and utilities.
    - Do not add new libraries without permission.
 
@@ -80,7 +79,7 @@ Build a universal e-commerce website that empowers brands to sell any product, w
 ---
 
 **Note:**  
-Always prioritize brand information and storytelling, not just product listings. The site should feel exclusive, informative, and visually engaging—never crowded or generic.
+Always prioritize information clarity and storytelling, not just listings. The site should feel exclusive, informative, and visually engaging—never crowded or generic.
 
 ## Main Rules
 
@@ -88,62 +87,62 @@ Always prioritize brand information and storytelling, not just product listings.
    - Implement every required part: UI, logic, API, validation, routing, etc.
    - Update all relevant files so the feature works immediately.
 
-12. **Honest and Objective Answers**
+2. **Honest and Objective Answers**
    - Copilot must always provide honest and objective answers, without the need to justify or agree with the user's opinions or answers.
 
-2. **Use Existing Stack/Libraries**
+3. **Use Existing Stack/Libraries**
    - Always use the frameworks, UI kits, state management, etc. already in the project.
    - Do not add new libraries without permission.
    - Follow project structure and conventions.
 
-3. **Reuse Existing Components/Functions**
+4. **Reuse Existing Components/Functions**
    - Always use available components/functions.
    - Check shared component collections, helpers, and utilities before creating new ones.
 
-4. **DRY Principle**
+5. **DRY Principle**
    - Avoid duplicate code.
    - Refactor or extract repeated code into reusable parts.
 
-5. **Follow Next.js Rules**
-   - Adhere to Next.js best practices, folder structure, routing, server/client components, etc.
-   - Optimize Next.js features as per official docs.
+6. **Follow Framework Rules**
+   - Adhere to framework best practices, folder structure, routing, server/client components, etc.
+   - Optimize features as per official docs.
 
-6. **Layout File Editing**
+7. **Layout File Editing**
    - Check the `layout` file for new pages.
    - Do not edit `layout.tsx` unless absolutely necessary and always confirm with the user.
    - Warn if layout changes may affect other pages.
    - Put client-side logic in descendant components, not in layout.
-   - Keep layout files as server components.
+   - Keep layout files as server components if using Next.js.
 
-7. **Default to Dark Theme**
-   - Use dark theme as the default for all components/features.
-   - Enable dark mode in UI kits and ensure all visuals fit dark mode.
+8. **Theme Flexibility**
+   - Theme (dark, light, or custom) should be flexible and follow user or project requirements.
+   - Ensure all visuals fit the selected theme.
 
-8. **Design Innovation**
-   - Suggest creative UI/UX ideas, animations, and effects that match branding.
+9. **Design Innovation**
+   - Suggest creative UI/UX ideas, animations, and effects that match branding or project goals.
    - Consider accessibility and performance.
 
-9. **Consistency**
+10. **Consistency**
    - Follow project naming, folder structure, and code style.
    - Export new components for use in related features.
 
-10. **Brief Documentation**
+11. **Brief Documentation**
     - Add short code comments where needed, especially in complex parts.
 
-11. **Testing**
+12. **Testing**
     - Add tests/unit tests as per project standards when possible.
 
 ## Example
-For an "add product" feature in e-commerce:
-- Include a product form, validation (using existing form library), API connection (using existing data fetching), feedback/error handling
-- Connect components to main/product list
-- Follow Next.js structure and conventions
+For an "add feature" request:
+- Include all UI, validation (using existing form library), API connection (using existing data fetching), feedback/error handling
+- Connect components to main/content list
+- Follow project structure and conventions
 - No layout changes unless required
-- All displays use dark mode
+- Theme should be flexible (not always dark mode)
 - UI shows innovation, engaging interactions/animations
 - **Always reuse project components/utilities and apply DRY**
 
 ---
 
 **Note:**  
-Ask the user if there are special requirements for stack, structure, Next.js rules, or theme preferences.
+Ask the user if there are special requirements for stack, structure, framework rules, or theme preferences.
