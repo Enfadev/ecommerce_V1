@@ -100,15 +100,26 @@ export default function AdminProductManagement() {
       // TODO: update produk ke database jika fitur edit diaktifkan
       setProducts(products.map((p) => (p.id === productData.id ? { ...productData, updatedAt: new Date().toLocaleDateString("id-ID") } : p)));
     } else {
-      // Tambah produk ke database
       try {
+        let imageUrl = "";
+        if (productData.imageFile) {
+          const formData = new FormData();
+          formData.append("file", productData.imageFile);
+          const uploadRes = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          if (!uploadRes.ok) throw new Error("Gagal upload gambar");
+          const uploadData = await uploadRes.json();
+          imageUrl = uploadData.url;
+        }
         const res = await fetch("/api/product", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: productData.name,
             price: productData.price,
-            imageUrl: productData.image,
+            imageUrl,
             description: productData.description,
           }),
         });

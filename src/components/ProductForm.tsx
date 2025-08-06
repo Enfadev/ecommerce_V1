@@ -58,18 +58,18 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
         <Label>Nama Produk</Label>
         <Input {...register("name")} />
         {errors.name && <p className="text-red-500 text-xs">{errors.name.message as string}</p>}
+      </div>
+      <div>
+        <Label>Harga</Label>
+        <Input type="number" {...register("price", { valueAsNumber: true })} />
+        {errors.price && <p className="text-red-500 text-xs">{errors.price.message as string}</p>}
+      </div>
       <div>
         <Label>Upload Gambar</Label>
         <Input type="file" accept="image/*" onChange={onImageChange} />
         {imagePreview && (
           <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover mt-2 rounded" />
         )}
-      </div>
-      </div>
-      <div>
-        <Label>URL Gambar</Label>
-        <Input {...register("image")} />
-        {errors.image && <p className="text-red-500 text-xs">{errors.image.message as string}</p>}
       </div>
       <div>
         <Label>Deskripsi</Label>
