@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import sharp from 'sharp';
 
 export const config = {
   api: {
@@ -18,9 +19,12 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     await mkdir(uploadDir, { recursive: true });
-    const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    // Konversi ke webp
+    const webpBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
+    const baseName = file.name.replace(/\.[^/.]+$/, '').replace(/\s+/g, '-');
+    const filename = `${Date.now()}-${baseName}.webp`;
     const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
+    await writeFile(filePath, webpBuffer);
     const url = `/uploads/${filename}`;
     return NextResponse.json({ url });
   } catch (error) {
