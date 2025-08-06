@@ -40,7 +40,7 @@ export default function ProductPage() {
       });
     }
 
-    // Sorting
+    
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "name-asc":

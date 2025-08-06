@@ -23,10 +23,10 @@ export default function WishlistPage() {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
-  // Get unique categories
+  
   const categories = Array.from(new Set(wishlist.map((product) => product.category)));
 
-  // Filter and sort products
+  
   const filteredProducts = wishlist.filter((product) => filterCategory === "all" || product.category === filterCategory);
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -76,7 +76,7 @@ export default function WishlistPage() {
         console.log("Sharing cancelled");
       }
     } else {
-      // Fallback: copy to clipboard
+      
       navigator.clipboard.writeText(window.location.href);
       toast.success("Wishlist link copied to clipboard!");
     }

@@ -59,7 +59,7 @@ export default function RegisterPage() {
     },
   });
 
-  // Redirect if already authenticated
+  
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/");
