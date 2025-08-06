@@ -107,7 +107,7 @@ export default function AdminCustomerManagement() {
   const [sortBy, setSortBy] = useState<keyof Customer>("joinDate");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Filter and sort customers
+  
   const filteredCustomers = customers
     .filter((customer) => {
       const matchesSearch =
@@ -182,7 +182,7 @@ export default function AdminCustomerManagement() {
     }
   };
 
-  // Calculate stats
+  
   const stats = {
     total: customers.length,
     active: customers.filter((c) => c.status === "active").length,

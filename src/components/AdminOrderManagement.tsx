@@ -103,7 +103,7 @@ export default function AdminOrderManagement() {
   const [sortBy, setSortBy] = useState<keyof Order>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Filter and sort orders
+  
   const filteredOrders = orders
     .filter((order) => {
       const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.email.toLowerCase().includes(searchQuery.toLowerCase());
@@ -221,7 +221,7 @@ export default function AdminOrderManagement() {
     }
   };
 
-  // Calculate stats
+  
   const stats = {
     total: orders.length,
     pending: orders.filter((o) => o.status === "pending").length,

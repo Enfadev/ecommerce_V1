@@ -12,7 +12,7 @@ const productSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(2, "Product name is required"),
   price: z.number().min(1, "Price must be greater than 0"),
-  image: z.string().optional(), // not required, can upload file
+  image: z.string().optional(),
   description: z.string().optional(),
 });
 

@@ -30,7 +30,7 @@ export function SavedItemsProvider({ children }: { children: ReactNode }) {
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load saved items from localStorage on mount
+  
   useEffect(() => {
     try {
       const saved = localStorage.getItem("saved-items");
@@ -48,7 +48,7 @@ export function SavedItemsProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Save to localStorage whenever items change
+  
   useEffect(() => {
     if (isLoaded) {
       try {
@@ -72,7 +72,7 @@ export function SavedItemsProvider({ children }: { children: ReactNode }) {
   }
 
   function moveToCart(id: string) {
-    // This would integrate with cart context
+    
     removeFromSaved(id);
   }
 
