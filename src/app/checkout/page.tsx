@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   const ongkir = subtotal >= 250000 ? 0 : 15000;
   const total = subtotal + ongkir;
 
-  // Redirect jika cart kosong
+  
   useEffect(() => {
     if (items.length === 0 && !submitted) {
       toast.error("Keranjang belanja kosong");
@@ -52,14 +52,14 @@ export default function CheckoutPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validasi form
+    
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
       toast.error("Mohon lengkapi semua field yang wajib diisi");
       setIsSubmitting(false);
       return;
     }
 
-    // Simulate API call
+    
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     setSubmitted(true);

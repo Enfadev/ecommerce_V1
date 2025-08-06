@@ -42,7 +42,7 @@ export default function SignInPage() {
     },
   });
 
-  // Redirect if already authenticated
+  
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/");

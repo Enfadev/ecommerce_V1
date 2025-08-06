@@ -18,7 +18,7 @@ import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";
 import ProductRecommendation from "@/components/ProductRecommendation";
 
-// Schema for profile update
+
 const profileSchema = z.object({
   name: z.string().min(2, { message: "Nama minimal 2 karakter" }),
   email: z.string().email({ message: "Email tidak valid" }),
@@ -72,14 +72,14 @@ export default function ProfilePage() {
     },
   });
 
-  // Redirect if not authenticated
+  
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/signin");
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Populate form with user data
+  
   useEffect(() => {
     if (user) {
       profileForm.reset({
@@ -121,7 +121,7 @@ export default function ProfilePage() {
 
   async function onPasswordSubmit(values: PasswordValues) {
     try {
-      // Simulate password change
+      
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setToast({

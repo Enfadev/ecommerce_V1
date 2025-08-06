@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Password salah' }, { status: 401 });
     }
 
-    // Jangan kirim password ke client
+    
     const { password: _, ...userData } = user;
     return NextResponse.json(userData);
   } catch (error) {
