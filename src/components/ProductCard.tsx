@@ -217,7 +217,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                   id: String(product.id),
                   name: product.name,
                   price: product.price,
-                  image: product.image,
+                      image: product.image,
                 });
                 toast.success(`${product.name} successfully added to cart!`);
               }}

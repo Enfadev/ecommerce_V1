@@ -1,13 +1,13 @@
 "use client";
 
 import { ProductCard } from "@/components/ProductCard";
-import { products } from "@/data/products";
+// import { products } from "@/data/products";
 import { useSearchParams } from "next/navigation";
 import { ProductFilter } from "@/components/ProductFilter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, Grid, List, Filter, SortAsc, SortDesc } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -23,6 +23,29 @@ export default function ProductPage() {
   const [localSearch, setLocalSearch] = useState(search);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    setLoading(true);
+    fetch("/api/product")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setProducts(data);
+          setError("");
+        } else {
+          setError(data.error || "Failed to fetch products");
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to fetch products");
+        setLoading(false);
+      });
+  }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products.filter((p) => p.name.toLowerCase().includes(localSearch.toLowerCase()));
@@ -40,7 +63,6 @@ export default function ProductPage() {
       });
     }
 
-    
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "name-asc":
@@ -58,7 +80,7 @@ export default function ProductPage() {
     });
 
     return filtered;
-  }, [localSearch, category, price, sortBy]);
+  }, [products, localSearch, category, price, sortBy]);
 
   const getSortIcon = () => {
     if (sortBy.includes("asc")) return <SortAsc className="w-4 h-4" />;
@@ -130,7 +152,22 @@ export default function ProductPage() {
         </div>
 
         {/* Products Grid/List */}
-        {filteredAndSortedProducts.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center animate-pulse">
+              <Search className="w-12 h-12 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Loading products...</h3>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20">
+            <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
+              <Search className="w-12 h-12 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">{error}</h3>
+            <Button variant="outline" onClick={() => window.location.reload()}>Retry</Button>
+          </div>
+        ) : filteredAndSortedProducts.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
               <Search className="w-12 h-12 text-muted-foreground" />

@@ -49,7 +49,7 @@ export async function GET() {
       name: p.name,
       description: p.description,
       price: p.price,
-      imageUrl: p.imageUrl,
+      image: p.imageUrl,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
     }));
