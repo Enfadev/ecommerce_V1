@@ -201,8 +201,8 @@ export default function AdminCustomerManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Manajemen Pelanggan</h1>
-          <p className="text-muted-foreground mt-1">Kelola data pelanggan dan analisis perilaku pembelian</p>
+          <h1 className="text-3xl font-bold">Customer Management</h1>
+          <p className="text-muted-foreground mt-1">Manage customer data and analyze purchase behavior</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" className="gap-2">
@@ -211,7 +211,7 @@ export default function AdminCustomerManagement() {
           </Button>
           <Button className="gap-2">
             <UserPlus className="w-4 h-4" />
-            Tambah Pelanggan
+            Add Customer
           </Button>
         </div>
       </div>
@@ -235,7 +235,7 @@ export default function AdminCustomerManagement() {
               <Users className="w-5 h-5 text-green-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Aktif</p>
+              <p className="text-sm text-muted-foreground">Active</p>
               <p className="text-xl font-bold">{stats.active}</p>
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function AdminCustomerManagement() {
               <Users className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Tidak Aktif</p>
+              <p className="text-sm text-muted-foreground">Inactive</p>
               <p className="text-xl font-bold">{stats.inactive}</p>
             </div>
           </div>
@@ -257,7 +257,7 @@ export default function AdminCustomerManagement() {
               <Users className="w-5 h-5 text-red-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Diblokir</p>
+              <p className="text-sm text-muted-foreground">Blocked</p>
               <p className="text-xl font-bold">{stats.blocked}</p>
             </div>
           </div>
@@ -268,7 +268,7 @@ export default function AdminCustomerManagement() {
               <UserPlus className="w-5 h-5 text-purple-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Baru Bulan Ini</p>
+              <p className="text-sm text-muted-foreground">New This Month</p>
               <p className="text-xl font-bold">{stats.newThisMonth}</p>
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function AdminCustomerManagement() {
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Cari berdasarkan nama, email, telepon, atau ID..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input placeholder="Search by name, email, phone, or ID..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
           </div>
           <div className="flex gap-2">
@@ -300,15 +300,15 @@ export default function AdminCustomerManagement() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
                   <Filter className="w-4 h-4" />
-                  Status: {selectedStatus === "all" ? "Semua" : getStatusText(selectedStatus)}
+                  Status: {selectedStatus === "all" ? "All" : getStatusText(selectedStatus)}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>Pilih Status</DropdownMenuLabel>
+                <DropdownMenuLabel>Select Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {statusOptions.map((status) => (
                   <DropdownMenuItem key={status} onClick={() => setSelectedStatus(status)}>
-                    {status === "all" ? "Semua Status" : getStatusText(status)}
+                    {status === "all" ? "All Status" : getStatusText(status)}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -324,38 +324,38 @@ export default function AdminCustomerManagement() {
             <TableRow>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("id")} className="gap-1 p-0 h-auto">
-                  ID Pelanggan
+                  Customer ID
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("name")} className="gap-1 p-0 h-auto">
-                  Nama
+                  Name
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Kontak</TableHead>
+              <TableHead>Contact</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("totalOrders")} className="gap-1 p-0 h-auto">
-                  Total Pesanan
+                  Total Orders
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("totalSpent")} className="gap-1 p-0 h-auto">
-                  Total Pembelian
+                  Total Spent
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("joinDate")} className="gap-1 p-0 h-auto">
-                  Bergabung
+                  Joined
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Pesanan Terakhir</TableHead>
-              <TableHead className="w-12">Aksi</TableHead>
+              <TableHead>Last Order</TableHead>
+              <TableHead className="w-12">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -397,7 +397,7 @@ export default function AdminCustomerManagement() {
                 <TableCell>
                   <div className="text-center">
                     <p className="font-medium">{customer.totalOrders}</p>
-                    <p className="text-sm text-muted-foreground">pesanan</p>
+                    <p className="text-sm text-muted-foreground">orders</p>
                   </div>
                 </TableCell>
                 <TableCell className="font-medium">Rp {customer.totalSpent.toLocaleString("id-ID")}</TableCell>
@@ -419,18 +419,18 @@ export default function AdminCustomerManagement() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => handleViewDetail(customer)}>
                         <Eye className="w-4 h-4 mr-2" />
-                        Detail
+                        View Details
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Edit className="w-4 h-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Ubah Status</DropdownMenuLabel>
+                      <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                       {["active", "inactive", "blocked"].map((status) => (
                         <DropdownMenuItem key={status} onClick={() => handleStatusChange(customer.id, status as Customer["status"])} disabled={customer.status === status}>
                           {getStatusText(status)}
@@ -439,7 +439,7 @@ export default function AdminCustomerManagement() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => handleDeleteCustomer(customer.id)} className="text-destructive">
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Hapus
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -454,14 +454,14 @@ export default function AdminCustomerManagement() {
       <Dialog open={showCustomerDetail} onOpenChange={setShowCustomerDetail}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detail Pelanggan {selectedCustomer?.name}</DialogTitle>
+            <DialogTitle>Customer Details {selectedCustomer?.name}</DialogTitle>
           </DialogHeader>
           {selectedCustomer && (
             <div className="space-y-6">
               {/* Customer Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <h3 className="font-semibold mb-4">Informasi Personal</h3>
+                  <h3 className="font-semibold mb-4">Personal Information</h3>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -489,30 +489,30 @@ export default function AdminCustomerManagement() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-muted-foreground" />
-                        <span>Bergabung: {new Date(selectedCustomer.joinDate).toLocaleDateString("id-ID")}</span>
+                        <span>Joined: {new Date(selectedCustomer.joinDate).toLocaleDateString("en-GB")}</span>
                       </div>
                     </div>
                   </div>
                 </Card>
 
                 <Card className="p-4">
-                  <h3 className="font-semibold mb-4">Status & Statistik</h3>
+                  <h3 className="font-semibold mb-4">Status & Statistics</h3>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Status:</span>
                       <Badge className={getStatusColor(selectedCustomer.status)}>{getStatusText(selectedCustomer.status)}</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Total Pesanan:</span>
+                      <span className="text-sm text-muted-foreground">Total Orders:</span>
                       <span className="font-medium">{selectedCustomer.totalOrders}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Total Pembelian:</span>
+                      <span className="text-sm text-muted-foreground">Total Spent:</span>
                       <span className="font-medium">Rp {selectedCustomer.totalSpent.toLocaleString("id-ID")}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Pesanan Terakhir:</span>
-                      <span className="font-medium">{selectedCustomer.lastOrder ? new Date(selectedCustomer.lastOrder).toLocaleDateString("id-ID") : "Belum ada"}</span>
+                      <span className="text-sm text-muted-foreground">Last Order:</span>
+                      <span className="font-medium">{selectedCustomer.lastOrder ? new Date(selectedCustomer.lastOrder).toLocaleDateString("en-GB") : "None"}</span>
                     </div>
                   </div>
                 </Card>
@@ -520,7 +520,7 @@ export default function AdminCustomerManagement() {
 
               {/* Address */}
               <Card className="p-4">
-                <h3 className="font-semibold mb-2">Alamat</h3>
+                <h3 className="font-semibold mb-2">Address</h3>
                 <p className="text-sm">{selectedCustomer.address}</p>
               </Card>
 
@@ -528,15 +528,15 @@ export default function AdminCustomerManagement() {
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1">
                   <Edit className="w-4 h-4 mr-2" />
-                  Edit Pelanggan
+                  Edit Customer
                 </Button>
                 <Button variant="outline" className="flex-1">
                   <Mail className="w-4 h-4 mr-2" />
-                  Kirim Email
+                  Send Email
                 </Button>
                 <Button variant="outline" className="flex-1">
                   <Eye className="w-4 h-4 mr-2" />
-                  Lihat Pesanan
+                  View Orders
                 </Button>
               </div>
             </div>
