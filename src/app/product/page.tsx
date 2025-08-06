@@ -80,7 +80,7 @@ export default function ProductPage() {
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input placeholder="Cari produk yang Anda inginkan..." value={localSearch} onChange={(e) => setLocalSearch(e.target.value)} className="pl-10 h-12 text-base border-2 focus:border-primary/50" />
+              <Input placeholder="Search for products you want..." value={localSearch} onChange={(e) => setLocalSearch(e.target.value)} className="pl-10 h-12 text-base border-2 focus:border-primary/50" />
             </div>
           </div>
 
@@ -90,15 +90,15 @@ export default function ProductPage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="lg" className="gap-2">
                   {getSortIcon()}
-                  Urutkan
+                  Sort
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSortBy("newest")}>Terbaru</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-asc")}>Nama A-Z</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-desc")}>Nama Z-A</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-asc")}>Harga Termurah</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-desc")}>Harga Termahal</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("newest")}>Newest</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("name-asc")}>Name A-Z</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("name-desc")}>Name Z-A</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("price-asc")}>Lowest Price</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("price-desc")}>Highest Price</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -122,9 +122,9 @@ export default function ProductPage() {
         {/* Results Header */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-semibold">{localSearch ? `Hasil pencarian "${localSearch}"` : "Semua Produk"}</h2>
+            <h2 className="text-2xl font-semibold">{localSearch ? `Search results "${localSearch}"` : "All Products"}</h2>
             <Badge variant="secondary" className="text-sm">
-              {filteredAndSortedProducts.length} produk
+              {filteredAndSortedProducts.length} products
             </Badge>
           </div>
         </div>
@@ -135,8 +135,8 @@ export default function ProductPage() {
             <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
               <Search className="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Produk tidak ditemukan</h3>
-            <p className="text-muted-foreground mb-6">Coba ubah kata kunci pencarian atau filter yang Anda gunakan</p>
+            <h3 className="text-xl font-semibold mb-2">Product not found</h3>
+            <p className="text-muted-foreground mb-6">Try changing your search keyword or filter</p>
             <Button
               variant="outline"
               onClick={() => {
@@ -144,7 +144,7 @@ export default function ProductPage() {
                 setSortBy("newest");
               }}
             >
-              Reset Pencarian
+              Reset Search
             </Button>
           </div>
         ) : (
@@ -159,7 +159,7 @@ export default function ProductPage() {
         {filteredAndSortedProducts.length > 12 && (
           <div className="text-center mt-12">
             <Button variant="outline" size="lg">
-              Muat Lebih Banyak
+              Load More
             </Button>
           </div>
         )}

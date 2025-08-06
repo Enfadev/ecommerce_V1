@@ -3,10 +3,10 @@ import { useMemo } from "react";
 
 const categories = ["All", "Fashion", "Electronics"];
 const priceRanges = [
-  { label: "Semua", value: "all" },
-  { label: "< Rp200.000", value: "lt200" },
-  { label: "Rp200.000 - Rp500.000", value: "200-500" },
-  { label: "> Rp500.000", value: "gt500" },
+  { label: "All", value: "all" },
+  { label: "< Rp200,000", value: "lt200" },
+  { label: "Rp200,000 - Rp500,000", value: "200-500" },
+  { label: "> Rp500,000", value: "gt500" },
 ];
 
 export function ProductFilter() {
@@ -29,11 +29,11 @@ export function ProductFilter() {
 
   return (
     <div className="space-y-4 p-6 bg-card rounded-lg border shadow-sm">
-      <h3 className="font-semibold text-lg mb-4">Filter Produk</h3>
+      <h3 className="font-semibold text-lg mb-4">Product Filter</h3>
 
       {/* Category Filter */}
       <div className="space-y-3">
-        <span className="text-sm font-medium text-muted-foreground">Kategori:</span>
+        <span className="text-sm font-medium text-muted-foreground">Category:</span>
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
@@ -52,7 +52,7 @@ export function ProductFilter() {
 
       {/* Price Filter */}
       <div className="space-y-3">
-        <span className="text-sm font-medium text-muted-foreground">Rentang Harga:</span>
+        <span className="text-sm font-medium text-muted-foreground">Price Range:</span>
         <div className="flex flex-wrap gap-2">
           {priceRanges.map((range) => (
             <button
@@ -73,12 +73,12 @@ export function ProductFilter() {
       {(selectedCategory !== "All" || selectedPrice !== "all") && (
         <div className="pt-4 border-t">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Filter Aktif:</span>
+            <span className="text-sm font-medium text-muted-foreground">Active Filters:</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {selectedCategory !== "All" && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-                Kategori: {selectedCategory}
+                Category: {selectedCategory}
                 <button onClick={() => setParam("category", "All")} className="ml-1 hover:bg-primary/20 rounded-full p-0.5">
                   ×
                 </button>
@@ -86,7 +86,7 @@ export function ProductFilter() {
             )}
             {selectedPrice !== "all" && (
               <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-                Harga: {priceRanges.find((p) => p.value === selectedPrice)?.label}
+                Price: {priceRanges.find((p) => p.value === selectedPrice)?.label}
                 <button onClick={() => setParam("price", "all")} className="ml-1 hover:bg-primary/20 rounded-full p-0.5">
                   ×
                 </button>
