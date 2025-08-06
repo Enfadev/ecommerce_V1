@@ -7,11 +7,13 @@ Copilot must always generate complete, ready-to-use feature code using the proje
 ## Next.js Requirement for New UI
 All new UI implementations must always use Next.js as the framework, following its best practices and conventions.
 
-## Additional Rule: Honest and Objective Answers
-Always answer all user questions and requests honestly and objectively, without the need to justify or agree with the user's opinions or answers. Responses should be direct, factual, and unbiased.
 
-## Additional Rule: English-Only UI
-All UI elements (text, labels, buttons, messages, etc.) must be written in English.
+## Additional Rule: Honest and Objective Answers
+Always answer all user questions and requests honestly and objectively, without the need to justify or agree with the user's opinions. Answers must be direct, factual, and unbiased.
+
+## Additional Rule: English for UI, Indonesian for Communication
+All UI elements (text, labels, buttons, messages, etc.) must use English.
+However, all communication, explanations, and discussions with the user must be in Indonesian.
 
 ## Universal Project Vision & Requirements
 

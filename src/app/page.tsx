@@ -1,12 +1,28 @@
 import { ProductCard } from "../components/ProductCard";
-import { products } from "../data/products";
+import { prisma } from "../lib/prisma";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../components/ui/carousel";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import NextLink from "next/link";
 import { ArrowRight, Star, Truck, Shield, Headphones, Gift } from "lucide-react";
-export default function Home() {
+export default async function Home() {
+  
+  const dbProducts = await prisma.product.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 8,
+  });
+
+  
+  const products = dbProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    image: p.imageUrl || "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format",
+    category: "General",
+    stock: 50,
+  }));
+
   return (
     <div className="min-h-screen bg-background">
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-12">
@@ -156,7 +172,7 @@ export default function Home() {
         {/* This Week's Promo */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">This Week's Promo</h2>
+            <h2 className="text-3xl font-bold">This Week&apos;s Promo</h2>
             <Button variant="outline" asChild>
               <NextLink href="/product">
                 View All Promos <ArrowRight className="ml-2 h-4 w-4" />
@@ -275,7 +291,7 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.slice(0, 8).map((product) => (
+            {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

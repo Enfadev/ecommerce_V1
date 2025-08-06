@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 
-// Singleton pattern agar PrismaClient tidak membuat koneksi berlebih di Next.js
 const globalForPrisma = global as unknown as { prisma: PrismaClient | undefined };
 
 export const prisma =
