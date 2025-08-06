@@ -58,9 +58,9 @@ export default function WishlistPage() {
       }
     });
     if (addedCount > 0) {
-      toast.success(`${addedCount} produk ditambahkan ke keranjang!`);
+      toast.success(`${addedCount} products added to cart!`);
     } else {
-      toast.info("Tidak ada produk tersedia untuk ditambahkan ke keranjang");
+      toast.info("No available products to add to cart");
     }
   };
 
@@ -68,8 +68,8 @@ export default function WishlistPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Wishlist Saya",
-          text: `Lihat ${getWishlistCount()} produk favorit saya!`,
+          title: "My Wishlist",
+          text: `Check out my ${getWishlistCount()} favorite products!`,
           url: window.location.href,
         });
       } catch (error) {
@@ -78,7 +78,7 @@ export default function WishlistPage() {
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      toast.success("Link wishlist disalin ke clipboard!");
+      toast.success("Wishlist link copied to clipboard!");
     }
   };
 
@@ -92,15 +92,15 @@ export default function WishlistPage() {
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-500">{categories.length}</div>
-            <div className="text-sm text-muted-foreground">Kategori</div>
+            <div className="text-sm text-muted-foreground">Categories</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-500">Rp {filteredProducts.reduce((sum, product) => sum + product.price, 0).toLocaleString("id-ID")}</div>
-            <div className="text-sm text-muted-foreground">Total Nilai</div>
+            <div className="text-sm text-muted-foreground">Total Value</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-500">{filteredProducts.filter((p) => p.stock > 0).length}</div>
-            <div className="text-sm text-muted-foreground">Tersedia</div>
+            <div className="text-sm text-muted-foreground">Available</div>
           </div>
         </div>
       </CardContent>
@@ -115,12 +115,12 @@ export default function WishlistPage() {
             <div className="mx-auto mb-6 w-24 h-24 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
               <Heart className="w-12 h-12 text-pink-500" />
             </div>
-            <h1 className="text-3xl font-bold mb-4">Wishlist Kosong</h1>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">Belum ada produk favorit yang ditambahkan. Mulai jelajahi produk dan tambahkan yang Anda sukai!</p>
+            <h1 className="text-3xl font-bold mb-4">Empty Wishlist</h1>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">No favorite products added yet. Start exploring products and add the ones you like!</p>
             <Link href="/product">
               <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600">
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Jelajahi Produk
+                Explore Products
               </Button>
             </Link>
           </div>
@@ -135,9 +135,9 @@ export default function WishlistPage() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">Wishlist Saya</h1>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">My Wishlist</h1>
             <p className="text-muted-foreground mt-2">
-              {getWishlistCount()} produk favorit • {filteredProducts.filter((p) => p.stock > 0).length} tersedia
+              {getWishlistCount()} favorite products • {filteredProducts.filter((p) => p.stock > 0).length} available
             </p>
           </div>
 
@@ -149,7 +149,7 @@ export default function WishlistPage() {
             {filteredProducts.length > 0 && (
               <Button size="sm" onClick={addAllToCart} className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
                 <ShoppingCart className="w-4 h-4 mr-2" />
-                Tambah Semua ke Keranjang
+                Add All to Cart
               </Button>
             )}
             {wishlist.length > 0 && (
@@ -157,13 +157,13 @@ export default function WishlistPage() {
                 variant="destructive"
                 size="sm"
                 onClick={() => {
-                  if (confirm("Yakin ingin mengosongkan wishlist?")) {
+                  if (confirm("Are you sure you want to clear your wishlist?")) {
                     clearWishlist();
                   }
                 }}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Kosongkan
+                Clear All
               </Button>
             )}
           </div>
@@ -177,7 +177,7 @@ export default function WishlistPage() {
           <div className="flex flex-wrap gap-2">
             {/* Category Filter */}
             <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="px-3 py-2 rounded-lg border bg-background text-sm">
-              <option value="all">Semua Kategori</option>
+              <option value="all">All Categories</option>
               {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
@@ -187,10 +187,10 @@ export default function WishlistPage() {
 
             {/* Sort Options */}
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)} className="px-3 py-2 rounded-lg border bg-background text-sm">
-              <option value="name">Nama A-Z</option>
-              <option value="price-low">Harga Terendah</option>
-              <option value="price-high">Harga Tertinggi</option>
-              <option value="category">Kategori</option>
+              <option value="name">Name A-Z</option>
+              <option value="price-low">Lowest Price</option>
+              <option value="price-high">Highest Price</option>
+              <option value="category">Category</option>
             </select>
           </div>
 
@@ -210,7 +210,7 @@ export default function WishlistPage() {
           <div className="mb-6">
             <Badge variant="secondary" className="text-sm">
               <Filter className="w-3 h-3 mr-1" />
-              {filteredProducts.length} produk dalam kategori "{filterCategory}"
+              {filteredProducts.length} products in category "{filterCategory}"
             </Badge>
           </div>
         )}
@@ -220,7 +220,7 @@ export default function WishlistPage() {
           <Card className="p-12 text-center">
             <div className="text-muted-foreground">
               <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Tidak ada produk yang sesuai dengan filter yang dipilih</p>
+              <p>No products match the selected filter</p>
             </div>
           </Card>
         ) : (
@@ -236,16 +236,16 @@ export default function WishlistPage() {
           <Card className="mt-12 bg-gradient-to-r from-pink-500/5 to-purple-500/5 border-pink-200/20">
             <CardContent className="p-6">
               <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Siap untuk berbelanja?</h3>
-                <p className="text-muted-foreground mb-4">Tambahkan semua produk favorit Anda ke keranjang dengan satu klik</p>
+                <h3 className="text-lg font-semibold mb-2">Ready to shop?</h3>
+                <p className="text-muted-foreground mb-4">Add all your favorite products to the cart with one click</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button size="lg" onClick={addAllToCart} className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
                     <ShoppingCart className="w-5 h-5 mr-2" />
-                    Tambah Semua ke Keranjang
+                    Add All to Cart
                   </Button>
                   <Link href="/product">
                     <Button variant="outline" size="lg">
-                      Lanjut Belanja
+                      Continue Shopping
                     </Button>
                   </Link>
                 </div>

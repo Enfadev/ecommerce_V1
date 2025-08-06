@@ -16,12 +16,12 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, badge: null, href: "/admin" },
-  { id: "products", label: "Produk", icon: Package, badge: null, href: "/admin/product" },
-  { id: "orders", label: "Pesanan", icon: ShoppingCart, badge: "12", href: "/admin/orders" },
-  { id: "customers", label: "Pelanggan", icon: Users, badge: null, href: "/admin/customers" },
-  { id: "inventory", label: "Inventaris", icon: Package2, badge: null, href: "/admin/inventory" },
+  { id: "products", label: "Products", icon: Package, badge: null, href: "/admin/product" },
+  { id: "orders", label: "Orders", icon: ShoppingCart, badge: "12", href: "/admin/orders" },
+  { id: "customers", label: "Customers", icon: Users, badge: null, href: "/admin/customers" },
+  { id: "inventory", label: "Inventory", icon: Package2, badge: null, href: "/admin/inventory" },
   { id: "analytics", label: "Analytics", icon: BarChart3, badge: null, href: "/admin/analytics" },
-  { id: "settings", label: "Pengaturan", icon: Settings, badge: null, href: "/admin/settings" },
+  { id: "settings", label: "Settings", icon: Settings, badge: null, href: "/admin/settings" },
 ];
 
 export default function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarProps) {
@@ -64,7 +64,7 @@ export default function AdminSidebar({ activeSection, onSectionChange }: AdminSi
         <div className="p-4 border-b border-border">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Cari menu..." className="pl-10 h-9" />
+            <Input placeholder="Search menu..." className="pl-10 h-9" />
           </div>
         </div>
       )}
@@ -115,7 +115,7 @@ export default function AdminSidebar({ activeSection, onSectionChange }: AdminSi
         )}
 
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" className="flex-1" title="Notifikasi">
+          <Button variant="ghost" size="icon" className="flex-1" title="Notifications">
             <Bell className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="icon" className="flex-1" title="Logout" onClick={() => router.push("/")}>

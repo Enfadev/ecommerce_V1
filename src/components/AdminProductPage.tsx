@@ -18,8 +18,8 @@ function AdminSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Pengaturan</h1>
-        <p className="text-muted-foreground mt-1">Kelola pengaturan toko dan sistem</p>
+        <h1 className="text-3xl font-bold">Settings</h1>
+        <p className="text-muted-foreground mt-1">Manage store and system settings</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -29,22 +29,22 @@ function AdminSettings() {
             <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
               <Settings className="w-5 h-5 text-blue-500" />
             </div>
-            <h3 className="text-lg font-semibold">Pengaturan Umum</h3>
+            <h3 className="text-lg font-semibold">General Settings</h3>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Nama Toko</label>
+              <label className="text-sm font-medium">Store Name</label>
               <Input defaultValue="E-Commerce Store" />
             </div>
             <div>
-              <label className="text-sm font-medium">Deskripsi</label>
-              <Input defaultValue="Toko online terpercaya" />
+              <label className="text-sm font-medium">Description</label>
+              <Input defaultValue="Trusted online store" />
             </div>
             <div>
-              <label className="text-sm font-medium">Email Kontak</label>
+              <label className="text-sm font-medium">Contact Email</label>
               <Input defaultValue="contact@store.com" />
             </div>
-            <Button>Simpan Perubahan</Button>
+            <Button>Save Changes</Button>
           </div>
         </Card>
 
@@ -54,20 +54,20 @@ function AdminSettings() {
             <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
               <User className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-lg font-semibold">Manajemen User</h3>
+            <h3 className="text-lg font-semibold">User Management</h3>
           </div>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span>Total Admin</span>
+              <span>Total Admins</span>
               <Badge>3</Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span>Total Pelanggan</span>
+              <span>Total Customers</span>
               <Badge>1,234</Badge>
             </div>
             <Button variant="outline" className="w-full">
               <User className="w-4 h-4 mr-2" />
-              Kelola User
+              Manage Users
             </Button>
           </div>
         </Card>
@@ -78,16 +78,16 @@ function AdminSettings() {
             <div className="w-10 h-10 bg-red-500/10 rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-red-500" />
             </div>
-            <h3 className="text-lg font-semibold">Keamanan</h3>
+            <h3 className="text-lg font-semibold">Security</h3>
           </div>
           <div className="space-y-4">
             <Button variant="outline" className="w-full">
               <Shield className="w-4 h-4 mr-2" />
-              Ubah Password
+              Change Password
             </Button>
             <Button variant="outline" className="w-full">
               <Bell className="w-4 h-4 mr-2" />
-              Pengaturan Notifikasi
+              Notification Settings
             </Button>
           </div>
         </Card>
@@ -98,7 +98,7 @@ function AdminSettings() {
             <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center">
               <Database className="w-5 h-5 text-purple-500" />
             </div>
-            <h3 className="text-lg font-semibold">Sistem</h3>
+            <h3 className="text-lg font-semibold">System</h3>
           </div>
           <div className="space-y-4">
             <Button variant="outline" className="w-full">
@@ -121,44 +121,44 @@ function AdminAnalytics() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Analytics & Laporan</h1>
-        <p className="text-muted-foreground mt-1">Analisis performa toko dan insights bisnis</p>
+        <h1 className="text-3xl font-bold">Analytics & Reports</h1>
+        <p className="text-muted-foreground mt-1">Analyze store performance and business insights</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold mb-4">Penjualan Hari Ini</h3>
+          <h3 className="font-semibold mb-4">Today's Sales</h3>
           <p className="text-3xl font-bold text-green-500">Rp 2,500,000</p>
-          <p className="text-sm text-muted-foreground">+15% dari kemarin</p>
+          <p className="text-sm text-muted-foreground">+15% from yesterday</p>
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold mb-4">Pengunjung Hari Ini</h3>
+          <h3 className="font-semibold mb-4">Today's Visitors</h3>
           <p className="text-3xl font-bold text-blue-500">1,234</p>
-          <p className="text-sm text-muted-foreground">+8% dari kemarin</p>
+          <p className="text-sm text-muted-foreground">+8% from yesterday</p>
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold mb-4">Konversi Rate</h3>
+          <h3 className="font-semibold mb-4">Conversion Rate</h3>
           <p className="text-3xl font-bold text-purple-500">3.2%</p>
-          <p className="text-sm text-muted-foreground">+0.5% dari bulan lalu</p>
+          <p className="text-sm text-muted-foreground">+0.5% from last month</p>
         </Card>
       </div>
 
       <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Laporan Detail</h3>
+        <h3 className="text-lg font-semibold mb-4">Detailed Reports</h3>
         <div className="space-y-3">
           <Button variant="outline" className="w-full justify-start">
-            Laporan Penjualan Bulanan
+            Monthly Sales Report
           </Button>
           <Button variant="outline" className="w-full justify-start">
-            Analisis Produk Terlaris
+            Best-Selling Product Analysis
           </Button>
           <Button variant="outline" className="w-full justify-start">
-            Laporan Pelanggan
+            Customer Report
           </Button>
           <Button variant="outline" className="w-full justify-start">
-            Analisis Traffic Website
+            Website Traffic Analysis
           </Button>
         </div>
       </Card>
