@@ -50,7 +50,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 </Link>
                 {!admin && (
                   <button
-                    aria-label={fav ? "Hapus dari Favorit" : "Tambah ke Favorit"}
+                    aria-label={fav ? "Remove from Wishlist" : "Add to Wishlist"}
                     className={`p-1.5 rounded-full transition-all duration-300 transform ${fav ? "text-red-500 scale-110 animate-pulse" : "text-gray-400 hover:text-red-500 hover:scale-110"}`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -85,7 +85,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                       Edit
                     </Button>
                     <Button size="sm" variant="destructive" onClick={onDelete}>
-                      Hapus
+                      Delete
                     </Button>
                   </div>
                 ) : (
@@ -100,13 +100,13 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                         price: product.price,
                         image: product.image,
                       });
-                      toast.success(`${product.name} ditambahkan ke keranjang!`);
+                      toast.success(`${product.name} added to cart!`);
                     }}
                     disabled={product.stock === 0}
                     className="gap-2"
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    {product.stock === 0 ? "Habis" : "Beli"}
+                    {product.stock === 0 ? "Out of Stock" : "Buy"}
                   </Button>
                 )}
               </div>
@@ -122,7 +122,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
       <CardContent className="p-0 relative">
         {!admin && (
           <button
-            aria-label={fav ? "Hapus dari Favorit" : "Tambah ke Favorit"}
+            aria-label={fav ? "Remove from Wishlist" : "Add to Wishlist"}
             className={`absolute top-3 right-3 z-20 p-2 rounded-full transition-all duration-300 transform hover:scale-110 ${
               fav ? "bg-red-500 text-white shadow-lg animate-pulse" : "bg-white/80 text-gray-600 hover:bg-red-50 hover:text-red-500 backdrop-blur-sm shadow-lg"
             }`}
@@ -165,7 +165,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                       price: product.price,
                       image: product.image,
                     });
-                    toast.success(`${product.name} ditambahkan ke keranjang!`);
+                    toast.success(`${product.name} added to cart!`);
                   }}
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
@@ -204,7 +204,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 Edit
               </Button>
               <Button className="flex-1" variant="destructive" size="sm" onClick={onDelete}>
-                Hapus
+                Delete
               </Button>
             </div>
           ) : (
@@ -219,11 +219,11 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                   price: product.price,
                   image: product.image,
                 });
-                toast.success(`${product.name} berhasil ditambahkan ke keranjang!`);
+                toast.success(`${product.name} successfully added to cart!`);
               }}
             >
               <ShoppingCart className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-              Tambah ke Keranjang
+              Add to Cart
             </Button>
           )}
         </div>

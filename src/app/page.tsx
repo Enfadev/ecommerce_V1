@@ -84,8 +84,8 @@ export default function Home() {
                 <Truck className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold">Pengiriman Cepat</h3>
-                <p className="text-sm text-muted-foreground">Gratis ongkir ke seluruh Indonesia</p>
+                <h3 className="font-semibold">Fast Delivery</h3>
+                <p className="text-sm text-muted-foreground">Free shipping across Indonesia</p>
               </div>
             </div>
           </Card>
@@ -95,7 +95,7 @@ export default function Home() {
                 <Shield className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <h3 className="font-semibold">Pembayaran Aman</h3>
+                <h3 className="font-semibold">Secure Payment</h3>
                 <p className="text-sm text-muted-foreground">100% secure payment</p>
               </div>
             </div>
@@ -107,18 +107,18 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-semibold">Customer Support 24/7</h3>
-                <p className="text-sm text-muted-foreground">Siap membantu kapan saja</p>
+                <p className="text-sm text-muted-foreground">Ready to help anytime</p>
               </div>
             </div>
           </Card>
         </section>{" "}
-        {/* Kategori Populer */}
+        {/* Popular Categories */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Kategori Populer</h2>
+            <h2 className="text-3xl font-bold">Popular Categories</h2>
             <Button variant="outline" asChild>
               <NextLink href="/product">
-                Lihat Semua <ArrowRight className="ml-2 h-4 w-4" />
+                View All <ArrowRight className="ml-2 h-4 w-4" />
               </NextLink>
             </Button>
           </div>
@@ -127,39 +127,39 @@ export default function Home() {
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">👕</div>
                 <h3 className="font-semibold">Fashion</h3>
-                <p className="text-sm text-muted-foreground mt-1">1,234 produk</p>
+                <p className="text-sm text-muted-foreground mt-1">1,234 products</p>
               </CardContent>
             </Card>
             <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📱</div>
-                <h3 className="font-semibold">Elektronik</h3>
-                <p className="text-sm text-muted-foreground mt-1">856 produk</p>
+                <h3 className="font-semibold">Electronics</h3>
+                <p className="text-sm text-muted-foreground mt-1">856 products</p>
               </CardContent>
             </Card>
             <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 bg-yellow-500/20 text-yellow-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏠</div>
-                <h3 className="font-semibold">Rumah Tangga</h3>
-                <p className="text-sm text-muted-foreground mt-1">672 produk</p>
+                <h3 className="font-semibold">Home & Living</h3>
+                <p className="text-sm text-muted-foreground mt-1">672 products</p>
               </CardContent>
             </Card>
             <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 bg-pink-500/20 text-pink-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🎮</div>
-                <h3 className="font-semibold">Hobi & Game</h3>
-                <p className="text-sm text-muted-foreground mt-1">543 produk</p>
+                <h3 className="font-semibold">Hobbies & Games</h3>
+                <p className="text-sm text-muted-foreground mt-1">543 products</p>
               </CardContent>
             </Card>
           </div>
         </section>{" "}
-        {/* Promo Minggu Ini */}
+        {/* This Week's Promo */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Promo Minggu Ini</h2>
+            <h2 className="text-3xl font-bold">This Week's Promo</h2>
             <Button variant="outline" asChild>
               <NextLink href="/product">
-                Lihat Semua Promo <ArrowRight className="ml-2 h-4 w-4" />
+                View All Promos <ArrowRight className="ml-2 h-4 w-4" />
               </NextLink>
             </Button>
           </div>
@@ -178,8 +178,8 @@ export default function Home() {
                     <span className="text-muted-foreground text-sm line-through">Rp 600.000</span>
                     <span className="text-2xl font-bold text-primary">Rp 450.000</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Hanya hari ini!</p>
-                  <Button className="w-full mt-4 group-hover:bg-primary/90">Beli Sekarang</Button>
+                  <p className="text-xs text-muted-foreground">Today only!</p>
+                  <Button className="w-full mt-4 group-hover:bg-primary/90">Buy Now</Button>
                 </div>
               </CardContent>
             </Card>
@@ -197,8 +197,8 @@ export default function Home() {
                     <span className="text-muted-foreground text-sm line-through">Rp 170.000</span>
                     <span className="text-2xl font-bold text-primary">Rp 120.000</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Stok terbatas!</p>
-                  <Button className="w-full mt-4 group-hover:bg-primary/90">Beli Sekarang</Button>
+                  <p className="text-xs text-muted-foreground">Limited stock!</p>
+                  <Button className="w-full mt-4 group-hover:bg-primary/90">Buy Now</Button>
                 </div>
               </CardContent>
             </Card>
@@ -216,8 +216,8 @@ export default function Home() {
                     <span className="text-muted-foreground text-sm line-through">Rp 1.000.000</span>
                     <span className="text-2xl font-bold text-primary">Rp 800.000</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Khusus area Jawa & Bali</p>
-                  <Button className="w-full mt-4 group-hover:bg-primary/90">Beli Sekarang</Button>
+                  <p className="text-xs text-muted-foreground">Java & Bali area only</p>
+                  <Button className="w-full mt-4 group-hover:bg-primary/90">Buy Now</Button>
                 </div>
               </CardContent>
             </Card>
@@ -225,33 +225,33 @@ export default function Home() {
         </section>{" "}
         {/* Event & Giveaway */}
         <section>
-          <h2 className="text-3xl font-bold mb-8">Event & Giveaway</h2>
+          <h2 className="text-3xl font-bold mb-8">Events & Giveaways</h2>
           <Card className="overflow-hidden hover:shadow-lg transition-shadow">
             <CardContent className="p-8">
               <div className="flex flex-col lg:flex-row items-center gap-8">
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-2">
                     <Gift className="h-6 w-6 text-primary" />
-                    <h3 className="text-2xl font-semibold text-primary">Event Spesial & Hadiah Menarik!</h3>
+                    <h3 className="text-2xl font-semibold text-primary">Special Events & Exciting Prizes!</h3>
                   </div>
-                  <p className="text-muted-foreground text-lg">Jangan lewatkan kesempatan untuk mengikuti event dan giveaway bulanan kami. Dapatkan hadiah menarik seperti voucher belanja, produk gratis, dan banyak lagi!</p>
+                  <p className="text-muted-foreground text-lg">Don't miss the chance to join our monthly events and giveaways. Win exciting prizes like shopping vouchers, free products, and much more!</p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <Star className="h-4 w-4 text-yellow-500" />
-                      <span>Event Foto Produk Kreatif (20-27 Juli 2025)</span>
+                      <span>Creative Product Photo Event (July 20-27, 2025)</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Star className="h-4 w-4 text-yellow-500" />
-                      <span>Giveaway Ulasan Terbaik (1-10 Agustus 2025)</span>
+                      <span>Best Review Giveaway (August 1-10, 2025)</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Star className="h-4 w-4 text-yellow-500" />
-                      <span>Flash Quiz Berhadiah Setiap Minggu</span>
+                      <span>Weekly Flash Quiz with Prizes</span>
                     </div>
                   </div>
                   <Button size="lg" className="mt-6" asChild>
                     <NextLink href="/event">
-                      Lihat Detail & Ikuti Event <ArrowRight className="ml-2 h-4 w-4" />
+                      View Details & Join Event <ArrowRight className="ml-2 h-4 w-4" />
                     </NextLink>
                   </Button>
                 </div>
@@ -264,13 +264,13 @@ export default function Home() {
             </CardContent>
           </Card>
         </section>{" "}
-        {/* Produk Unggulan */}
+        {/* Featured Products */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Produk Unggulan</h2>
+            <h2 className="text-3xl font-bold">Featured Products</h2>
             <Button variant="outline" asChild>
               <NextLink href="/product">
-                Lihat Semua Produk <ArrowRight className="ml-2 h-4 w-4" />
+                View All Products <ArrowRight className="ml-2 h-4 w-4" />
               </NextLink>
             </Button>
           </div>
