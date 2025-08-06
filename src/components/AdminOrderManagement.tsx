@@ -33,7 +33,7 @@ interface Order {
 const mockOrders: Order[] = [
   {
     id: "ORD-001",
-    customer: { name: "Ahmad Fajar", email: "ahmad@email.com", phone: "08123456789" },
+    customer: { name: "John Smith", email: "john@email.com", phone: "08123456789" },
     items: [
       { name: "iPhone 14 Pro", quantity: 1, price: 15000000 },
       { name: "AirPods Pro", quantity: 1, price: 3500000 },
@@ -43,33 +43,33 @@ const mockOrders: Order[] = [
     paymentStatus: "paid",
     createdAt: "2024-01-15",
     updatedAt: "2024-01-18",
-    shippingAddress: "Jl. Sudirman No. 123, Jakarta",
+    shippingAddress: "123 Main St, New York",
   },
   {
     id: "ORD-002",
-    customer: { name: "Siti Nurhaliza", email: "siti@email.com", phone: "08234567890" },
+    customer: { name: "Sarah Lee", email: "sarah@email.com", phone: "08234567890" },
     items: [{ name: "Samsung Galaxy S23", quantity: 1, price: 12000000 }],
     total: 12000000,
     status: "shipped",
     paymentStatus: "paid",
     createdAt: "2024-01-20",
     updatedAt: "2024-01-22",
-    shippingAddress: "Jl. Gatot Subroto No. 456, Bandung",
+    shippingAddress: "456 Market Ave, Los Angeles",
   },
   {
     id: "ORD-003",
-    customer: { name: "Budi Santoso", email: "budi@email.com", phone: "08345678901" },
+    customer: { name: "Michael Brown", email: "michael@email.com", phone: "08345678901" },
     items: [{ name: "MacBook Air M2", quantity: 1, price: 18000000 }],
     total: 18000000,
     status: "processing",
     paymentStatus: "paid",
     createdAt: "2024-01-22",
     updatedAt: "2024-01-22",
-    shippingAddress: "Jl. Diponegoro No. 789, Surabaya",
+    shippingAddress: "789 Broadway, Chicago",
   },
   {
     id: "ORD-004",
-    customer: { name: "Maya Indira", email: "maya@email.com", phone: "08456789012" },
+    customer: { name: "Emily Davis", email: "emily@email.com", phone: "08456789012" },
     items: [
       { name: "iPad Pro", quantity: 1, price: 15000000 },
       { name: "Apple Pencil", quantity: 1, price: 2000000 },
@@ -79,18 +79,18 @@ const mockOrders: Order[] = [
     paymentStatus: "pending",
     createdAt: "2024-01-25",
     updatedAt: "2024-01-25",
-    shippingAddress: "Jl. Ahmad Yani No. 321, Yogyakarta",
+    shippingAddress: "321 Oak Lane, Houston",
   },
   {
     id: "ORD-005",
-    customer: { name: "Rudi Hermawan", email: "rudi@email.com", phone: "08567890123" },
+    customer: { name: "David Wilson", email: "david@email.com", phone: "08567890123" },
     items: [{ name: "Sony WH-1000XM5", quantity: 2, price: 5000000 }],
     total: 10000000,
     status: "cancelled",
     paymentStatus: "failed",
     createdAt: "2024-01-20",
     updatedAt: "2024-01-21",
-    shippingAddress: "Jl. Veteran No. 654, Semarang",
+    shippingAddress: "654 Pine St, Seattle",
   },
 ];
 
@@ -181,15 +181,15 @@ export default function AdminOrderManagement() {
   const getStatusText = (status: string) => {
     switch (status) {
       case "pending":
-        return "Menunggu";
+        return "Pending";
       case "processing":
-        return "Diproses";
+        return "Processing";
       case "shipped":
-        return "Dikirim";
+        return "Shipped";
       case "delivered":
-        return "Selesai";
+        return "Delivered";
       case "cancelled":
-        return "Dibatalkan";
+        return "Cancelled";
       default:
         return status;
     }
@@ -211,11 +211,11 @@ export default function AdminOrderManagement() {
   const getPaymentStatusText = (status: string) => {
     switch (status) {
       case "pending":
-        return "Menunggu";
+        return "Pending";
       case "paid":
-        return "Lunas";
+        return "Paid";
       case "failed":
-        return "Gagal";
+        return "Failed";
       default:
         return status;
     }
@@ -236,8 +236,8 @@ export default function AdminOrderManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Manajemen Pesanan</h1>
-          <p className="text-muted-foreground mt-1">Kelola semua pesanan dari pelanggan</p>
+          <h1 className="text-3xl font-bold">Order Management</h1>
+          <p className="text-muted-foreground mt-1">Manage all customer orders</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" className="gap-2">
@@ -246,7 +246,7 @@ export default function AdminOrderManagement() {
           </Button>
           <Button variant="outline" className="gap-2">
             <Calendar className="w-4 h-4" />
-            Filter Tanggal
+            Date Filter
           </Button>
         </div>
       </div>
@@ -270,7 +270,7 @@ export default function AdminOrderManagement() {
               <Clock className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Menunggu</p>
+              <p className="text-sm text-muted-foreground">Pending</p>
               <p className="text-xl font-bold">{stats.pending}</p>
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function AdminOrderManagement() {
               <Package className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Diproses</p>
+              <p className="text-sm text-muted-foreground">Processing</p>
               <p className="text-xl font-bold">{stats.processing}</p>
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function AdminOrderManagement() {
               <Truck className="w-5 h-5 text-purple-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Dikirim</p>
+              <p className="text-sm text-muted-foreground">Shipped</p>
               <p className="text-xl font-bold">{stats.shipped}</p>
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function AdminOrderManagement() {
               <CheckCircle className="w-5 h-5 text-green-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Selesai</p>
+              <p className="text-sm text-muted-foreground">Delivered</p>
               <p className="text-xl font-bold">{stats.delivered}</p>
             </div>
           </div>
@@ -327,7 +327,7 @@ export default function AdminOrderManagement() {
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Cari berdasarkan ID pesanan, nama, atau email..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input placeholder="Search by order ID, name, or email..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
           </div>
           <div className="flex gap-2">
@@ -335,15 +335,15 @@ export default function AdminOrderManagement() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
                   <Filter className="w-4 h-4" />
-                  Status: {selectedStatus === "all" ? "Semua" : getStatusText(selectedStatus)}
+                  Status: {selectedStatus === "all" ? "All" : getStatusText(selectedStatus)}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>Pilih Status</DropdownMenuLabel>
+                <DropdownMenuLabel>Select Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {statusOptions.map((status) => (
                   <DropdownMenuItem key={status} onClick={() => setSelectedStatus(status)}>
-                    {status === "all" ? "Semua Status" : getStatusText(status)}
+                    {status === "all" ? "All Statuses" : getStatusText(status)}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -359,27 +359,27 @@ export default function AdminOrderManagement() {
             <TableRow>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("id")} className="gap-1 p-0 h-auto">
-                  ID Pesanan
+                  Order ID
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Pelanggan</TableHead>
-              <TableHead>Produk</TableHead>
+              <TableHead>Customer</TableHead>
+              <TableHead>Product</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("total")} className="gap-1 p-0 h-auto">
                   Total
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Status Pesanan</TableHead>
-              <TableHead>Status Pembayaran</TableHead>
+              <TableHead>Order Status</TableHead>
+              <TableHead>Payment Status</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("createdAt")} className="gap-1 p-0 h-auto">
-                  Tanggal
+                  Date
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead className="w-12">Aksi</TableHead>
+              <TableHead className="w-12">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -398,10 +398,10 @@ export default function AdminOrderManagement() {
                 </TableCell>
                 <TableCell>
                   <div>
-                    <p className="font-medium">{order.items.length} item</p>
+                    <p className="font-medium">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
                     <p className="text-sm text-muted-foreground">
                       {order.items[0]?.name}
-                      {order.items.length > 1 && ` +${order.items.length - 1} lainnya`}
+                      {order.items.length > 1 && ` +${order.items.length - 1} more`}
                     </p>
                   </div>
                 </TableCell>
@@ -417,7 +417,7 @@ export default function AdminOrderManagement() {
                 <TableCell>
                   <Badge className={getPaymentStatusColor(order.paymentStatus)}>{getPaymentStatusText(order.paymentStatus)}</Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("id-ID")}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -426,14 +426,14 @@ export default function AdminOrderManagement() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                      <DropdownMenuLabel>Action</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => handleViewDetail(order)}>
                         <Eye className="w-4 h-4 mr-2" />
                         Detail
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Ubah Status</DropdownMenuLabel>
+                      <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                       {["pending", "processing", "shipped", "delivered", "cancelled"].map((status) => (
                         <DropdownMenuItem key={status} onClick={() => handleStatusChange(order.id, status as Order["status"])} disabled={order.status === status}>
                           {getStatusIcon(status)}
@@ -453,14 +453,14 @@ export default function AdminOrderManagement() {
       <Dialog open={showOrderDetail} onOpenChange={setShowOrderDetail}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detail Pesanan {selectedOrder?.id}</DialogTitle>
+            <DialogTitle>Order Detail {selectedOrder?.id}</DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-6">
               {/* Order Info */}
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
-                  <h3 className="font-semibold mb-2">Informasi Pesanan</h3>
+                  <h3 className="font-semibold mb-2">Order Information</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">ID:</span>
@@ -471,21 +471,21 @@ export default function AdminOrderManagement() {
                       <Badge className={getStatusColor(selectedOrder.status)}>{getStatusText(selectedOrder.status)}</Badge>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Pembayaran:</span>
+                      <span className="text-muted-foreground">Payment:</span>
                       <Badge className={getPaymentStatusColor(selectedOrder.paymentStatus)}>{getPaymentStatusText(selectedOrder.paymentStatus)}</Badge>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tanggal:</span>
-                      <span>{new Date(selectedOrder.createdAt).toLocaleDateString("id-ID")}</span>
+                      <span className="text-muted-foreground">Date:</span>
+                      <span>{new Date(selectedOrder.createdAt).toLocaleDateString("en-GB")}</span>
                     </div>
                   </div>
                 </Card>
 
                 <Card className="p-4">
-                  <h3 className="font-semibold mb-2">Informasi Pelanggan</h3>
+                  <h3 className="font-semibold mb-2">Customer Information</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Nama:</span>
+                      <span className="text-muted-foreground">Name:</span>
                       <span>{selectedOrder.customer.name}</span>
                     </div>
                     <div className="flex justify-between">
@@ -493,7 +493,7 @@ export default function AdminOrderManagement() {
                       <span>{selectedOrder.customer.email}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Telepon:</span>
+                      <span className="text-muted-foreground">Phone:</span>
                       <span>{selectedOrder.customer.phone}</span>
                     </div>
                   </div>
@@ -502,13 +502,13 @@ export default function AdminOrderManagement() {
 
               {/* Shipping Address */}
               <Card className="p-4">
-                <h3 className="font-semibold mb-2">Alamat Pengiriman</h3>
+                <h3 className="font-semibold mb-2">Shipping Address</h3>
                 <p className="text-sm">{selectedOrder.shippingAddress}</p>
               </Card>
 
               {/* Order Items */}
               <Card className="p-4">
-                <h3 className="font-semibold mb-4">Item Pesanan</h3>
+                <h3 className="font-semibold mb-4">Order Items</h3>
                 <div className="space-y-3">
                   {selectedOrder.items.map((item, index) => (
                     <div key={index} className="flex justify-between items-center p-3 border border-border rounded-lg">
@@ -525,7 +525,7 @@ export default function AdminOrderManagement() {
                 </div>
                 <div className="border-t border-border pt-4 mt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold">Total Pesanan:</span>
+                    <span className="text-lg font-semibold">Order Total:</span>
                     <span className="text-xl font-bold">Rp {selectedOrder.total.toLocaleString("id-ID")}</span>
                   </div>
                 </div>
