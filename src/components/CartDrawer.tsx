@@ -23,17 +23,17 @@ export function CartDrawer() {
   const handleCheckout = () => {
     setOpen(false);
     router.push("/checkout");
-    toast.success("Menuju halaman checkout...");
+    toast.success("Proceeding to checkout page...");
   };
 
   const handleRemoveItem = (id: string, name: string) => {
     removeFromCart(id);
-    toast.success(`${name} telah dihapus dari keranjang`);
+    toast.success(`${name} has been removed from the cart`);
   };
 
   const handleClearCart = () => {
     clearCart();
-    toast.success("Keranjang telah dikosongkan");
+    toast.success("Cart has been emptied");
   };
 
   return (
@@ -42,7 +42,7 @@ export function CartDrawer() {
         <Button variant="ghost" size="icon" className="relative">
           <ShoppingCart className="h-5 w-5" />
           {totalItems > 0 && <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary hover:bg-primary/80">{totalItems > 99 ? "99+" : totalItems}</Badge>}
-          <span className="sr-only">Keranjang Belanja</span>
+          <span className="sr-only">Shopping Cart</span>
         </Button>
       </DrawerTrigger>
       <DrawerContent className="max-w-md mx-auto max-h-[85vh]">
@@ -50,7 +50,7 @@ export function CartDrawer() {
           <div className="flex items-center justify-between">
             <DrawerTitle className="flex items-center gap-2 text-xl font-bold">
               <ShoppingBag className="h-5 w-5 text-primary" />
-              Keranjang Belanja
+              Shopping Cart
               {totalItems > 0 && (
                 <Badge variant="secondary" className="ml-2">
                   {totalItems} item{totalItems > 1 ? "s" : ""}
@@ -71,10 +71,10 @@ export function CartDrawer() {
               <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-4">
                 <ShoppingCart className="h-10 w-10 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Keranjang Kosong</h3>
-              <p className="text-muted-foreground mb-6">Belum ada produk yang ditambahkan ke keranjang</p>
+              <h3 className="text-lg font-semibold mb-2">Cart is Empty</h3>
+              <p className="text-muted-foreground mb-6">No products have been added to the cart yet</p>
               <DrawerClose asChild>
-                <Button onClick={() => router.push("/product")}>Mulai Belanja</Button>
+                <Button onClick={() => router.push("/product")}>Start Shopping</Button>
               </DrawerClose>
             </div>
           ) : (
@@ -96,7 +96,7 @@ export function CartDrawer() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm line-clamp-2 mb-1">{item.name}</h4>
                         <div className="flex items-center justify-between">
-                          <div className="text-sm font-semibold text-primary">Rp {item.price.toLocaleString()}</div>
+                          <div className="text-sm font-semibold text-primary">${item.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
                           <Button variant="ghost" size="sm" onClick={() => handleRemoveItem(item.id, item.name)} className="text-destructive hover:text-destructive hover:bg-destructive/10 p-2">
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -110,7 +110,7 @@ export function CartDrawer() {
                           <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.qty + 1)} className="h-8 w-8 p-0">
                             <Plus className="h-3 w-3" />
                           </Button>
-                          <div className="ml-auto text-sm font-semibold">Rp {(item.price * item.qty).toLocaleString()}</div>
+                          <div className="ml-auto text-sm font-semibold">${(item.price * item.qty).toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
                         </div>
                       </div>
                     </div>
@@ -129,15 +129,15 @@ export function CartDrawer() {
                 <span className="text-sm text-muted-foreground">
                   Subtotal ({totalItems} item{totalItems > 1 ? "s" : ""})
                 </span>
-                <span className="text-lg font-bold">Rp {total.toLocaleString()}</span>
+                <span className="text-lg font-bold">${total.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
               </div>
 
               <div className="grid gap-2">
                 <Button onClick={handleCheckout} className="w-full" size="lg">
-                  Lanjutkan ke Checkout
+                  Proceed to Checkout
                 </Button>
                 <Button variant="outline" onClick={handleClearCart} className="w-full">
-                  Kosongkan Keranjang
+                  Empty Cart
                 </Button>
               </div>
             </div>

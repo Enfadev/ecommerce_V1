@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import OrderDetailModal from "./OrderDetailModal";
@@ -144,32 +144,32 @@ export default function OrderHistoryPage() {
     Pending: {
       icon: Clock,
       color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-      description: "Menunggu Konfirmasi",
+      description: "Waiting for Confirmation",
     },
     Processing: {
       icon: Package,
       color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-      description: "Sedang Diproses",
+      description: "Processing",
     },
     Shipped: {
       icon: Truck,
       color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
-      description: "Dalam Pengiriman",
+      description: "Shipped",
     },
     Delivered: {
       icon: CheckCircle,
       color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-      description: "Pesanan Selesai",
+      description: "Order Completed",
     },
     Cancelled: {
       icon: XCircle,
       color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-      description: "Dibatalkan",
+      description: "Cancelled",
     },
     Returned: {
       icon: RefreshCw,
       color: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
-      description: "Dikembalikan",
+      description: "Returned",
     },
   };
 
@@ -182,7 +182,7 @@ export default function OrderHistoryPage() {
         setLoading(false);
       })
       .catch(() => {
-        setError("Gagal memuat riwayat pesanan.");
+        setError("Failed to load order history.");
         setLoading(false);
       });
   }, []);
@@ -395,7 +395,7 @@ export default function OrderHistoryPage() {
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
               <ShoppingBag className="h-8 w-8" />
-              Riwayat Pesanan
+              Order History
             </h1>
             <Button variant="outline" size="sm">
               <Download className="h-4 w-4 mr-2" />
@@ -408,14 +408,14 @@ export default function OrderHistoryPage() {
             <Card className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">{orders?.length || 0}</div>
-                <div className="text-sm text-muted-foreground">Total Pesanan</div>
+                <div className="text-sm text-muted-foreground">Total Orders</div>
               </div>
             </Card>
-            {Object.entries(statusConfig).map(([status, config]) => (
+            {Object.keys(statusConfig).map((status) => (
               <Card key={status} className="p-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">{orderCounts[status] || 0}</div>
-                  <div className="text-sm text-muted-foreground">{config.description}</div>
+                  <div className="text-sm text-muted-foreground">{statusConfig[status as keyof typeof statusConfig].description}</div>
                 </div>
               </Card>
             ))}
@@ -427,7 +427,7 @@ export default function OrderHistoryPage() {
           <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Cari nomor pesanan atau nama produk..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
+              <Input placeholder="Search order number or product name..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
             </div>
             <div className="flex gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -436,7 +436,7 @@ export default function OrderHistoryPage() {
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="all">All Statuses</SelectItem>
                   {Object.entries(statusConfig).map(([status, config]) => (
                     <SelectItem key={status} value={status}>
                       {config.description}
@@ -448,13 +448,13 @@ export default function OrderHistoryPage() {
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[150px]">
                   <ArrowUpDown className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Urutkan" />
+                  <SelectValue placeholder="Sort By" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="date-desc">Terbaru</SelectItem>
-                  <SelectItem value="date-asc">Terlama</SelectItem>
-                  <SelectItem value="total-desc">Total Tertinggi</SelectItem>
-                  <SelectItem value="total-asc">Total Terendah</SelectItem>
+                  <SelectItem value="date-desc">Newest</SelectItem>
+                  <SelectItem value="date-asc">Oldest</SelectItem>
+                  <SelectItem value="total-desc">Highest Total</SelectItem>
+                  <SelectItem value="total-asc">Lowest Total</SelectItem>
                   <SelectItem value="status">Status</SelectItem>
                 </SelectContent>
               </Select>
@@ -526,15 +526,15 @@ export default function OrderHistoryPage() {
                       <ShoppingBag className="h-10 w-10 text-muted-foreground" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-xl font-semibold text-foreground">Belum ada riwayat pesanan</h3>
-                      <p className="text-muted-foreground">Pesanan Anda akan muncul di sini setelah Anda berbelanja. Mulai jelajahi produk kami sekarang!</p>
+                      <h3 className="text-xl font-semibold text-foreground">No order history yet</h3>
+                      <p className="text-muted-foreground">Your orders will appear here after you shop. Start exploring our products now!</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
                       <Button className="bg-primary hover:bg-primary/90">
                         <ShoppingBag className="h-4 w-4 mr-2" />
-                        Mulai Belanja
+                        Start Shopping
                       </Button>
-                      <Button variant="outline">Lihat Katalog</Button>
+                      <Button variant="outline">View Catalog</Button>
                     </div>
                   </>
                 )}
@@ -604,7 +604,7 @@ export default function OrderHistoryPage() {
                             <div className="flex items-start gap-2">
                               <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
                               <div>
-                                <div className="font-medium">Alamat Pengiriman</div>
+                                <div className="font-medium">Shipping Address</div>
                                 <div className="text-muted-foreground">{order.shippingAddress}</div>
                               </div>
                             </div>
@@ -613,7 +613,7 @@ export default function OrderHistoryPage() {
                             <div className="flex items-start gap-2">
                               <CreditCard className="h-4 w-4 mt-0.5 text-muted-foreground" />
                               <div>
-                                <div className="font-medium">Metode Pembayaran</div>
+                                <div className="font-medium">Payment Method</div>
                                 <div className="text-muted-foreground">{order.paymentMethod}</div>
                               </div>
                             </div>
@@ -622,7 +622,7 @@ export default function OrderHistoryPage() {
                             <div className="flex items-start gap-2">
                               <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
                               <div>
-                                <div className="font-medium">Estimasi Tiba</div>
+                                <div className="font-medium">Estimated Arrival</div>
                                 <div className="text-muted-foreground">{formatDate(order.estimatedDelivery)}</div>
                               </div>
                             </div>
@@ -637,7 +637,7 @@ export default function OrderHistoryPage() {
                         <Separator />
                         <div className="p-3 bg-muted/30 rounded-lg">
                           <div className="text-sm">
-                            <span className="font-medium">Catatan: </span>
+                            <span className="font-medium">Note: </span>
                             <span className="text-muted-foreground">{order.notes}</span>
                           </div>
                         </div>
@@ -648,18 +648,18 @@ export default function OrderHistoryPage() {
                     <div className="flex justify-end gap-2">
                       <Button variant="outline" size="sm" onClick={() => handleOrderDetail(order)}>
                         <Eye className="h-4 w-4 mr-2" />
-                        Lihat Detail
+                        View Details
                       </Button>
                       {order.status === "Delivered" && (
                         <Button variant="outline" size="sm">
                           <Receipt className="h-4 w-4 mr-2" />
-                          Beli Lagi
+                          Buy Again
                         </Button>
                       )}
                       {order.trackingNumber && order.status === "Shipped" && (
                         <Button variant="default" size="sm">
                           <Truck className="h-4 w-4 mr-2" />
-                          Lacak Paket
+                          Track Package
                         </Button>
                       )}
                     </div>

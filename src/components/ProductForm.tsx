@@ -10,9 +10,9 @@ import { Label } from "./ui/label";
 
 const productSchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(2, "Nama produk wajib diisi"),
-  price: z.number().min(1, "Harga harus lebih dari 0"),
-  image: z.string().optional(), // tidak wajib, karena bisa upload file
+  name: z.string().min(2, "Product name is required"),
+  price: z.number().min(1, "Price must be greater than 0"),
+  image: z.string().optional(), // not required, can upload file
   description: z.string().optional(),
 });
 
@@ -55,30 +55,30 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
       <div>
-        <Label>Nama Produk</Label>
+        <Label>Product Name</Label>
         <Input {...register("name")} />
         {errors.name && <p className="text-red-500 text-xs">{errors.name.message as string}</p>}
       </div>
       <div>
-        <Label>Harga</Label>
+        <Label>Price</Label>
         <Input type="number" {...register("price", { valueAsNumber: true })} />
         {errors.price && <p className="text-red-500 text-xs">{errors.price.message as string}</p>}
       </div>
       <div>
-        <Label>Upload Gambar</Label>
+        <Label>Upload Image</Label>
         <Input type="file" accept="image/*" onChange={onImageChange} />
         {imagePreview && (
           <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover mt-2 rounded" />
         )}
       </div>
       <div>
-        <Label>Deskripsi</Label>
+        <Label>Description</Label>
         <Input {...register("description")} />
       </div>
       <div className="flex gap-2">
-        <Button type="submit">Simpan</Button>
+        <Button type="submit">Save</Button>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Batal
+          Cancel
         </Button>
       </div>
     </form>

@@ -54,16 +54,16 @@ export function Header() {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center space-x-8">
           <Link href="/product" className="text-sm font-medium hover:text-primary transition-colors">
-            Produk
+            Products
           </Link>
           <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
-            Tentang
+            About
           </Link>
           <Link href="/event" className="text-sm font-medium hover:text-primary transition-colors">
-            Event
+            Events
           </Link>
           <Link href="/kontak" className="text-sm font-medium hover:text-primary transition-colors">
-            Kontak
+            Contact
           </Link>
           {user?.role === "admin" && (
             <Link href="/admin" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
@@ -77,7 +77,7 @@ export function Header() {
         <div className="flex-1 max-w-sm mx-8 hidden md:block">
           <form onSubmit={handleSearch} role="search" className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input type="text" placeholder="Cari produk favoritmu..." className="pl-10 rounded-full bg-muted/40 border-none focus-visible:ring-2 focus-visible:ring-primary/50" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input type="text" placeholder="Search your favorite products..." className="pl-10 rounded-full bg-muted/40 border-none focus-visible:ring-2 focus-visible:ring-primary/50" value={search} onChange={(e) => setSearch(e.target.value)} />
           </form>
         </div>
 
@@ -132,13 +132,13 @@ export function Header() {
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="flex items-center">
                     <User className="mr-2 h-4 w-4" />
-                    <span>Profil</span>
+                    <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/order-history" className="flex items-center">
                     <ShoppingBag className="mr-2 h-4 w-4" />
-                    <span>Riwayat Pesanan</span>
+                    <span>Order History</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -161,17 +161,17 @@ export function Header() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Keluar</span>
+                  <span>Sign Out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="hidden sm:flex items-center gap-2">
               <Button variant="outline" size="sm" asChild>
-                <Link href="/signin">Masuk</Link>
+                <Link href="/signin">Sign In</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link href="/register">Daftar</Link>
+                <Link href="/register">Register</Link>
               </Button>
             </div>
           )}
@@ -201,16 +201,16 @@ export function Header() {
 
                 {/* Navigation Links */}
                 <Link href="/product" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  Produk
+                  Products
                 </Link>
                 <Link href="/about" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  Tentang
+                  About
                 </Link>
                 <Link href="/event" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  Event
+                  Events
                 </Link>
                 <Link href="/kontak" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  Kontak
+                  Contact
                 </Link>
 
                 {user?.role === "admin" && (
@@ -227,7 +227,7 @@ export function Header() {
                   <>
                     <Link href="/profile" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
                       <User className="h-4 w-4" />
-                      Profil
+                      Profile
                     </Link>
                     <Link href="/wishlist" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
                       <Heart className="h-4 w-4" />
@@ -235,20 +235,20 @@ export function Header() {
                     </Link>
                     <Link href="/order-history" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
                       <ShoppingBag className="h-4 w-4" />
-                      Riwayat Pesanan
+                      Order History
                     </Link>
                     <Button variant="outline" className="mt-4 justify-start" onClick={handleSignOut}>
                       <LogOut className="h-4 w-4 mr-2" />
-                      Keluar
+                      Sign Out
                     </Button>
                   </>
                 ) : (
                   <div className="space-y-2 mt-4">
                     <Button asChild className="w-full">
-                      <Link href="/signin">Masuk</Link>
+                      <Link href="/signin">Sign In</Link>
                     </Button>
                     <Button variant="outline" asChild className="w-full">
-                      <Link href="/register">Daftar</Link>
+                      <Link href="/register">Register</Link>
                     </Button>
                   </div>
                 )}

@@ -35,7 +35,7 @@ export default function AdminProductManagement() {
           ...p,
           image: p.imageUrl,
           status: "active",
-          createdAt: new Date(p.createdAt).toLocaleDateString("id-ID"),
+          createdAt: new Date(p.createdAt).toLocaleDateString("en-US"),
         })));
       }
     };
@@ -92,17 +92,17 @@ export default function AdminProductManagement() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Yakin ingin menghapus produk ini?')) return;
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       const res = await fetch('/api/product', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
       });
-      if (!res.ok) throw new Error('Gagal menghapus produk');
+      if (!res.ok) throw new Error('Failed to delete product');
       setProducts(products.filter((p) => p.id !== id));
     } catch {
-      alert('Gagal menghapus produk');
+      alert('Failed to delete product');
     }
   };
 
@@ -120,7 +120,7 @@ export default function AdminProductManagement() {
             method: "POST",
             body: formData,
           });
-          if (!uploadRes.ok) throw new Error("Gagal upload gambar");
+          if (!uploadRes.ok) throw new Error("Failed to upload image");
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
         }
@@ -134,16 +134,16 @@ export default function AdminProductManagement() {
             description: productData.description,
           }),
         });
-        if (!res.ok) throw new Error("Gagal menambah produk");
+        if (!res.ok) throw new Error("Failed to add product");
         const newProduct = await res.json();
         setProducts([{
           ...newProduct,
           image: newProduct.imageUrl,
           status: "active",
-          createdAt: new Date(newProduct.createdAt).toLocaleDateString("id-ID"),
+          createdAt: new Date(newProduct.createdAt).toLocaleDateString("en-US"),
         }, ...products]);
       } catch {
-        alert("Gagal menambah produk");
+        alert("Failed to add product");
       }
     }
     setShowForm(false);
@@ -157,9 +157,9 @@ export default function AdminProductManagement() {
   };
 
   const getStatusText = (status: string, stock: number) => {
-    if (stock === 0) return "Habis";
-    if (stock < 10) return "Stok Rendah";
-    return "Tersedia";
+    if (stock === 0) return "Out of Stock";
+    if (stock < 10) return "Low Stock";
+    return "Available";
   };
 
   return (
@@ -167,8 +167,8 @@ export default function AdminProductManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Manajemen Produk</h1>
-          <p className="text-muted-foreground mt-1">Kelola semua produk dalam toko Anda</p>
+          <h1 className="text-3xl font-bold">Product Management</h1>
+          <p className="text-muted-foreground mt-1">Manage all products in your store</p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" className="gap-2">
@@ -177,7 +177,7 @@ export default function AdminProductManagement() {
           </Button>
           <Button onClick={handleAdd} className="gap-2">
             <Plus className="w-4 h-4" />
-            Tambah Produk
+            Add Product
           </Button>
         </div>
       </div>
@@ -190,7 +190,7 @@ export default function AdminProductManagement() {
               <Package className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Produk</p>
+              <p className="text-sm text-muted-foreground">Total Products</p>
               <p className="text-xl font-bold">{products.length}</p>
             </div>
           </div>
@@ -201,7 +201,7 @@ export default function AdminProductManagement() {
               <Package className="w-5 h-5 text-green-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Produk Aktif</p>
+              <p className="text-sm text-muted-foreground">Active Products</p>
               <p className="text-xl font-bold">{products.filter((p) => p.stock > 0).length}</p>
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function AdminProductManagement() {
               <Package className="w-5 h-5 text-yellow-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Stok Rendah</p>
+              <p className="text-sm text-muted-foreground">Low Stock</p>
               <p className="text-xl font-bold">{products.filter((p) => p.stock < 10 && p.stock > 0).length}</p>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function AdminProductManagement() {
               <Package className="w-5 h-5 text-red-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Habis Stok</p>
+              <p className="text-sm text-muted-foreground">Out of Stock</p>
               <p className="text-xl font-bold">{products.filter((p) => p.stock === 0).length}</p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export default function AdminProductManagement() {
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Cari produk..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input placeholder="Search products..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
           </div>
           <div className="flex gap-2">
@@ -244,15 +244,15 @@ export default function AdminProductManagement() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
                   <Filter className="w-4 h-4" />
-                  Kategori: {selectedCategory === "all" ? "Semua" : selectedCategory}
+                  Category: {selectedCategory === "all" ? "All" : selectedCategory}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>Pilih Kategori</DropdownMenuLabel>
+                <DropdownMenuLabel>Select Category</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {categories.map((category) => (
                   <DropdownMenuItem key={category} onClick={() => setSelectedCategory(category)}>
-                    {category === "all" ? "Semua Kategori" : category}
+                    {category === "all" ? "All Categories" : category}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -267,29 +267,29 @@ export default function AdminProductManagement() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">#</TableHead>
-              <TableHead className="w-20">Gambar</TableHead>
+              <TableHead className="w-20">Image</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("name")} className="gap-1 p-0 h-auto">
-                  Nama Produk
+                  Product Name
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Kategori</TableHead>
+              <TableHead>Category</TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("price")} className="gap-1 p-0 h-auto">
-                  Harga
+                  Price
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("stock")} className="gap-1 p-0 h-auto">
-                  Stok
+                  Stock
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Tanggal</TableHead>
-              <TableHead className="w-12">Aksi</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead className="w-12">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -320,7 +320,7 @@ export default function AdminProductManagement() {
                 <TableCell>
                   <Badge variant="outline">{product.category}</Badge>
                 </TableCell>
-                <TableCell className="font-medium">Rp {product.price.toLocaleString("id-ID")}</TableCell>
+                <TableCell className="font-medium">${product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
                 <TableCell>
                   <span className="font-mono">{product.stock}</span>
                 </TableCell>
@@ -336,7 +336,7 @@ export default function AdminProductManagement() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                      <DropdownMenuLabel>Action</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => handleEdit(product)}>
                         <Edit className="w-4 h-4 mr-2" />
@@ -344,12 +344,12 @@ export default function AdminProductManagement() {
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Eye className="w-4 h-4 mr-2" />
-                        Detail
+                        Details
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => handleDelete(product.id)} className="text-destructive">
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Hapus
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -364,7 +364,7 @@ export default function AdminProductManagement() {
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingProduct ? "Edit Produk" : "Tambah Produk Baru"}</DialogTitle>
+            <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
           </DialogHeader>
           <ProductForm product={editingProduct} onSave={handleSave} onCancel={() => setShowForm(false)} />
         </DialogContent>
