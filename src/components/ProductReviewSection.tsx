@@ -82,7 +82,7 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
   );
 }
 
-// Review list
+
 interface ReviewListProps {
   productId: number;
 }
@@ -145,7 +145,7 @@ function ReviewList({ productId }: ReviewListProps) {
   );
 }
 
-// Main Review & Rating component
+
 interface ProductReviewSectionProps {
   productId: number;
 }

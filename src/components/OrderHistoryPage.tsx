@@ -38,7 +38,7 @@ export interface Order {
   notes?: string;
 }
 
-// Enhanced dummy data with more realistic orders
+
 async function fetchOrderHistory(): Promise<Order[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -139,7 +139,7 @@ export default function OrderHistoryPage() {
     paymentMethod: "all",
   });
 
-  // Status configuration with colors and icons
+
   const statusConfig = {
     Pending: {
       icon: Clock,
@@ -173,7 +173,7 @@ export default function OrderHistoryPage() {
     },
   };
 
-  // Fetch orders on component mount
+
   useEffect(() => {
     fetchOrderHistory()
       .then((data) => {
@@ -187,25 +187,25 @@ export default function OrderHistoryPage() {
       });
   }, []);
 
-  // Filter and sort orders
+
   useEffect(() => {
     if (!orders) return;
 
     let filtered = [...orders];
 
-    // Apply search filter (from both basic and advanced)
+
     const searchTerm = searchQuery || advancedFilters.searchQuery;
     if (searchTerm) {
       filtered = filtered.filter((order) => order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) || order.items.some((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase())));
     }
 
-    // Apply status filter (from both basic and advanced)
+
     const statusToFilter = statusFilter !== "all" ? statusFilter : advancedFilters.status;
     if (statusToFilter !== "all") {
       filtered = filtered.filter((order) => order.status === statusToFilter);
     }
 
-    // Apply amount filters (advanced only)
+
     if (advancedFilters.minAmount) {
       filtered = filtered.filter((order) => order.total >= advancedFilters.minAmount!);
     }
@@ -213,17 +213,17 @@ export default function OrderHistoryPage() {
       filtered = filtered.filter((order) => order.total <= advancedFilters.maxAmount!);
     }
 
-    // Apply payment method filter (advanced only)
+
     if (advancedFilters.paymentMethod !== "all") {
       filtered = filtered.filter((order) => order.paymentMethod === advancedFilters.paymentMethod);
     }
 
-    // Apply tab filter
+
     if (selectedTab !== "all") {
       filtered = filtered.filter((order) => order.status === selectedTab);
     }
 
-    // Apply sorting
+
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "date-desc":
@@ -244,7 +244,7 @@ export default function OrderHistoryPage() {
     setFilteredOrders(filtered);
   }, [orders, searchQuery, statusFilter, sortBy, selectedTab, advancedFilters]);
 
-  // Get order counts by status
+
   const getOrderCounts = () => {
     if (!orders) return {};
     return orders.reduce((acc, order) => {
@@ -255,22 +255,22 @@ export default function OrderHistoryPage() {
 
   const orderCounts = getOrderCounts();
 
-  // Handle opening order detail
+
   const handleOrderDetail = (order: Order) => {
     setSelectedOrder(order);
     setIsDetailModalOpen(true);
   };
 
-  // Handle closing order detail
+
   const handleCloseDetail = () => {
     setSelectedOrder(null);
     setIsDetailModalOpen(false);
   };
 
-  // Handle advanced filter changes
+
   const handleAdvancedFilterChange = (newFilters: FilterOptions) => {
     setAdvancedFilters(newFilters);
-    // Clear basic filters when advanced filters are applied
+
     if (newFilters.searchQuery) setSearchQuery("");
     if (newFilters.status !== "all") setStatusFilter("all");
   };

@@ -3,7 +3,7 @@ import { products } from "../data/products";
 import { Card } from "./ui/card";
 import { Carousel, CarouselItem, CarouselContent } from "./ui/carousel";
 import { Badge } from "./ui/badge";
-// ...existing code...
+
 
 interface ProductRecommendationProps {
   userId?: string;
@@ -15,7 +15,7 @@ interface ProductRecommendationProps {
 
 
 function getRecommendedProducts({ userId, wishlist, orderHistory, currentProductId, maxItems = 6 }: ProductRecommendationProps) {
-  // Prioritas: Wishlist > OrderHistory > Popular > Same Category
+
   let recommended: typeof products = [];
 
   if (wishlist && wishlist.length > 0) {
@@ -31,7 +31,7 @@ function getRecommendedProducts({ userId, wishlist, orderHistory, currentProduct
     }
   }
   if (recommended.length === 0) {
-    // Fallback: produk populer (contoh: rating > 4)
+
     recommended = products
       .filter((p) => p.id !== Number(currentProductId))
       .sort((a, b) => b.stock - a.stock)
@@ -68,4 +68,4 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ userId, w
 };
 
 export default ProductRecommendation;
-// Komponen ini dapat digunakan di halaman detail produk, checkout, dan profil.
+
