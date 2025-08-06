@@ -22,7 +22,7 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
 
   if (!order) return null;
 
-  // Status configuration with colors and icons
+  
   const statusConfig = {
     Pending: {
       icon: Clock,
@@ -58,7 +58,7 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
 
   const StatusIcon = statusConfig[order.status].icon;
 
-  // Format date
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
       day: "2-digit",
@@ -69,7 +69,7 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
     });
   };
 
-  // Format currency
+  
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -78,11 +78,11 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
     }).format(amount);
   };
 
-  // Calculate subtotal and other costs
+  
   const subtotal = order.items.reduce((total, item) => total + item.price * item.qty, 0);
-  const shipping = 25000; // Example shipping cost
-  const tax = subtotal * 0.11; // 11% tax
-  const discount = 0; // No discount for example
+  const shipping = 25000;
+  const tax = subtotal * 0.11;
+  const discount = 0;
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);

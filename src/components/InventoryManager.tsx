@@ -10,9 +10,9 @@ import { products as productsData, Product } from "../data/products";
 import { Package, AlertTriangle, CheckCircle, Search, Filter, Download, RefreshCw } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
-// Komponen utama manajemen stok & inventaris
+
 export default function InventoryManager() {
-  // Simulasi data produk, seharusnya dari API/database
+  
   const [products, setProducts] = useState<Product[]>(
     productsData.map((p) => ({
       ...p,
@@ -24,14 +24,14 @@ export default function InventoryManager() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Edit stok produk
+  
   const handleEditStock = (id: number) => {
     setEditId(id);
     const prod = products.find((p: Product) => p.id === id);
     setNewStock(prod?.stock ?? 0);
   };
 
-  // Simpan stok baru
+  
   const handleSaveStock = (id: number) => {
     setProducts((prev: Product[]) => prev.map((p: Product) => (p.id === id ? { ...p, stock: newStock } : p)));
     setEditId(null);
@@ -43,7 +43,7 @@ export default function InventoryManager() {
     return { status: "good", text: "Good", color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle };
   };
 
-  // Filter products
+  
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
@@ -52,7 +52,7 @@ export default function InventoryManager() {
 
   const categories = ["all", ...new Set(products.map((p) => p.category))];
 
-  // Calculate stats
+  
   const stats = {
     total: products.length,
     outOfStock: products.filter((p) => p.stock === 0).length,

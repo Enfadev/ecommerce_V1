@@ -31,9 +31,9 @@ export default function AdminSidebar({ activeSection, onSectionChange }: AdminSi
 
   const handleNavigation = (section: string, href: string) => {
     onSectionChange(section);
-    // Only navigate if not on the same page to improve UX within the same admin page
+    
     if (pathname === "/admin" || pathname === "/admin/product" || pathname.startsWith("/admin/")) {
-      // For single page admin, just change section
+      
       return;
     }
     router.push(href);

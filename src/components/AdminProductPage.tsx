@@ -13,7 +13,7 @@ import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { Settings, Bell, User, Shield, Database, Mail, Palette, Globe } from "lucide-react";
 
-// Settings Component
+
 function AdminSettings() {
   return (
     <div className="space-y-6">
@@ -116,7 +116,7 @@ function AdminSettings() {
   );
 }
 
-// Analytics Component
+
 function AdminAnalytics() {
   return (
     <div className="space-y-6">
