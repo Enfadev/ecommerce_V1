@@ -47,41 +47,41 @@ export default function Event() {
     {
       id: 4,
       title: "Review Competition",
-      description: "Tulis review terbaik dan dapatkan hadiah menarik setiap minggunya",
-      period: "1 - 10 Agustus 2025",
+      description: "Write your best review and win attractive prizes every week",
+      period: "1 - 10 August 2025",
       type: "Competition",
       icon: MessageSquare,
-      prize: "Voucher & Produk Gratis",
+      prize: "Vouchers & Free Products",
     },
     {
       id: 5,
       title: "Brand Ambassador Hunt",
-      description: "Menjadi brand ambassador ShopZone dan dapatkan benefit eksklusif",
-      period: "15 Agustus 2025",
+      description: "Become a ShopZone brand ambassador and get exclusive benefits",
+      period: "15 August 2025",
       type: "Recruitment",
       icon: Star,
-      prize: "Kontrak 6 Bulan",
+      prize: "6-Month Contract",
     },
   ];
 
   const pastEvents = [
     {
-      title: "Giveaway Laptop Gaming",
-      period: "Juni 2025",
-      winner: "Ahmad Rizki dari Jakarta",
-      prize: "Laptop Gaming RTX 4060",
+      title: "Giveaway Gaming Laptop",
+      period: "June 2025",
+      winner: "Ahmad Rizki from Jakarta",
+      prize: "RTX 4060 Gaming Laptop",
     },
     {
       title: "Fashion Week Sale",
-      period: "Mei 2025",
-      winner: "1000+ Pemenang",
-      prize: "Total Hadiah Rp 50 Juta",
+      period: "May 2025",
+      winner: "1000+ Winners",
+      prize: "Total Prizes Worth Rp 50 Million",
     },
     {
       title: "Mother's Day Special",
-      period: "Mei 2025",
-      winner: "Sari Indah dari Bandung",
-      prize: "Hampers Premium",
+      period: "May 2025",
+      winner: "Sari Indah from Bandung",
+      prize: "Premium Hampers",
     },
   ];
 
@@ -94,11 +94,11 @@ export default function Event() {
           <div className="text-center">
             <Badge variant="secondary" className="mb-4 gap-2">
               <Sparkles className="w-4 h-4" />
-              Event & Giveaway
+              Events & Giveaways
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Event Seru & Hadiah Menarik!</h1>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Exciting Events & Amazing Prizes!</h1>
             <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
-              Ikuti berbagai event menarik dan menangkan hadiah spektakuler setiap bulannya. Dari kontes foto hingga quiz berhadiah, ada banyak kesempatan untuk menang!
+              Join various exciting events and win spectacular prizes every month. From photo contests to prize quizzes, there are plenty of chances to win!
             </p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function Event() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <Trophy className="w-8 h-8 text-primary" />
-            <h2 className="text-3xl font-bold">Event Aktif</h2>
+            <h2 className="text-3xl font-bold">Active Events</h2>
             <Badge variant="destructive" className="animate-pulse">
               Live
             </Badge>
@@ -121,7 +121,7 @@ export default function Event() {
                 <CardContent className="p-0">
                   <div className={`h-24 bg-gradient-to-r ${event.bgGradient} flex items-center justify-center relative`}>
                     <event.icon className="w-12 h-12 text-white" />
-                    <Badge variant={event.status === "Aktif" ? "destructive" : "secondary"} className="absolute top-3 right-3">
+                    <Badge variant={event.status === "Active" ? "destructive" : "secondary"} className="absolute top-3 right-3">
                       {event.status}
                     </Badge>
                   </div>
@@ -151,7 +151,7 @@ export default function Event() {
 
                     <Button className="w-full gap-2">
                       <ExternalLink className="w-4 h-4" />
-                      Ikuti Event
+                      Join Event
                     </Button>
                   </div>
                 </CardContent>
@@ -166,7 +166,7 @@ export default function Event() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <Clock className="w-8 h-8 text-primary" />
-            <h2 className="text-3xl font-bold">Event Mendatang</h2>
+            <h2 className="text-3xl font-bold">Upcoming Events</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -205,7 +205,7 @@ export default function Event() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <Star className="w-8 h-8 text-primary" />
-            <h2 className="text-3xl font-bold">Pemenang Sebelumnya</h2>
+            <h2 className="text-3xl font-bold">Previous Winners</h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -219,7 +219,7 @@ export default function Event() {
                   <Badge variant="secondary" className="mb-3">
                     {event.period}
                   </Badge>
-                  <p className="text-sm text-muted-foreground mb-2">Pemenang:</p>
+                  <p className="text-sm text-muted-foreground mb-2">Winner:</p>
                   <p className="font-medium text-primary mb-3">{event.winner}</p>
                   <div className="text-sm">
                     <Gift className="w-4 h-4 inline mr-2 text-primary" />
@@ -235,8 +235,8 @@ export default function Event() {
       {/* CTA Section */}
       <section className="py-16 px-4 bg-gradient-to-r from-primary to-primary/80 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Jangan Lewatkan Event Berikutnya!</h2>
-          <p className="text-xl opacity-90 mb-8">Follow media sosial kami untuk mendapatkan update event terbaru dan tips memenangkan hadiah</p>
+          <h2 className="text-3xl font-bold mb-4">Don't Miss the Next Event!</h2>
+          <p className="text-xl opacity-90 mb-8">Follow our social media to get the latest event updates and tips to win prizes</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="gap-2">
               <Users className="w-5 h-5" />
@@ -244,7 +244,7 @@ export default function Event() {
             </Button>
             <Button size="lg" variant="outline" className="gap-2 text-white border-white hover:bg-white hover:text-primary">
               <Gift className="w-5 h-5" />
-              Lihat Semua Event
+              View All Events
             </Button>
           </div>
         </div>

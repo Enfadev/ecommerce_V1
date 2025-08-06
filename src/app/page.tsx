@@ -232,9 +232,9 @@ export default function Home() {
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-2">
                     <Gift className="h-6 w-6 text-primary" />
-                    <h3 className="text-2xl font-semibold text-primary">Special Events & Exciting Prizes!</h3>
+                    <h3 className="text-2xl font-semibold text-primary">Special Events & Exclusive Rewards!</h3>
                   </div>
-                  <p className="text-muted-foreground text-lg">Don't miss the chance to join our monthly events and giveaways. Win exciting prizes like shopping vouchers, free products, and much more!</p>
+                  <p className="text-muted-foreground text-lg">Write your best review and win attractive prizes every week, including vouchers & free products. Become a ShopZone brand ambassador and enjoy exclusive benefits with a 6-month contract!</p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <Star className="h-4 w-4 text-yellow-500" />

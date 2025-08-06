@@ -104,10 +104,10 @@ export default function About() {
               <CardContent className="p-0">
                 <div className="flex items-center gap-3 mb-6">
                   <Target className="w-8 h-8 text-primary" />
-                  <h2 className="text-2xl font-bold">Visi Kami</h2>
+                  <h2 className="text-2xl font-bold">Our Vision</h2>
                 </div>
                 <p className="text-muted-foreground leading-relaxed">
-                  Menjadi platform e-commerce #1 di Indonesia yang mengutamakan kepuasan pelanggan, inovasi teknologi, dan pemberdayaan ekonomi digital untuk menciptakan ekosistem belanja online yang berkelanjutan dan inklusif.
+                  To become the #1 e-commerce platform in Indonesia, prioritizing customer satisfaction, technological innovation, and digital economic empowerment to create a sustainable and inclusive online shopping ecosystem.
                 </p>
               </CardContent>
             </Card>
@@ -116,24 +116,24 @@ export default function About() {
               <CardContent className="p-0">
                 <div className="flex items-center gap-3 mb-6">
                   <Award className="w-8 h-8 text-primary" />
-                  <h2 className="text-2xl font-bold">Misi Kami</h2>
+                  <h2 className="text-2xl font-bold">Our Mission</h2>
                 </div>
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                    Menyediakan produk berkualitas tinggi dengan harga yang kompetitif
+                    Provide high-quality products at competitive prices
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                    Memberikan pengalaman belanja yang mudah, aman, dan menyenangkan
+                    Deliver a shopping experience that is easy, safe, and enjoyable
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                    Mendukung pertumbuhan UMKM dan brand lokal Indonesia
+                    Support the growth of MSMEs and local Indonesian brands
                   </li>
                   <li className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                    Menghadirkan inovasi teknologi untuk kemudahan berbelanja
+                    Bring technological innovation for shopping convenience
                   </li>
                 </ul>
               </CardContent>
@@ -146,8 +146,8 @@ export default function About() {
       <section className="py-16 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Mengapa Memilih ShopZone?</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Kami berkomitmen memberikan layanan terbaik dengan berbagai keunggulan yang membuat pengalaman belanja Anda semakin istimewa.</p>
+            <h2 className="text-3xl font-bold mb-4">Why Choose ShopZone?</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">We are committed to providing the best service with various advantages that make your shopping experience even more special.</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -170,8 +170,8 @@ export default function About() {
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Tim Terbaik Kami</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Bertemu dengan para profesional berpengalaman yang berdedikasi membangun ShopZone menjadi platform terdepan di Indonesia.</p>
+            <h2 className="text-3xl font-bold mb-4">Our Best Team</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Meet the experienced professionals dedicated to making ShopZone the leading platform in Indonesia.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -198,16 +198,16 @@ export default function About() {
       {/* Contact CTA */}
       <section className="py-16 px-4 bg-primary/5">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Mari Berkolaborasi!</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">Apakah Anda seorang supplier, brand partner, atau memiliki ide bisnis? Kami terbuka untuk membangun kemitraan yang saling menguntungkan.</p>
+          <h2 className="text-3xl font-bold mb-4">Let's Collaborate!</h2>
+          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">Are you a supplier, brand partner, or have a business idea? We are open to building mutually beneficial partnerships.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gap-2">
               <Mail className="w-5 h-5" />
-              Email Kami
+              Email Us
             </Button>
             <Button variant="outline" size="lg" className="gap-2">
               <Phone className="w-5 h-5" />
-              Hubungi WhatsApp
+              Contact WhatsApp
             </Button>
           </div>
         </div>
