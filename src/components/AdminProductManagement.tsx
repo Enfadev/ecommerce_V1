@@ -91,8 +91,19 @@ export default function AdminProductManagement() {
     setShowForm(true);
   };
 
-  const handleDelete = (id: number) => {
-    setProducts(products.filter((p) => p.id !== id));
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Yakin ingin menghapus produk ini?')) return;
+    try {
+      const res = await fetch('/api/product', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error('Gagal menghapus produk');
+      setProducts(products.filter((p) => p.id !== id));
+    } catch {
+      alert('Gagal menghapus produk');
+    }
   };
 
   const handleSave = async (productData: any) => {

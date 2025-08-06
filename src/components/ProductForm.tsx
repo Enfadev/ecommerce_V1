@@ -12,7 +12,7 @@ const productSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(2, "Nama produk wajib diisi"),
   price: z.number().min(1, "Harga harus lebih dari 0"),
-  image: z.string().url("URL gambar tidak valid"),
+  image: z.string().optional(), // tidak wajib, karena bisa upload file
   description: z.string().optional(),
 });
 
