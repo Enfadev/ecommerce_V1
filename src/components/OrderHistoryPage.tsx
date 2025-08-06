@@ -275,7 +275,7 @@ export default function OrderHistoryPage() {
     if (newFilters.status !== "all") setStatusFilter("all");
   };
 
-  // Format date
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
       day: "2-digit",
@@ -284,7 +284,7 @@ export default function OrderHistoryPage() {
     });
   };
 
-  // Format currency
+  
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
