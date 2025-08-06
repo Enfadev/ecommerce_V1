@@ -117,5 +117,3 @@ export function CartProvider({ children }: { children: ReactNode }) {
     </CartContext.Provider>
   );
 }
-
-// Penjelasan: Context ini menyimpan state cart global dan fungsi manipulasi cart.
