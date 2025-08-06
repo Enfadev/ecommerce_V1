@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-// In-memory review store (for demo, replace with DB in production)
+
 let reviews: Record<string, Array<{ rating: number; comment: string; user?: string; date: string }>> = {};
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
