@@ -330,8 +330,8 @@ export default function AdminProductManagement() {
           <TableHeader>
             <TableRow>
             <TableHead className="w-12 text-center">#</TableHead>
-            <TableHead className="w-20 text-center">Image</TableHead>
-            <TableHead className="w-44"> 
+            <TableHead className="w-20 text-center align-middle">Image</TableHead>
+            <TableHead className="w-44 text-center align-middle">
               <Button variant="ghost" onClick={() => handleSort("name")} className="gap-1 p-0 h-auto">
                 Product Name
                 <ArrowUpDown className="w-4 h-4" />
@@ -359,8 +359,8 @@ export default function AdminProductManagement() {
             {filteredProducts.map((product, index) => (
               <TableRow key={product.id}>
                 <TableCell className="text-center">{index + 1}</TableCell>
-                <TableCell className="text-center">
-                  <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative">
+                <TableCell className="text-center align-middle">
+                  <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative mx-auto">
                     {product.image && product.image !== "/placeholder-image.svg" ? (
                       <Image
                         src={product.image}
@@ -377,8 +377,8 @@ export default function AdminProductManagement() {
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="text-center">
-                  <div>
+                <TableCell className="text-center align-middle">
+                  <div className="inline-block text-left">
                     <p className="font-medium">{product.name}</p>
                     <p className="text-sm text-muted-foreground">ID: {product.id}</p>
                   </div>
