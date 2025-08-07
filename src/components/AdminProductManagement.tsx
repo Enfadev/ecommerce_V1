@@ -431,11 +431,11 @@ export default function AdminProductManagement() {
                 <TableRow className="bg-muted/30">
                 <TableHead className="w-12 text-center sticky left-0 bg-muted/30 z-10 border-r shadow-sm">#</TableHead>
                 {allColumns.map(col => visibleColumns.includes(col.key) && (
-                  <TableHead key={col.key} className="text-center whitespace-nowrap min-w-[140px] px-4 py-3">
+                  <TableHead key={col.key} className="text-center whitespace-nowrap min-w-[160px] px-4 py-3">
                     {col.label}
                   </TableHead>
                 ))}
-                <TableHead className="w-20 text-center sticky right-0 bg-muted/30 z-10 border-l shadow-sm">Action</TableHead>
+                <TableHead className="w-24 text-center sticky right-0 bg-muted/30 z-10 border-l shadow-sm">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -445,21 +445,21 @@ export default function AdminProductManagement() {
                       {index + 1}
                     </TableCell>
                     {allColumns.map(col => visibleColumns.includes(col.key) && (
-                      <TableCell key={col.key} className="text-center whitespace-nowrap min-w-[140px] px-4 py-3">
+                      <TableCell key={col.key} className="text-center whitespace-nowrap min-w-[160px] px-4 py-4">
                         {col.key === "imageUrl"
                           ? (product.imageUrl ? 
                               <div className="flex justify-center">
-                                <Image src={product.imageUrl} alt={product.name} width={48} height={48} className="object-cover rounded" />
+                                <Image src={product.imageUrl} alt={product.name} width={64} height={64} className="object-cover rounded-lg border" />
                               </div>
-                              : <div className="flex justify-center"><Package className="w-6 h-6 text-muted-foreground" /></div>)
+                              : <div className="flex justify-center"><Package className="w-8 h-8 text-muted-foreground" /></div>)
                           : col.key === "gallery"
                             ? (product.gallery && product.gallery.length > 0 ? (
-                                <div className="flex gap-1 flex-wrap justify-center max-w-[120px] mx-auto">
+                                <div className="flex gap-2 flex-wrap justify-center max-w-[140px] mx-auto">
                                   {product.gallery.slice(0, 3).map((url, idx) => (
-                                    <Image key={idx} src={url} alt={`Gallery ${idx + 1}`} width={24} height={24} className="object-cover rounded" />
+                                    <Image key={idx} src={url} alt={`Gallery ${idx + 1}`} width={32} height={32} className="object-cover rounded border" />
                                   ))}
                                   {product.gallery.length > 3 && (
-                                    <div className="w-6 h-6 bg-muted rounded flex items-center justify-center text-xs font-medium">
+                                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center text-xs font-medium border">
                                       +{product.gallery.length - 3}
                                     </div>
                                   )}
@@ -467,21 +467,21 @@ export default function AdminProductManagement() {
                               ) : <span className="text-muted-foreground">-</span>)
                             : col.key === "price" || col.key === "hargaDiskon"
                               ? (product[col.key as keyof Product] ? 
-                                  <span className="font-medium">${product[col.key as keyof Product]}</span> 
+                                  <span className="font-semibold text-base">${product[col.key as keyof Product]}</span> 
                                   : <span className="text-muted-foreground">-</span>)
                               : col.key === "createdAt" || col.key === "updatedAt"
                                 ? (product[col.key as keyof Product] ? 
-                                    <span className="text-sm">{new Date(product[col.key as keyof Product] as string).toLocaleDateString()}</span> 
+                                    <span className="text-sm font-medium">{new Date(product[col.key as keyof Product] as string).toLocaleDateString()}</span> 
                                     : <span className="text-muted-foreground">-</span>)
                                 : col.key === "status"
                                   ? (
-                                      <Badge variant="outline" className={getStatusColor(product.status || "", product.stock || 0)}>
+                                      <Badge variant="outline" className={`${getStatusColor(product.status || "", product.stock || 0)} px-3 py-1 font-medium`}>
                                         {getStatusText(product.status || "", product.stock || 0)}
                                       </Badge>
                                     )
                                   : col.key === "stock"
                                     ? (
-                                        <span className={`font-medium ${
+                                        <span className={`font-bold text-base ${
                                           (product.stock || 0) === 0 ? "text-red-500" : 
                                           (product.stock || 0) < 10 ? "text-yellow-600" : 
                                           "text-green-600"
@@ -489,11 +489,17 @@ export default function AdminProductManagement() {
                                           {product.stock || 0}
                                         </span>
                                       )
-                                    : (
-                                        <span className="max-w-[120px] truncate block" title={String(product[col.key as keyof Product] || "-")}>
-                                          {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
-                                        </span>
-                                      )}
+                                    : col.key === "name"
+                                      ? (
+                                          <span className="max-w-[140px] truncate block font-medium text-sm" title={String(product[col.key as keyof Product] || "-")}>
+                                            {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
+                                          </span>
+                                        )
+                                      : (
+                                          <span className="max-w-[140px] truncate block text-sm" title={String(product[col.key as keyof Product] || "-")}>
+                                            {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
+                                          </span>
+                                        )}
                       </TableCell>
                     ))}
                     <TableCell className="text-center sticky right-0 bg-background z-10 border-l shadow-sm">
