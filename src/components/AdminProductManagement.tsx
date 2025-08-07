@@ -132,10 +132,11 @@ export default function AdminProductManagement() {
     if (editingProduct) {
       try {
         let imageUrl = editingProduct.image;
-        // Jika ada file gambar baru, upload dulu
-        if (productData.imageFile) {
+        let galleryUrls = editingProduct.gallery || [];
+        // Upload gambar utama jika ada file baru
+        if (productData.imageFiles && productData.imageFiles.length > 0) {
           const formData = new FormData();
-          formData.append("file", productData.imageFile);
+          formData.append("file", productData.imageFiles[0]);
           const uploadRes = await fetch("/api/upload", {
             method: "POST",
             body: formData,
@@ -144,7 +145,21 @@ export default function AdminProductManagement() {
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
         }
-        // Update produk ke database
+        // Upload gallery images jika ada file baru
+        if (productData.imageFiles && productData.imageFiles.length > 1) {
+          const galleryForm = new FormData();
+          productData.imageFiles.slice(1).forEach((file: File) => {
+            galleryForm.append("files", file);
+          });
+          const galleryRes = await fetch("/api/upload?gallery=1", {
+            method: "POST",
+            body: galleryForm,
+          });
+          if (!galleryRes.ok) throw new Error("Failed to upload gallery images");
+          const galleryData = await galleryRes.json();
+          galleryUrls = galleryData.urls;
+        }
+        // Update produk ke database dengan semua field
         const res = await fetch(`/api/product`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -154,6 +169,17 @@ export default function AdminProductManagement() {
             price: productData.price,
             imageUrl,
             description: productData.description,
+            category: productData.category,
+            stock: productData.stock,
+            status: productData.status,
+            sku: productData.sku,
+            brand: productData.brand,
+            slug: productData.slug,
+            metaTitle: productData.metaTitle,
+            metaDescription: productData.metaDescription,
+            hargaDiskon: productData.hargaDiskon,
+            promoExpired: productData.promoExpired,
+            gallery: galleryUrls,
           }),
         });
         if (!res.ok) throw new Error("Failed to update product");

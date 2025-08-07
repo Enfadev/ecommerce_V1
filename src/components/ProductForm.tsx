@@ -25,9 +25,28 @@ const productSchema = z.object({
   promoExpired: z.string().optional(),
 });
 
+type ProductFormData = {
+  id?: number;
+  name: string;
+  price: number;
+  description?: string;
+  category: string;
+  stock: number;
+  status: string;
+  sku: string;
+  brand?: string;
+  slug: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  hargaDiskon?: number;
+  promoExpired?: string;
+  imageFiles?: File[];
+  gallery?: string[];
+};
+
 type ProductFormProps = {
-  product?: any;
-  onSave: (product: any) => void;
+  product?: ProductFormData;
+  onSave: (product: ProductFormData) => void;
   onCancel: () => void;
 };
 
@@ -53,7 +72,13 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
   };
 
   const onSubmit = (data: any) => {
-    onSave({ ...product, ...data, imageFiles });
+    const submitData: ProductFormData = {
+      ...data,
+      id: product?.id,
+      imageFiles,
+      gallery: product?.gallery || [],
+    };
+    onSave(submitData);
     reset();
     setImageFiles([]);
     setImagePreviews([]);

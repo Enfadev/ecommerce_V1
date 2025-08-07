@@ -65,7 +65,24 @@ export async function GET(req: Request) {
 }
 export async function PUT(req: Request) {
   try {
-    const { id, name, description, price, imageUrl } = await req.json();
+    const {
+      id,
+      name,
+      description,
+      price,
+      imageUrl,
+      category,
+      stock,
+      status,
+      sku,
+      brand,
+      slug,
+      metaTitle,
+      metaDescription,
+      hargaDiskon,
+      promoExpired,
+      gallery
+    } = await req.json();
     if (!id || !name || !price) {
       return NextResponse.json({ error: 'ID, nama, dan harga produk wajib diisi' }, { status: 400 });
     }
@@ -76,6 +93,17 @@ export async function PUT(req: Request) {
         description,
         price: parseFloat(price),
         imageUrl,
+        category,
+        stock,
+        status,
+        sku,
+        brand,
+        slug,
+        metaTitle,
+        metaDescription,
+        hargaDiskon: hargaDiskon === undefined || hargaDiskon === null || hargaDiskon === '' ? null : parseFloat(hargaDiskon),
+        promoExpired,
+        gallery,
       },
     });
     return NextResponse.json(product);
@@ -96,6 +124,7 @@ export async function POST(req: Request) {
         description,
         price: parseFloat(price),
         imageUrl,
+        hargaDiskon: hargaDiskon === undefined || hargaDiskon === null || hargaDiskon === '' ? null : parseFloat(hargaDiskon),
       },
     });
     return NextResponse.json(product);
