@@ -5,12 +5,12 @@ export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
     if (!id) {
-      return NextResponse.json({ error: 'ID produk wajib diisi' }, { status: 400 });
+      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
     }
     
     const product = await prisma.product.findUnique({ where: { id: Number(id) } });
     if (!product) {
-      return NextResponse.json({ error: 'Produk tidak ditemukan' }, { status: 404 });
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     
     await prisma.product.delete({ where: { id: Number(id) } });
@@ -23,7 +23,7 @@ export async function DELETE(req: Request) {
     }
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Gagal menghapus produk' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
   }
 }
 import { NextResponse } from 'next/server';
@@ -60,7 +60,7 @@ export async function GET(req: Request) {
       return NextResponse.json(result);
     }
   } catch (error) {
-    return NextResponse.json({ error: 'Gagal mengambil data produk' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch product data' }, { status: 500 });
   }
 }
 export async function PUT(req: Request) {
@@ -84,7 +84,7 @@ export async function PUT(req: Request) {
       gallery
     } = await req.json();
     if (!id || !name || !price) {
-      return NextResponse.json({ error: 'ID, nama, dan harga produk wajib diisi' }, { status: 400 });
+      return NextResponse.json({ error: 'ID, name, and price are required' }, { status: 400 });
     }
     const product = await prisma.product.update({
       where: { id: Number(id) },
@@ -108,7 +108,7 @@ export async function PUT(req: Request) {
     });
     return NextResponse.json(product);
   } catch (error) {
-    return NextResponse.json({ error: 'Gagal update produk' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
 
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
   try {
     const { name, description, price, imageUrl } = await req.json();
     if (!name || !price) {
-      return NextResponse.json({ error: 'Nama dan harga produk wajib diisi' }, { status: 400 });
+      return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
     }
     const product = await prisma.product.create({
       data: {
@@ -129,6 +129,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(product);
   } catch (error) {
-    return NextResponse.json({ error: 'Gagal menambah produk' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to add product' }, { status: 500 });
   }
 }
