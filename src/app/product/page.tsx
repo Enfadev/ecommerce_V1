@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductCard } from "@/components/ProductCard";
-// import { products } from "@/data/products";
+import type { Product } from "@/data/products";
 import { useSearchParams } from "next/navigation";
 import { ProductFilter } from "@/components/ProductFilter";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 type SortOption = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "newest";
 type ViewMode = "grid" | "list";
 
+interface APIProduct {
+  id: number;
+  name: string;
+  price: number;
+  imageUrl: string | null;
+  description: string | null;
+}
+
 export default function ProductPage() {
   const searchParams = useSearchParams();
   const search = searchParams.get("q") || "";
@@ -24,7 +32,7 @@ export default function ProductPage() {
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -34,7 +42,16 @@ export default function ProductPage() {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setProducts(data);
+          // Map API data to match ProductCard interface
+          const mappedProducts: Product[] = data.map((product: APIProduct) => ({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.imageUrl || "/placeholder-image.svg",
+            category: "General", // Default category since it's not in DB
+            stock: Math.floor(Math.random() * 50) + 1, // Random stock for demo
+          }));
+          setProducts(mappedProducts);
           setError("");
         } else {
           setError(data.error || "Failed to fetch products");

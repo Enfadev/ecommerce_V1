@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -21,17 +22,14 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         <CardContent className="p-4">
           <div className="flex gap-4">
             <Link href={`/product/${product.id}`} className="flex-shrink-0">
-              <div className="w-24 h-24 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center overflow-hidden relative">
                 {product.image ? (
-                  <img
+                  <Image
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format`;
-                    }}
-                    loading="lazy"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    sizes="96px"
                   />
                 ) : (
                   <div className="text-muted-foreground text-xs text-center">
@@ -55,7 +53,11 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      fav ? removeFromWishlist(product.id) : addToWishlist(product);
+                      if (fav) {
+                        removeFromWishlist(product.id);
+                      } else {
+                        addToWishlist(product);
+                      }
                     }}
                   >
                     <Heart className={`w-4 h-4 transition-all duration-300 ${fav ? "fill-current animate-bounce" : ""}`} />
@@ -129,7 +131,11 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              fav ? removeFromWishlist(product.id) : addToWishlist(product);
+              if (fav) {
+                removeFromWishlist(product.id);
+              } else {
+                addToWishlist(product);
+              }
             }}
           >
             <Heart size={18} fill={fav ? "currentColor" : "none"} className={`transition-all duration-300 ${fav ? "animate-bounce" : ""}`} />
@@ -137,16 +143,13 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         )}
 
         <Link href={`/product/${product.id}`} className="block">
-          <div className="relative overflow-hidden group/image">
-            <img
+          <div className="relative overflow-hidden group/image h-48">
+            <Image
               src={product.image}
               alt={product.name}
-              className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format`;
-              }}
-              loading="lazy"
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-300"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
