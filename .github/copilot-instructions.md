@@ -1,6 +1,9 @@
 
 # Copilot Instructions (General Version)
 
+## Additional Rule: Comment Usage
+Do not use unnecessary comments. Only use section comments (e.g., React JSX block comments for UI structure or major code regions). Avoid inline or explanatory comments unless absolutely required for complex logic.
+
 ## Purpose
 Copilot must always generate complete, ready-to-use feature code using the project's existing stack, libraries, and conventions.
 
