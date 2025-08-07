@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,16 @@ interface Product {
   stock: number;
   status: string;
   image: string;
+  description?: string;
   createdAt?: string;
+}
+
+interface ProductFormData {
+  id?: number;
+  name: string;
+  price: number;
+  description?: string;
+  imageFile?: File;
 }
 
 export default function AdminProductManagement() {
@@ -28,15 +38,31 @@ export default function AdminProductManagement() {
   
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await fetch("/api/product");
-      if (res.ok) {
-        const data = await res.json();
-        setProducts(data.map((p: any) => ({
-          ...p,
-          image: p.imageUrl,
-          status: "active",
-          createdAt: new Date(p.createdAt).toLocaleDateString("en-US"),
-        })));
+      try {
+        const res = await fetch("/api/product");
+        if (res.ok) {
+          const data = await res.json();
+          setProducts(data.map((p: {
+            id: number;
+            name: string;
+            price: number;
+            imageUrl: string | null;
+            description: string | null;
+            createdAt: string;
+          }) => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            image: p.imageUrl || "/placeholder-image.jpg",
+            category: "General", // Default category since it's not in DB
+            stock: Math.floor(Math.random() * 50) + 1, // Random stock for demo
+            status: "active",
+            description: p.description || "",
+            createdAt: new Date(p.createdAt).toLocaleDateString("en-US"),
+          })));
+        }
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
       }
     };
     fetchProducts();
@@ -70,7 +96,7 @@ export default function AdminProductManagement() {
       return 0;
     });
 
-  const categories = ["all", ...new Set(products.map((p) => p.category))];
+  const categories = ["all", ...new Set(products.map((p) => p.category).filter(Boolean))];
 
   const handleSort = (field: keyof Product) => {
     if (sortBy === field) {
@@ -106,10 +132,10 @@ export default function AdminProductManagement() {
     }
   };
 
-  const handleSave = async (productData: any) => {
+  const handleSave = async (productData: ProductFormData) => {
     if (editingProduct) {
       
-      setProducts(products.map((p) => (p.id === productData.id ? { ...productData, updatedAt: new Date().toLocaleDateString("id-ID") } : p)));
+      setProducts(products.map((p) => (p.id === productData.id ? { ...p, ...productData, updatedAt: new Date().toLocaleDateString("id-ID") } : p)));
     } else {
       try {
         let imageUrl = "";
@@ -137,9 +163,14 @@ export default function AdminProductManagement() {
         if (!res.ok) throw new Error("Failed to add product");
         const newProduct = await res.json();
         setProducts([{
-          ...newProduct,
-          image: newProduct.imageUrl,
+          id: newProduct.id,
+          name: newProduct.name,
+          price: newProduct.price,
+          image: newProduct.imageUrl || "/placeholder-image.jpg",
+          category: "General",
+          stock: Math.floor(Math.random() * 50) + 1,
           status: "active",
+          description: newProduct.description || "",
           createdAt: new Date(newProduct.createdAt).toLocaleDateString("en-US"),
         }, ...products]);
       } catch {
@@ -251,7 +282,7 @@ export default function AdminProductManagement() {
                 <DropdownMenuLabel>Select Category</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {categories.map((category) => (
-                  <DropdownMenuItem key={category} onClick={() => setSelectedCategory(category)}>
+                  <DropdownMenuItem key={category} onClick={() => setSelectedCategory(category || "all")}>
                     {category === "all" ? "All Categories" : category}
                   </DropdownMenuItem>
                 ))}
@@ -297,18 +328,21 @@ export default function AdminProductManagement() {
               <TableRow key={product.id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
-                  <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = "none";
-                        target.nextElementSibling?.classList.remove("hidden");
-                      }}
-                    />
-                    <Package className="w-6 h-6 text-muted-foreground hidden" />
+                  <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative">
+                    {product.image && product.image !== "/placeholder-image.jpg" ? (
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                        sizes="48px"
+                        onError={() => {
+                          // Fallback handled by Next.js automatically
+                        }}
+                      />
+                    ) : (
+                      <Package className="w-6 h-6 text-muted-foreground" />
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>

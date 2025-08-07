@@ -29,17 +29,6 @@ export async function DELETE(req: Request) {
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-
-type Product = {
-  id: number;
-  name: string;
-  description?: string | null;
-  price: number;
-  imageUrl?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -59,12 +48,12 @@ export async function GET(req: Request) {
       return NextResponse.json(result);
     } else {
       const products = await prisma.product.findMany();
-      const result: Product[] = products.map((p) => ({
+      const result = products.map((p) => ({
         id: p.id,
         name: p.name,
         description: p.description,
         price: p.price,
-        image: p.imageUrl,
+        imageUrl: p.imageUrl,
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
       }));
