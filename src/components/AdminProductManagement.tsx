@@ -134,8 +134,44 @@ export default function AdminProductManagement() {
 
   const handleSave = async (productData: ProductFormData) => {
     if (editingProduct) {
-      
-      setProducts(products.map((p) => (p.id === productData.id ? { ...p, ...productData, updatedAt: new Date().toLocaleDateString("id-ID") } : p)));
+      try {
+        let imageUrl = editingProduct.image;
+        // Jika ada file gambar baru, upload dulu
+        if (productData.imageFile) {
+          const formData = new FormData();
+          formData.append("file", productData.imageFile);
+          const uploadRes = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          if (!uploadRes.ok) throw new Error("Failed to upload image");
+          const uploadData = await uploadRes.json();
+          imageUrl = uploadData.url;
+        }
+        // Update produk ke database
+        const res = await fetch(`/api/product`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: editingProduct.id,
+            name: productData.name,
+            price: productData.price,
+            imageUrl,
+            description: productData.description,
+          }),
+        });
+        if (!res.ok) throw new Error("Failed to update product");
+        const updatedProduct = await res.json();
+        setProducts(products.map((p) => (p.id === updatedProduct.id ? {
+          ...p,
+          name: updatedProduct.name,
+          price: updatedProduct.price,
+          image: updatedProduct.imageUrl || "/placeholder-image.svg",
+          description: updatedProduct.description || "",
+        } : p)));
+      } catch {
+        alert("Failed to update product");
+      }
     } else {
       try {
         let imageUrl = "";

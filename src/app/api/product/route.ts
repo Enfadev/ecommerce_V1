@@ -63,6 +63,27 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Gagal mengambil data produk' }, { status: 500 });
   }
 }
+export async function PUT(req: Request) {
+  try {
+    const { id, name, description, price, imageUrl } = await req.json();
+    if (!id || !name || !price) {
+      return NextResponse.json({ error: 'ID, nama, dan harga produk wajib diisi' }, { status: 400 });
+    }
+    const product = await prisma.product.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        description,
+        price: parseFloat(price),
+        imageUrl,
+      },
+    });
+    return NextResponse.json(product);
+  } catch (error) {
+    return NextResponse.json({ error: 'Gagal update produk' }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const { name, description, price, imageUrl } = await req.json();
