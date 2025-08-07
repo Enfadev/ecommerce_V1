@@ -42,24 +42,20 @@ export default function AdminProductManagement() {
         const res = await fetch("/api/product");
         if (res.ok) {
           const data = await res.json();
-          setProducts(data.map((p: {
-            id: number;
-            name: string;
-            price: number;
-            imageUrl: string | null;
-            description: string | null;
-            createdAt: string;
-          }) => ({
-            id: p.id,
-            name: p.name,
-            price: p.price,
-            image: p.imageUrl || "/placeholder-image.svg",
-            category: "General", // Default category since it's not in DB
-            stock: Math.floor(Math.random() * 50) + 1, // Random stock for demo
-            status: "active",
-            description: p.description || "",
-            createdAt: new Date(p.createdAt).toLocaleDateString("en-US"),
-          })));
+      setProducts(data.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        image: p.imageUrl || "/placeholder-image.svg",
+        category: p.category?.name || p.category || "-",
+        stock: typeof p.stock === "number" ? p.stock : 0,
+        status: p.status || "-",
+        sku: p.sku || "-",
+        brand: p.brand || "-",
+        slug: p.slug || "-",
+        description: p.description || "",
+        createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-US") : "-",
+      })));
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
