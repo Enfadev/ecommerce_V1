@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { products } from "@/data/products";
+// import { products } from "@/data/products";
 import Image from "next/image";
 import ProductReviewSection from "@/components/ProductReviewSection";
 import ProductRecommendation from "@/components/ProductRecommendation";
@@ -11,22 +11,33 @@ import * as React from "react";
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { addToCart } = useCart();
-  const [product, setProduct] = React.useState<(typeof products)[0] | undefined>(undefined);
+  const [product, setProduct] = React.useState<any | undefined>(undefined);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState("");
 
   React.useEffect(() => {
     let isMounted = true;
     (async () => {
       const _params = await params;
-      const found = products.find((p) => p.id === Number(_params.id));
-      if (isMounted) setProduct(found);
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`/api/product?id=${_params.id}`);
+        if (!res.ok) throw new Error("Product not found");
+        const data = await res.json();
+        if (isMounted) setProduct(data);
+      } catch (err: any) {
+        if (isMounted) setError(err.message || "Failed to fetch product");
+      }
+      if (isMounted) setLoading(false);
     })();
     return () => {
       isMounted = false;
     };
   }, [params]);
 
-  if (product === undefined) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Memuat...</div>;
-  if (!product) return notFound();
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
+  if (error || !product) return notFound();
 
   return (
     <div className="min-h-screen bg-background font-sans">

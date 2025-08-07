@@ -40,20 +40,36 @@ type Product = {
   updatedAt: Date;
 };
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const products = await prisma.product.findMany();
-    
-    const result: Product[] = products.map((p) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      price: p.price,
-      image: p.imageUrl,
-      createdAt: p.createdAt,
-      updatedAt: p.updatedAt,
-    }));
-    return NextResponse.json(result);
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (id) {
+      const p = await prisma.product.findUnique({ where: { id: Number(id) } });
+      if (!p) return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      const result = {
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        image: p.imageUrl,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+      };
+      return NextResponse.json(result);
+    } else {
+      const products = await prisma.product.findMany();
+      const result: Product[] = products.map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        image: p.imageUrl,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+      }));
+      return NextResponse.json(result);
+    }
   } catch (error) {
     return NextResponse.json({ error: 'Gagal mengambil data produk' }, { status: 500 });
   }
