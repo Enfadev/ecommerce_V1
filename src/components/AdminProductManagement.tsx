@@ -53,7 +53,7 @@ export default function AdminProductManagement() {
             id: p.id,
             name: p.name,
             price: p.price,
-            image: p.imageUrl || "/placeholder-image.jpg",
+            image: p.imageUrl || "/placeholder-image.svg",
             category: "General", // Default category since it's not in DB
             stock: Math.floor(Math.random() * 50) + 1, // Random stock for demo
             status: "active",
@@ -166,7 +166,7 @@ export default function AdminProductManagement() {
           id: newProduct.id,
           name: newProduct.name,
           price: newProduct.price,
-          image: newProduct.imageUrl || "/placeholder-image.jpg",
+          image: newProduct.imageUrl || "/placeholder-image.svg",
           category: "General",
           stock: Math.floor(Math.random() * 50) + 1,
           status: "active",
@@ -329,7 +329,7 @@ export default function AdminProductManagement() {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative">
-                    {product.image && product.image !== "/placeholder-image.jpg" ? (
+                    {product.image && product.image !== "/placeholder-image.svg" ? (
                       <Image
                         src={product.image}
                         alt={product.name}
