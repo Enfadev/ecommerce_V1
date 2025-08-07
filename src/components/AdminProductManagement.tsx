@@ -402,7 +402,29 @@ export default function AdminProductManagement() {
 
       {/* Products Table */}
       <Card>
-        <div className="overflow-x-auto border rounded-lg">
+        <div className="overflow-x-auto border rounded-lg custom-scrollbar">
+          <style jsx>{`
+            .custom-scrollbar::-webkit-scrollbar {
+              height: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: hsl(var(--muted));
+              border-radius: 3px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: hsl(var(--border));
+              border-radius: 3px;
+              transition: background-color 0.2s ease;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: hsl(var(--muted-foreground) / 0.4);
+            }
+            /* Firefox */
+            .custom-scrollbar {
+              scrollbar-width: thin;
+              scrollbar-color: hsl(var(--border)) hsl(var(--muted));
+            }
+          `}</style>
           <div className="min-w-fit">
             <Table className="min-w-full">
               <TableHeader>
