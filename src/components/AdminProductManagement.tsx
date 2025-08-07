@@ -402,65 +402,115 @@ export default function AdminProductManagement() {
 
       {/* Products Table */}
       <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-            <TableHead className="w-12 text-center">#</TableHead>
-            {allColumns.map(col => visibleColumns.includes(col.key) && (
-              <TableHead key={col.key} className="text-center">{col.label}</TableHead>
-            ))}
-            <TableHead className="w-16 text-center">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredProducts.map((product, index) => (
-              <TableRow key={product.id}>
-                <TableCell className="text-center">{index + 1}</TableCell>
+        <div className="overflow-x-auto border rounded-lg">
+          <div className="min-w-fit">
+            <Table className="min-w-full">
+              <TableHeader>
+                <TableRow className="bg-muted/30">
+                <TableHead className="w-12 text-center sticky left-0 bg-muted/30 z-10 border-r shadow-sm">#</TableHead>
                 {allColumns.map(col => visibleColumns.includes(col.key) && (
-                  <TableCell key={col.key} className="text-center">
-                    {col.key === "imageUrl"
-                      ? (product.imageUrl ? <Image src={product.imageUrl} alt={product.name} width={48} height={48} className="object-cover rounded" /> : <Package className="w-6 h-6 text-muted-foreground" />)
-                      : col.key === "gallery"
-                        ? (product.gallery && product.gallery.length > 0 ? (
-                            <div className="flex gap-1 flex-wrap justify-center">
-                              {product.gallery.map((url, idx) => (
-                                <Image key={idx} src={url} alt={`Gallery ${idx + 1}`} width={32} height={32} className="object-cover rounded" />
-                              ))}
-                            </div>
-                          ) : "-")
-                        : (product[col.key as keyof Product] ?? "-")}
-                  </TableCell>
+                  <TableHead key={col.key} className="text-center whitespace-nowrap min-w-[140px] px-4 py-3">
+                    {col.label}
+                  </TableHead>
                 ))}
-                <TableCell className="text-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Action</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleEdit(product)}>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Details
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleDelete(product.id)} className="text-destructive">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                <TableHead className="w-20 text-center sticky right-0 bg-muted/30 z-10 border-l shadow-sm">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredProducts.map((product, index) => (
+                  <TableRow key={product.id} className="hover:bg-muted/20">
+                    <TableCell className="text-center sticky left-0 bg-background z-10 border-r font-medium shadow-sm">
+                      {index + 1}
+                    </TableCell>
+                    {allColumns.map(col => visibleColumns.includes(col.key) && (
+                      <TableCell key={col.key} className="text-center whitespace-nowrap min-w-[140px] px-4 py-3">
+                        {col.key === "imageUrl"
+                          ? (product.imageUrl ? 
+                              <div className="flex justify-center">
+                                <Image src={product.imageUrl} alt={product.name} width={48} height={48} className="object-cover rounded" />
+                              </div>
+                              : <div className="flex justify-center"><Package className="w-6 h-6 text-muted-foreground" /></div>)
+                          : col.key === "gallery"
+                            ? (product.gallery && product.gallery.length > 0 ? (
+                                <div className="flex gap-1 flex-wrap justify-center max-w-[120px] mx-auto">
+                                  {product.gallery.slice(0, 3).map((url, idx) => (
+                                    <Image key={idx} src={url} alt={`Gallery ${idx + 1}`} width={24} height={24} className="object-cover rounded" />
+                                  ))}
+                                  {product.gallery.length > 3 && (
+                                    <div className="w-6 h-6 bg-muted rounded flex items-center justify-center text-xs font-medium">
+                                      +{product.gallery.length - 3}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : <span className="text-muted-foreground">-</span>)
+                            : col.key === "price" || col.key === "hargaDiskon"
+                              ? (product[col.key as keyof Product] ? 
+                                  <span className="font-medium">${product[col.key as keyof Product]}</span> 
+                                  : <span className="text-muted-foreground">-</span>)
+                              : col.key === "createdAt" || col.key === "updatedAt"
+                                ? (product[col.key as keyof Product] ? 
+                                    <span className="text-sm">{new Date(product[col.key as keyof Product] as string).toLocaleDateString()}</span> 
+                                    : <span className="text-muted-foreground">-</span>)
+                                : col.key === "status"
+                                  ? (
+                                      <Badge variant="outline" className={getStatusColor(product.status || "", product.stock || 0)}>
+                                        {getStatusText(product.status || "", product.stock || 0)}
+                                      </Badge>
+                                    )
+                                  : col.key === "stock"
+                                    ? (
+                                        <span className={`font-medium ${
+                                          (product.stock || 0) === 0 ? "text-red-500" : 
+                                          (product.stock || 0) < 10 ? "text-yellow-600" : 
+                                          "text-green-600"
+                                        }`}>
+                                          {product.stock || 0}
+                                        </span>
+                                      )
+                                    : (
+                                        <span className="max-w-[120px] truncate block" title={String(product[col.key as keyof Product] || "-")}>
+                                          {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
+                                        </span>
+                                      )}
+                      </TableCell>
+                    ))}
+                    <TableCell className="text-center sticky right-0 bg-background z-10 border-l shadow-sm">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Action</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleEdit(product)}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Eye className="w-4 h-4 mr-2" />
+                            Details
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleDelete(product.id)} className="text-destructive">
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+        {visibleColumns.length > 8 && (
+          <div className="p-2 text-center text-sm text-muted-foreground bg-muted/20 border-t">
+            <p>💡 Tip: Scroll horizontally to view all {visibleColumns.length} columns. Use the Columns button to hide unnecessary fields.</p>
+          </div>
+        )}
       </Card>
 
       {/* Product Form Dialog */}
@@ -469,7 +519,27 @@ export default function AdminProductManagement() {
           <DialogHeader>
             <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
           </DialogHeader>
-          <ProductForm product={editingProduct} onSave={handleSave} onCancel={() => setShowForm(false)} />
+          <ProductForm 
+            product={editingProduct ? {
+              id: editingProduct.id,
+              name: editingProduct.name,
+              price: editingProduct.price,
+              description: editingProduct.description || "",
+              category: editingProduct.category || "",
+              stock: editingProduct.stock || 0,
+              status: editingProduct.status || "active",
+              sku: editingProduct.sku || "",
+              brand: editingProduct.brand || "",
+              slug: editingProduct.slug || "",
+              metaTitle: editingProduct.metaTitle || "",
+              metaDescription: editingProduct.metaDescription || "",
+              hargaDiskon: editingProduct.hargaDiskon || 0,
+              promoExpired: editingProduct.promoExpired || "",
+              gallery: editingProduct.gallery || []
+            } : undefined} 
+            onSave={handleSave} 
+            onCancel={() => setShowForm(false)} 
+          />
         </DialogContent>
       </Dialog>
     </div>
