@@ -329,37 +329,37 @@ export default function AdminProductManagement() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">#</TableHead>
-              <TableHead className="w-20">Image</TableHead>
-              <TableHead>
-                <Button variant="ghost" onClick={() => handleSort("name")} className="gap-1 p-0 h-auto">
-                  Product Name
-                  <ArrowUpDown className="w-4 h-4" />
-                </Button>
-              </TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>
-                <Button variant="ghost" onClick={() => handleSort("price")} className="gap-1 p-0 h-auto">
-                  Price
-                  <ArrowUpDown className="w-4 h-4" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button variant="ghost" onClick={() => handleSort("stock")} className="gap-1 p-0 h-auto">
-                  Stock
-                  <ArrowUpDown className="w-4 h-4" />
-                </Button>
-              </TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="w-12">Action</TableHead>
+            <TableHead className="w-12 text-center">#</TableHead>
+            <TableHead className="w-20 text-center">Image</TableHead>
+            <TableHead className="w-44"> 
+              <Button variant="ghost" onClick={() => handleSort("name")} className="gap-1 p-0 h-auto">
+                Product Name
+                <ArrowUpDown className="w-4 h-4" />
+              </Button>
+            </TableHead>
+            <TableHead className="w-32 text-center">Category</TableHead>
+            <TableHead className="w-24 text-center">
+              <Button variant="ghost" onClick={() => handleSort("price")} className="gap-1 p-0 h-auto">
+                Price
+                <ArrowUpDown className="w-4 h-4" />
+              </Button>
+            </TableHead>
+            <TableHead className="w-20 text-center">
+              <Button variant="ghost" onClick={() => handleSort("stock")} className="gap-1 p-0 h-auto">
+                Stock
+                <ArrowUpDown className="w-4 h-4" />
+              </Button>
+            </TableHead>
+            <TableHead className="w-24 text-center">Status</TableHead>
+            <TableHead className="w-28 text-center">Date</TableHead>
+            <TableHead className="w-16 text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredProducts.map((product, index) => (
               <TableRow key={product.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
+                <TableCell className="text-center">{index + 1}</TableCell>
+                <TableCell className="text-center">
                   <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative">
                     {product.image && product.image !== "/placeholder-image.svg" ? (
                       <Image
@@ -377,24 +377,24 @@ export default function AdminProductManagement() {
                     )}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   <div>
                     <p className="font-medium">{product.name}</p>
                     <p className="text-sm text-muted-foreground">ID: {product.id}</p>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   <Badge variant="outline">{product.category}</Badge>
                 </TableCell>
-                <TableCell className="font-medium">${product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
-                <TableCell>
+                <TableCell className="font-medium text-center">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
+                <TableCell className="text-center">
                   <span className="font-mono">{product.stock}</span>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   <Badge className={getStatusColor(product.status, product.stock)}>{getStatusText(product.status, product.stock)}</Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{product.createdAt}</TableCell>
-                <TableCell>
+                <TableCell className="text-sm text-muted-foreground text-center">{product.createdAt}</TableCell>
+                <TableCell className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
