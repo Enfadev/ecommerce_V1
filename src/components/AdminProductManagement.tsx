@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, ArrowUpDown, Download } from "lucide-react";
+import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, ArrowUpDown, Download, Layout } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -16,13 +16,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 interface Product {
   id: number;
   name: string;
-  price: number;
-  category: string;
-  stock: number;
-  status: string;
-  image: string;
   description?: string;
+  price: number;
+  imageUrl?: string;
+  stock?: number;
+  status?: string;
+  sku?: string;
+  brand?: string;
+  slug?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  hargaDiskon?: number;
+  promoExpired?: string;
+  category?: string;
   createdAt?: string;
+  updatedAt?: string;
+  gallery?: string[];
 }
 
 interface ProductFormData {
@@ -34,6 +43,36 @@ interface ProductFormData {
 }
 
 export default function AdminProductManagement() {
+  // Daftar semua field produk yang bisa ditampilkan
+  const allColumns = [
+    { key: "imageUrl", label: "Image" },
+    { key: "name", label: "Name" },
+    { key: "description", label: "Description" },
+    { key: "category", label: "Category" },
+    { key: "price", label: "Price" },
+    { key: "stock", label: "Stock" },
+    { key: "status", label: "Status" },
+    { key: "sku", label: "SKU" },
+    { key: "brand", label: "Brand" },
+    { key: "slug", label: "Slug" },
+    { key: "metaTitle", label: "Meta Title" },
+    { key: "metaDescription", label: "Meta Description" },
+    { key: "hargaDiskon", label: "Discount Price" },
+    { key: "promoExpired", label: "Promo Expired" },
+    { key: "gallery", label: "Gallery" },
+    { key: "createdAt", label: "Created At" },
+    { key: "updatedAt", label: "Updated At" },
+  ];
+
+  // State untuk kolom yang ditampilkan
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumns.map(col => col.key));
+
+  // Handler untuk toggle kolom
+  const handleToggleColumn = (key: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(key) ? prev.filter((col) => col !== key) : [...prev, key]
+    );
+  };
   const [products, setProducts] = useState<Product[]>([]);
   
   useEffect(() => {
@@ -42,20 +81,7 @@ export default function AdminProductManagement() {
         const res = await fetch("/api/product");
         if (res.ok) {
           const data = await res.json();
-      setProducts(data.map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        price: p.price,
-        image: p.imageUrl || "/placeholder-image.svg",
-        category: p.category?.name || p.category || "-",
-        stock: typeof p.stock === "number" ? p.stock : 0,
-        status: p.status || "-",
-        sku: p.sku || "-",
-        brand: p.brand || "-",
-        slug: p.slug || "-",
-        description: p.description || "",
-        createdAt: p.createdAt ? new Date(p.createdAt).toLocaleDateString("en-US") : "-",
-      })));
+          setProducts(data);
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -350,34 +376,48 @@ export default function AdminProductManagement() {
         </div>
       </Card>
 
+      {/* Show/Hide Columns */}
+      <Card className="mb-4 p-4">
+        <div className="flex items-center gap-4">
+          {/* ...existing search and category UI... */}
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Layout className="w-4 h-4" />
+                  Columns: {visibleColumns.length}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
+                <DropdownMenuLabel>Show/Hide Columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {allColumns.map(col => (
+                  <DropdownMenuItem key={col.key} asChild>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.includes(col.key)}
+                        onChange={() => handleToggleColumn(col.key)}
+                      />
+                      {col.label}
+                    </label>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </Card>
+
       {/* Products Table */}
       <Card>
         <Table>
           <TableHeader>
             <TableRow>
             <TableHead className="w-12 text-center">#</TableHead>
-            <TableHead className="w-20 text-center align-middle">Image</TableHead>
-            <TableHead className="w-44 text-center align-middle">
-              <Button variant="ghost" onClick={() => handleSort("name")} className="gap-1 p-0 h-auto">
-                Product Name
-                <ArrowUpDown className="w-4 h-4" />
-              </Button>
-            </TableHead>
-            <TableHead className="w-32 text-center">Category</TableHead>
-            <TableHead className="w-24 text-center">
-              <Button variant="ghost" onClick={() => handleSort("price")} className="gap-1 p-0 h-auto">
-                Price
-                <ArrowUpDown className="w-4 h-4" />
-              </Button>
-            </TableHead>
-            <TableHead className="w-20 text-center">
-              <Button variant="ghost" onClick={() => handleSort("stock")} className="gap-1 p-0 h-auto">
-                Stock
-                <ArrowUpDown className="w-4 h-4" />
-              </Button>
-            </TableHead>
-            <TableHead className="w-24 text-center">Status</TableHead>
-            <TableHead className="w-28 text-center">Date</TableHead>
+            {allColumns.map(col => visibleColumns.includes(col.key) && (
+              <TableHead key={col.key} className="text-center">{col.label}</TableHead>
+            ))}
             <TableHead className="w-16 text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -385,41 +425,21 @@ export default function AdminProductManagement() {
             {filteredProducts.map((product, index) => (
               <TableRow key={product.id}>
                 <TableCell className="text-center">{index + 1}</TableCell>
-                <TableCell className="text-center align-middle">
-                  <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden relative mx-auto">
-                    {product.image && product.image !== "/placeholder-image.svg" ? (
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                        sizes="48px"
-                        onError={() => {
-                          // Fallback handled by Next.js automatically
-                        }}
-                      />
-                    ) : (
-                      <Package className="w-6 h-6 text-muted-foreground" />
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="text-center align-middle">
-                  <div className="inline-block text-left">
-                    <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">ID: {product.id}</p>
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge variant="outline">{product.category}</Badge>
-                </TableCell>
-                <TableCell className="font-medium text-center">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
-                <TableCell className="text-center">
-                  <span className="font-mono">{product.stock}</span>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge className={getStatusColor(product.status, product.stock)}>{getStatusText(product.status, product.stock)}</Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground text-center">{product.createdAt}</TableCell>
+                {allColumns.map(col => visibleColumns.includes(col.key) && (
+                  <TableCell key={col.key} className="text-center">
+                    {col.key === "imageUrl"
+                      ? (product.imageUrl ? <Image src={product.imageUrl} alt={product.name} width={48} height={48} className="object-cover rounded" /> : <Package className="w-6 h-6 text-muted-foreground" />)
+                      : col.key === "gallery"
+                        ? (product.gallery && product.gallery.length > 0 ? (
+                            <div className="flex gap-1 flex-wrap justify-center">
+                              {product.gallery.map((url, idx) => (
+                                <Image key={idx} src={url} alt={`Gallery ${idx + 1}`} width={32} height={32} className="object-cover rounded" />
+                              ))}
+                            </div>
+                          ) : "-")
+                        : (product[col.key as keyof Product] ?? "-")}
+                  </TableCell>
+                ))}
                 <TableCell className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
