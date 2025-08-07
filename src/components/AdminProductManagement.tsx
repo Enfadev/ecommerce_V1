@@ -400,50 +400,6 @@ export default function AdminProductManagement() {
         </div>
       </Card>
 
-      {/* Show/Hide Columns */}
-      <Card className="mb-4 p-4">
-        <div className="flex items-center gap-4">
-          {/* Search input */}
-          <Input
-            type="text"
-            placeholder="Search products..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="max-w-lg"
-          />
-          {/* Columns button di antara search dan category */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Layout className="w-4 h-4" />
-                Columns: {visibleColumns.length}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
-              <DropdownMenuLabel>Show/Hide Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {allColumns.map(col => (
-                <DropdownMenuItem key={col.key} asChild>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={visibleColumns.includes(col.key)}
-                      onChange={() => handleToggleColumn(col.key)}
-                    />
-                    {col.label}
-                  </label>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {/* Category button */}
-          <Button variant="outline" className="flex items-center gap-2">
-            <Filter className="w-4 h-4" />
-            Category: {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
-          </Button>
-        </div>
-      </Card>
-
       {/* Products Table */}
       <Card>
         <Table>
