@@ -79,7 +79,7 @@ export async function PUT(req: Request) {
       slug,
       metaTitle,
       metaDescription,
-      hargaDiskon,
+      discountPrice,
       promoExpired,
       gallery
     } = await req.json();
@@ -101,7 +101,7 @@ export async function PUT(req: Request) {
         slug,
         metaTitle,
         metaDescription,
-        hargaDiskon: hargaDiskon === undefined || hargaDiskon === null || hargaDiskon === '' ? null : parseFloat(hargaDiskon),
+        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === '' ? null : parseFloat(discountPrice),
         promoExpired,
         gallery,
       },
@@ -114,7 +114,7 @@ export async function PUT(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { name, description, price, imageUrl } = await req.json();
+    const { name, description, price, imageUrl, discountPrice } = await req.json();
     if (!name || !price) {
       return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
     }
@@ -124,7 +124,7 @@ export async function POST(req: Request) {
         description,
         price: parseFloat(price),
         imageUrl,
-        hargaDiskon: hargaDiskon === undefined || hargaDiskon === null || hargaDiskon === '' ? null : parseFloat(hargaDiskon),
+        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === '' ? null : parseFloat(discountPrice),
       },
     });
     return NextResponse.json(product);
