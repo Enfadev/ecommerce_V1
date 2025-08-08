@@ -43,6 +43,7 @@ export async function GET(req: Request) {
         price: p.price,
         imageUrl: p.imageUrl,
         brand: p.brand,
+        category: p.category, // pastikan field category ada di schema
         categoryId: p.categoryId,
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,
@@ -57,7 +58,27 @@ export async function GET(req: Request) {
       };
       return NextResponse.json(result);
     } else {
-      const products = await prisma.product.findMany();
+      // Filtering
+      const category = searchParams.get('category');
+      const price = searchParams.get('price');
+      const q = searchParams.get('q');
+      let where: any = {};
+      if (category && category !== 'All') {
+        where.category = category;
+      }
+      if (q) {
+        where.name = { contains: q, mode: 'insensitive' };
+      }
+      if (price && price !== 'all') {
+        if (price === 'lt200') {
+          where.price = { lt: 200000 };
+        } else if (price === '200-500') {
+          where.price = { gte: 200000, lte: 500000 };
+        } else if (price === 'gt500') {
+          where.price = { gt: 500000 };
+        }
+      }
+      const products = await prisma.product.findMany({ where, orderBy: { id: 'desc' } });
       const result = products.map((p) => ({
         id: p.id,
         name: p.name,
@@ -65,6 +86,7 @@ export async function GET(req: Request) {
         price: p.price,
         imageUrl: p.imageUrl,
         brand: p.brand,
+        category: p.category,
         categoryId: p.categoryId,
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,

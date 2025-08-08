@@ -1,21 +1,53 @@
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { useMemo } from "react";
 
-const categories = ["All", "Fashion", "Electronics"];
-const priceRanges = [
-  { label: "All", value: "all" },
-  { label: "< Rp200,000", value: "lt200" },
-  { label: "Rp200,000 - Rp500,000", value: "200-500" },
-  { label: "> Rp500,000", value: "gt500" },
-];
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function ProductFilter() {
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
   const selectedCategory = searchParams.get("category") || "All";
   const selectedPrice = searchParams.get("price") || "all";
+
+  const [categories, setCategories] = useState<string[]>(["All"]);
+  const [priceRanges, setPriceRanges] = useState<Array<{ label: string; value: string }>>([
+    { label: "All", value: "all" },
+  ]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchOptions() {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/product/filter-options");
+        const data = await res.json();
+        // Kategori
+        setCategories(["All", ...data.categories.filter((c: string) => !!c)]);
+        // Rentang harga
+        setPriceRanges(
+          data.priceRanges.map((r: any, idx: number) => ({
+            label: r.label,
+            value:
+              idx === 0
+                ? "all"
+                : idx === 1
+                ? "lt200"
+                : idx === 2
+                ? "200-500"
+                : "gt500",
+          }))
+        );
+      } catch (e) {
+        // fallback jika error
+        setCategories(["All"]);
+        setPriceRanges([{ label: "All", value: "all" }]);
+      }
+      setLoading(false);
+    }
+    fetchOptions();
+  }, []);
 
   function setParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -35,18 +67,22 @@ export function ProductFilter() {
       <div className="space-y-3">
         <span className="text-sm font-medium text-muted-foreground">Category:</span>
         <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`px-4 py-2 rounded-full text-sm border-2 transition-all hover:scale-105 ${
-                selectedCategory === cat ? "bg-primary text-primary-foreground border-primary shadow-lg" : "bg-background text-foreground border-muted-foreground/20 hover:border-primary/50"
-              }`}
-              onClick={() => setParam("category", cat)}
-              type="button"
-            >
-              {cat}
-            </button>
-          ))}
+          {loading ? (
+            <span className="text-muted-foreground">Loading...</span>
+          ) : (
+            categories.map((cat) => (
+              <button
+                key={cat}
+                className={`px-4 py-2 rounded-full text-sm border-2 transition-all hover:scale-105 ${
+                  selectedCategory === cat ? "bg-primary text-primary-foreground border-primary shadow-lg" : "bg-background text-foreground border-muted-foreground/20 hover:border-primary/50"
+                }`}
+                onClick={() => setParam("category", cat)}
+                type="button"
+              >
+                {cat}
+              </button>
+            ))
+          )}
         </div>
       </div>
 
@@ -54,18 +90,22 @@ export function ProductFilter() {
       <div className="space-y-3">
         <span className="text-sm font-medium text-muted-foreground">Price Range:</span>
         <div className="flex flex-wrap gap-2">
-          {priceRanges.map((range) => (
-            <button
-              key={range.value}
-              className={`px-4 py-2 rounded-full text-sm border-2 transition-all hover:scale-105 ${
-                selectedPrice === range.value ? "bg-primary text-primary-foreground border-primary shadow-lg" : "bg-background text-foreground border-muted-foreground/20 hover:border-primary/50"
-              }`}
-              onClick={() => setParam("price", range.value)}
-              type="button"
-            >
-              {range.label}
-            </button>
-          ))}
+          {loading ? (
+            <span className="text-muted-foreground">Loading...</span>
+          ) : (
+            priceRanges.map((range) => (
+              <button
+                key={range.value}
+                className={`px-4 py-2 rounded-full text-sm border-2 transition-all hover:scale-105 ${
+                  selectedPrice === range.value ? "bg-primary text-primary-foreground border-primary shadow-lg" : "bg-background text-foreground border-muted-foreground/20 hover:border-primary/50"
+                }`}
+                onClick={() => setParam("price", range.value)}
+                type="button"
+              >
+                {range.label}
+              </button>
+            ))
+          )}
         </div>
       </div>
 
