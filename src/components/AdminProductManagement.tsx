@@ -65,7 +65,18 @@ export default function AdminProductManagement() {
   ];
 
   // State untuk kolom yang ditampilkan
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(allColumns.map(col => col.key));
+  // Only show important columns by default
+  const defaultImportantColumns = [
+    "imageUrl",
+    "name",
+    "category",
+    "price",
+    "stock",
+    "status",
+    "sku",
+    "brand"
+  ];
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultImportantColumns);
 
   // Handler untuk toggle kolom
   const handleToggleColumn = (key: string) => {
