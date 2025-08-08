@@ -77,7 +77,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
 
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-2xl font-bold text-primary">Rp {product.price.toLocaleString("id-ID")}</p>
+                  <p className="text-2xl font-bold text-primary">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>
                   <p className="text-sm text-muted-foreground">Stok: {product.stock}</p>
                 </div>
 
@@ -193,7 +193,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
 
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-lg font-bold text-primary">Rp {product.price.toLocaleString("id-ID")}</p>
+                <p className="text-lg font-bold text-primary">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>
                 <p className="text-xs text-muted-foreground">Stok: 50</p>
               </div>
             </div>

@@ -30,13 +30,38 @@ async function main() {
     },
   });
 
+
+  // Seed categories
+  const categoryNames = ['Electronics', 'Fashion', 'Home', 'Sports', 'Books'];
+  const categories = [];
+  for (const name of categoryNames) {
+    const category = await prisma.category.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+    categories.push(category);
+  }
+
+  // Seed products with all fields
   const products = [];
   for (let i = 1; i <= 30; i++) {
+    const category = categories[i % categories.length];
     products.push({
       name: `Product ${i}`,
       description: `Description for product ${i}`,
       price: 100 + i * 10,
       imageUrl: `/uploads/product${i}.jpg`,
+      brand: `Brand ${((i % 5) + 1)}`,
+      categoryId: category.id,
+      hargaDiskon: i % 2 === 0 ? (80 + i * 8) : null,
+      metaDescription: `Meta description for product ${i}`,
+      metaTitle: `Meta title for product ${i}`,
+      promoExpired: i % 3 === 0 ? new Date(Date.now() + 86400000 * i) : null,
+      sku: `SKU${1000 + i}`,
+      slug: `product-${i}`,
+      stock: 10 + i,
+      status: 'active',
     });
   }
 
