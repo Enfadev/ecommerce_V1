@@ -2,13 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-  // Ambil kategori dari tabel Category
   const categories = await prisma.category.findMany({
     select: { name: true },
     orderBy: { name: 'asc' },
   });
 
-  // Ambil rentang harga minimum dan maksimum
   const prices = await prisma.product.findMany({
     select: { price: true },
   });
@@ -16,17 +14,18 @@ export async function GET() {
   const minPrice = priceValues.length > 0 ? Math.min(...priceValues) : 0;
   const maxPrice = priceValues.length > 0 ? Math.max(...priceValues) : 0;
 
-  // Buat rentang harga dinamis
   let priceRanges = [{ label: 'All', min: null, max: null }];
   if (minPrice !== maxPrice && priceValues.length > 0) {
-    // Bagi menjadi 3 interval
     const step = Math.ceil((maxPrice - minPrice) / 3);
     const lowMax = minPrice + step;
     const midMax = minPrice + step * 2;
+    const round50 = (num: number) => Math.round(num / 50) * 50;
+    const lowMax50 = round50(lowMax);
+    const midMax50 = round50(midMax);
     priceRanges = [
-      { label: `< $${lowMax}`, min: null, max: lowMax },
-      { label: `$${lowMax} - $${midMax}`, min: lowMax, max: midMax },
-      { label: `> $${midMax}`, min: midMax, max: null },
+      { label: `< $${lowMax50}`, min: null, max: lowMax50 },
+      { label: `$${lowMax50} - $${midMax50}`, min: lowMax50, max: midMax50 },
+      { label: `> $${midMax50}`, min: midMax50, max: null },
     ];
     priceRanges.unshift({ label: 'All', min: null, max: null });
   }
