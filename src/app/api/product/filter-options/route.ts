@@ -16,13 +16,20 @@ export async function GET() {
   const minPrice = priceValues.length > 0 ? Math.min(...priceValues) : 0;
   const maxPrice = priceValues.length > 0 ? Math.max(...priceValues) : 0;
 
-  // Buat rentang harga (bisa disesuaikan)
-  const priceRanges = [
-    { label: 'All', min: null, max: null },
-    { label: '< $200', min: null, max: 200 },
-    { label: '$200 - $500', min: 200, max: 500 },
-    { label: '> $500', min: 500, max: null },
-  ];
+  // Buat rentang harga dinamis
+  let priceRanges = [{ label: 'All', min: null, max: null }];
+  if (minPrice !== maxPrice && priceValues.length > 0) {
+    // Bagi menjadi 3 interval
+    const step = Math.ceil((maxPrice - minPrice) / 3);
+    const lowMax = minPrice + step;
+    const midMax = minPrice + step * 2;
+    priceRanges = [
+      { label: `< $${lowMax}`, min: null, max: lowMax },
+      { label: `$${lowMax} - $${midMax}`, min: lowMax, max: midMax },
+      { label: `> $${midMax}`, min: midMax, max: null },
+    ];
+    priceRanges.unshift({ label: 'All', min: null, max: null });
+  }
 
   return NextResponse.json({
     categories: categories.map(c => c.name),
