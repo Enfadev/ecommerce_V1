@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-  // Ambil kategori unik dari produk
-  const categories = await prisma.product.findMany({
-    select: { category: true },
-    distinct: ['category'],
+  // Ambil kategori dari tabel Category
+  const categories = await prisma.category.findMany({
+    select: { name: true },
+    orderBy: { name: 'asc' },
   });
 
   // Ambil rentang harga minimum dan maksimum
@@ -13,19 +13,19 @@ export async function GET() {
     select: { price: true },
   });
   const priceValues = prices.map(p => p.price);
-  const minPrice = Math.min(...priceValues);
-  const maxPrice = Math.max(...priceValues);
+  const minPrice = priceValues.length > 0 ? Math.min(...priceValues) : 0;
+  const maxPrice = priceValues.length > 0 ? Math.max(...priceValues) : 0;
 
   // Buat rentang harga (bisa disesuaikan)
   const priceRanges = [
     { label: 'All', min: null, max: null },
-    { label: '< Rp200,000', min: null, max: 200000 },
-    { label: 'Rp200,000 - Rp500,000', min: 200000, max: 500000 },
-    { label: '> Rp500,000', min: 500000, max: null },
+    { label: '< $200', min: null, max: 200 },
+    { label: '$200 - $500', min: 200, max: 500 },
+    { label: '> $500', min: 500, max: null },
   ];
 
   return NextResponse.json({
-    categories: categories.map(c => c.category),
+    categories: categories.map(c => c.name),
     priceRanges,
     minPrice,
     maxPrice,
