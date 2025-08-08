@@ -30,7 +30,21 @@ async function main() {
     },
   });
 
-  console.log('Seeder selesai:', { admin, user });
+  const products = [];
+  for (let i = 1; i <= 30; i++) {
+    products.push({
+      name: `Product ${i}`,
+      description: `Description for product ${i}`,
+      price: 100 + i * 10,
+      imageUrl: `/uploads/product${i}.jpg`,
+    });
+  }
+
+  for (const data of products) {
+    await prisma.product.create({ data });
+  }
+
+  console.log('Seeding completed:', { admin, user, productsCount: products.length });
 }
 
 main()
