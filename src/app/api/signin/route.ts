@@ -6,23 +6,23 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
     if (!email || !password) {
-      return NextResponse.json({ error: 'Email dan password wajib diisi' }, { status: 400 });
+      return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return NextResponse.json({ error: 'Email tidak ditemukan' }, { status: 401 });
+      return NextResponse.json({ error: 'Email not found' }, { status: 401 });
     }
 
     const valid = await compare(password, user.password);
     if (!valid) {
-      return NextResponse.json({ error: 'Password salah' }, { status: 401 });
+      return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
     }
 
     
     const { password: _, ...userData } = user;
     return NextResponse.json(userData);
   } catch (error) {
-    return NextResponse.json({ error: 'Login gagal' }, { status: 500 });
+    return NextResponse.json({ error: 'Login failed' }, { status: 500 });
   }
 }

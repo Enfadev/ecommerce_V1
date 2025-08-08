@@ -28,6 +28,6 @@ export async function POST(req: Request) {
     const url = `/uploads/${filename}`;
     return NextResponse.json({ url });
   } catch (error) {
-    return NextResponse.json({ error: 'Upload gagal' }, { status: 500 });
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
 }

@@ -15,6 +15,6 @@ export async function GET() {
     });
     return NextResponse.json(users);
   } catch {
-    return NextResponse.json({ error: 'Gagal mengambil data user' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch user data' }, { status: 500 });
   }
 }

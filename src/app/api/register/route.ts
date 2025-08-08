@@ -6,13 +6,13 @@ export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
     if (!name || !email || !password) {
-      return NextResponse.json({ error: 'Data tidak lengkap' }, { status: 400 });
+      return NextResponse.json({ error: 'Incomplete data' }, { status: 400 });
     }
 
     
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: 'Email sudah terdaftar' }, { status: 409 });
+      return NextResponse.json({ error: 'Email is already registered' }, { status: 409 });
     }
 
     
@@ -37,6 +37,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(user);
   } catch (error) {
-    return NextResponse.json({ error: 'Registrasi gagal' }, { status: 500 });
+    return NextResponse.json({ error: 'Registration failed' }, { status: 500 });
   }
 }
