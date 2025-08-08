@@ -54,7 +54,7 @@ async function main() {
       imageUrl: `/uploads/product${i}.jpg`,
       brand: `Brand ${((i % 5) + 1)}`,
       categoryId: category.id,
-      hargaDiskon: i % 2 === 0 ? (80 + i * 8) : null,
+      discountPrice: i % 2 === 0 ? (80 + i * 8) : null,
       metaDescription: `Meta description for product ${i}`,
       metaTitle: `Meta title for product ${i}`,
       promoExpired: i % 3 === 0 ? new Date(Date.now() + 86400000 * i) : null,

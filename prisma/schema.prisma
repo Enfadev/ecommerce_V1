@@ -24,7 +24,7 @@ model Product {
   slug           String?  @unique
   metaTitle      String?
   metaDescription String?
-  hargaDiskon    Float?
+  discountPrice  Float?
   promoExpired   DateTime?
   categoryId     Int?
   category       Category? @relation(fields: [categoryId], references: [id])
