@@ -69,6 +69,83 @@ async function main() {
     await prisma.product.create({ data });
   }
 
+  // Seed ContactPage
+  await prisma.contactPage.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      heroTitle: "We Are Ready to Help You",
+      heroSubtitle: "Contact Us",
+      heroDescription: "Have a question or need assistance? Our customer service team is ready to help you with the best service and quick response.",
+      contactMethods: [
+        {
+          icon: "Phone",
+          title: "Phone",
+          subtitle: "Monday - Friday, 08:00 - 17:00",
+          value: "+62 21 1234 5678",
+          link: "tel:+622112345678",
+          bgColor: "bg-blue-500",
+        },
+        {
+          icon: "MessageSquare",
+          title: "WhatsApp",
+          subtitle: "24/7 Fast Response",
+          value: "+62 812 3456 7890",
+          link: "https://wa.me/6281234567890",
+          bgColor: "bg-green-500",
+        },
+        {
+          icon: "Mail",
+          title: "Email",
+          subtitle: "Response within 24 hours",
+          value: "support@shopzone.com",
+          link: "mailto:support@shopzone.com",
+          bgColor: "bg-purple-500",
+        },
+        {
+          icon: "Headphones",
+          title: "Live Chat",
+          subtitle: "Monday - Saturday, 08:00 - 22:00",
+          value: "Live Chat",
+          link: "#",
+          bgColor: "bg-orange-500",
+        },
+      ],
+      officeLocations: [
+        {
+          city: "Jakarta",
+          address: "Jl. Sudirman No. 123, Jakarta Pusat",
+          phone: "+62 21 1234 5678",
+          isMain: true,
+        },
+        {
+          city: "Surabaya",
+          address: "Jl. Ahmad Yani No. 456, Surabaya",
+          phone: "+62 31 8765 4321",
+          isMain: false,
+        },
+        {
+          city: "Bandung",
+          address: "Jl. Asia Afrika No. 789, Bandung",
+          phone: "+62 22 9876 5432",
+          isMain: false,
+        },
+      ],
+      businessHours: [
+        { day: "Monday - Friday", open: "08:00", close: "17:00" },
+        { day: "Saturday", open: "09:00", close: "15:00" },
+        { day: "Sunday", open: null, close: null, note: "Closed" },
+        { day: "WhatsApp Support", open: "00:00", close: "23:59", note: "24/7" },
+      ],
+      socialMedia: [
+        { icon: "Facebook", name: "Facebook", link: "#", color: "text-blue-600" },
+        { icon: "Instagram", name: "Instagram", link: "#", color: "text-pink-600" },
+        { icon: "Twitter", name: "Twitter", link: "#", color: "text-blue-400" },
+        { icon: "Youtube", name: "YouTube", link: "#", color: "text-red-600" },
+      ],
+    },
+  });
+
   console.log('Seeding completed:', { admin, user, productsCount: products.length });
 }
 

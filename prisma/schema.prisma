@@ -1,5 +1,15 @@
+model ContactPage {
+  id             Int      @id @default(autoincrement())
+  heroTitle      String
+  heroSubtitle   String
+  heroDescription String
+  contactMethods Json
+  officeLocations Json
+  businessHours  Json
+  socialMedia    Json
+  updatedAt      DateTime @updatedAt
+}
 // Prisma schema for MySQL
-// Tambahkan model sesuai kebutuhan project
 
 generator client {
   provider = "prisma-client-js"
