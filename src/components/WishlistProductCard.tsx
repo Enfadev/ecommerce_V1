@@ -49,7 +49,7 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format`;
+                    target.src = `/placeholder-image.svg`;
                   }}
                   loading="lazy"
                 />
@@ -162,7 +162,7 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
               className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = `https://images.unsplash.com/photo-1560472354-b43ff0c44a43?w=400&h=400&fit=crop&auto=format`;
+                target.src = `/placeholder-image.svg`;
               }}
               loading="lazy"
             />

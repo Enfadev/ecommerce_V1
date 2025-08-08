@@ -18,7 +18,7 @@ export default async function Home() {
     id: p.id,
     name: p.name,
     price: p.price,
-    image: p.imageUrl || "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format",
+    image: p.imageUrl || "/placeholder-image.svg",
     category: "General",
     stock: 50,
   }));
