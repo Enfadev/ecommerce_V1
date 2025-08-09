@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface AdminSidebarProps {
@@ -17,6 +17,7 @@ interface AdminSidebarProps {
 const menuItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, badge: null, href: "/admin" },
   { id: "products", label: "Products", icon: Package, badge: null, href: "/admin/product" },
+  { id: "page-management", label: "Page Management", icon: FileText, badge: null, href: "/admin/page-management" },
   { id: "orders", label: "Orders", icon: ShoppingCart, badge: "12", href: "/admin/orders" },
   { id: "customers", label: "Customers", icon: Users, badge: null, href: "/admin/customers" },
   { id: "inventory", label: "Inventory", icon: Package2, badge: null, href: "/admin/inventory" },
