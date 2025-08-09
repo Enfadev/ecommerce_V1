@@ -75,9 +75,18 @@ export default function ProductPage() {
 
     if (price !== "all") {
       filtered = filtered.filter((p) => {
-        if (price === "lt200") return p.price < 200000;
-        if (price === "200-500") return p.price >= 200000 && p.price <= 500000;
-        if (price === "gt500") return p.price > 500000;
+        if (price.startsWith("lt")) {
+          const max = Number(price.replace("lt", ""));
+          return p.price < max;
+        }
+        if (price.startsWith("gt")) {
+          const min = Number(price.replace("gt", ""));
+          return p.price > min;
+        }
+        if (price.includes("-")) {
+          const [min, max] = price.split("-").map(Number);
+          return p.price >= min && p.price <= max;
+        }
         return true;
       });
     }

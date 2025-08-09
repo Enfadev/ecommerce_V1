@@ -70,12 +70,16 @@ export async function GET(req: Request) {
         where.name = { contains: q, mode: 'insensitive' };
       }
       if (price && price !== 'all') {
-        if (price === 'lt200') {
-          where.price = { lt: 200000 };
-        } else if (price === '200-500') {
-          where.price = { gte: 200000, lte: 500000 };
-        } else if (price === 'gt500') {
-          where.price = { gt: 500000 };
+        // price value format: lt{max}, {min}-{max}, gt{min}
+        if (price.startsWith('lt')) {
+          const max = Number(price.replace('lt', ''));
+          if (!isNaN(max)) where.price = { lt: max };
+        } else if (price.includes('-')) {
+          const [min, max] = price.split('-').map(Number);
+          if (!isNaN(min) && !isNaN(max)) where.price = { gte: min, lte: max };
+        } else if (price.startsWith('gt')) {
+          const min = Number(price.replace('gt', ''));
+          if (!isNaN(min)) where.price = { gt: min };
         }
       }
       const products = await prisma.product.findMany({

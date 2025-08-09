@@ -27,16 +27,16 @@ export function ProductFilter() {
         setCategories(["All", ...data.categories.filter((c: string) => !!c)]);
         // Rentang harga
         setPriceRanges(
-          data.priceRanges.map((r: any, idx: number) => ({
+          data.priceRanges.map((r: any) => ({
             label: r.label,
             value:
-              idx === 0
+              r.min === null && r.max === null
                 ? "all"
-                : idx === 1
-                ? "lt200"
-                : idx === 2
-                ? "200-500"
-                : "gt500",
+                : r.min === null
+                ? `lt${r.max}`
+                : r.max === null
+                ? `gt${r.min}`
+                : `${r.min}-${r.max}`,
           }))
         );
       } catch (e) {
