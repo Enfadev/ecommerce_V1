@@ -43,7 +43,7 @@ export async function GET(req: Request) {
         price: p.price,
         imageUrl: p.imageUrl,
         brand: p.brand,
-        category: p.category, // pastikan field category ada di schema
+        category: p.category, 
         categoryId: p.categoryId,
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,
@@ -78,7 +78,11 @@ export async function GET(req: Request) {
           where.price = { gt: 500000 };
         }
       }
-      const products = await prisma.product.findMany({ where, orderBy: { id: 'desc' } });
+      const products = await prisma.product.findMany({
+        where,
+        orderBy: { id: 'desc' },
+        include: { category: true }, 
+      });
       const result = products.map((p) => ({
         id: p.id,
         name: p.name,
@@ -86,7 +90,7 @@ export async function GET(req: Request) {
         price: p.price,
         imageUrl: p.imageUrl,
         brand: p.brand,
-        category: p.category,
+        category: p.category?.name || null, 
         categoryId: p.categoryId,
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,

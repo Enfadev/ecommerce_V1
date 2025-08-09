@@ -43,13 +43,13 @@ export default function ProductPage() {
       .then((data) => {
         if (Array.isArray(data)) {
           // Map API data to match ProductCard interface
-          const mappedProducts: Product[] = data.map((product: APIProduct) => ({
+          const mappedProducts: Product[] = data.map((product: any) => ({
             id: product.id,
             name: product.name,
             price: product.price,
             image: product.imageUrl || "/placeholder-image.svg",
-            category: "General", // Default category since it's not in DB
-            stock: Math.floor(Math.random() * 50) + 1, // Random stock for demo
+            category: product.category || "General",
+            stock: product.stock ?? Math.floor(Math.random() * 50) + 1,
           }));
           setProducts(mappedProducts);
           setError("");
@@ -68,7 +68,9 @@ export default function ProductPage() {
     let filtered = products.filter((p) => p.name.toLowerCase().includes(localSearch.toLowerCase()));
 
     if (category !== "All") {
-      filtered = filtered.filter((p) => p.category === category);
+      filtered = filtered.filter((p) =>
+        p.category && p.category.toLowerCase() === category.toLowerCase()
+      );
     }
 
     if (price !== "all") {
