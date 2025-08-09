@@ -132,10 +132,9 @@ async function main() {
         },
       ],
       businessHours: [
-        { day: "Monday - Friday", open: "08:00", close: "17:00" },
-        { day: "Saturday", open: "09:00", close: "15:00" },
-        { day: "Sunday", open: null, close: null, note: "Closed" },
-        { day: "WhatsApp Support", open: "00:00", close: "23:59", note: "24/7" },
+        { day: "Monday - Friday", hours: "08:00 - 17:00", closed: false },
+        { day: "Saturday", hours: "09:00 - 15:00", closed: false },
+        { day: "Sunday", hours: "", closed: true },
       ],
       socialMedia: [
         { icon: "Facebook", name: "Facebook", link: "#", color: "text-blue-600" },

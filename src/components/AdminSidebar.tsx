@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Settings, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface AdminSidebarProps {
