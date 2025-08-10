@@ -92,8 +92,6 @@ export default function AdminProductPage() {
       <AdminSidebar 
         activeSection={activeSection} 
         onSectionChange={setActiveSection}
-        activeSubTab={activeSubTab}
-        onSubTabChange={setActiveSubTab}
       />
 
       {/* Main Content */}

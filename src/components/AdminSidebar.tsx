@@ -6,21 +6,13 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, ChevronDown, ChevronUp, Home, Info, Calendar, MessageCircle } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LucideIcon } from "lucide-react";
 
 interface AdminSidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
-  activeSubTab?: string;
-  onSubTabChange?: (subTab: string) => void;
-}
-
-interface SubMenuItem {
-  id: string;
-  label: string;
-  icon: LucideIcon;
 }
 
 interface MenuItem {
@@ -28,7 +20,6 @@ interface MenuItem {
   label: string;
   icon: LucideIcon;
   badge?: string | null;
-  subItems?: SubMenuItem[];
 }
 
 const menuItems: MenuItem[] = [
@@ -38,42 +29,15 @@ const menuItems: MenuItem[] = [
   { id: "customers", label: "Customers", icon: Users, badge: null },
   { id: "inventory", label: "Inventory", icon: Package2, badge: null },
   { id: "analytics", label: "Analytics", icon: BarChart3, badge: null },
-  { 
-    id: "settings", 
-    label: "Settings", 
-    icon: Settings, 
-    badge: null,
-    subItems: [
-      { id: "general", label: "General Settings", icon: Settings },
-      { id: "pages", label: "Page Management", icon: Package },
-      { id: "home", label: "Edit Home Page", icon: Home },
-      { id: "about", label: "Edit About Page", icon: Info },
-      { id: "events", label: "Edit Events Page", icon: Calendar },
-      { id: "contact", label: "Edit Contact Page", icon: MessageCircle },
-    ]
-  },
+  { id: "settings", label: "Settings", icon: Settings, badge: null },
 ];
 
-export default function AdminSidebar({ activeSection, onSectionChange, activeSubTab, onSubTabChange }: AdminSidebarProps) {
+export default function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(["settings"]);
   const router = useRouter();
 
   const handleNavigation = (section: string) => {
     onSectionChange(section);
-  };
-
-  const handleSubTabNavigation = (subTab: string) => {
-    onSectionChange("settings");
-    onSubTabChange?.(subTab);
-  };
-
-  const toggleSubmenu = (menuId: string) => {
-    setExpandedMenus(prev => 
-      prev.includes(menuId) 
-        ? prev.filter(id => id !== menuId)
-        : [...prev, menuId]
-    );
   };
 
   return (
@@ -111,78 +75,30 @@ export default function AdminSidebar({ activeSection, onSectionChange, activeSub
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeSection === item.id;
-          const isExpanded = expandedMenus.includes(item.id);
-          const hasSubItems = item.subItems && item.subItems.length > 0;
 
           return (
-            <div key={item.id}>
-              {/* Main Menu Item */}
-              <Button
-                variant={isActive ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start gap-3 h-10",
-                  isCollapsed && "px-2 justify-center",
-                  isActive && "bg-primary text-primary-foreground shadow-sm"
-                )}
-                onClick={() => {
-                  if (hasSubItems && !isCollapsed) {
-                    toggleSubmenu(item.id);
-                    if (!isExpanded) {
-                      handleNavigation(item.id);
-                    }
-                  } else {
-                    handleNavigation(item.id);
-                  }
-                }}
-              >
-                <Icon className="w-5 h-5 flex-shrink-0" />
-                {!isCollapsed && (
-                  <>
-                    <span className="flex-1 text-left">{item.label}</span>
-                    {item.badge && (
-                      <Badge variant={isActive ? "secondary" : "outline"} className="h-5 px-1.5 text-xs">
-                        {item.badge}
-                      </Badge>
-                    )}
-                    {hasSubItems && (
-                      <div className="ml-auto">
-                        {isExpanded ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-              </Button>
-
-              {/* Submenu Items */}
-              {hasSubItems && isExpanded && !isCollapsed && (
-                <div className="ml-6 mt-2 space-y-1">
-                  {item.subItems!.map((subItem) => {
-                    const SubIcon = subItem.icon;
-                    const isSubActive = activeSection === "settings" && activeSubTab === subItem.id;
-
-                    return (
-                      <Button
-                        key={subItem.id}
-                        variant={isSubActive ? "default" : "ghost"}
-                        size="sm"
-                        className={cn(
-                          "w-full justify-start gap-2 h-8 text-sm",
-                          isSubActive && "bg-primary text-primary-foreground shadow-sm"
-                        )}
-                        onClick={() => handleSubTabNavigation(subItem.id)}
-                      >
-                        <SubIcon className="w-4 h-4 flex-shrink-0" />
-                        <span className="flex-1 text-left">{subItem.label}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
+            <Button
+              key={item.id}
+              variant={isActive ? "default" : "ghost"}
+              className={cn(
+                "w-full justify-start gap-3 h-10",
+                isCollapsed && "px-2 justify-center",
+                isActive && "bg-primary text-primary-foreground shadow-sm"
               )}
-            </div>
+              onClick={() => handleNavigation(item.id)}
+            >
+              <Icon className="w-5 h-5 flex-shrink-0" />
+              {!isCollapsed && (
+                <>
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {item.badge && (
+                    <Badge variant={isActive ? "secondary" : "outline"} className="h-5 px-1.5 text-xs">
+                      {item.badge}
+                    </Badge>
+                  )}
+                </>
+              )}
+            </Button>
           );
         })}
       </nav>
