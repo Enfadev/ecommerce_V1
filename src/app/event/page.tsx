@@ -2,67 +2,49 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Gift, Trophy, Users, Star, Clock, MapPin, ExternalLink, Camera, MessageSquare, Zap, Crown, Sparkles } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
-export default function Event() {
-  const activeEvents = [
-    {
-      id: 1,
-      title: "Mega Ramadan Sale",
-      description: "Up to 70% off on all product categories. Limited time promo until the end of the month!",
-      period: "April 1 - 30, 2025",
-      status: "Active",
-      type: "Sale",
-      icon: Crown,
-      prize: "Up to 70% Off",
-      participants: "15.2K",
-      bgGradient: "from-yellow-500 to-orange-500",
-    },
-    {
-      id: 2,
-      title: "Creative Photo Contest",
-      description: "Upload your most creative product photo and win exciting prizes! Show your creativity!",
-      period: "July 20 - 27, 2025",
-      status: "Ongoing",
-      type: "Contest",
-      icon: Camera,
-      prize: "$30 Voucher",
-      participants: "892",
-      bgGradient: "from-purple-500 to-pink-500",
-    },
-    {
-      id: 3,
-      title: "Flash Quiz with Prizes",
-      description: "Quick quiz every Sunday with instant prizes, no drawing!",
-      period: "Every Sunday",
-      status: "Regular",
-      type: "Quiz",
-      icon: Zap,
-      prize: "Various Prizes",
-      participants: "2.1K",
-      bgGradient: "from-blue-500 to-cyan-500",
-    },
-  ];
+async function getEventPageData() {
+  try {
+    const eventPage = await prisma.eventPage.findFirst();
+    return eventPage;
+  } catch (error) {
+    console.error("Error fetching event page data:", error);
+    return null;
+  }
+}
 
-  const upcomingEvents = [
-    {
-      id: 4,
-      title: "Review Competition",
-      description: "Write your best review and win attractive prizes every week",
-      period: "1 - 10 August 2025",
-      type: "Competition",
-      icon: MessageSquare,
-      prize: "Vouchers & Free Products",
-    },
-    {
-      id: 5,
-      title: "Brand Ambassador Hunt",
-      description: "Become a ShopZone brand ambassador and get exclusive benefits",
-      period: "15 August 2025",
-      type: "Recruitment",
-      icon: Star,
-      prize: "6-Month Contract",
-    },
-  ];
+export default async function Event() {
+  const eventPageData = await getEventPageData();
+
+  // Default fallback data
+  const defaultData = {
+    heroTitle: "Exciting Events & Promotions",
+    heroSubtitle: "Don't Miss Out!",
+    heroDescription: "Join our amazing events and take advantage of exclusive promotions, special discounts, and limited-time offers.",
+    activeEvents: [
+      {
+        title: "Mega Sale",
+        description: "Up to 70% off on all product categories. Limited time promo!",
+        status: "Active",
+        category: "sale",
+        featured: true
+      }
+    ],
+    upcomingEvents: [
+      {
+        title: "Tech Week 2024",
+        date: "2024-10-15",
+        description: "Latest gadgets and electronics at special prices"
+      }
+    ],
+    pastEvents: [],
+    eventCategories: []
+  };
+
+  const pageData = eventPageData || defaultData;
+  const activeEvents = pageData.activeEvents || defaultData.activeEvents;
+  const upcomingEvents = pageData.upcomingEvents || defaultData.upcomingEvents;
 
   const pastEvents = [
     {
@@ -96,9 +78,11 @@ export default function Event() {
               <Sparkles className="w-4 h-4" />
               Events & Giveaways
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Exciting Events & Amazing Prizes!</h1>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">
+              {pageData.heroTitle || "Exciting Events & Promotions"}
+            </h1>
             <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
-              Join various exciting events and win spectacular prizes every month. From photo contests to prize quizzes, there are plenty of chances to win!
+              {pageData.heroDescription || "Join our amazing events and take advantage of exclusive promotions, special discounts, and limited-time offers."}
             </p>
           </div>
         </div>
@@ -117,21 +101,21 @@ export default function Event() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activeEvents.map((event, index) => (
-              <Card key={event.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <Card key={event.id || index} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                 <CardContent className="p-0">
-                  <div className={`h-24 bg-gradient-to-r ${event.bgGradient} flex items-center justify-center relative`}>
-                    <event.icon className="w-12 h-12 text-white" />
+                  <div className={`h-24 bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center relative`}>
+                    <Trophy className="w-12 h-12 text-white" />
                     <Badge variant={event.status === "Active" ? "destructive" : "secondary"} className="absolute top-3 right-3">
-                      {event.status}
+                      {event.status || "Active"}
                     </Badge>
                   </div>
 
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="outline">{event.type}</Badge>
+                      <Badge variant="outline">{event.category || "Event"}</Badge>
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Users className="w-4 h-4" />
-                        {event.participants}
+                        {event.participants || "Many"}
                       </div>
                     </div>
 
@@ -141,11 +125,11 @@ export default function Event() {
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm">
                         <Calendar className="w-4 h-4 text-primary" />
-                        <span>{event.period}</span>
+                        <span>{event.period || event.date || "Ongoing"}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <Gift className="w-4 h-4 text-primary" />
-                        <span className="font-medium">{event.prize}</span>
+                        <span className="font-medium">{event.prize || "Amazing Prizes!"}</span>
                       </div>
                     </div>
 
@@ -171,22 +155,22 @@ export default function Event() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {upcomingEvents.map((event, index) => (
-              <Card key={event.id} className="p-6 hover:shadow-lg transition-shadow">
+              <Card key={event.id || index} className="p-6 hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <event.icon className="w-6 h-6 text-primary" />
+                      <Clock className="w-6 h-6 text-primary" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline">{event.type}</Badge>
-                        <span className="text-sm text-muted-foreground">{event.period}</span>
+                        <Badge variant="outline">{event.category || event.type || "Event"}</Badge>
+                        <span className="text-sm text-muted-foreground">{event.date || event.period || "Soon"}</span>
                       </div>
                       <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
                       <p className="text-sm text-muted-foreground mb-3">{event.description}</p>
                       <div className="flex items-center gap-2 text-sm">
                         <Gift className="w-4 h-4 text-primary" />
-                        <span className="font-medium">{event.prize}</span>
+                        <span className="font-medium">{event.prize || "Exciting Prizes!"}</span>
                       </div>
                     </div>
                   </div>

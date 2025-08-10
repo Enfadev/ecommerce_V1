@@ -5,13 +5,25 @@ import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import NextLink from "next/link";
-import { ArrowRight, Star, Truck, Shield, Headphones, Gift } from "lucide-react";
+import { ArrowRight, Star, Truck, Shield, Headphones, Gift, Users, Package, Globe, Calendar } from "lucide-react";
+
+  try {
+    const homePage = await prisma.homePage.findFirst();
+    return homePage;
+  } catch (error) {
+    console.error("Error fetching home page data:", error);
+    return null;
+  }
+}
+
 export default async function Home() {
   
   const dbProducts = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
     take: 8,
   });
+
+  const homePageData = await getHomePageData();
 
   
   const products = dbProducts.map((p) => ({
@@ -23,6 +35,37 @@ export default async function Home() {
     stock: 50,
   }));
 
+  // Default fallback data
+  const defaultData = {
+    heroTitle: "Welcome to Our Store",
+    heroSubtitle: "Quality Products",
+    heroDescription: "Discover amazing products at great prices",
+    heroSlides: [
+      {
+        title: "Flash Sale",
+        subtitle: "Up to 70% Off",
+        description: "Get the best products at the best prices. Limited time offer!",
+        image: "/hero1.jpg",
+        buttonText: "Shop Now",
+        buttonLink: "/products"
+      }
+    ],
+    features: [
+      { icon: "Truck", title: "Free Shipping", description: "Free shipping on orders over $50" },
+      { icon: "Shield", title: "Secure Payment", description: "100% secure payment processing" },
+      { icon: "Headphones", title: "24/7 Support", description: "Dedicated customer support" },
+      { icon: "Gift", title: "Special Offers", description: "Regular discounts and promotions" }
+    ],
+    statsData: [
+      { label: "Happy Customers", value: "10,000+", icon: "Users" },
+      { label: "Products", value: "5,000+", icon: "Package" },
+      { label: "Countries", value: "25+", icon: "Globe" },
+      { label: "Years", value: "5+", icon: "Calendar" }
+    ]
+  };
+
+  const pageData = homePageData || defaultData;
+
   return (
     <div className="min-h-screen bg-background">
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-12">
@@ -30,63 +73,29 @@ export default async function Home() {
         <section className="relative">
           <Carousel className="w-full">
             <CarouselContent>
-              <CarouselItem>
-                <Card className="border-0 overflow-hidden">
-                  <div className="relative h-64 md:h-80 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-between px-8 md:px-16">
-                    <div className="text-white space-y-4 z-10">
-                      <Badge className="bg-yellow-500 text-black font-semibold">🔥 FLASH SALE</Badge>
-                      <h1 className="text-2xl md:text-4xl font-bold">Up to 70% Off</h1>
-                      <p className="text-blue-100 max-w-md">Get the best products at the best prices. Limited time offer!</p>
-                      <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
-                        Shop Now <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
-                      <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
-                        <Gift className="w-16 h-16 text-white" />
+              {(pageData.heroSlides || defaultData.heroSlides).map((slide: { title: string; subtitle: string; description: string; buttonText: string; buttonLink: string }, index: number) => (
+                <CarouselItem key={index}>
+                  <Card className="border-0 overflow-hidden">
+                    <div className="relative h-64 md:h-80 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-between px-8 md:px-16">
+                      <div className="text-white space-y-4 z-10">
+                        <Badge className="bg-yellow-500 text-black font-semibold">� {slide.subtitle}</Badge>
+                        <h1 className="text-2xl md:text-4xl font-bold">{slide.title}</h1>
+                        <p className="text-blue-100 max-w-md">{slide.description}</p>
+                        <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50" asChild>
+                          <NextLink href={slide.buttonLink || "/products"}>
+                            {slide.buttonText} <ArrowRight className="ml-2 h-4 w-4" />
+                          </NextLink>
+                        </Button>
+                      </div>
+                      <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
+                        <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
+                          <Gift className="w-16 h-16 text-white" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              </CarouselItem>
-              <CarouselItem>
-                <Card className="border-0 overflow-hidden">
-                  <div className="relative h-64 md:h-80 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 flex items-center justify-between px-8 md:px-16">
-                    <div className="text-white space-y-4 z-10">
-                      <Badge className="bg-emerald-400 text-emerald-900 font-semibold">📦 FREE SHIPPING</Badge>
-                      <h1 className="text-2xl md:text-4xl font-bold">Free Shipping Across Indonesia</h1>
-                      <p className="text-emerald-100 max-w-md">Minimum purchase of Rp 250,000. Applies to all products.</p>
-                      <Button size="lg" className="bg-white text-emerald-600 hover:bg-emerald-50">
-                        View Terms & Conditions <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
-                      <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
-                        <Truck className="w-16 h-16 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </CarouselItem>
-              <CarouselItem>
-                <Card className="border-0 overflow-hidden">
-                  <div className="relative h-64 md:h-80 bg-gradient-to-br from-pink-600 via-rose-600 to-pink-800 flex items-center justify-between px-8 md:px-16">
-                    <div className="text-white space-y-4 z-10">
-                      <Badge className="bg-pink-400 text-pink-900 font-semibold">⭐ NEW MEMBER</Badge>
-                      <h1 className="text-2xl md:text-4xl font-bold">20% Cashback for New Members</h1>
-                      <p className="text-pink-100 max-w-md">Register now and enjoy cashback on your first purchase.</p>
-                      <Button size="lg" className="bg-white text-pink-600 hover:bg-pink-50">
-                        Register Now <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
-                      <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
-                        <Star className="w-16 h-16 text-white" />
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </CarouselItem>
+                  </Card>
+                </CarouselItem>
+              ))}
             </CarouselContent>
             <CarouselPrevious className="left-4" />
             <CarouselNext className="right-4" />
@@ -94,39 +103,26 @@ export default async function Home() {
         </section>{" "}
         {/* Features Section */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
-                <Truck className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Fast Delivery</h3>
-                <p className="text-sm text-muted-foreground">Free shipping across Indonesia</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-full">
-                <Shield className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Secure Payment</h3>
-                <p className="text-sm text-muted-foreground">100% secure payment</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-full">
-                <Headphones className="h-6 w-6 text-purple-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold">Customer Support 24/7</h3>
-                <p className="text-sm text-muted-foreground">Ready to help anytime</p>
-              </div>
-            </div>
-          </Card>
+          {(pageData.features || defaultData.features).map((feature: { icon: string; title: string; description: string }, index: number) => {
+            const IconComponent = feature.icon === 'Truck' ? Truck : 
+                               feature.icon === 'Shield' ? Shield : 
+                               feature.icon === 'Headphones' ? Headphones : 
+                               feature.icon === 'Gift' ? Gift : Truck;
+            
+            return (
+              <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
+                    <IconComponent className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </section>{" "}
         {/* Popular Categories */}
         <section>

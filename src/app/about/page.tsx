@@ -2,58 +2,63 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Target, Award, Heart, Shield, Truck, Clock, Star, MapPin, Phone, Mail } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
-export default function About() {
-  const stats = [
-    { label: "Loyal Customers", value: "50K+", icon: Users },
-    { label: "Quality Products", value: "10K+", icon: Award },
-    { label: "Satisfaction Rating", value: "4.8", icon: Star },
-    { label: "Cities Reached", value: "100+", icon: MapPin },
-  ];
+async function getAboutPageData() {
+  try {
+    const aboutPage = await prisma.aboutPage.findFirst();
+    return aboutPage;
+  } catch (error) {
+    console.error("Error fetching about page data:", error);
+    return null;
+  }
+}
 
-  const features = [
-    {
-      icon: Shield,
-      title: "Secure Shopping",
-      description: "Multi-layered security system and customer data protection",
-    },
-    {
-      icon: Truck,
-      title: "Fast Delivery",
-      description: "Free shipping across Indonesia with express delivery",
-    },
-    {
-      icon: Clock,
-      title: "24/7 Support",
-      description: "Customer service ready to help you anytime",
-    },
-    {
-      icon: Heart,
-      title: "Quality Products",
-      description: "Only selling original products with official warranty",
-    },
-  ];
+export default async function About() {
+  const aboutPageData = await getAboutPageData();
 
-  const team = [
-    {
-      name: "Ahmad Rizki",
-      role: "CEO & Founder",
-      image: "/team1.jpg",
-      description: "Visioner di balik ShopZone dengan pengalaman 10+ tahun di e-commerce",
-    },
-    {
-      name: "Sari Indah",
-      role: "Head of Operations",
-      image: "/team2.jpg",
-      description: "Memastikan setiap operasional berjalan lancar dan efisien",
-    },
-    {
-      name: "Budi Santoso",
-      role: "Tech Lead",
-      image: "/team3.jpg",
-      description: "Mengembangkan teknologi terdepan untuk pengalaman belanja terbaik",
-    },
-  ];
+  // Default fallback data
+  const defaultData = {
+    heroTitle: "About Our Company",
+    heroSubtitle: "Your Trusted Shopping Partner",
+    heroDescription: "We are committed to providing the best shopping experience with quality products, competitive prices, and exceptional customer service.",
+    companyStory: "Founded with a vision to make quality products accessible to everyone. We have grown into a trusted brand serving thousands of customers worldwide.",
+    mission: "To provide customers with the highest quality products at competitive prices while delivering exceptional customer service.",
+    vision: "To become the leading e-commerce platform that connects people with the products they love.",
+    statistics: [
+      { label: "Loyal Customers", value: "50K+", icon: "Users" },
+      { label: "Quality Products", value: "10K+", icon: "Award" },
+      { label: "Satisfaction Rating", value: "4.8", icon: "Star" },
+      { label: "Cities Reached", value: "100+", icon: "MapPin" },
+    ],
+    features: [
+      {
+        icon: "Shield",
+        title: "Secure Shopping",
+        description: "Multi-layered security system and customer data protection",
+      },
+      {
+        icon: "Truck",
+        title: "Fast Delivery",
+        description: "Free shipping across Indonesia with express delivery",
+      },
+      {
+        icon: "Clock",
+        title: "24/7 Support",
+        description: "Customer service ready to help you anytime",
+      },
+      {
+        icon: "Heart",
+        title: "Quality Products",
+        description: "Only selling original products with official warranty",
+      },
+    ]
+  };
+
+  const pageData = aboutPageData || defaultData;
+  const stats = pageData.statistics || defaultData.statistics;
+  const features = pageData.features || defaultData.features;
+  const team = pageData.teamMembers || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -61,11 +66,13 @@ export default function About() {
       <section className="relative py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <Badge variant="secondary" className="mb-4">
-            About ShopZone
+            {pageData.heroSubtitle}
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">Building the Future of Online Shopping in Indonesia</h1>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">
+            {pageData.heroTitle}
+          </h1>
           <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
-            ShopZone is a trusted e-commerce platform delivering the best online shopping experience with quality products, competitive prices, and outstanding customer service.
+            {pageData.heroDescription}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gap-2">
