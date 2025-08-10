@@ -30,12 +30,7 @@ import AdminAboutPageEditor from "./AdminAboutPageEditor";
 import AdminEventPageEditor from "./AdminEventPageEditor";
 import AdminProductPageEditor from "./AdminProductPageEditor";
 
-interface AdminSettingsPageProps {
-  activeSubTab?: string;
-  onSubTabChange?: (subTab: string) => void;
-}
-
-export default function AdminSettingsPage({ activeSubTab = "general", onSubTabChange }: AdminSettingsPageProps) {
+export default function AdminSettingsPage() {
   const [generalSettings, setGeneralSettings] = useState({
     storeName: "E-Commerce Store",
     storeDescription: "Trusted online store",
@@ -72,7 +67,7 @@ export default function AdminSettingsPage({ activeSubTab = "general", onSubTabCh
         </div>
       </div>
 
-      <Tabs value={activeSubTab} onValueChange={onSubTabChange} className="space-y-6">
+      <Tabs defaultValue="general" className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />

@@ -63,6 +63,7 @@ function AdminAnalytics() {
 
 export default function AdminProductPage() {
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [activeSubTab, setActiveSubTab] = useState("general");
 
   const renderContent = () => {
     switch (activeSection) {
@@ -79,7 +80,7 @@ export default function AdminProductPage() {
       case "analytics":
         return <AdminAnalytics />;
       case "settings":
-        return <AdminSettingsPage />;
+        return <AdminSettingsPage activeSubTab={activeSubTab} onSubTabChange={setActiveSubTab} />;
       default:
         return <AdminDashboard />;
     }
@@ -88,7 +89,12 @@ export default function AdminProductPage() {
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <AdminSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+      <AdminSidebar 
+        activeSection={activeSection} 
+        onSectionChange={setActiveSection}
+        activeSubTab={activeSubTab}
+        onSubTabChange={setActiveSubTab}
+      />
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
