@@ -85,7 +85,31 @@ export default function AdminProductPageEditor() {
       if (res.ok) {
         const pageData = await res.json();
         if (pageData) {
-          setData(pageData);
+          // Ensure arrays are properly handled from JSON fields
+          const processedData = {
+            ...pageData,
+            featuredCategories: Array.isArray(pageData.featuredCategories) 
+              ? pageData.featuredCategories 
+              : [],
+            filterOptions: Array.isArray(pageData.filterOptions) 
+              ? pageData.filterOptions 
+              : [],
+            sortOptions: Array.isArray(pageData.sortOptions) 
+              ? pageData.sortOptions 
+              : [],
+            seoContent: Array.isArray(pageData.seoContent) 
+              ? pageData.seoContent 
+              : (pageData.seoContent ? [pageData.seoContent] : []),
+            promotionalBanner: pageData.promotionalBanner || {
+              title: "",
+              description: "",
+              buttonText: "",
+              buttonLink: "",
+              bgColor: "#3b82f6",
+              isActive: false
+            }
+          };
+          setData(processedData);
         }
       }
     } catch (error) {
@@ -129,15 +153,22 @@ export default function AdminProductPageEditor() {
       link: "/category/new",
       bgColor: "bg-blue-100",
     };
-    setData({ ...data, featuredCategories: [...data.featuredCategories, newCategory] });
+    setData({ 
+      ...data, 
+      featuredCategories: Array.isArray(data.featuredCategories) 
+        ? [...data.featuredCategories, newCategory]
+        : [newCategory]
+    });
   };
 
   const removeFeaturedCategory = (index: number) => {
+    if (!Array.isArray(data.featuredCategories)) return;
     const newCategories = data.featuredCategories.filter((_, i) => i !== index);
     setData({ ...data, featuredCategories: newCategories });
   };
 
   const updateFeaturedCategory = (index: number, field: keyof FeaturedCategory, value: string) => {
+    if (!Array.isArray(data.featuredCategories)) return;
     const newCategories = [...data.featuredCategories];
     newCategories[index] = { ...newCategories[index], [field]: value };
     setData({ ...data, featuredCategories: newCategories });
@@ -168,15 +199,22 @@ export default function AdminProductPageEditor() {
       value: "new_sort",
       label: "New Sort Option",
     };
-    setData({ ...data, sortOptions: [...data.sortOptions, newSort] });
+    setData({ 
+      ...data, 
+      sortOptions: Array.isArray(data.sortOptions) 
+        ? [...data.sortOptions, newSort]
+        : [newSort]
+    });
   };
 
   const removeSortOption = (index: number) => {
+    if (!Array.isArray(data.sortOptions)) return;
     const newSorts = data.sortOptions.filter((_, i) => i !== index);
     setData({ ...data, sortOptions: newSorts });
   };
 
   const updateSortOption = (index: number, field: keyof SortOption, value: string) => {
+    if (!Array.isArray(data.sortOptions)) return;
     const newSorts = [...data.sortOptions];
     newSorts[index] = { ...newSorts[index], [field]: value };
     setData({ ...data, sortOptions: newSorts });
@@ -188,15 +226,22 @@ export default function AdminProductPageEditor() {
       content: "SEO content description",
       type: "text",
     };
-    setData({ ...data, seoContent: [...data.seoContent, newContent] });
+    setData({ 
+      ...data, 
+      seoContent: Array.isArray(data.seoContent) 
+        ? [...data.seoContent, newContent]
+        : [newContent]
+    });
   };
 
   const removeSeoContent = (index: number) => {
+    if (!Array.isArray(data.seoContent)) return;
     const newContent = data.seoContent.filter((_, i) => i !== index);
     setData({ ...data, seoContent: newContent });
   };
 
   const updateSeoContent = (index: number, field: keyof SeoContentBlock, value: string) => {
+    if (!Array.isArray(data.seoContent)) return;
     const newContent = [...data.seoContent];
     newContent[index] = { ...newContent[index], [field]: value };
     setData({ ...data, seoContent: newContent });
@@ -341,7 +386,7 @@ export default function AdminProductPageEditor() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {data.featuredCategories.map((category, index) => (
+          {Array.isArray(data.featuredCategories) && data.featuredCategories.map((category, index) => (
             <Card key={index} className="border-l-4 border-blue-500">
               <CardHeader>
                 <div className="flex justify-between items-center">
@@ -398,7 +443,7 @@ export default function AdminProductPageEditor() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {data.sortOptions.map((sort, index) => (
+          {Array.isArray(data.sortOptions) && data.sortOptions.map((sort, index) => (
             <Card key={index} className="border-l-4 border-green-500">
               <CardHeader>
                 <div className="flex justify-between items-center">
@@ -437,7 +482,7 @@ export default function AdminProductPageEditor() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {data.seoContent.map((content, index) => (
+          {Array.isArray(data.seoContent) && data.seoContent.map((content, index) => (
             <Card key={index} className="border-l-4 border-purple-500">
               <CardHeader>
                 <div className="flex justify-between items-center">
