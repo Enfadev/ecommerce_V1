@@ -7,6 +7,7 @@ import { Badge } from "../components/ui/badge";
 import NextLink from "next/link";
 import { ArrowRight, Star, Truck, Shield, Headphones, Gift, Users, Package, Globe, Calendar } from "lucide-react";
 
+async function getHomePageData() {
   try {
     const homePage = await prisma.homePage.findFirst();
     return homePage;
