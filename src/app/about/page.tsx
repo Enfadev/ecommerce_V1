@@ -1,8 +1,10 @@
+import React from "react";
+// ...existing code...
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, Target, Award, Heart, Shield, Truck, Clock, Star, MapPin, Phone, Mail } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import { Users, Target, Award, Heart, Shield, Truck, Clock, Star, MapPin, Phone, Mail, Globe } from "lucide-react";
+ import { prisma } from "@/lib/prisma";
 
 async function getAboutPageData() {
   try {
@@ -15,6 +17,17 @@ async function getAboutPageData() {
 }
 
 export default async function About() {
+  const iconMap: { [key: string]: React.ComponentType<{ className?: string }> } = {
+    Shield,
+    Truck,
+    Clock,
+    Heart,
+    Award,
+    Globe,
+    Star,
+    Users,
+    MapPin,
+  };
   const aboutPageData = await getAboutPageData();
 
   // Default fallback data
@@ -93,7 +106,9 @@ export default async function About() {
             {stats.map((stat, index) => (
               <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
-                  <stat.icon className="w-8 h-8 mx-auto mb-4 text-primary" />
+                  {stat.icon && typeof stat.icon === "function" ? (
+                    <stat.icon className="w-8 h-8 mx-auto mb-4 text-primary" />
+                  ) : null}
                   <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </CardContent>
@@ -158,11 +173,13 @@ export default async function About() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
+            {features.map((feature: any, index: number) => (
               <Card key={index} className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
                 <CardContent className="p-0">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <feature.icon className="w-6 h-6 text-primary" />
+                    {iconMap[feature.icon] ? (
+                      React.createElement(iconMap[feature.icon], { className: "w-6 h-6 text-primary" })
+                    ) : null}
                   </div>
                   <h3 className="font-semibold mb-3">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
@@ -182,7 +199,7 @@ export default async function About() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
+            {team.map((member: any, index: number) => (
               <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
                   <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
@@ -205,7 +222,7 @@ export default async function About() {
       {/* Contact CTA */}
       <section className="py-16 px-4 bg-primary/5">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Let's Collaborate!</h2>
+          <h2 className="text-3xl font-bold mb-4">Let&apos;s Collaborate!</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">Are you a supplier, brand partner, or have a business idea? We are open to building mutually beneficial partnerships.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gap-2">

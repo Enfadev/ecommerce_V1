@@ -53,7 +53,7 @@ async function main() {
       name: `Product ${i}`,
       description: `Description for product ${i}`,
       price: 100 + i * 10,
-      imageUrl: `/uploads/product${i}.jpg`,
+  imageUrl: "",
       brand: `Brand ${((i % 5) + 1)}`,
       categoryId: category.id,
       discountPrice: i % 2 === 0 ? (80 + i * 8) : null,
