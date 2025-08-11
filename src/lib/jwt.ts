@@ -1,9 +1,29 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
 
-const secret = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-fallback-secret-key-min-32-characters-long'
-);
+// Get JWT secret with fallback for development
+const getJWTSecret = () => {
+  const jwtSecret = process.env.JWT_SECRET;
+  
+  // In production, JWT_SECRET is required
+  if (process.env.NODE_ENV === 'production' && !jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is required in production');
+  }
+  
+  // For development, provide a default secret but warn
+  if (!jwtSecret) {
+    console.warn('⚠️  Using default JWT secret for development. Set JWT_SECRET in .env.local for production!');
+    return 'your-fallback-secret-key-min-32-characters-long-dev-only';
+  }
+  
+  if (jwtSecret.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters long');
+  }
+  
+  return jwtSecret;
+};
+
+const secret = new TextEncoder().encode(getJWTSecret());
 
 export interface CustomJWTPayload {
   id: string;
@@ -36,7 +56,10 @@ export async function verifyJWT(token: string): Promise<CustomJWTPayload | null>
       exp: payload.exp,
     };
   } catch (error) {
-    console.error('JWT verification failed:', error);
+    // Only log in development to avoid information disclosure
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('JWT verification failed:', error);
+    }
     return null;
   }
 }

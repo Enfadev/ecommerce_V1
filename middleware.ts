@@ -51,7 +51,10 @@ export async function middleware(request: NextRequest) {
       
       return response;
     } catch (error) {
-      console.error('Middleware JWT verification error:', error);
+      // Only log detailed errors in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Middleware JWT verification error:', error);
+      }
       const signInUrl = new URL('/signin', request.url);
       signInUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(signInUrl);
@@ -122,7 +125,10 @@ export async function middleware(request: NextRequest) {
         
         return response;
       } catch (error) {
-        console.error('API middleware JWT verification error:', error);
+        // Only log detailed errors in development
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('API middleware JWT verification error:', error);
+        }
         return NextResponse.json(
           { error: 'Authentication verification failed' },
           { status: 401 }

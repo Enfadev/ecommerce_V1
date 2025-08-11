@@ -49,7 +49,10 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
-    console.error('Sign in error:', error);
-    return NextResponse.json({ error: 'Login failed' }, { status: 500 });
+    // Only log detailed errors in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Sign in error:', error);
+    }
+    return NextResponse.json({ error: 'Authentication failed' }, { status: 500 });
   }
 }

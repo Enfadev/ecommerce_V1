@@ -70,7 +70,10 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
-    console.error('Registration error:', error);
+    // Only log detailed errors in development
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Registration error:', error);
+    }
     return NextResponse.json({ error: 'Registration failed' }, { status: 500 });
   }
 }
