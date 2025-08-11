@@ -7,7 +7,7 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
-  role: "admin" | "user";
+  role: "ADMIN" | "USER";
   phoneNumber?: string;
   address?: string;
   dateOfBirth?: string;
@@ -19,9 +19,10 @@ interface AuthContextType {
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (name: string, email: string, password: string) => Promise<boolean>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<boolean>;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,28 +31,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  
-  useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-        localStorage.removeItem("user");
+  // Get user profile from server (JWT from httpOnly cookie)
+  const refreshUser = async () => {
+    try {
+      const res = await fetch("/api/profile", {
+        method: "GET",
+        credentials: 'include', // Include cookies
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        const userData = data.user;
+        setUser({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          createdAt: userData.createdAt,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
+        });
+      } else {
+        setUser(null);
       }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      setUser(null);
     }
-    setIsLoading(false);
-  }, []);
+  };
 
-  
+  // Load user on component mount
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
-    }
-  }, [user]);
+    const loadUser = async () => {
+      setIsLoading(true);
+      await refreshUser();
+      setIsLoading(false);
+    };
+    
+    loadUser();
+  }, []);
 
   const signIn = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
@@ -59,24 +76,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include', // Include cookies
         body: JSON.stringify({ email, password }),
       });
-      if (!res.ok) {
+      
+      if (res.ok) {
+        const data = await res.json();
+        const userData = data.user;
+        setUser({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          createdAt: userData.createdAt,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
+        });
+        setIsLoading(false);
+        return true;
+      } else {
         setIsLoading(false);
         return false;
       }
-      const user = await res.json();
-      setUser({
-        id: user.id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role === "ADMIN" ? "admin" : "user",
-        createdAt: user.createdAt,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`,
-      });
-      setIsLoading(false);
-      return true;
     } catch (error) {
+      console.error("Sign in error:", error);
       setIsLoading(false);
       return false;
     }
@@ -88,31 +110,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include', // Include cookies
         body: JSON.stringify({ name, email, password }),
       });
-      if (!res.ok) {
+      
+      if (res.ok) {
+        const data = await res.json();
+        const userData = data.user;
+        setUser({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          createdAt: userData.createdAt,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
+        });
+        setIsLoading(false);
+        return true;
+      } else {
         setIsLoading(false);
         return false;
       }
-      const user = await res.json();
-      setUser({
-        id: user.id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role === "ADMIN" ? "admin" : "user",
-        createdAt: user.createdAt,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`,
-      });
-      setIsLoading(false);
-      return true;
     } catch (error) {
+      console.error("Sign up error:", error);
       setIsLoading(false);
       return false;
     }
   };
 
-  const signOut = () => {
-    setUser(null);
+  const signOut = async (): Promise<void> => {
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: 'include', // Include cookies
+      });
+      setUser(null);
+    } catch (error) {
+      console.error("Sign out error:", error);
+      // Clear user even if API call fails
+      setUser(null);
+    }
   };
 
   const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
@@ -120,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      
+      // Simulate API call for profile update
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const updatedUser = { ...user, ...userData };
@@ -144,6 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         updateProfile,
         isAuthenticated: !!user,
+        refreshUser,
       }}
     >
       {children}

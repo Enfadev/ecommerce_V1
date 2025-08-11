@@ -65,7 +65,7 @@ export function Header() {
           <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors">
             Contact
           </Link>
-          {user?.role === "admin" && (
+          {user?.role === "ADMIN" && (
             <Link href="/admin" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
               <Crown className="h-3 w-3" />
               Admin
@@ -112,7 +112,7 @@ export function Header() {
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start">
                       <span className="text-sm font-medium">{user.name}</span>
-                      {user.role === "admin" && (
+                      {user.role === "ADMIN" && (
                         <Badge variant="secondary" className="text-xs bg-blue-600 text-white">
                           Admin
                         </Badge>
@@ -147,7 +147,7 @@ export function Header() {
                     <span>Wishlist</span>
                   </Link>
                 </DropdownMenuItem>
-                {user.role === "admin" && (
+                {user.role === "ADMIN" && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
@@ -213,7 +213,7 @@ export function Header() {
                   Contact
                 </Link>
 
-                {user?.role === "admin" && (
+                {user?.role === "ADMIN" && (
                   <Link href="/admin" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
                     <Crown className="h-4 w-4" />
                     Admin Panel

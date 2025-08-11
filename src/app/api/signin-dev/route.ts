@@ -1,10 +1,46 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { compare } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import { signJWT, setAuthCookie } from '@/lib/jwt';
+
+// Temporary in-memory storage for development testing
+// In production, this should use database
+const users = new Map([
+  ['admin@test.com', {
+    id: '1',
+    name: 'Admin User',
+    email: 'admin@test.com',
+    password: '', // Will be set below
+    role: 'ADMIN',
+    createdAt: new Date().toISOString(),
+  }],
+  ['user@test.com', {
+    id: '2',
+    name: 'Regular User',
+    email: 'user@test.com',
+    password: '', // Will be set below
+    role: 'USER',
+    createdAt: new Date().toISOString(),
+  }]
+]);
+
+// Initialize test users with hashed passwords
+async function initTestUsers() {
+  const adminUser = users.get('admin@test.com');
+  const regularUser = users.get('user@test.com');
+  
+  if (adminUser && !adminUser.password) {
+    adminUser.password = await hash('admin123', 12);
+  }
+  
+  if (regularUser && !regularUser.password) {
+    regularUser.password = await hash('user123', 12);
+  }
+}
 
 export async function POST(req: Request) {
   try {
+    await initTestUsers();
+    
     const { email, password } = await req.json();
     
     // Validate input
@@ -12,8 +48,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    // Find user
-    const user = await prisma.user.findUnique({ where: { email } });
+    // Find user in memory storage
+    const user = users.get(email);
     if (!user) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
@@ -26,7 +62,7 @@ export async function POST(req: Request) {
 
     // Generate JWT token
     const token = await signJWT({
-      id: user.id.toString(),
+      id: user.id,
       email: user.email,
       role: user.role,
     });
@@ -37,10 +73,7 @@ export async function POST(req: Request) {
 
     // Create response and set cookie
     const response = NextResponse.json({
-      user: {
-        ...userData,
-        id: userData.id.toString(),
-      },
+      user: userData,
       message: 'Sign in successful'
     });
 

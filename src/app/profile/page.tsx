@@ -192,7 +192,7 @@ export default function ProfilePage() {
               <div className="flex-1 text-center md:text-left">
                 <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
                   <h1 className="text-3xl font-bold text-white">{user.name}</h1>
-                  {user.role === "admin" && (
+                  {user.role === "ADMIN" && (
                     <Badge variant="secondary" className="bg-blue-600 text-white">
                       <Crown className="h-3 w-3 mr-1" />
                       Admin

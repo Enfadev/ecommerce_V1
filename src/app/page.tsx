@@ -18,13 +18,73 @@ async function getHomePageData() {
 }
 
 export default async function Home() {
+  let dbProducts = [];
+  let homePageData = null;
   
-  const dbProducts = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 8,
-  });
-
-  const homePageData = await getHomePageData();
+  try {
+    // Try to get data from database
+    dbProducts = await prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 8,
+    });
+    homePageData = await getHomePageData();
+  } catch (error) {
+    console.error("Database connection error, using mock data:", error);
+    // Use mock data when database is not available
+    dbProducts = [
+      {
+        id: 1,
+        name: "Sample Product 1",
+        description: "This is a sample product for testing",
+        price: 99.99,
+        imageUrl: "/placeholder-image.svg",
+        brand: "Test Brand",
+        category: "Electronics",
+        categoryId: 1,
+        discountPrice: 79.99,
+        metaDescription: "Sample product description",
+        metaTitle: "Sample Product",
+        promoExpired: null,
+        sku: "SAMPLE001",
+        slug: "sample-product-1",
+        stock: 10,
+        status: "active",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 2,
+        name: "Sample Product 2",
+        description: "Another sample product for testing",
+        price: 149.99,
+        imageUrl: "/placeholder-image.svg",
+        brand: "Test Brand",
+        category: "Fashion",
+        categoryId: 2,
+        discountPrice: null,
+        metaDescription: "Another sample product description",
+        metaTitle: "Sample Product 2",
+        promoExpired: null,
+        sku: "SAMPLE002",
+        slug: "sample-product-2",
+        stock: 5,
+        status: "active",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+    ];
+    
+    homePageData = {
+      heroTitle: "Welcome to Our Store",
+      heroSubtitle: "Testing JWT Implementation",
+      heroDescription: "This is a test environment for JWT authentication",
+      heroSlides: [],
+      features: [],
+      statsData: [],
+      aboutPreview: {},
+      testimonialsData: []
+    };
+  }
 
   
   const products = dbProducts.map((p) => ({

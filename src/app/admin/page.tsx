@@ -9,13 +9,13 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && (!user || user.role !== "admin")) {
+    if (!isLoading && (!user || user.role !== "ADMIN")) {
       router.replace("/");
     }
   }, [user, isLoading, router]);
 
   if (isLoading || !user) return null;
-  if (user.role !== "admin") return null;
+  if (user.role !== "ADMIN") return null;
 
   return <AdminProductPage />;
 }
