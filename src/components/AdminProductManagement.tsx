@@ -181,33 +181,53 @@ export default function AdminProductManagement() {
       try {
         let imageUrl = editingProduct.imageUrl;
         let galleryUrls = editingProduct.gallery || [];
+        
         // Upload gambar utama jika ada file baru
         if (productData.imageFiles && productData.imageFiles.length > 0) {
+          console.log('Uploading main image...');
           const formData = new FormData();
           formData.append("file", productData.imageFiles[0]);
+          
           const uploadRes = await fetch("/api/upload", {
             method: "POST",
             body: formData,
           });
-          if (!uploadRes.ok) throw new Error("Failed to upload image");
+          
+          if (!uploadRes.ok) {
+            const errorData = await uploadRes.json();
+            throw new Error(`Failed to upload image: ${errorData.error}`);
+          }
+          
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
+          console.log('Main image uploaded successfully:', imageUrl);
         }
-        // Upload gallery images jika ada file baru
+        
+        // Upload gallery images jika ada file baru (lebih dari 1 file)
         if (productData.imageFiles && productData.imageFiles.length > 1) {
+          console.log('Uploading gallery images...');
           const galleryForm = new FormData();
           productData.imageFiles.slice(1).forEach((file: File) => {
             galleryForm.append("files", file);
           });
+          
           const galleryRes = await fetch("/api/upload?gallery=1", {
             method: "POST",
             body: galleryForm,
           });
-          if (!galleryRes.ok) throw new Error("Failed to upload gallery images");
+          
+          if (!galleryRes.ok) {
+            const errorData = await galleryRes.json();
+            throw new Error(`Failed to upload gallery images: ${errorData.error}`);
+          }
+          
           const galleryData = await galleryRes.json();
           galleryUrls = galleryData.urls;
+          console.log('Gallery images uploaded successfully:', galleryUrls);
         }
+        
         // Update produk ke database dengan semua field
+        console.log('Updating product in database...');
         const res = await fetch(`/api/product`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -230,29 +250,53 @@ export default function AdminProductManagement() {
             gallery: galleryUrls,
           }),
         });
-        if (!res.ok) throw new Error("Failed to update product");
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(`Failed to update product: ${errorData.error}`);
+        }
+        
         const updatedProduct = await res.json();
+        console.log('Product updated successfully:', updatedProduct);
+        
         setProducts(products.map((p) => (p.id === updatedProduct.id ? {
           ...updatedProduct,
           imageUrl: updatedProduct.imageUrl || "/placeholder-image.svg",
         } : p)));
-      } catch {
-        alert("Failed to update product");
+        
+        alert('Product updated successfully!');
+      } catch (error: any) {
+        console.error('Update product error:', error);
+        alert(`Failed to update product: ${error?.message || 'Unknown error'}`);
       }
     } else {
       try {
         let imageUrl = "";
-        if (productData.imageFile) {
+        
+        // Upload gambar utama jika ada file baru
+        if (productData.imageFiles && productData.imageFiles.length > 0) {
+          console.log('Uploading main image for new product...');
           const formData = new FormData();
-          formData.append("file", productData.imageFile);
+          formData.append("file", productData.imageFiles[0]);
+          
           const uploadRes = await fetch("/api/upload", {
             method: "POST",
             body: formData,
           });
-          if (!uploadRes.ok) throw new Error("Failed to upload image");
+          
+          if (!uploadRes.ok) {
+            const errorData = await uploadRes.json();
+            throw new Error(`Failed to upload image: ${errorData.error}`);
+          }
+          
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
+          console.log('Main image uploaded successfully:', imageUrl);
         }
+        
+        // Note: For new products, we'll just use the main image
+        // Gallery can be added later in edit mode
+        console.log('Creating new product...');
         const res = await fetch("/api/product", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -273,8 +317,15 @@ export default function AdminProductManagement() {
             promoExpired: productData.promoExpired,
           }),
         });
-        if (!res.ok) throw new Error("Failed to add product");
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(`Failed to add product: ${errorData.error}`);
+        }
+        
         const newProduct = await res.json();
+        console.log('Product created successfully:', newProduct);
+        
         setProducts([{
           ...newProduct,
           imageUrl: newProduct.imageUrl || "/placeholder-image.svg",
@@ -283,8 +334,11 @@ export default function AdminProductManagement() {
           status: newProduct.status || "active",
           createdAt: new Date(newProduct.createdAt).toLocaleDateString("en-US"),
         }, ...products]);
-      } catch {
-        alert("Failed to add product");
+        
+        alert('Product added successfully!');
+      } catch (error: any) {
+        console.error('Add product error:', error);
+        alert(`Failed to add product: ${error?.message || 'Unknown error'}`);
       }
     }
     setShowForm(false);

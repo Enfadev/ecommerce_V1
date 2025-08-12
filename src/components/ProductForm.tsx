@@ -3,10 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Label } from "./ui/label";
+import Image from "next/image";
 
 const productSchema = z.object({
   id: z.number().optional(),
@@ -41,6 +42,7 @@ type ProductFormData = {
   hargaDiskon?: number;
   promoExpired?: string;
   imageFiles?: File[];
+  imageUrl?: string;
   gallery?: string[];
 };
 
@@ -75,9 +77,18 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     },
   });
 
-
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+  // Set initial image preview if editing existing product
+  useEffect(() => {
+    if (product?.imageUrl) {
+      setImagePreviews([product.imageUrl]);
+    }
+    if (product?.gallery) {
+      setImagePreviews([product.imageUrl || '', ...product.gallery].filter(Boolean));
+    }
+  }, [product]);
 
   const onImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);

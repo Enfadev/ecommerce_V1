@@ -37,53 +37,107 @@ function validateFileType(file: File): boolean {
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get('file') as File;
+    const url = new URL(req.url);
+    const isGallery = url.searchParams.get('gallery') === '1';
     
-    if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
-    }
+    if (isGallery) {
+      // Handle multiple files for gallery
+      const files = formData.getAll('files') as File[];
+      
+      if (!files || files.length === 0) {
+        return NextResponse.json({ error: 'No files uploaded' }, { status: 400 });
+      }
 
-    // Validate file type
-    if (!validateFileType(file)) {
-      return NextResponse.json({ 
-        error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.' 
-      }, { status: 400 });
-    }
+      const uploadedUrls: string[] = [];
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      await mkdir(uploadDir, { recursive: true });
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json({ 
-        error: `File too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.` 
-      }, { status: 400 });
-    }
+      for (const file of files) {
+        // Validate each file
+        if (!validateFileType(file)) {
+          return NextResponse.json({ 
+            error: `Invalid file type for ${file.name}. Only JPEG, PNG, and WebP images are allowed.` 
+          }, { status: 400 });
+        }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadDir, { recursive: true });
-    
-    // Convert to WebP and compress
-    const webpBuffer = await sharp(buffer)
-      .webp({ quality: 80 })
-      .resize(1920, 1920, { 
-        fit: 'inside', 
-        withoutEnlargement: true 
-      })
-      .toBuffer();
-    
-    // Sanitize filename and add timestamp
-    const sanitizedName = sanitizeFilename(file.name.replace(/\.[^/.]+$/, ''));
-    const filename = `${Date.now()}-${sanitizedName}.webp`;
-    const filePath = path.join(uploadDir, filename);
-    
-    await writeFile(filePath, webpBuffer);
-    const url = `/uploads/${filename}`;
-    
-    return NextResponse.json({ url });
+        if (file.size > MAX_FILE_SIZE) {
+          return NextResponse.json({ 
+            error: `File ${file.name} too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.` 
+          }, { status: 400 });
+        }
+
+        const buffer = Buffer.from(await file.arrayBuffer());
+        
+        // Convert to WebP and compress
+        const webpBuffer = await sharp(buffer)
+          .webp({ quality: 80 })
+          .resize(1920, 1920, { 
+            fit: 'inside', 
+            withoutEnlargement: true 
+          })
+          .toBuffer();
+        
+        // Sanitize filename and add timestamp
+        const sanitizedName = sanitizeFilename(file.name.replace(/\.[^/.]+$/, ''));
+        const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${sanitizedName}.webp`;
+        const filePath = path.join(uploadDir, filename);
+        
+        await writeFile(filePath, webpBuffer);
+        uploadedUrls.push(`/uploads/${filename}`);
+      }
+      
+      return NextResponse.json({ urls: uploadedUrls });
+    } else {
+      // Handle single file upload
+      const file = formData.get('file') as File;
+      
+      if (!file) {
+        return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+      }
+
+      // Validate file type
+      if (!validateFileType(file)) {
+        return NextResponse.json({ 
+          error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.' 
+        }, { status: 400 });
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        return NextResponse.json({ 
+          error: `File too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.` 
+        }, { status: 400 });
+      }
+
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      await mkdir(uploadDir, { recursive: true });
+      
+      // Convert to WebP and compress
+      const webpBuffer = await sharp(buffer)
+        .webp({ quality: 80 })
+        .resize(1920, 1920, { 
+          fit: 'inside', 
+          withoutEnlargement: true 
+        })
+        .toBuffer();
+      
+      // Sanitize filename and add timestamp
+      const sanitizedName = sanitizeFilename(file.name.replace(/\.[^/.]+$/, ''));
+      const filename = `${Date.now()}-${sanitizedName}.webp`;
+      const filePath = path.join(uploadDir, filename);
+      
+      await writeFile(filePath, webpBuffer);
+      const url = `/uploads/${filename}`;
+      
+      return NextResponse.json({ url });
+    }
   } catch (error) {
     // Log error safely without exposing sensitive information
     if (process.env.NODE_ENV !== 'production') {
       console.error('Upload error:', error);
     }
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: 'Upload failed', details: errorMessage }, { status: 500 });
   }
 }
