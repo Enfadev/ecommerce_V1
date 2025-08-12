@@ -48,6 +48,9 @@ export default function AdminOrderManagement() {
   const [showOrderDetail, setShowOrderDetail] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
 
+  // Use separate state to track if initial load is done
+  const [initialLoad, setInitialLoad] = useState(false);
+
   const handlePageChange = useCallback((newPage: number) => {
     fetchOrders({ 
       page: newPage, 
@@ -56,13 +59,29 @@ export default function AdminOrderManagement() {
     });
   }, [fetchOrders, selectedStatus, searchQuery]);
 
+  // Initial load only
   useEffect(() => {
+    if (!initialLoad) {
+      fetchOrders();
+      setInitialLoad(true);
+    }
+  }, [initialLoad, fetchOrders]);
+
+  // Handle search and filter changes with debounce
+  useEffect(() => {
+    if (!initialLoad) return; // Don't trigger on initial load
+    
     const delayedSearch = setTimeout(() => {
-      debouncedFetchOrders(searchQuery, selectedStatus);
+      fetchOrders({
+        page: 1,
+        status: selectedStatus,
+        search: searchQuery,
+      });
     }, 500);
 
     return () => clearTimeout(delayedSearch);
-  }, [searchQuery, selectedStatus, debouncedFetchOrders]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, selectedStatus]);
 
   const handleStatusChange = async (orderId: string, newStatus: Order["status"]) => {
     setUpdating(orderId);
