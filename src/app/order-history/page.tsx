@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import OrderHistoryPage from "@/components/OrderHistoryPage";
+import OrderHistoryPageNew from "@/components/OrderHistoryPageNew";
 
 export const metadata: Metadata = {
   title: "Order History | E-Commerce",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <OrderHistoryPage />;
+  return <OrderHistoryPageNew />;
 }

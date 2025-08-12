@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "../../components/cart-context";
+import { useOrders, CreateOrderData, Order } from "../../hooks/use-orders";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
@@ -12,13 +13,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CheckCircle, ArrowLeft, Package, CreditCard, Truck, Tag } from "lucide-react";
+import { CheckCircle, ArrowLeft, Package, CreditCard, Truck, Tag, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const { items, clearCart, getTotalPrice, getTotalItems } = useCart();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { createOrder, creating } = useOrders();
   const [submitted, setSubmitted] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [formData, setFormData] = useState({
     nama: "",
     email: "",
@@ -26,12 +28,14 @@ export default function CheckoutPage() {
     alamat: "",
     kodePos: "",
     catatan: "",
+    paymentMethod: "Bank Transfer",
   });
   const router = useRouter();
 
   const subtotal = getTotalPrice();
-  const ongkir = subtotal >= 250000 ? 0 : 15000;
-  const total = subtotal + ongkir;
+  const ongkir = subtotal >= 250 ? 0 : 15; // Free shipping over $250
+  const tax = subtotal * 0.1; // 10% tax
+  const total = subtotal + ongkir + tax;
 
   
   useEffect(() => {
@@ -41,7 +45,7 @@ export default function CheckoutPage() {
     }
   }, [items.length, submitted, router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -50,21 +54,52 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    
+    // Validate required fields
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
       toast.error("Please complete all required fields");
-      setIsSubmitting(false);
       return;
     }
 
-    
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-  setSubmitted(true);
-  clearCart();
-  toast.success("Order placed successfully!");
-  setIsSubmitting(false);
+    if (items.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    // Prepare order data
+    const orderData: CreateOrderData = {
+      customerName: formData.nama,
+      customerEmail: formData.email,
+      customerPhone: formData.phone,
+      shippingAddress: formData.alamat,
+      postalCode: formData.kodePos,
+      notes: formData.catatan,
+      paymentMethod: formData.paymentMethod,
+      items: items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+      subtotal,
+      shippingFee: ongkir,
+      tax,
+      discount: 0,
+      totalAmount: total,
+    };
+
+    try {
+      // Create order using API
+      const newOrder = await createOrder(orderData);
+      
+      if (newOrder) {
+        setCreatedOrder(newOrder);
+        setSubmitted(true);
+        clearCart();
+        toast.success("Order placed successfully!");
+      }
+    } catch (error) {
+      console.error("Submit order error:", error);
+      toast.error("Failed to place order. Please try again.");
+    }
   };
 
   if (submitted) {
@@ -76,8 +111,35 @@ export default function CheckoutPage() {
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Order Placed!</h1>
-              <p className="text-muted-foreground mb-6">Thank you for your order. We will process it and send confirmation to your email soon.</p>
+              <h1 className="text-2xl font-bold mb-2">Order Placed Successfully!</h1>
+              <p className="text-muted-foreground mb-6">
+                Thank you for your order. We will process it and send confirmation to your email soon.
+              </p>
+              
+              {createdOrder && (
+                <div className="bg-muted/30 rounded-lg p-4 mb-6 text-left">
+                  <h3 className="font-semibold mb-2">Order Details</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Order Number:</span>
+                      <span className="font-mono">{createdOrder.orderNumber}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Total Amount:</span>
+                      <span className="font-semibold">${createdOrder.totalAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Payment Method:</span>
+                      <span>{createdOrder.paymentMethod}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Status:</span>
+                      <Badge variant="secondary">{createdOrder.status}</Badge>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex gap-4 justify-center">
                 <Button asChild>
                   <Link href="/order-history">View Orders</Link>
@@ -155,21 +217,93 @@ export default function CheckoutPage() {
                     Payment Method
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="p-4 border-2 border-primary/20 rounded-lg bg-primary/5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 bg-primary rounded-full"></div>
-                      <div>
-                        <p className="font-medium">Bank Transfer</p>
-                        <p className="text-sm text-muted-foreground">Pay via bank transfer (manual confirmation)</p>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    {/* Bank Transfer */}
+                    <div 
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                        formData.paymentMethod === "Bank Transfer" 
+                          ? "border-primary bg-primary/5" 
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "Bank Transfer"}))}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${
+                          formData.paymentMethod === "Bank Transfer" ? "bg-primary" : "bg-muted"
+                        }`}></div>
+                        <div>
+                          <p className="font-medium">Bank Transfer</p>
+                          <p className="text-sm text-muted-foreground">Pay via bank transfer (manual confirmation)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* E-Wallet */}
+                    <div 
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                        formData.paymentMethod === "E-Wallet" 
+                          ? "border-primary bg-primary/5" 
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "E-Wallet"}))}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${
+                          formData.paymentMethod === "E-Wallet" ? "bg-primary" : "bg-muted"
+                        }`}></div>
+                        <div>
+                          <p className="font-medium">E-Wallet</p>
+                          <p className="text-sm text-muted-foreground">OVO, GoPay, DANA, LinkAja</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Credit Card */}
+                    <div 
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                        formData.paymentMethod === "Credit Card" 
+                          ? "border-primary bg-primary/5" 
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "Credit Card"}))}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${
+                          formData.paymentMethod === "Credit Card" ? "bg-primary" : "bg-muted"
+                        }`}></div>
+                        <div>
+                          <p className="font-medium">Credit Card</p>
+                          <p className="text-sm text-muted-foreground">Visa, Mastercard, JCB</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cash on Delivery */}
+                    <div 
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                        formData.paymentMethod === "Cash on Delivery" 
+                          ? "border-primary bg-primary/5" 
+                          : "border-muted hover:border-primary/50"
+                      }`}
+                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "Cash on Delivery"}))}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-3 h-3 rounded-full ${
+                          formData.paymentMethod === "Cash on Delivery" ? "bg-primary" : "bg-muted"
+                        }`}></div>
+                        <div>
+                          <p className="font-medium">Cash on Delivery</p>
+                          <p className="text-sm text-muted-foreground">Pay when package arrives</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-                {isSubmitting ? "Processing..." : `Place Order - $${total.toLocaleString("en-US", { style: "currency", currency: "USD" })}`}
+              <Button type="submit" className="w-full" size="lg" disabled={creating}>
+                {creating ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
               </Button>
             </form>
           </div>
@@ -200,10 +334,10 @@ export default function CheckoutPage() {
                         <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
                         <div className="flex items-center justify-between mt-1">
                           <span className="text-sm text-muted-foreground">x{typeof item.quantity === "number" && item.quantity > 0 ? item.quantity : 1}</span>
-                          <span className="text-sm font-semibold">{
+                          <span className="text-sm font-semibold">${
                             typeof item.price === "number" && typeof item.quantity === "number" && item.price > 0 && item.quantity > 0
-                              ? (item.price * item.quantity).toLocaleString("en-US", { style: "currency", currency: "USD" })
-                              : (0).toLocaleString("en-US", { style: "currency", currency: "USD" })
+                              ? (item.price * item.quantity).toFixed(2)
+                              : "0.00"
                           }</span>
                         </div>
                       </div>
@@ -218,7 +352,7 @@ export default function CheckoutPage() {
                     <span>
                       Subtotal ({getTotalItems()} item{getTotalItems() > 1 ? "s" : ""})
                     </span>
-                    <span>{subtotal.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
+                    <span>${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="flex items-center gap-1">
@@ -229,16 +363,20 @@ export default function CheckoutPage() {
                         </Badge>
                       )}
                     </span>
-                    <span>{ongkir.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
+                    <span>${ongkir.toFixed(2)}</span>
                   </div>
-                  {subtotal < 250000 && ongkir > 0 && <p className="text-xs text-muted-foreground">Free shipping for orders over $250.00</p>}
+                  <div className="flex justify-between text-sm">
+                    <span>Tax (10%)</span>
+                    <span>${tax.toFixed(2)}</span>
+                  </div>
+                  {subtotal < 250 && ongkir > 0 && <p className="text-xs text-muted-foreground">Free shipping for orders over $250.00</p>}
                 </div>
 
                 <Separator />
 
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span>{total.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
               </CardContent>
             </Card>

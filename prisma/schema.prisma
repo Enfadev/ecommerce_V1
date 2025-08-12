@@ -92,6 +92,7 @@ model Product {
   categoryId     Int?
   category       Category? @relation(fields: [categoryId], references: [id])
   cartItems      CartItem[]
+  orderItems     OrderItem[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -123,6 +124,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   cart      Cart?
+  orders    Order[]
 }
 
 model Cart {
@@ -146,4 +148,77 @@ model CartItem {
   updatedAt DateTime @updatedAt
 
   @@unique([cartId, productId])
+}
+
+model Order {
+  id              Int       @id @default(autoincrement())
+  orderNumber     String    @unique
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items           OrderItem[]
+  status          OrderStatus @default(PENDING)
+  
+  // Customer Information
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  shippingAddress String
+  postalCode      String?
+  notes           String?
+  
+  // Payment Information
+  paymentMethod   String    @default("Bank Transfer")
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentProof    String?
+  
+  // Price Information
+  subtotal        Float
+  shippingFee     Float     @default(0)
+  tax             Float     @default(0)
+  discount        Float     @default(0)
+  totalAmount     Float
+  
+  // Shipping Information
+  trackingNumber  String?
+  estimatedDelivery DateTime?
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  
+  // Product snapshot at time of purchase
+  productName     String
+  productPrice    Float
+  productImage    String?
+  quantity        Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderId, productId])
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
 }
