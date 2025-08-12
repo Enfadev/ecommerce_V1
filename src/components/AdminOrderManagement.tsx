@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,17 +48,21 @@ export default function AdminOrderManagement() {
   const [showOrderDetail, setShowOrderDetail] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
 
+  const handlePageChange = useCallback((newPage: number) => {
+    fetchOrders({ 
+      page: newPage, 
+      status: selectedStatus, 
+      search: searchQuery 
+    });
+  }, [fetchOrders, selectedStatus, searchQuery]);
+
   useEffect(() => {
     const delayedSearch = setTimeout(() => {
-      fetchOrders({
-        page: 1,
-        status: selectedStatus,
-        search: searchQuery,
-      });
+      debouncedFetchOrders(searchQuery, selectedStatus);
     }, 500);
 
     return () => clearTimeout(delayedSearch);
-  }, [searchQuery, selectedStatus, fetchOrders]);
+  }, [searchQuery, selectedStatus, debouncedFetchOrders]);
 
   const handleStatusChange = async (orderId: string, newStatus: Order["status"]) => {
     setUpdating(orderId);

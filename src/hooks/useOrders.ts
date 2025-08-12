@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface OrderItem {
   name: string;
@@ -85,7 +85,7 @@ export function useOrders(): UseOrdersResult {
     totalPages: 0,
   });
 
-  const fetchOrders = async (params = {}) => {
+  const fetchOrders = useCallback(async (params = {}) => {
     setLoading(true);
     setError(null);
 
@@ -113,9 +113,9 @@ export function useOrders(): UseOrdersResult {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const updateOrder = async (orderNumber: string, updates: {
+  const updateOrder = useCallback(async (orderNumber: string, updates: {
     status?: string;
     paymentStatus?: string;
     trackingNumber?: string;
@@ -136,7 +136,7 @@ export function useOrders(): UseOrdersResult {
         throw new Error('Failed to update order');
       }
 
-      // Refresh orders after update
+      // Refresh orders after update without changing pagination
       await fetchOrders({
         page: pagination.page,
         limit: pagination.limit,
@@ -145,11 +145,11 @@ export function useOrders(): UseOrdersResult {
       setError(err instanceof Error ? err.message : 'Failed to update order');
       throw err;
     }
-  };
+  }, [fetchOrders, pagination.page, pagination.limit]);
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [fetchOrders]);
 
   return {
     orders,
