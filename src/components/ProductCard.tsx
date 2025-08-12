@@ -5,7 +5,6 @@ import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { useCart } from "./cart-context";
-import { toast } from "sonner";
 import type { Product } from "../data/products";
 import Link from "next/link";
 import { useWishlist } from "./wishlist-context";
@@ -93,16 +92,15 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 ) : (
                   <Button
                     size="sm"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      addToCart({
-                        id: product.id.toString(),
+                      await addToCart({
+                        id: product.id,
                         name: product.name,
                         price: product.price,
                         image: product.image,
                       });
-                      toast.success(`${product.name} added to cart!`);
                     }}
                     disabled={product.stock === 0}
                     className="gap-2"
@@ -159,16 +157,15 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 <Button
                   size="sm"
                   className="bg-primary/90 hover:bg-primary text-white shadow-lg backdrop-blur-sm"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    addToCart({
-                      id: String(product.id),
+                    await addToCart({
+                      id: product.id,
                       name: product.name,
                       price: product.price,
                       image: product.image,
                     });
-                    toast.success(`${product.name} added to cart!`);
                   }}
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
@@ -214,15 +211,14 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
             <Button
               className="w-full group/btn"
               size="sm"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                addToCart({
-                  id: String(product.id),
+                await addToCart({
+                  id: product.id,
                   name: product.name,
                   price: product.price,
-                      image: product.image,
+                  image: product.image,
                 });
-                toast.success(`${product.name} successfully added to cart!`);
               }}
             >
               <ShoppingCart className="h-4 w-4 mr-2 group-hover/btn:scale-110 transition-transform" />

@@ -13,12 +13,12 @@ import { ShoppingCart, Plus, Minus, Trash2, X, Tag, ShoppingBag } from "lucide-r
 import { toast } from "sonner";
 
 export function CartDrawer() {
-  const { items, removeFromCart, clearCart, updateQty } = useCart();
+  const { items, removeFromCart, clearCart, updateQty, isLoading } = useCart();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const totalItems = items.reduce((sum, i) => sum + i.qty, 0);
+  const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
 
   const handleCheckout = () => {
     setOpen(false);
@@ -26,13 +26,13 @@ export function CartDrawer() {
     toast.success("Proceeding to checkout page...");
   };
 
-  const handleRemoveItem = (id: string, name: string) => {
-    removeFromCart(id);
+  const handleRemoveItem = async (id: number, name: string) => {
+    await removeFromCart(id);
     toast.success(`${name} has been removed from the cart`);
   };
 
-  const handleClearCart = () => {
-    clearCart();
+  const handleClearCart = async () => {
+    await clearCart();
     toast.success("Cart has been emptied");
   };
 
@@ -103,14 +103,14 @@ export function CartDrawer() {
                         </div>
 
                         <div className="flex items-center gap-2 mt-2">
-                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.qty - 1)} disabled={item.qty === 1} className="h-8 w-8 p-0">
+                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.quantity - 1)} disabled={item.quantity === 1} className="h-8 w-8 p-0">
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="text-sm font-medium w-8 text-center">{item.qty}</span>
-                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.qty + 1)} className="h-8 w-8 p-0">
+                          <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.quantity + 1)} className="h-8 w-8 p-0">
                             <Plus className="h-3 w-3" />
                           </Button>
-                          <div className="ml-auto text-sm font-semibold">${(item.price * item.qty).toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
+                          <div className="ml-auto text-sm font-semibold">${(item.price * item.quantity).toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
                         </div>
                       </div>
                     </div>

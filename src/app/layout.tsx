@@ -2,7 +2,6 @@ import Footer from "../components/Footer";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "../components/cart-context";
 import { WishlistProvider } from "../components/wishlist-context";
 import ClientRootLayout from "./ClientRootLayout";
 
@@ -29,14 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
-        {/* CartProvider & WishlistProvider membungkus seluruh app agar state global */}
         <WishlistProvider>
-          <CartProvider>
-            <div className="flex-1 flex flex-col">
-              <ClientRootLayout>{children}</ClientRootLayout>
-            </div>
-            <Footer />
-          </CartProvider>
+          <div className="flex-1 flex flex-col">
+            <ClientRootLayout>{children}</ClientRootLayout>
+          </div>
+          <Footer />
         </WishlistProvider>
       </body>
     </html>
