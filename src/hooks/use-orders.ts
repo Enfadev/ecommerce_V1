@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
 export interface OrderItem {
@@ -89,7 +89,7 @@ export function useOrders() {
   const [creating, setCreating] = useState(false);
 
   // Fetch user orders
-  const fetchOrders = async (page = 1, limit = 10, status?: string) => {
+  const fetchOrders = useCallback(async (page = 1, limit = 10, status?: string) => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -117,7 +117,7 @@ export function useOrders() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Create new order
   const createOrder = async (orderData: CreateOrderData): Promise<Order | null> => {
