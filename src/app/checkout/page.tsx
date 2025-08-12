@@ -36,7 +36,7 @@ export default function CheckoutPage() {
   
   useEffect(() => {
     if (items.length === 0 && !submitted) {
-      toast.error("Keranjang belanja kosong");
+      toast.error("Your cart is empty");
       router.push("/product");
     }
   }, [items.length, submitted, router]);
@@ -54,18 +54,17 @@ export default function CheckoutPage() {
 
     
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
-      toast.error("Mohon lengkapi semua field yang wajib diisi");
+      toast.error("Please complete all required fields");
       setIsSubmitting(false);
       return;
     }
 
     
     await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    setSubmitted(true);
-    clearCart();
-    toast.success("Pesanan berhasil dibuat!");
-    setIsSubmitting(false);
+  setSubmitted(true);
+  clearCart();
+  toast.success("Order placed successfully!");
+  setIsSubmitting(false);
   };
 
   if (submitted) {
@@ -77,14 +76,14 @@ export default function CheckoutPage() {
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Pesanan Berhasil Dibuat!</h1>
-              <p className="text-muted-foreground mb-6">Terima kasih atas pesanan Anda. Kami akan segera memproses dan mengirimkan konfirmasi ke email Anda.</p>
+              <h1 className="text-2xl font-bold mb-2">Order Placed!</h1>
+              <p className="text-muted-foreground mb-6">Thank you for your order. We will process it and send confirmation to your email soon.</p>
               <div className="flex gap-4 justify-center">
                 <Button asChild>
-                  <Link href="/order-history">Lihat Pesanan</Link>
+                  <Link href="/order-history">View Orders</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/">Kembali ke Beranda</Link>
+                  <Link href="/">Back to Home</Link>
                 </Button>
               </div>
             </CardContent>
@@ -101,32 +100,32 @@ export default function CheckoutPage() {
           <Button variant="ghost" asChild className="mb-4">
             <Link href="/">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Kembali
+              Back
             </Link>
           </Button>
           <h1 className="text-3xl font-bold">Checkout</h1>
-          <p className="text-muted-foreground">Lengkapi informasi untuk menyelesaikan pesanan</p>
+          <p className="text-muted-foreground">Fill in your information to complete your order</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Form Checkout */}
+          {/* Checkout Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Package className="h-5 w-5 text-primary" />
-                    Informasi Pengiriman
+                    Shipping Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="nama">Nama Lengkap *</Label>
-                      <Input id="nama" name="nama" value={formData.nama} onChange={handleInputChange} placeholder="Masukkan nama lengkap" required />
+                      <Label htmlFor="nama">Full Name *</Label>
+                      <Input id="nama" name="nama" value={formData.nama} onChange={handleInputChange} placeholder="Enter your full name" required />
                     </div>
                     <div>
-                      <Label htmlFor="phone">Nomor Telepon *</Label>
+                      <Label htmlFor="phone">Phone Number *</Label>
                       <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="08xxxxxxxxxx" required />
                     </div>
                   </div>
@@ -135,16 +134,16 @@ export default function CheckoutPage() {
                     <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="email@example.com" required />
                   </div>
                   <div>
-                    <Label htmlFor="alamat">Alamat Lengkap *</Label>
-                    <Textarea id="alamat" name="alamat" value={formData.alamat} onChange={handleInputChange} placeholder="Jl. Contoh No. 123, RT/RW, Kelurahan, Kecamatan, Kota" required rows={3} />
+                    <Label htmlFor="alamat">Full Address *</Label>
+                    <Textarea id="alamat" name="alamat" value={formData.alamat} onChange={handleInputChange} placeholder="Street, District, City, etc." required rows={3} />
                   </div>
                   <div>
-                    <Label htmlFor="kodePos">Kode Pos</Label>
+                    <Label htmlFor="kodePos">Postal Code</Label>
                     <Input id="kodePos" name="kodePos" value={formData.kodePos} onChange={handleInputChange} placeholder="12345" />
                   </div>
                   <div>
-                    <Label htmlFor="catatan">Catatan Tambahan</Label>
-                    <Textarea id="catatan" name="catatan" value={formData.catatan} onChange={handleInputChange} placeholder="Catatan untuk kurir atau toko (opsional)" rows={2} />
+                    <Label htmlFor="catatan">Additional Notes</Label>
+                    <Textarea id="catatan" name="catatan" value={formData.catatan} onChange={handleInputChange} placeholder="Notes for courier or store (optional)" rows={2} />
                   </div>
                 </CardContent>
               </Card>
@@ -153,7 +152,7 @@ export default function CheckoutPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CreditCard className="h-5 w-5 text-primary" />
-                    Metode Pembayaran
+                    Payment Method
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -161,8 +160,8 @@ export default function CheckoutPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 bg-primary rounded-full"></div>
                       <div>
-                        <p className="font-medium">Transfer Bank</p>
-                        <p className="text-sm text-muted-foreground">Pembayaran via transfer bank (Konfirmasi manual)</p>
+                        <p className="font-medium">Bank Transfer</p>
+                        <p className="text-sm text-muted-foreground">Pay via bank transfer (manual confirmation)</p>
                       </div>
                     </div>
                   </div>
@@ -170,7 +169,7 @@ export default function CheckoutPage() {
               </Card>
 
               <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-                {isSubmitting ? "Memproses..." : `Buat Pesanan - Rp ${total.toLocaleString()}`}
+                {isSubmitting ? "Processing..." : `Place Order - $${total.toLocaleString("en-US", { style: "currency", currency: "USD" })}`}
               </Button>
             </form>
           </div>
@@ -181,7 +180,7 @@ export default function CheckoutPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Truck className="h-5 w-5 text-primary" />
-                  Ringkasan Pesanan
+                  Order Summary
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -200,8 +199,12 @@ export default function CheckoutPage() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
                         <div className="flex items-center justify-between mt-1">
-                          <span className="text-sm text-muted-foreground">x{item.qty}</span>
-                          <span className="text-sm font-semibold">Rp {(item.price * item.qty).toLocaleString()}</span>
+                          <span className="text-sm text-muted-foreground">x{typeof item.quantity === "number" && item.quantity > 0 ? item.quantity : 1}</span>
+                          <span className="text-sm font-semibold">{
+                            typeof item.price === "number" && typeof item.quantity === "number" && item.price > 0 && item.quantity > 0
+                              ? (item.price * item.quantity).toLocaleString("en-US", { style: "currency", currency: "USD" })
+                              : (0).toLocaleString("en-US", { style: "currency", currency: "USD" })
+                          }</span>
                         </div>
                       </div>
                     </div>
@@ -215,27 +218,27 @@ export default function CheckoutPage() {
                     <span>
                       Subtotal ({getTotalItems()} item{getTotalItems() > 1 ? "s" : ""})
                     </span>
-                    <span>Rp {subtotal.toLocaleString()}</span>
+                    <span>{subtotal.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="flex items-center gap-1">
-                      Ongkos Kirim
+                      Shipping Fee
                       {ongkir === 0 && (
                         <Badge variant="secondary" className="text-xs">
-                          GRATIS
+                          FREE
                         </Badge>
                       )}
                     </span>
-                    <span>Rp {ongkir.toLocaleString()}</span>
+                    <span>{ongkir.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
                   </div>
-                  {subtotal < 250000 && ongkir > 0 && <p className="text-xs text-muted-foreground">Gratis ongkir untuk pembelian min. Rp 250.000</p>}
+                  {subtotal < 250000 && ongkir > 0 && <p className="text-xs text-muted-foreground">Free shipping for orders over $250.00</p>}
                 </div>
 
                 <Separator />
 
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span>Rp {total.toLocaleString()}</span>
+                  <span>{total.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
                 </div>
               </CardContent>
             </Card>

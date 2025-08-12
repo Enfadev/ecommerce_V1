@@ -1,5 +1,7 @@
 
 # Copilot Instructions (General Version)
+# Default Currency Rule
+The default currency for this website is US Dollar (USD). All price, payment, and monetary information must use USD unless the user requests otherwise.
 
 ## Additional Rule: Comment Usage
 Do not use unnecessary comments. Only use section comments (e.g., React JSX block comments for UI structure or major code regions). Avoid inline or explanatory comments unless absolutely required for complex logic.
