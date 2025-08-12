@@ -96,7 +96,7 @@ export function CartDrawer() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm line-clamp-2 mb-1">{item.name}</h4>
                         <div className="flex items-center justify-between">
-                          <div className="text-sm font-semibold text-primary">${item.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
+                          <div className="text-sm font-semibold text-primary">{item.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
                           <Button variant="ghost" size="sm" onClick={() => handleRemoveItem(item.id, item.name)} className="text-destructive hover:text-destructive hover:bg-destructive/10 p-2">
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -110,7 +110,7 @@ export function CartDrawer() {
                           <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.quantity + 1)} className="h-8 w-8 p-0">
                             <Plus className="h-3 w-3" />
                           </Button>
-                          <div className="ml-auto text-sm font-semibold">${(item.price * item.quantity).toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
+                          <div className="ml-auto text-sm font-semibold">{(item.price * item.quantity).toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
                         </div>
                       </div>
                     </div>
@@ -129,7 +129,7 @@ export function CartDrawer() {
                 <span className="text-sm text-muted-foreground">
                   Subtotal ({totalItems} item{totalItems > 1 ? "s" : ""})
                 </span>
-                <span className="text-lg font-bold">${total.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
+                <span className="text-lg font-bold">{total.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
               </div>
 
               <div className="grid gap-2">
