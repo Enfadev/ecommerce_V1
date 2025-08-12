@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CartDrawer } from "./CartDrawer";
-import { CartStats } from "./CartStats";
 import { WishlistBadge } from "./WishlistBadge";
 import { Search, Menu, Heart, User, ShoppingBag, LogOut, Settings, Crown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -83,15 +82,11 @@ export function Header() {
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-2">
-          {/* Cart Stats */}
-          <CartStats />
-
           {/* Mobile Search */}
           <Button variant="ghost" size="icon" className="md:hidden">
             <Search className="h-5 w-5" />
           </Button>
 
-          {/* Wishlist */}
           {/* Wishlist */}
           <div className="hidden sm:block">
             <WishlistBadge />
