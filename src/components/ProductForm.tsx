@@ -58,7 +58,21 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     reset,
   } = useForm({
     resolver: zodResolver(productSchema),
-    defaultValues: product || { name: "", price: 0, image: "", description: "" },
+    defaultValues: product || { 
+      name: "", 
+      price: 0, 
+      description: "",
+      category: "",
+      stock: 0,
+      status: "active",
+      sku: "",
+      brand: "",
+      slug: "",
+      metaTitle: "",
+      metaDescription: "",
+      hargaDiskon: 0,
+      promoExpired: ""
+    },
   });
 
 

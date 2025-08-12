@@ -133,9 +133,23 @@ export async function PUT(req: Request) {
       promoExpired,
       gallery
     } = await req.json();
+    
     if (!id || !name || !price) {
       return NextResponse.json({ error: 'ID, name, and price are required' }, { status: 400 });
     }
+
+    // Handle category relationship
+    let categoryData = {};
+    if (category) {
+      // First, find or create the category
+      const categoryRecord = await prisma.category.upsert({
+        where: { name: category },
+        update: {},
+        create: { name: category }
+      });
+      categoryData = { categoryId: categoryRecord.id };
+    }
+
     const product = await prisma.product.update({
       where: { id: Number(id) },
       data: {
@@ -143,31 +157,61 @@ export async function PUT(req: Request) {
         description,
         price: parseFloat(price),
         imageUrl,
-        category,
-        stock,
-        status,
+        ...categoryData,
+        stock: stock ? Number(stock) : 0,
+        status: status || 'active',
         sku,
         brand,
         slug,
         metaTitle,
         metaDescription,
         discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === '' ? null : parseFloat(discountPrice),
-        promoExpired,
-        gallery,
+        promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
     });
+    
     return NextResponse.json(product);
   } catch (error) {
+    console.error('Update product error:', error);
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const { name, description, price, imageUrl, discountPrice } = await req.json();
+    const { 
+      name, 
+      description, 
+      price, 
+      imageUrl, 
+      discountPrice,
+      category,
+      stock,
+      status,
+      sku,
+      brand,
+      slug,
+      metaTitle,
+      metaDescription,
+      promoExpired
+    } = await req.json();
+    
     if (!name || !price) {
       return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
     }
+
+    // Handle category relationship
+    let categoryData = {};
+    if (category) {
+      // First, find or create the category
+      const categoryRecord = await prisma.category.upsert({
+        where: { name: category },
+        update: {},
+        create: { name: category }
+      });
+      categoryData = { categoryId: categoryRecord.id };
+    }
+
     const product = await prisma.product.create({
       data: {
         name,
@@ -175,10 +219,21 @@ export async function POST(req: Request) {
         price: parseFloat(price),
         imageUrl,
         discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === '' ? null : parseFloat(discountPrice),
+        ...categoryData,
+        stock: stock ? Number(stock) : 0,
+        status: status || 'active',
+        sku,
+        brand,
+        slug,
+        metaTitle,
+        metaDescription,
+        promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
     });
+    
     return NextResponse.json(product);
   } catch (error) {
+    console.error('Create product error:', error);
     return NextResponse.json({ error: 'Failed to add product' }, { status: 500 });
   }
 }

@@ -39,7 +39,18 @@ interface ProductFormData {
   name: string;
   price: number;
   description?: string;
+  category?: string;
+  stock?: number;
+  status?: string;
+  sku?: string;
+  brand?: string;
+  slug?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  hargaDiskon?: number;
+  promoExpired?: string;
   imageFile?: File;
+  imageFiles?: File[];
 }
 
 export default function AdminProductManagement() {
@@ -168,7 +179,7 @@ export default function AdminProductManagement() {
   const handleSave = async (productData: ProductFormData) => {
     if (editingProduct) {
       try {
-        let imageUrl = editingProduct.image;
+        let imageUrl = editingProduct.imageUrl;
         let galleryUrls = editingProduct.gallery || [];
         // Upload gambar utama jika ada file baru
         if (productData.imageFiles && productData.imageFiles.length > 0) {
@@ -214,7 +225,7 @@ export default function AdminProductManagement() {
             slug: productData.slug,
             metaTitle: productData.metaTitle,
             metaDescription: productData.metaDescription,
-            hargaDiskon: productData.hargaDiskon,
+            discountPrice: productData.hargaDiskon, // Map hargaDiskon to discountPrice
             promoExpired: productData.promoExpired,
             gallery: galleryUrls,
           }),
@@ -222,11 +233,8 @@ export default function AdminProductManagement() {
         if (!res.ok) throw new Error("Failed to update product");
         const updatedProduct = await res.json();
         setProducts(products.map((p) => (p.id === updatedProduct.id ? {
-          ...p,
-          name: updatedProduct.name,
-          price: updatedProduct.price,
-          image: updatedProduct.imageUrl || "/placeholder-image.svg",
-          description: updatedProduct.description || "",
+          ...updatedProduct,
+          imageUrl: updatedProduct.imageUrl || "/placeholder-image.svg",
         } : p)));
       } catch {
         alert("Failed to update product");
@@ -253,19 +261,26 @@ export default function AdminProductManagement() {
             price: productData.price,
             imageUrl,
             description: productData.description,
+            category: productData.category,
+            stock: productData.stock,
+            status: productData.status,
+            sku: productData.sku,
+            brand: productData.brand,
+            slug: productData.slug,
+            metaTitle: productData.metaTitle,
+            metaDescription: productData.metaDescription,
+            discountPrice: productData.hargaDiskon,
+            promoExpired: productData.promoExpired,
           }),
         });
         if (!res.ok) throw new Error("Failed to add product");
         const newProduct = await res.json();
         setProducts([{
-          id: newProduct.id,
-          name: newProduct.name,
-          price: newProduct.price,
-          image: newProduct.imageUrl || "/placeholder-image.svg",
-          category: "General",
-          stock: Math.floor(Math.random() * 50) + 1,
-          status: "active",
-          description: newProduct.description || "",
+          ...newProduct,
+          imageUrl: newProduct.imageUrl || "/placeholder-image.svg",
+          category: newProduct.category || "General",
+          stock: newProduct.stock || 0,
+          status: newProduct.status || "active",
           createdAt: new Date(newProduct.createdAt).toLocaleDateString("en-US"),
         }, ...products]);
       } catch {
