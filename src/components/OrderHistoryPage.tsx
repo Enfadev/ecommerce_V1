@@ -48,14 +48,14 @@ async function fetchOrderHistory(): Promise<Order[]> {
           orderNumber: "ORD-2024-001",
           date: "2025-07-20",
           status: "Delivered",
-          total: 450000,
+          total: 1150,
           trackingNumber: "JNE123456789",
           estimatedDelivery: "2025-07-22",
-          shippingAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
+          shippingAddress: "123 Sudirman St, Central Jakarta",
           paymentMethod: "Credit Card",
           items: [
-            { id: "1", name: "Kaos Polos Premium", qty: 2, price: 125000, variant: "Hitam, Size L" },
-            { id: "2", name: "Topi Baseball Cap", qty: 1, price: 200000, variant: "Navy Blue" },
+            { id: "1", name: "Premium Plain T-Shirt", qty: 2, price: 250, variant: "Black, Size L" },
+            { id: "2", name: "Baseball Cap", qty: 1, price: 650, variant: "Navy Blue" },
           ],
         },
         {
@@ -63,14 +63,14 @@ async function fetchOrderHistory(): Promise<Order[]> {
           orderNumber: "ORD-2024-002",
           date: "2025-07-18",
           status: "Shipped",
-          total: 320000,
+          total: 320,
           trackingNumber: "SICEPAT987654321",
           estimatedDelivery: "2025-07-23",
-          shippingAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan",
+          shippingAddress: "456 Gatot Subroto St, South Jakarta",
           paymentMethod: "Bank Transfer",
           items: [
-            { id: "3", name: "Celana Jeans Slim Fit", qty: 1, price: 280000, variant: "Blue, Size 32" },
-            { id: "4", name: "Ikat Pinggang Kulit", qty: 1, price: 40000, variant: "Brown" },
+            { id: "3", name: "Slim Fit Jeans", qty: 1, price: 280, variant: "Blue, Size 32" },
+            { id: "4", name: "Leather Belt", qty: 1, price: 40, variant: "Brown" },
           ],
         },
         {
@@ -78,42 +78,42 @@ async function fetchOrderHistory(): Promise<Order[]> {
           orderNumber: "ORD-2024-003",
           date: "2025-07-15",
           status: "Processing",
-          total: 150000,
-          shippingAddress: "Jl. Thamrin No. 789, Jakarta Pusat",
+          total: 150,
+          shippingAddress: "789 Thamrin St, Central Jakarta",
           paymentMethod: "E-Wallet",
-          items: [{ id: "5", name: "Hoodie Oversize", qty: 1, price: 150000, variant: "Grey, Size XL" }],
+          items: [{ id: "5", name: "Oversize Hoodie", qty: 1, price: 150, variant: "Grey, Size XL" }],
         },
         {
           id: "4",
           orderNumber: "ORD-2024-004",
           date: "2025-07-10",
           status: "Cancelled",
-          total: 85000,
-          shippingAddress: "Jl. Kuningan No. 321, Jakarta Selatan",
+          total: 85,
+          shippingAddress: "321 Kuningan St, South Jakarta",
           paymentMethod: "Credit Card",
-          items: [{ id: "6", name: "Kemeja Casual", qty: 1, price: 85000, variant: "White, Size M" }],
-          notes: "Dibatalkan karena stok habis",
+          items: [{ id: "6", name: "Casual Shirt", qty: 1, price: 85, variant: "White, Size M" }],
+          notes: "Cancelled due to out of stock",
         },
         {
           id: "5",
           orderNumber: "ORD-2024-005",
           date: "2025-07-08",
           status: "Pending",
-          total: 275000,
-          shippingAddress: "Jl. Senopati No. 654, Jakarta Selatan",
+          total: 275,
+          shippingAddress: "654 Senopati St, South Jakarta",
           paymentMethod: "Bank Transfer",
-          items: [{ id: "7", name: "Sepatu Sneakers", qty: 1, price: 275000, variant: "White, Size 42" }],
+          items: [{ id: "7", name: "Sneakers Shoes", qty: 1, price: 275, variant: "White, Size 42" }],
         },
         {
           id: "6",
           orderNumber: "ORD-2024-006",
           date: "2025-07-05",
           status: "Returned",
-          total: 195000,
-          shippingAddress: "Jl. Rasuna Said No. 987, Jakarta Selatan",
+          total: 195,
+          shippingAddress: "987 Rasuna Said St, South Jakarta",
           paymentMethod: "E-Wallet",
-          items: [{ id: "8", name: "Jaket Bomber", qty: 1, price: 195000, variant: "Black, Size L" }],
-          notes: "Barang tidak sesuai ekspektasi",
+          items: [{ id: "8", name: "Bomber Jacket", qty: 1, price: 195, variant: "Black, Size L" }],
+          notes: "Item did not meet expectations",
         },
       ]);
     }, 1200);
@@ -277,19 +277,19 @@ export default function OrderHistoryPage() {
 
   
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       day: "2-digit",
-      month: "long",
+      month: "short",
       year: "numeric",
     });
   };
 
   
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
+      currency: "USD",
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -468,7 +468,7 @@ export default function OrderHistoryPage() {
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="all" className="text-xs">
-              Semua ({orders?.length || 0})
+              All ({orders?.length || 0})
             </TabsTrigger>
             {Object.entries(statusConfig).map(([status, config]) => (
               <TabsTrigger key={status} value={status} className="text-xs">
@@ -496,8 +496,8 @@ export default function OrderHistoryPage() {
                       <Search className="h-8 w-8 text-muted-foreground" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-xl font-semibold text-foreground">Tidak ada pesanan ditemukan</h3>
-                      <p className="text-muted-foreground">Coba ubah filter pencarian atau hapus beberapa kriteria filter untuk melihat lebih banyak hasil.</p>
+                      <h3 className="text-xl font-semibold text-foreground">No orders found</h3>
+                      <p className="text-muted-foreground">Try changing your search or remove some filter criteria to see more results.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
                       <Button
@@ -516,7 +516,7 @@ export default function OrderHistoryPage() {
                         }}
                       >
                         <X className="h-4 w-4 mr-2" />
-                        Hapus Filter
+                        Clear Filter
                       </Button>
                     </div>
                   </>
