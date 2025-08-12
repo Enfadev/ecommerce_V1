@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, MoreHorizontal, ArrowUpDown, Download, Calendar } from "lucide-react";
+import { Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, MoreHorizontal, Download, Calendar } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useOrders } from "@/hooks/useOrders";
 
 interface Order {
   id: string;
@@ -21,6 +22,7 @@ interface Order {
     name: string;
     quantity: number;
     price: number;
+    image?: string;
   }[];
   total: number;
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
@@ -28,115 +30,56 @@ interface Order {
   createdAt: string;
   updatedAt: string;
   shippingAddress: string;
+  trackingNumber?: string;
+  estimatedDelivery?: string;
+  paymentMethod: string;
+  subtotal: number;
+  shippingFee: number;
+  tax: number;
+  discount: number;
+  notes?: string;
 }
 
-const mockOrders: Order[] = [
-  {
-    id: "ORD-001",
-    customer: { name: "John Smith", email: "john@email.com", phone: "08123456789" },
-    items: [
-      { name: "iPhone 14 Pro", quantity: 1, price: 15000000 },
-      { name: "AirPods Pro", quantity: 1, price: 3500000 },
-    ],
-    total: 18500000,
-    status: "delivered",
-    paymentStatus: "paid",
-    createdAt: "2024-01-15",
-    updatedAt: "2024-01-18",
-    shippingAddress: "123 Main St, New York",
-  },
-  {
-    id: "ORD-002",
-    customer: { name: "Sarah Lee", email: "sarah@email.com", phone: "08234567890" },
-    items: [{ name: "Samsung Galaxy S23", quantity: 1, price: 12000000 }],
-    total: 12000000,
-    status: "shipped",
-    paymentStatus: "paid",
-    createdAt: "2024-01-20",
-    updatedAt: "2024-01-22",
-    shippingAddress: "456 Market Ave, Los Angeles",
-  },
-  {
-    id: "ORD-003",
-    customer: { name: "Michael Brown", email: "michael@email.com", phone: "08345678901" },
-    items: [{ name: "MacBook Air M2", quantity: 1, price: 18000000 }],
-    total: 18000000,
-    status: "processing",
-    paymentStatus: "paid",
-    createdAt: "2024-01-22",
-    updatedAt: "2024-01-22",
-    shippingAddress: "789 Broadway, Chicago",
-  },
-  {
-    id: "ORD-004",
-    customer: { name: "Emily Davis", email: "emily@email.com", phone: "08456789012" },
-    items: [
-      { name: "iPad Pro", quantity: 1, price: 15000000 },
-      { name: "Apple Pencil", quantity: 1, price: 2000000 },
-    ],
-    total: 17000000,
-    status: "pending",
-    paymentStatus: "pending",
-    createdAt: "2024-01-25",
-    updatedAt: "2024-01-25",
-    shippingAddress: "321 Oak Lane, Houston",
-  },
-  {
-    id: "ORD-005",
-    customer: { name: "David Wilson", email: "david@email.com", phone: "08567890123" },
-    items: [{ name: "Sony WH-1000XM5", quantity: 2, price: 5000000 }],
-    total: 10000000,
-    status: "cancelled",
-    paymentStatus: "failed",
-    createdAt: "2024-01-20",
-    updatedAt: "2024-01-21",
-    shippingAddress: "654 Pine St, Seattle",
-  },
-];
-
 export default function AdminOrderManagement() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const { orders, stats, loading, error, pagination, fetchOrders, updateOrder } = useOrders();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showOrderDetail, setShowOrderDetail] = useState(false);
-  const [sortBy, setSortBy] = useState<keyof Order>("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [updating, setUpdating] = useState<string | null>(null);
 
-  
-  const filteredOrders = orders
-    .filter((order) => {
-      const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.email.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = selectedStatus === "all" || order.status === selectedStatus;
-      return matchesSearch && matchesStatus;
-    })
-    .sort((a, b) => {
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
-      const modifier = sortOrder === "asc" ? 1 : -1;
+  useEffect(() => {
+    const delayedSearch = setTimeout(() => {
+      fetchOrders({
+        page: 1,
+        status: selectedStatus,
+        search: searchQuery,
+      });
+    }, 500);
 
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return aValue.localeCompare(bValue) * modifier;
-      }
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return (aValue - bValue) * modifier;
-      }
-      return 0;
-    });
+    return () => clearTimeout(delayedSearch);
+  }, [searchQuery, selectedStatus, fetchOrders]);
 
-  const statusOptions = ["all", "pending", "processing", "shipped", "delivered", "cancelled"];
-
-  const handleSort = (field: keyof Order) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("asc");
+  const handleStatusChange = async (orderId: string, newStatus: Order["status"]) => {
+    setUpdating(orderId);
+    try {
+      await updateOrder(orderId, { status: newStatus });
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+    } finally {
+      setUpdating(null);
     }
   };
 
-  const handleStatusChange = (orderId: string, newStatus: Order["status"]) => {
-    setOrders(orders.map((order) => (order.id === orderId ? { ...order, status: newStatus, updatedAt: new Date().toISOString().split("T")[0] } : order)));
+  const handlePaymentStatusChange = async (orderId: string, newPaymentStatus: Order["paymentStatus"]) => {
+    setUpdating(orderId);
+    try {
+      await updateOrder(orderId, { paymentStatus: newPaymentStatus });
+    } catch (error) {
+      console.error('Failed to update payment status:', error);
+    } finally {
+      setUpdating(null);
+    }
   };
 
   const handleViewDetail = (order: Order) => {
@@ -221,18 +164,29 @@ export default function AdminOrderManagement() {
     }
   };
 
-  
-  const stats = {
-    total: orders.length,
-    pending: orders.filter((o) => o.status === "pending").length,
-    processing: orders.filter((o) => o.status === "processing").length,
-    shipped: orders.filter((o) => o.status === "shipped").length,
-    delivered: orders.filter((o) => o.status === "delivered").length,
-    revenue: orders.filter((o) => o.paymentStatus === "paid").reduce((sum, o) => sum + o.total, 0),
-  };
+  const statusOptions = ["all", "pending", "processing", "shipped", "delivered", "cancelled"];
 
   return (
     <div className="space-y-6">
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 text-red-800">
+            <XCircle className="w-5 h-5" />
+            <span className="font-medium">Error loading orders</span>
+          </div>
+          <p className="text-red-700 mt-1">{error}</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-2"
+            onClick={() => fetchOrders({ page: 1, status: selectedStatus, search: searchQuery })}
+          >
+            Try Again
+          </Button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -315,7 +269,7 @@ export default function AdminOrderManagement() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Revenue</p>
-              <p className="text-lg font-bold">Rp {stats.revenue.toLocaleString("id-ID")}</p>
+              <p className="text-lg font-bold">USD ${stats.revenue.toLocaleString()}</p>
             </div>
           </div>
         </Card>
@@ -357,96 +311,153 @@ export default function AdminOrderManagement() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>
-                <Button variant="ghost" onClick={() => handleSort("id")} className="gap-1 p-0 h-auto">
-                  Order ID
-                  <ArrowUpDown className="w-4 h-4" />
-                </Button>
-              </TableHead>
+              <TableHead>Order ID</TableHead>
               <TableHead>Customer</TableHead>
               <TableHead>Product</TableHead>
-              <TableHead>
-                <Button variant="ghost" onClick={() => handleSort("total")} className="gap-1 p-0 h-auto">
-                  Total
-                  <ArrowUpDown className="w-4 h-4" />
-                </Button>
-              </TableHead>
+              <TableHead>Total</TableHead>
               <TableHead>Order Status</TableHead>
               <TableHead>Payment Status</TableHead>
-              <TableHead>
-                <Button variant="ghost" onClick={() => handleSort("createdAt")} className="gap-1 p-0 h-auto">
-                  Date
-                  <ArrowUpDown className="w-4 h-4" />
-                </Button>
-              </TableHead>
+              <TableHead>Date</TableHead>
               <TableHead className="w-12">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredOrders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{order.id}</p>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    Loading orders...
                   </div>
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{order.customer.name}</p>
-                    <p className="text-sm text-muted-foreground">{order.customer.email}</p>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {order.items[0]?.name}
-                      {order.items.length > 1 && ` +${order.items.length - 1} more`}
-                    </p>
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">Rp {order.total.toLocaleString("id-ID")}</TableCell>
-                <TableCell>
-                  <Badge className={getStatusColor(order.status)}>
-                    <div className="flex items-center gap-1">
-                      {getStatusIcon(order.status)}
-                      {getStatusText(order.status)}
-                    </div>
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge className={getPaymentStatusColor(order.paymentStatus)}>{getPaymentStatusText(order.paymentStatus)}</Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("en-GB")}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Action</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleViewDetail(order)}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Detail
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                      {["pending", "processing", "shipped", "delivered", "cancelled"].map((status) => (
-                        <DropdownMenuItem key={status} onClick={() => handleStatusChange(order.id, status as Order["status"])} disabled={order.status === status}>
-                          {getStatusIcon(status)}
-                          <span className="ml-2">{getStatusText(status)}</span>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </TableCell>
               </TableRow>
-            ))}
+            ) : error ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-red-500">
+                  Error loading orders: {error}
+                </TableCell>
+              </TableRow>
+            ) : orders.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  No orders found
+                </TableCell>
+              </TableRow>
+            ) : (
+              orders.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{order.id}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{order.customer.name}</p>
+                      <p className="text-sm text-muted-foreground">{order.customer.email}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {order.items[0]?.name}
+                        {order.items.length > 1 && ` +${order.items.length - 1} more`}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-medium">USD ${order.total.toLocaleString()}</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(order.status)}>
+                      <div className="flex items-center gap-1">
+                        {getStatusIcon(order.status)}
+                        {getStatusText(order.status)}
+                      </div>
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={getPaymentStatusColor(order.paymentStatus)}>{getPaymentStatusText(order.paymentStatus)}</Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString("en-GB")}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" disabled={updating === order.id}>
+                          {updating === order.id ? (
+                            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <MoreHorizontal className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Action</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => handleViewDetail(order)}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          Detail
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Change Status</DropdownMenuLabel>
+                        {["pending", "processing", "shipped", "delivered", "cancelled"].map((status) => (
+                          <DropdownMenuItem 
+                            key={status} 
+                            onClick={() => handleStatusChange(order.id, status as Order["status"])} 
+                            disabled={order.status === status || updating === order.id}
+                          >
+                            {getStatusIcon(status)}
+                            <span className="ml-2">{getStatusText(status)}</span>
+                          </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Payment Status</DropdownMenuLabel>
+                        {["pending", "paid", "failed"].map((paymentStatus) => (
+                          <DropdownMenuItem 
+                            key={paymentStatus} 
+                            onClick={() => handlePaymentStatusChange(order.id, paymentStatus as Order["paymentStatus"])} 
+                            disabled={order.paymentStatus === paymentStatus || updating === order.id}
+                          >
+                            <span className="ml-2">{getPaymentStatusText(paymentStatus)}</span>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
+        
+        {/* Pagination */}
+        {pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t">
+            <div className="text-sm text-muted-foreground">
+              Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.page <= 1 || loading}
+                onClick={() => fetchOrders({ page: pagination.page - 1, status: selectedStatus, search: searchQuery })}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {pagination.page} of {pagination.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.page >= pagination.totalPages || loading}
+                onClick={() => fetchOrders({ page: pagination.page + 1, status: selectedStatus, search: searchQuery })}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Order Detail Dialog */}
@@ -517,8 +528,8 @@ export default function AdminOrderManagement() {
                         <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">Rp {item.price.toLocaleString("id-ID")}</p>
-                        <p className="text-sm text-muted-foreground">Total: Rp {(item.price * item.quantity).toLocaleString("id-ID")}</p>
+                        <p className="font-semibold">USD ${item.price.toLocaleString()}</p>
+                        <p className="text-sm text-muted-foreground">Total: USD ${(item.price * item.quantity).toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
@@ -526,7 +537,7 @@ export default function AdminOrderManagement() {
                 <div className="border-t border-border pt-4 mt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">Order Total:</span>
-                    <span className="text-xl font-bold">Rp {selectedOrder.total.toLocaleString("id-ID")}</span>
+                    <span className="text-xl font-bold">USD ${selectedOrder.total.toLocaleString()}</span>
                   </div>
                 </div>
               </Card>
