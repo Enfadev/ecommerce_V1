@@ -82,10 +82,47 @@ This document outlines the security measures implemented to protect the e-commer
 2. **Defense in Depth**: Multiple layers of security controls
 3. **Secure by Default**: Secure configurations applied by default
 4. **Error Handling**: Graceful error handling without information disclosure
-5. **Input Validation**: All user inputs validated and sanitized
+5. **Input Validation**: All user inputs validated and sanitized with Zod schemas
 6. **Secure Storage**: Sensitive data properly hashed and stored
+7. **Rate Limiting**: API endpoints protected against abuse
+8. **CORS Policy**: Cross-origin requests properly controlled
+9. **CSRF Protection**: Cross-site request forgery prevention
+10. **Strong Password Policy**: Enforced password complexity requirements
 
 ## 🔧 Security Configuration
+
+### New Security Features Added
+
+#### Rate Limiting
+- **Authentication endpoints**: 5 requests per 15 minutes
+- **API endpoints**: 100 requests per 15 minutes  
+- **Upload endpoints**: 10 requests per hour
+- **Admin endpoints**: 50 requests per 15 minutes
+
+#### Enhanced Password Policy
+- **Minimum length**: 8 characters
+- **Required**: Uppercase + lowercase + numbers + special characters
+- **Forbidden**: Common patterns, repeated characters
+- **Strength assessment**: Weak/Medium/Strong classification
+
+#### Input Validation with Zod
+- **Email validation**: Format and length checks
+- **Name validation**: Character restrictions and length limits
+- **File upload validation**: Size and type restrictions
+- **XSS prevention**: HTML sanitization
+- **SQL injection prevention**: Additional input sanitization
+
+#### CORS Configuration
+- **Allowed origins**: Configurable via environment variables
+- **Methods**: GET, POST, PUT, DELETE, OPTIONS
+- **Headers**: Content-Type, Authorization, X-Requested-With
+- **Credentials**: Enabled for authenticated requests
+
+#### Content Security Policy
+- **Script sources**: Self and controlled inline scripts
+- **Style sources**: Self and inline styles
+- **Image sources**: Self, data, and blob URLs
+- **Frame ancestors**: None (prevents clickjacking)
 
 ### Environment Setup
 1. Copy `env.example` to `.env.local`
@@ -139,14 +176,20 @@ Ensure the `public/uploads` directory has proper permissions:
 - [x] Secure password hashing
 - [x] File upload restrictions
 - [x] Security headers implementation
-- [x] Input validation and sanitization
+- [x] Input validation and sanitization with Zod
 - [x] Environment variable protection
 - [x] Error handling security
 - [x] Role-based access control
-- [ ] Rate limiting implementation (recommended)
+- [x] Rate limiting implementation ✅ NEW
+- [x] CORS protection ✅ NEW
+- [x] Content Security Policy ✅ NEW
+- [x] Enhanced password policy ✅ NEW
+- [x] XSS and SQL injection prevention ✅ NEW
 - [ ] CSRF protection (consider for forms)
 - [ ] API versioning (for future updates)
 - [ ] Security testing automation
+- [ ] JWT token blacklisting (for logout)
+- [ ] Audit logging system
 
 ## 🆘 Incident Response
 

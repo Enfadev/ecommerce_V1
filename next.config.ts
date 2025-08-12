@@ -32,12 +32,32 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';",
+          },
         ],
       },
       {
-        // Additional headers for API routes
+        // CORS and additional headers for API routes
         source: '/api/(.*)',
         headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: process.env.ALLOWED_ORIGINS || 'http://localhost:3000',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization, X-Requested-With',
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true',
+          },
           {
             key: 'Cache-Control',
             value: 'no-store, max-age=0',

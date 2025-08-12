@@ -34,9 +34,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Get user profile from server (JWT from httpOnly cookie)
   const refreshUser = async () => {
     try {
+      setIsLoading(true);
+      
+      // First, check if we have an auth token
+      const authCheck = await fetch("/api/auth/check", {
+        method: "GET",
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
+      
+      if (!authCheck.ok) {
+        console.log('Auth check failed:', authCheck.status);
+        setUser(null);
+        return;
+      }
+      
+      const authData = await authCheck.json();
+      console.log('🔍 Auth check result:', authData);
+      
+      if (!authData.authenticated) {
+        console.log('Not authenticated:', authData.error);
+        setUser(null);
+        return;
+      }
+      
+      // Get full user profile
       const res = await fetch("/api/profile", {
         method: "GET",
-        credentials: 'include', // Include cookies
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
       });
       
       if (res.ok) {
@@ -50,21 +80,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           createdAt: userData.createdAt,
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
         });
+        console.log('✅ User profile loaded successfully');
       } else {
+        console.log('❌ Failed to load user profile:', res.status);
         setUser(null);
       }
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error("❌ Error fetching user profile:", error);
       setUser(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   // Load user on component mount
   useEffect(() => {
     const loadUser = async () => {
-      setIsLoading(true);
+      console.log('🔄 Loading user on mount...');
       await refreshUser();
-      setIsLoading(false);
     };
     
     loadUser();

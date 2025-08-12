@@ -1,142 +1,112 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyJWT } from './src/lib/jwt';
+import { verifyJWT } from '@/lib/jwt';
 
-// Define protected routes
-const protectedRoutes = ['/admin', '/profile', '/order-history'];
-const adminRoutes = ['/admin'];
+// Protected paths that require authentication
+const PROTECTED_PATHS = [
+  '/admin',
+  '/profile',
+  '/order-history',
+  '/wishlist',
+  '/checkout',
+];
+
+// Protected API routes that require authentication
+const PROTECTED_API_ROUTES = [
+  '/api/admin',
+  '/api/profile',
+  '/api/orders',
+  '/api/wishlist',
+  '/api/checkout',
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Check if the route is protected
-  const isProtectedRoute = protectedRoutes.some(route => 
-    pathname.startsWith(route)
-  );
+  console.log('🛡️ Middleware executing for:', pathname);
   
-  const isAdminRoute = adminRoutes.some(route => 
-    pathname.startsWith(route)
-  );
+  // Skip middleware for static files and public API routes
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/static') ||
+    pathname.includes('.') ||
+    pathname === '/api/test' ||
+    pathname === '/jwt-test'
+  ) {
+    console.log('⏭️ Skipping middleware for:', pathname);
+    return NextResponse.next();
+  }
 
-  if (isProtectedRoute) {
+  // Check if current path requires authentication
+  const isProtectedPath = PROTECTED_PATHS.some(path => pathname.startsWith(path));
+  const isProtectedAPI = PROTECTED_API_ROUTES.some(path => pathname.startsWith(path));
+  
+  if (isProtectedPath || isProtectedAPI) {
+    console.log('🔒 Protected route detected:', pathname);
+    
+    // Get token from cookies
     const token = request.cookies.get('auth-token')?.value;
     
     if (!token) {
-      // Redirect to signin if no token
-      const signInUrl = new URL('/signin', request.url);
-      signInUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(signInUrl);
+      console.log('❌ No token found for protected route');
+      
+      if (isProtectedAPI) {
+        return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      } else {
+        const loginUrl = new URL('/signin', request.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
     }
 
-    try {
-      const payload = await verifyJWT(token);
+    console.log('🔍 Verifying token for protected route...');
+    console.log('🔍 Token preview:', token.substring(0, 50) + '...');
+    
+    // Verify JWT token
+    const payload = await verifyJWT(token);
+    
+    if (!payload) {
+      console.log('❌ Invalid token for protected route');
       
-      if (!payload) {
-        // Invalid token, redirect to signin
-        const signInUrl = new URL('/signin', request.url);
-        signInUrl.searchParams.set('redirect', pathname);
-        return NextResponse.redirect(signInUrl);
+      if (isProtectedAPI) {
+        return NextResponse.json({ error: 'Invalid authentication token' }, { status: 401 });
+      } else {
+        const loginUrl = new URL('/signin', request.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
       }
-
-      // Check admin access
-      if (isAdminRoute && payload.role !== 'ADMIN') {
-        // Not admin, redirect to home
-        return NextResponse.redirect(new URL('/', request.url));
-      }
-
-      // Add user info to headers for API routes
-      const response = NextResponse.next();
-      response.headers.set('x-user-id', payload.id);
-      response.headers.set('x-user-email', payload.email);
-      response.headers.set('x-user-role', payload.role);
-      
-      return response;
-    } catch (error) {
-      // Only log detailed errors in development
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Middleware JWT verification error:', error);
-      }
-      const signInUrl = new URL('/signin', request.url);
-      signInUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(signInUrl);
     }
+
+    console.log('✅ Token verified for user:', payload.email);
+    
+    // Admin route protection
+    if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
+      if (payload.role !== 'ADMIN') {
+        console.log('❌ User not admin, denying access to admin route');
+        
+        if (isProtectedAPI) {
+          return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+        } else {
+          return NextResponse.redirect(new URL('/', request.url));
+        }
+      }
+    }
+
+    // Create response with user context headers
+    const response = NextResponse.next();
+    
+    // Add user context to headers for API routes
+    response.headers.set('x-user-id', payload.id);
+    response.headers.set('x-user-email', payload.email);
+    response.headers.set('x-user-role', payload.role);
+    
+    console.log('✅ Middleware completed successfully for:', pathname);
+    console.log('✅ Headers set - User ID:', payload.id, 'Email:', payload.email);
+    
+    return response;
   }
 
-  // For API routes, check authentication
-  if (pathname.startsWith('/api/')) {
-    // Public API routes that don't need authentication
-    const publicApiRoutes = [
-      '/api/signin',
-      '/api/register',
-      '/api/product',
-      '/api/product/filter-options',
-      '/api/home-page',
-      '/api/about-page',
-      '/api/contact-page',
-      '/api/event-page',
-      '/api/product-page'
-    ];
-
-    const isPublicApi = publicApiRoutes.some(route => 
-      pathname === route || pathname.startsWith(route + '/')
-    );
-
-    if (!isPublicApi) {
-      const token = request.cookies.get('auth-token')?.value;
-      
-      if (!token) {
-        return NextResponse.json(
-          { error: 'Authentication required' },
-          { status: 401 }
-        );
-      }
-
-      try {
-        const payload = await verifyJWT(token);
-        
-        if (!payload) {
-          return NextResponse.json(
-            { error: 'Invalid authentication token' },
-            { status: 401 }
-          );
-        }
-
-        // Check admin-only API routes
-        const adminApiRoutes = [
-          '/api/user',
-          '/api/upload'
-        ];
-
-        const isAdminApi = adminApiRoutes.some(route => 
-          pathname.startsWith(route)
-        );
-
-        if (isAdminApi && payload.role !== 'ADMIN') {
-          return NextResponse.json(
-            { error: 'Admin access required' },
-            { status: 403 }
-          );
-        }
-
-        // Add user info to headers
-        const response = NextResponse.next();
-        response.headers.set('x-user-id', payload.id);
-        response.headers.set('x-user-email', payload.email);
-        response.headers.set('x-user-role', payload.role);
-        
-        return response;
-      } catch (error) {
-        // Only log detailed errors in development
-        if (process.env.NODE_ENV !== 'production') {
-          console.error('API middleware JWT verification error:', error);
-        }
-        return NextResponse.json(
-          { error: 'Authentication verification failed' },
-          { status: 401 }
-        );
-      }
-    }
-  }
-
+  console.log('✅ Public route, no authentication required:', pathname);
   return NextResponse.next();
 }
 
@@ -144,13 +114,10 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api/signin (signin endpoint)
-     * - api/register (register endpoint)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 };

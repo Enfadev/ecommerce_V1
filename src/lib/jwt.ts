@@ -47,7 +47,14 @@ export async function signJWT(payload: Omit<CustomJWTPayload, 'iat' | 'exp'>) {
 // Verify JWT token
 export async function verifyJWT(token: string): Promise<CustomJWTPayload | null> {
   try {
+    console.log('🔍 Verifying JWT token...');
+    console.log('🔍 Token length:', token.length);
+    console.log('🔍 Token preview:', token.substring(0, 50) + '...');
+    
     const { payload } = await jwtVerify(token, secret);
+    
+    console.log('✅ JWT verified successfully for user:', payload.email);
+    
     return {
       id: payload.id as string,
       email: payload.email as string,
@@ -56,10 +63,12 @@ export async function verifyJWT(token: string): Promise<CustomJWTPayload | null>
       exp: payload.exp,
     };
   } catch (error) {
-    // Only log in development to avoid information disclosure
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('JWT verification failed:', error);
-    }
+    console.error('❌ JWT verification failed:', error);
+    console.error('❌ Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      tokenLength: token?.length || 0
+    });
     return null;
   }
 }
@@ -91,24 +100,30 @@ export async function isAdminRequest(request: NextRequest): Promise<boolean> {
 
 // Set auth cookie in response
 export function setAuthCookie(response: NextResponse, token: string): NextResponse {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   response.cookies.set('auth-token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction, // Only secure in production
+    sameSite: isProduction ? 'strict' : 'lax', // More permissive in development
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: '/',
+    domain: isProduction ? undefined : undefined, // Let browser set domain
   });
   return response;
 }
 
 // Clear auth cookie in response
 export function clearAuthCookie(response: NextResponse): NextResponse {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   response.cookies.set('auth-token', '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
     maxAge: 0,
     path: '/',
+    domain: isProduction ? undefined : undefined,
   });
   return response;
 }
