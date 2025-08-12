@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,40 +48,36 @@ export default function AdminOrderManagement() {
   const [showOrderDetail, setShowOrderDetail] = useState(false);
   const [updating, setUpdating] = useState<string | null>(null);
 
-  // Use separate state to track if initial load is done
-  const [initialLoad, setInitialLoad] = useState(false);
-
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     fetchOrders({ 
       page: newPage, 
       status: selectedStatus, 
       search: searchQuery 
     });
-  }, [fetchOrders, selectedStatus, searchQuery]);
+  };
 
-  // Initial load only
-  useEffect(() => {
-    if (!initialLoad) {
-      fetchOrders();
-      setInitialLoad(true);
-    }
-  }, [initialLoad, fetchOrders]);
-
-  // Handle search and filter changes with debounce
-  useEffect(() => {
-    if (!initialLoad) return; // Don't trigger on initial load
-    
-    const delayedSearch = setTimeout(() => {
-      fetchOrders({
-        page: 1,
-        status: selectedStatus,
-        search: searchQuery,
-      });
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    // Debounced fetch will be triggered after 500ms of no changes
+    setTimeout(() => {
+      if (value === searchQuery) { // Ensure the value hasn't changed
+        fetchOrders({
+          page: 1,
+          status: selectedStatus,
+          search: value,
+        });
+      }
     }, 500);
+  };
 
-    return () => clearTimeout(delayedSearch);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, selectedStatus]);
+  const handleStatusFilterChange = (value: string) => {
+    setSelectedStatus(value);
+    fetchOrders({
+      page: 1,
+      status: value,
+      search: searchQuery,
+    });
+  };
 
   const handleStatusChange = async (orderId: string, newStatus: Order["status"]) => {
     setUpdating(orderId);
@@ -304,7 +300,7 @@ export default function AdminOrderManagement() {
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Search by order ID, name, or email..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              <Input placeholder="Search by order ID, name, or email..." className="pl-10" value={searchQuery} onChange={(e) => handleSearchChange(e.target.value)} />
             </div>
           </div>
           <div className="flex gap-2">
@@ -319,7 +315,7 @@ export default function AdminOrderManagement() {
                 <DropdownMenuLabel>Select Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {statusOptions.map((status) => (
-                  <DropdownMenuItem key={status} onClick={() => setSelectedStatus(status)}>
+                  <DropdownMenuItem key={status} onClick={() => handleStatusFilterChange(status)}>
                     {status === "all" ? "All Statuses" : getStatusText(status)}
                   </DropdownMenuItem>
                 ))}
@@ -463,7 +459,7 @@ export default function AdminOrderManagement() {
                 variant="outline"
                 size="sm"
                 disabled={pagination.page <= 1 || loading}
-                onClick={() => fetchOrders({ page: pagination.page - 1, status: selectedStatus, search: searchQuery })}
+                onClick={() => handlePageChange(pagination.page - 1)}
               >
                 Previous
               </Button>
@@ -474,7 +470,7 @@ export default function AdminOrderManagement() {
                 variant="outline"
                 size="sm"
                 disabled={pagination.page >= pagination.totalPages || loading}
-                onClick={() => fetchOrders({ page: pagination.page + 1, status: selectedStatus, search: searchQuery })}
+                onClick={() => handlePageChange(pagination.page + 1)}
               >
                 Next
               </Button>

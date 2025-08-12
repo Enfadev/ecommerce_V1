@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface OrderItem {
   name: string;
@@ -41,6 +41,13 @@ interface OrderStats {
   revenue: number;
 }
 
+interface FetchOrdersParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}
+
 interface UseOrdersResult {
   orders: Order[];
   stats: OrderStats;
@@ -52,12 +59,7 @@ interface UseOrdersResult {
     total: number;
     totalPages: number;
   };
-  fetchOrders: (params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    search?: string;
-  }) => Promise<void>;
+  fetchOrders: (params?: FetchOrdersParams) => Promise<void>;
   updateOrder: (orderNumber: string, updates: {
     status?: string;
     paymentStatus?: string;
@@ -84,8 +86,10 @@ export function useOrders(): UseOrdersResult {
     total: 0,
     totalPages: 0,
   });
+  
+  const initializedRef = useRef(false);
 
-  const fetchOrders = useCallback(async (params = {}) => {
+  const fetchOrders = async (params: FetchOrdersParams = {}) => {
     setLoading(true);
     setError(null);
 
@@ -113,9 +117,9 @@ export function useOrders(): UseOrdersResult {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  const updateOrder = useCallback(async (orderNumber: string, updates: {
+  const updateOrder = async (orderNumber: string, updates: {
     status?: string;
     paymentStatus?: string;
     trackingNumber?: string;
@@ -136,20 +140,21 @@ export function useOrders(): UseOrdersResult {
         throw new Error('Failed to update order');
       }
 
-      // Refresh orders after update without changing pagination
-      await fetchOrders({
-        page: pagination.page,
-        limit: pagination.limit,
-      });
+      // Refresh current page after update
+      await fetchOrders();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update order');
       throw err;
     }
-  }, [fetchOrders, pagination.page, pagination.limit]);
+  };
 
+  // Initial load only
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      fetchOrders();
+    }
+  }, []);
 
   return {
     orders,
