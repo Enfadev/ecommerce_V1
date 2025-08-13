@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useOrders } from "@/hooks/useOrders";
 import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LucideIcon } from "lucide-react";
@@ -35,6 +36,7 @@ const menuItems: MenuItem[] = [
 export default function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const router = useRouter();
+  const { stats } = useOrders();
 
   const handleNavigation = (section: string) => {
     onSectionChange(section);
@@ -75,6 +77,7 @@ export default function AdminSidebar({ activeSection, onSectionChange }: AdminSi
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeSection === item.id;
+          const badgeValue = item.id === "orders" ? stats.total : item.badge;
 
           return (
             <Button
@@ -91,11 +94,11 @@ export default function AdminSidebar({ activeSection, onSectionChange }: AdminSi
               {!isCollapsed && (
                 <>
                   <span className="flex-1 text-left">{item.label}</span>
-                  {item.badge && (
+                  {badgeValue ? (
                     <Badge variant={isActive ? "secondary" : "outline"} className="h-5 px-1.5 text-xs">
-                      {item.badge}
+                      {badgeValue}
                     </Badge>
-                  )}
+                  ) : null}
                 </>
               )}
             </Button>
