@@ -22,13 +22,13 @@ function AdminAnalytics() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="p-6">
-          <h3 className="font-semibold mb-4">Today&apos;s Sales</h3>
-          <p className="text-3xl font-bold text-green-500">Rp 2,500,000</p>
+          <h3 className="font-semibold mb-4">Today's Sales</h3>
+          <p className="text-3xl font-bold text-green-500">$2,500</p>
           <p className="text-sm text-muted-foreground">+15% from yesterday</p>
         </Card>
 
         <Card className="p-6">
-          <h3 className="font-semibold mb-4">Today&apos;s Visitors</h3>
+          <h3 className="font-semibold mb-4">Today's Visitors</h3>
           <p className="text-3xl font-bold text-blue-500">1,234</p>
           <p className="text-sm text-muted-foreground">+8% from yesterday</p>
         </Card>

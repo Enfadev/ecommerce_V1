@@ -38,9 +38,9 @@ export default function InventoryManager() {
   };
 
   const getStockStatus = (stock: number) => {
-    if (stock === 0) return { status: "out", text: "Out of Stock", color: "bg-red-500/10 text-red-500 border-red-500/20", icon: AlertTriangle };
-    if (stock < 10) return { status: "low", text: "Low", color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", icon: AlertTriangle };
-    return { status: "good", text: "Good", color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle };
+  if (stock === 0) return { status: "out", text: "Out of Stock", color: "bg-red-500/10 text-red-500 border-red-500/20", icon: AlertTriangle };
+  if (stock < 10) return { status: "low", text: "Low Stock", color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", icon: AlertTriangle };
+  return { status: "good", text: "In Stock", color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle };
   };
 
   
@@ -58,7 +58,7 @@ export default function InventoryManager() {
     outOfStock: products.filter((p) => p.stock === 0).length,
     lowStock: products.filter((p) => p.stock < 10 && p.stock > 0).length,
     goodStock: products.filter((p) => p.stock >= 10).length,
-    totalValue: products.reduce((sum, p) => sum + p.price * p.stock, 0),
+  totalValue: products.reduce((sum, p) => sum + p.price * p.stock, 0),
   };
 
   return (
@@ -122,7 +122,7 @@ export default function InventoryManager() {
               <CheckCircle className="w-5 h-5 text-green-500" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Good Stock</p>
+              <p className="text-sm text-muted-foreground">In Stock</p>
               <p className="text-xl font-bold">{stats.goodStock}</p>
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function InventoryManager() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Inventory Value</p>
-              <p className="text-lg font-bold">Rp {stats.totalValue.toLocaleString("id-ID")}</p>
+              <p className="text-lg font-bold">{stats.totalValue.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>
             </div>
           </div>
         </Card>
@@ -173,10 +173,10 @@ export default function InventoryManager() {
               <TableHead className="w-20">Image</TableHead>
               <TableHead>Product Name</TableHead>
               <TableHead>Category</TableHead>
-              <TableHead>Price</TableHead>
+              <TableHead>Price (USD)</TableHead>
               <TableHead>Current Stock</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Value</TableHead>
+              <TableHead>Value (USD)</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -212,7 +212,7 @@ export default function InventoryManager() {
                   <TableCell>
                     <Badge variant="outline">{product.category}</Badge>
                   </TableCell>
-                  <TableCell className="font-medium">Rp {product.price.toLocaleString("id-ID")}</TableCell>
+                  <TableCell className="font-medium">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
                   <TableCell>
                     {editId === product.id ? <Input type="number" min={0} value={newStock} onChange={(e) => setNewStock(Number(e.target.value))} className="w-20" /> : <span className="font-mono text-lg">{product.stock}</span>}
                   </TableCell>
@@ -222,7 +222,7 @@ export default function InventoryManager() {
                       {stockInfo.text}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">Rp {(product.price * product.stock).toLocaleString("id-ID")}</TableCell>
+                  <TableCell className="font-medium">{(product.price * product.stock).toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
                   <TableCell>
                     {editId === product.id ? (
                       <div className="flex gap-2">

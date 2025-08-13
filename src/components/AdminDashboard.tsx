@@ -25,7 +25,7 @@ const categoryData = [
 const statsCards = [
   {
     title: "Total Sales",
-    value: "Rp 28,000,000",
+    value: "$28,000",
     change: "+12.5%",
     trend: "up",
     icon: DollarSign,
@@ -58,17 +58,17 @@ const statsCards = [
 ];
 
 const recentOrders = [
-  { id: "ORD-001", customer: "Ahmad Fajar", amount: "Rp 450,000", status: "completed", date: "2 hours ago" },
-  { id: "ORD-002", customer: "Siti Nurhaliza", amount: "Rp 280,000", status: "processing", date: "4 hours ago" },
-  { id: "ORD-003", customer: "Budi Santoso", amount: "Rp 320,000", status: "pending", date: "6 hours ago" },
-  { id: "ORD-004", customer: "Maya Indira", amount: "Rp 150,000", status: "completed", date: "8 hours ago" },
+  { id: "ORD-001", customer: "John Smith", amount: "$450", status: "completed", date: "2 hours ago" },
+  { id: "ORD-002", customer: "Emily Johnson", amount: "$280", status: "processing", date: "4 hours ago" },
+  { id: "ORD-003", customer: "Michael Lee", amount: "$320", status: "pending", date: "6 hours ago" },
+  { id: "ORD-004", customer: "Sophia Brown", amount: "$150", status: "completed", date: "8 hours ago" },
 ];
 
 const topProducts = [
-  { name: "iPhone 14 Pro", sales: 145, revenue: "Rp 150,000,000" },
-  { name: "Samsung Galaxy S23", sales: 89, revenue: "Rp 95,000,000" },
-  { name: "MacBook Air M2", sales: 67, revenue: "Rp 120,000,000" },
-  { name: "iPad Pro", sales: 45, revenue: "Rp 65,000,000" },
+  { name: "iPhone 14 Pro", sales: 145, revenue: "$15,000" },
+  { name: "Samsung Galaxy S23", sales: 89, revenue: "$9,500" },
+  { name: "MacBook Air M2", sales: 67, revenue: "$12,000" },
+  { name: "iPad Pro", sales: 45, revenue: "$6,500" },
 ];
 
 function getStatusColor(status: string) {

@@ -26,58 +26,58 @@ interface Customer {
 const mockCustomers: Customer[] = [
   {
     id: "CUST-001",
-    name: "Ahmad Fajar",
-    email: "ahmad@email.com",
-    phone: "08123456789",
-    address: "Jl. Sudirman No. 123, Jakarta",
+    name: "John Smith",
+    email: "john.smith@email.com",
+    phone: "+1 555-123-4567",
+    address: "123 Main St, New York, NY, USA",
     joinDate: "2023-06-15",
     lastOrder: "2024-01-18",
     totalOrders: 5,
-    totalSpent: 50000000,
+    totalSpent: 3200,
     status: "active",
   },
   {
     id: "CUST-002",
-    name: "Siti Nurhaliza",
-    email: "siti@email.com",
-    phone: "08234567890",
-    address: "Jl. Gatot Subroto No. 456, Bandung",
+    name: "Emily Johnson",
+    email: "emily.j@email.com",
+    phone: "+1 555-234-5678",
+    address: "456 Market St, San Francisco, CA, USA",
     joinDate: "2023-08-20",
     lastOrder: "2024-01-22",
     totalOrders: 3,
-    totalSpent: 25000000,
+    totalSpent: 1800,
     status: "active",
   },
   {
     id: "CUST-003",
-    name: "Budi Santoso",
-    email: "budi@email.com",
-    phone: "08345678901",
-    address: "Jl. Diponegoro No. 789, Surabaya",
+    name: "Michael Lee",
+    email: "michael.lee@email.com",
+    phone: "+1 555-345-6789",
+    address: "789 Broadway, Chicago, IL, USA",
     joinDate: "2023-09-10",
     lastOrder: "2024-01-22",
     totalOrders: 2,
-    totalSpent: 35000000,
+    totalSpent: 950,
     status: "active",
   },
   {
     id: "CUST-004",
-    name: "Maya Indira",
-    email: "maya@email.com",
-    phone: "08456789012",
-    address: "Jl. Ahmad Yani No. 321, Yogyakarta",
+    name: "Sophia Brown",
+    email: "sophia.b@email.com",
+    phone: "+1 555-456-7890",
+    address: "321 Ocean Ave, Miami, FL, USA",
     joinDate: "2023-11-05",
     lastOrder: "2024-01-25",
     totalOrders: 1,
-    totalSpent: 17000000,
+    totalSpent: 400,
     status: "active",
   },
   {
     id: "CUST-005",
-    name: "Rudi Hermawan",
-    email: "rudi@email.com",
-    phone: "08567890123",
-    address: "Jl. Veteran No. 654, Semarang",
+    name: "David Wilson",
+    email: "david.w@email.com",
+    phone: "+1 555-567-8901",
+    address: "654 Hill Rd, Seattle, WA, USA",
     joinDate: "2023-12-01",
     lastOrder: "2023-12-15",
     totalOrders: 0,
@@ -86,14 +86,14 @@ const mockCustomers: Customer[] = [
   },
   {
     id: "CUST-006",
-    name: "Lisa Wijaya",
-    email: "lisa@email.com",
-    phone: "08678901234",
-    address: "Jl. Pahlawan No. 987, Medan",
+    name: "Olivia Davis",
+    email: "olivia.d@email.com",
+    phone: "+1 555-678-9012",
+    address: "987 Lake St, Austin, TX, USA",
     joinDate: "2023-10-12",
     lastOrder: "2024-01-20",
     totalOrders: 4,
-    totalSpent: 42000000,
+    totalSpent: 2100,
     status: "active",
   },
 ];
@@ -172,11 +172,11 @@ export default function AdminCustomerManagement() {
   const getStatusText = (status: string) => {
     switch (status) {
       case "active":
-        return "Aktif";
+        return "Active";
       case "inactive":
-        return "Tidak Aktif";
+        return "Inactive";
       case "blocked":
-        return "Diblokir";
+        return "Blocked";
       default:
         return status;
     }
@@ -193,7 +193,7 @@ export default function AdminCustomerManagement() {
       const now = new Date();
       return joinDate.getMonth() === now.getMonth() && joinDate.getFullYear() === now.getFullYear();
     }).length,
-    totalRevenue: customers.reduce((sum, c) => sum + c.totalSpent, 0),
+  totalRevenue: customers.reduce((sum, c) => sum + c.totalSpent, 0),
   };
 
   return (
@@ -280,7 +280,7 @@ export default function AdminCustomerManagement() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Revenue</p>
-              <p className="text-lg font-bold">Rp {stats.totalRevenue.toLocaleString("id-ID")}</p>
+              <p className="text-lg font-bold">{stats.totalRevenue.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>
             </div>
           </div>
         </Card>
@@ -400,7 +400,7 @@ export default function AdminCustomerManagement() {
                     <p className="text-sm text-muted-foreground">orders</p>
                   </div>
                 </TableCell>
-                <TableCell className="font-medium">Rp {customer.totalSpent.toLocaleString("id-ID")}</TableCell>
+                <TableCell className="font-medium">{customer.totalSpent.toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
                 <TableCell>
                   <Badge className={getStatusColor(customer.status)}>{getStatusText(customer.status)}</Badge>
                 </TableCell>
@@ -454,7 +454,7 @@ export default function AdminCustomerManagement() {
       <Dialog open={showCustomerDetail} onOpenChange={setShowCustomerDetail}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Customer Details {selectedCustomer?.name}</DialogTitle>
+            <DialogTitle>Customer Details: {selectedCustomer?.name}</DialogTitle>
           </DialogHeader>
           {selectedCustomer && (
             <div className="space-y-6">
@@ -489,7 +489,7 @@ export default function AdminCustomerManagement() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-muted-foreground" />
-                        <span>Joined: {new Date(selectedCustomer.joinDate).toLocaleDateString("en-GB")}</span>
+                        <span>Joined: {new Date(selectedCustomer.joinDate).toLocaleDateString("en-US")}</span>
                       </div>
                     </div>
                   </div>
@@ -508,11 +508,11 @@ export default function AdminCustomerManagement() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Total Spent:</span>
-                      <span className="font-medium">Rp {selectedCustomer.totalSpent.toLocaleString("id-ID")}</span>
+                      <span className="font-medium">{selectedCustomer.totalSpent.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Last Order:</span>
-                      <span className="font-medium">{selectedCustomer.lastOrder ? new Date(selectedCustomer.lastOrder).toLocaleDateString("en-GB") : "None"}</span>
+                      <span className="font-medium">{selectedCustomer.lastOrder ? new Date(selectedCustomer.lastOrder).toLocaleDateString("en-US") : "None"}</span>
                     </div>
                   </div>
                 </Card>
