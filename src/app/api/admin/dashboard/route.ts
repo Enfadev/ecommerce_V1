@@ -60,6 +60,27 @@ export async function GET() {
       },
     });
 
+    // Get customers for current month
+    const currentMonthCustomers = await prisma.user.count({
+      where: {
+        role: 'USER',
+        createdAt: {
+          gte: startOfMonth,
+        },
+      },
+    });
+
+    // Get customers for last month
+    const lastMonthCustomers = await prisma.user.count({
+      where: {
+        role: 'USER',
+        createdAt: {
+          gte: startOfLastMonth,
+          lte: endOfLastMonth,
+        },
+      },
+    });
+
     // Calculate growth percentages
     const salesGrowth = lastMonthSales._sum.totalAmount && lastMonthSales._sum.totalAmount > 0
       ? ((currentMonthSales._sum.totalAmount || 0) - (lastMonthSales._sum.totalAmount || 0)) / (lastMonthSales._sum.totalAmount || 0) * 100
@@ -67,6 +88,10 @@ export async function GET() {
 
     const ordersGrowth = lastMonthSales._count && lastMonthSales._count > 0 
       ? ((currentMonthSales._count || 0) - (lastMonthSales._count || 0)) / (lastMonthSales._count || 0) * 100
+      : 0;
+
+    const customersGrowth = lastMonthCustomers > 0
+      ? ((currentMonthCustomers - lastMonthCustomers) / lastMonthCustomers) * 100
       : 0;
 
     // Get sales data for the last 6 months
@@ -202,9 +227,9 @@ export async function GET() {
       {
         title: "Total Customers",
         value: totalCustomers.toLocaleString(),
-        change: "+0%",
-        trend: "up",
-        description: "active customers",
+        change: `${customersGrowth >= 0 ? '+' : ''}${customersGrowth.toFixed(1)}%`,
+        trend: customersGrowth >= 0 ? "up" : "down",
+        description: "new customers",
       },
     ];
 
