@@ -8,28 +8,7 @@ import AdminOrderManagement from "./AdminOrderManagement";
 import AdminCustomerManagement from "./AdminCustomerManagement";
 import InventoryManager from "./InventoryManager";
 import AdminSettingsPage from "./AdminSettingsPage";
-import { Button } from "./ui/button";
-
-function AdminAnalytics() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Analytics & Reports</h1>
-        <p className="text-muted-foreground mt-1">Analyze store performance and business insights</p>
-      </div>
-
-      <div className="text-center py-12">
-        <h3 className="text-lg font-semibold mb-4">Analytics Dashboard Coming Soon</h3>
-        <p className="text-muted-foreground mb-6">
-          Advanced analytics features are currently in development. You can view basic analytics in the Dashboard section.
-        </p>
-        <Button variant="outline">
-          Go to Dashboard
-        </Button>
-      </div>
-    </div>
-  );
-}
+import AdminAnalytics from "./AdminAnalytics";
 
 export default function AdminProductPage() {
   const [activeSection, setActiveSection] = useState("dashboard");
