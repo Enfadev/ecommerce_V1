@@ -1,90 +1,147 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Package, ShoppingCart, Users, DollarSign, Eye, ArrowUpRight } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import { TrendingUp, TrendingDown, Package, ShoppingCart, Users, DollarSign, Eye, ArrowUpRight, Loader2 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
-const salesData = [
-  { name: "Jan", value: 4000, orders: 240 },
-  { name: "Feb", value: 3000, orders: 198 },
-  { name: "Mar", value: 5000, orders: 350 },
-  { name: "Apr", value: 4500, orders: 290 },
-  { name: "May", value: 6000, orders: 410 },
-  { name: "Jun", value: 5500, orders: 380 },
-];
-
-const categoryData = [
-  { name: "Electronics", value: 400, color: "#8884d8" },
-  { name: "Fashion", value: 300, color: "#82ca9d" },
-  { name: "Home & Living", value: 200, color: "#ffc658" },
-  { name: "Sports", value: 100, color: "#ff7300" },
-];
-
-const statsCards = [
-  {
-    title: "Total Sales",
-    value: "$28,000",
-    change: "+12.5%",
-    trend: "up",
-    icon: DollarSign,
-    description: "from last month",
-  },
-  {
-    title: "Total Orders",
-    value: "1,234",
-    change: "+8.2%",
-    trend: "up",
-    icon: ShoppingCart,
-    description: "new orders",
-  },
-  {
-    title: "Total Products",
-    value: "456",
-    change: "+2.1%",
-    trend: "up",
-    icon: Package,
-    description: "active products",
-  },
-  {
-    title: "Total Customers",
-    value: "2,345",
-    change: "-1.2%",
-    trend: "down",
-    icon: Users,
-    description: "active customers",
-  },
-];
-
-const recentOrders = [
-  { id: "ORD-001", customer: "John Smith", amount: "$450", status: "completed", date: "2 hours ago" },
-  { id: "ORD-002", customer: "Emily Johnson", amount: "$280", status: "processing", date: "4 hours ago" },
-  { id: "ORD-003", customer: "Michael Lee", amount: "$320", status: "pending", date: "6 hours ago" },
-  { id: "ORD-004", customer: "Sophia Brown", amount: "$150", status: "completed", date: "8 hours ago" },
-];
-
-const topProducts = [
-  { name: "iPhone 14 Pro", sales: 145, revenue: "$15,000" },
-  { name: "Samsung Galaxy S23", sales: 89, revenue: "$9,500" },
-  { name: "MacBook Air M2", sales: 67, revenue: "$12,000" },
-  { name: "iPad Pro", sales: 45, revenue: "$6,500" },
-];
+interface DashboardData {
+  statsCards: Array<{
+    title: string;
+    value: string;
+    change: string;
+    trend: "up" | "down";
+    description: string;
+  }>;
+  salesData: Array<{
+    name: string;
+    value: number;
+    orders: number;
+  }>;
+  categoryData: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  recentOrders: Array<{
+    id: string;
+    customer: string;
+    amount: string;
+    status: string;
+    date: string;
+  }>;
+  topProducts: Array<{
+    name: string;
+    sales: number;
+    revenue: string;
+  }>;
+}
 
 function getStatusColor(status: string) {
   switch (status) {
     case "completed":
+    case "delivered":
       return "bg-green-500/10 text-green-500 border-green-500/20";
     case "processing":
+    case "confirmed":
       return "bg-blue-500/10 text-blue-500 border-blue-500/20";
     case "pending":
       return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+    case "shipped":
+      return "bg-purple-500/10 text-purple-500 border-purple-500/20";
+    case "cancelled":
+      return "bg-red-500/10 text-red-500 border-red-500/20";
     default:
       return "bg-gray-500/10 text-gray-500 border-gray-500/20";
   }
 }
 
+function getStatusLabel(status: string) {
+  switch (status) {
+    case "completed":
+    case "delivered":
+      return "Completed";
+    case "processing":
+      return "Processing";
+    case "confirmed":
+      return "Confirmed";
+    case "pending":
+      return "Pending";
+    case "shipped":
+      return "Shipped";
+    case "cancelled":
+      return "Cancelled";
+    default:
+      return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+}
+
+function getIconForStat(title: string) {
+  switch (title) {
+    case "Total Sales":
+      return DollarSign;
+    case "Total Orders":
+      return ShoppingCart;
+    case "Total Products":
+      return Package;
+    case "Total Customers":
+      return Users;
+    default:
+      return Package;
+  }
+}
+
 export default function AdminDashboard() {
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/dashboard');
+      if (!response.ok) {
+        throw new Error('Failed to fetch dashboard data');
+      }
+      const data = await response.json();
+      setDashboardData(data);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setError('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <p className="text-lg">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !dashboardData) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="text-center">
+          <p className="text-lg text-red-500 mb-4">{error || 'Failed to load dashboard data'}</p>
+          <Button onClick={fetchDashboardData}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -101,8 +158,8 @@ export default function AdminDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statsCards.map((stat, index) => {
-          const Icon = stat.icon;
+        {dashboardData.statsCards.map((stat, index) => {
+          const Icon = getIconForStat(stat.title);
           const isPositive = stat.trend === "up";
 
           return (
@@ -142,7 +199,7 @@ export default function AdminDashboard() {
           </div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={salesData}>
+              <LineChart data={dashboardData.salesData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="name" className="text-xs" />
                 <YAxis className="text-xs" />
@@ -174,8 +231,8 @@ export default function AdminDashboard() {
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={categoryData} cx="50%" cy="50%" outerRadius={100} fill="#8884d8" dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                  {categoryData.map((entry, index) => (
+                <Pie data={dashboardData.categoryData} cx="50%" cy="50%" outerRadius={100} fill="#8884d8" dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  {dashboardData.categoryData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -200,12 +257,12 @@ export default function AdminDashboard() {
             </Button>
           </div>
           <div className="space-y-4">
-            {recentOrders.map((order) => (
+            {dashboardData.recentOrders.map((order) => (
               <div key={order.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium">{order.id}</p>
-                    <Badge className={getStatusColor(order.status)}>{order.status === "completed" ? "Completed" : order.status === "processing" ? "Processing" : "Pending"}</Badge>
+                    <Badge className={getStatusColor(order.status)}>{getStatusLabel(order.status)}</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">{order.customer}</p>
                   <p className="text-xs text-muted-foreground">{order.date}</p>
@@ -230,7 +287,7 @@ export default function AdminDashboard() {
             </Button>
           </div>
           <div className="space-y-4">
-            {topProducts.map((product, index) => (
+            {dashboardData.topProducts.map((product, index) => (
               <div key={index} className="flex items-center justify-between p-4 border border-border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
