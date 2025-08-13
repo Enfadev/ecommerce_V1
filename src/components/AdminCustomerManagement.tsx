@@ -1,17 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Plus, Eye, Edit, Trash2, Users, Mail, Phone, Calendar, MoreHorizontal, ArrowUpDown, Download, UserPlus } from "lucide-react";
+import { Search, Filter, Plus, Eye, Edit, Trash2, Users, Mail, Phone, Calendar, MoreHorizontal, ArrowUpDown, Download, UserPlus, Loader2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface Customer {
   id: string;
+  dbId: number;
   name: string;
   email: string;
   phone: string;
@@ -23,89 +24,75 @@ interface Customer {
   status: "active" | "inactive" | "blocked";
 }
 
-const mockCustomers: Customer[] = [
-  {
-    id: "CUST-001",
-    name: "John Smith",
-    email: "john.smith@email.com",
-    phone: "+1 555-123-4567",
-    address: "123 Main St, New York, NY, USA",
-    joinDate: "2023-06-15",
-    lastOrder: "2024-01-18",
-    totalOrders: 5,
-    totalSpent: 3200,
-    status: "active",
-  },
-  {
-    id: "CUST-002",
-    name: "Emily Johnson",
-    email: "emily.j@email.com",
-    phone: "+1 555-234-5678",
-    address: "456 Market St, San Francisco, CA, USA",
-    joinDate: "2023-08-20",
-    lastOrder: "2024-01-22",
-    totalOrders: 3,
-    totalSpent: 1800,
-    status: "active",
-  },
-  {
-    id: "CUST-003",
-    name: "Michael Lee",
-    email: "michael.lee@email.com",
-    phone: "+1 555-345-6789",
-    address: "789 Broadway, Chicago, IL, USA",
-    joinDate: "2023-09-10",
-    lastOrder: "2024-01-22",
-    totalOrders: 2,
-    totalSpent: 950,
-    status: "active",
-  },
-  {
-    id: "CUST-004",
-    name: "Sophia Brown",
-    email: "sophia.b@email.com",
-    phone: "+1 555-456-7890",
-    address: "321 Ocean Ave, Miami, FL, USA",
-    joinDate: "2023-11-05",
-    lastOrder: "2024-01-25",
-    totalOrders: 1,
-    totalSpent: 400,
-    status: "active",
-  },
-  {
-    id: "CUST-005",
-    name: "David Wilson",
-    email: "david.w@email.com",
-    phone: "+1 555-567-8901",
-    address: "654 Hill Rd, Seattle, WA, USA",
-    joinDate: "2023-12-01",
-    lastOrder: "2023-12-15",
-    totalOrders: 0,
-    totalSpent: 0,
-    status: "inactive",
-  },
-  {
-    id: "CUST-006",
-    name: "Olivia Davis",
-    email: "olivia.d@email.com",
-    phone: "+1 555-678-9012",
-    address: "987 Lake St, Austin, TX, USA",
-    joinDate: "2023-10-12",
-    lastOrder: "2024-01-20",
-    totalOrders: 4,
-    totalSpent: 2100,
-    status: "active",
-  },
-];
+interface CustomerStats {
+  total: number;
+  active: number;
+  inactive: number;
+  blocked: number;
+  newThisMonth: number;
+  totalRevenue: number;
+}
+
+interface CustomerApiResponse {
+  customers: Customer[];
+  stats: CustomerStats;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 export default function AdminCustomerManagement() {
-  const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [stats, setStats] = useState<CustomerStats>({
+    total: 0,
+    active: 0,
+    inactive: 0,
+    blocked: 0,
+    newThisMonth: 0,
+    totalRevenue: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [showCustomerDetail, setShowCustomerDetail] = useState(false);
   const [sortBy, setSortBy] = useState<keyof Customer>("joinDate");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const fetchCustomers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('search', searchQuery);
+      if (selectedStatus !== 'all') params.append('status', selectedStatus);
+
+      const response = await fetch(`/api/admin/customers?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch customers');
+      }
+
+      const data: CustomerApiResponse = await response.json();
+      setCustomers(data.customers);
+      setStats(data.stats);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      setError('Failed to load customer data');
+    } finally {
+      setLoading(false);
+    }
+  }, [searchQuery, selectedStatus]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchCustomers();
+    }, 300); // Debounce search
+
+    return () => clearTimeout(timeoutId);
+  }, [fetchCustomers]);
 
   
   const filteredCustomers = customers
@@ -152,8 +139,24 @@ export default function AdminCustomerManagement() {
     setShowCustomerDetail(true);
   };
 
-  const handleDeleteCustomer = (customerId: string) => {
-    setCustomers(customers.filter((customer) => customer.id !== customerId));
+  const handleDeleteCustomer = async (customerId: string) => {
+    try {
+      const response = await fetch(`/api/admin/customers?id=${customerId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete customer');
+      }
+
+      // Remove customer from local state
+      setCustomers(customers.filter((customer) => customer.id !== customerId));
+      
+      // Refresh stats
+      await fetchCustomers();
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -182,19 +185,29 @@ export default function AdminCustomerManagement() {
     }
   };
 
-  
-  const stats = {
-    total: customers.length,
-    active: customers.filter((c) => c.status === "active").length,
-    inactive: customers.filter((c) => c.status === "inactive").length,
-    blocked: customers.filter((c) => c.status === "blocked").length,
-    newThisMonth: customers.filter((c) => {
-      const joinDate = new Date(c.joinDate);
-      const now = new Date();
-      return joinDate.getMonth() === now.getMonth() && joinDate.getFullYear() === now.getFullYear();
-    }).length,
-  totalRevenue: customers.reduce((sum, c) => sum + c.totalSpent, 0),
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <p className="text-lg">Loading customer data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[500px]">
+        <div className="text-center">
+          <p className="text-lg text-red-500 mb-4">{error}</p>
+          <Button onClick={fetchCustomers}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
