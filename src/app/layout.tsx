@@ -2,9 +2,8 @@ import Footer from "../components/Footer";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { WishlistProvider } from "../components/wishlist-context";
 import { NextAuthProvider } from "../components/NextAuthProvider";
-import ClientRootLayout from "./ClientRootLayout";
+import ClientWrapper from "./ClientWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,15 +26,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`} suppressHydrationWarning>
         <NextAuthProvider>
-          <WishlistProvider>
-            <div className="flex-1 flex flex-col">
-              <ClientRootLayout>{children}</ClientRootLayout>
-            </div>
-            <Footer />
-          </WishlistProvider>
+          <ClientWrapper>
+            {children}
+          </ClientWrapper>
+          <Footer />
         </NextAuthProvider>
       </body>
     </html>
