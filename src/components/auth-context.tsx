@@ -31,12 +31,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Get user profile from server (JWT from httpOnly cookie)
+  // Get user profile from server (JWT from httpOnly cookie or NextAuth session)
   const refreshUser = async () => {
     try {
       setIsLoading(true);
       
-      // First, check if we have an auth token
+      // First, check NextAuth session
+      const nextAuthCheck = await fetch("/api/auth/session", {
+        method: "GET",
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
+
+      if (nextAuthCheck.ok) {
+        const nextAuthData = await nextAuthCheck.json();
+        if (nextAuthData.authenticated && nextAuthData.user) {
+          setUser({
+            id: nextAuthData.user.id,
+            name: nextAuthData.user.name,
+            email: nextAuthData.user.email,
+            role: nextAuthData.user.role,
+            avatar: nextAuthData.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(nextAuthData.user.name)}&background=6366f1&color=fff`,
+          });
+          console.log('✅ NextAuth user loaded successfully');
+          return;
+        }
+      }
+      
+      // Fallback to original JWT auth check
       const authCheck = await fetch("/api/auth/check", {
         method: "GET",
         credentials: 'include',
@@ -59,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         return;
       }
-      
+
       // Get full user profile
       const res = await fetch("/api/profile", {
         method: "GET",
@@ -68,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           'Cache-Control': 'no-cache',
         },
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         const userData = data.user;
@@ -173,6 +197,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async (): Promise<void> => {
     try {
+      // Sign out from NextAuth if available
+      if (typeof window !== 'undefined') {
+        const { signOut: nextAuthSignOut } = await import('next-auth/react');
+        await nextAuthSignOut({ redirect: false });
+      }
+      
+      // Sign out from regular JWT session
       await fetch("/api/logout", {
         method: "POST",
         credentials: 'include', // Include cookies

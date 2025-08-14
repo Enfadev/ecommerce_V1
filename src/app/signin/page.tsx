@@ -10,10 +10,12 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 // ...existing code...
 import { Eye, EyeOff, Mail, Lock, ShoppingBag, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 const signInSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -173,6 +175,19 @@ export default function SignInPage() {
                 </Button>
               </form>
             </Form>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full border-gray-600" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-gray-800 px-2 text-gray-400">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Sign In Button */}
+            <GoogleSignInButton disabled={isLoading} />
 
             {/* ...existing code... */}
           </CardContent>

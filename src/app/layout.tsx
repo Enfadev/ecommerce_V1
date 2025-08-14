@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { WishlistProvider } from "../components/wishlist-context";
+import { NextAuthProvider } from "../components/NextAuthProvider";
 import ClientRootLayout from "./ClientRootLayout";
 
 const geistSans = Geist({
@@ -28,12 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
-        <WishlistProvider>
-          <div className="flex-1 flex flex-col">
-            <ClientRootLayout>{children}</ClientRootLayout>
-          </div>
-          <Footer />
-        </WishlistProvider>
+        <NextAuthProvider>
+          <WishlistProvider>
+            <div className="flex-1 flex flex-col">
+              <ClientRootLayout>{children}</ClientRootLayout>
+            </div>
+            <Footer />
+          </WishlistProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
