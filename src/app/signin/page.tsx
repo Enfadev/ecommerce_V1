@@ -10,14 +10,14 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, ShoppingBag, ArrowRight, AlertCircle } from "lucide-react";
+// ...existing code...
+import { Eye, EyeOff, Mail, Lock, ShoppingBag, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";
 
 const signInSchema = z.object({
-  email: z.string().email({ message: "Email tidak valid" }),
-  password: z.string().min(6, { message: "Password minimal 6 karakter" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -56,7 +56,7 @@ export default function SignInPage() {
       if (success) {
         setToast({
           show: true,
-          message: "Berhasil masuk! Mengarahkan...",
+          message: "Sign in successful! Redirecting...",
           type: "success",
         });
 
@@ -66,47 +66,39 @@ export default function SignInPage() {
       } else {
         setToast({
           show: true,
-          message: "Email atau password salah. Coba gunakan demo: admin@example.com / admin123",
+          message: "Incorrect email or password.",
           type: "error",
         });
       }
     } catch (error) {
       setToast({
         show: true,
-        message: "Terjadi kesalahan saat masuk",
+        message: "An error occurred during sign in.",
         type: "error",
       });
     }
   }
 
-  const demoAccounts = [
-    { email: "admin@example.com", password: "admin123", role: "Admin" },
-    { email: "user@example.com", password: "user123", role: "User" },
-  ];
-
-  const fillDemoAccount = (email: string, password: string) => {
-    form.setValue("email", email);
-    form.setValue("password", password);
-  };
+  // ...existing code...
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-      {toast.show && <Toast title={toast.type === "success" ? "Berhasil!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
+      {toast.show && <Toast title={toast.type === "success" ? "Success!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
 
       <div className="w-full max-w-lg">
-        {/* Header dengan Logo */}
+        {/* Header with Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-xl mb-4 shadow-lg">
             <ShoppingBag className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Selamat Datang</h1>
-          <p className="text-gray-400">Masuk ke akun Anda untuk melanjutkan</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Welcome</h1>
+          <p className="text-gray-400">Sign in to your account to continue</p>
         </div>
 
         <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700 shadow-2xl">
           <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-2xl text-white text-center">Masuk</CardTitle>
-            <CardDescription className="text-gray-400 text-center">Masukkan email dan password Anda</CardDescription>
+            <CardTitle className="text-2xl text-white text-center">Sign In</CardTitle>
+            <CardDescription className="text-gray-400 text-center">Enter your email and password</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -121,7 +113,7 @@ export default function SignInPage() {
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                          <Input type="email" placeholder="nama@email.com" className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500" {...field} />
+                          <Input type="email" placeholder="your@email.com" className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -156,13 +148,13 @@ export default function SignInPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="rememberMe" className="rounded border-gray-600 bg-gray-700" {...form.register("rememberMe")} />
+                    <input type="checkbox" id="rememberMe" className="rounded border-gray-600 bg-gray-700" {...form.register("rememberMe" )} />
                     <label htmlFor="rememberMe" className="text-sm text-gray-300">
-                      Ingat saya
+                      Remember me
                     </label>
                   </div>
                   <Link href="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300 hover:underline">
-                    Lupa password?
+                    Forgot password?
                   </Link>
                 </div>
 
@@ -170,11 +162,11 @@ export default function SignInPage() {
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Memproses...</span>
+                      <span>Processing...</span>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <span>Masuk</span>
+                      <span>Sign In</span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   )}
@@ -182,38 +174,15 @@ export default function SignInPage() {
               </form>
             </Form>
 
-            <div className="space-y-4">
-              <Separator className="bg-gray-600" />
-
-              {/* Demo Accounts */}
-              <div className="space-y-3">
-                <p className="text-sm text-gray-400 text-center">Akun Demo:</p>
-                <div className="grid gap-2">
-                  {demoAccounts.map((account, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="justify-between bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
-                      onClick={() => fillDemoAccount(account.email, account.password)}
-                    >
-                      <span className="text-xs">
-                        {account.role}: {account.email}
-                      </span>
-                      <span className="text-xs text-gray-400">{account.password}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {/* ...existing code... */}
           </CardContent>
         </Card>
 
         <div className="text-center mt-6">
           <p className="text-gray-400">
-            Belum punya akun?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register" className="text-blue-400 hover:text-blue-300 font-medium hover:underline transition-colors">
-              Daftar sekarang
+              Register now
             </Link>
           </p>
         </div>

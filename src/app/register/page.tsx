@@ -10,28 +10,28 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, User, ShoppingBag, ArrowRight, CheckCircle } from "lucide-react";
+// ...existing code...
+import { Eye, EyeOff, Mail, Lock, User, ShoppingBag, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, { message: "Nama minimal 2 karakter" }),
-    email: z.string().email({ message: "Email tidak valid" }),
+    name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+    email: z.string().email({ message: "Invalid email address" }),
     password: z
       .string()
-      .min(8, { message: "Password minimal 8 karakter" })
+      .min(8, { message: "Password must be at least 8 characters" })
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
-        message: "Password harus mengandung huruf besar, huruf kecil, dan angka",
+        message: "Password must contain uppercase, lowercase, and a number",
       }),
     confirmPassword: z.string(),
     agreeToTerms: z.boolean().refine((val) => val === true, {
-      message: "Anda harus menyetujui syarat dan ketentuan",
+      message: "You must agree to the terms and conditions",
     }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Konfirmasi password tidak cocok",
+    message: "Password confirmation does not match",
     path: ["confirmPassword"],
   });
 
@@ -73,7 +73,7 @@ export default function RegisterPage() {
       if (success) {
         setToast({
           show: true,
-          message: "Akun berhasil dibuat! Mengarahkan...",
+          message: "Account created successfully! Redirecting...",
           type: "success",
         });
 
@@ -83,14 +83,14 @@ export default function RegisterPage() {
       } else {
         setToast({
           show: true,
-          message: "Gagal membuat akun. Silakan coba lagi.",
+          message: "Failed to create account. Please try again.",
           type: "error",
         });
       }
     } catch (error) {
       setToast({
         show: true,
-        message: "Terjadi kesalahan saat mendaftar",
+        message: "An error occurred during registration.",
         type: "error",
       });
     }
@@ -114,10 +114,10 @@ export default function RegisterPage() {
   };
 
   const getStrengthText = (score: number) => {
-    if (score < 2) return "Lemah";
-    if (score < 3) return "Sedang";
-    if (score < 4) return "Kuat";
-    return "Sangat Kuat";
+    if (score < 2) return "Weak";
+    if (score < 3) return "Fair";
+    if (score < 4) return "Strong";
+    return "Very Strong";
   };
 
   const currentPassword = form.watch("password");
@@ -125,22 +125,22 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-      {toast.show && <Toast title={toast.type === "success" ? "Berhasil!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
+  {toast.show && <Toast title={toast.type === "success" ? "Success!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
 
       <div className="w-full max-w-lg">
-        {/* Header dengan Logo */}
+        {/* Header with Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-600 rounded-xl mb-4 shadow-lg">
             <ShoppingBag className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Bergabung Dengan Kami</h1>
-          <p className="text-gray-400">Buat akun baru untuk memulai berbelanja</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Join Us</h1>
+          <p className="text-gray-400">Create a new account to start shopping</p>
         </div>
 
         <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700 shadow-2xl">
           <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-2xl text-white text-center">Daftar</CardTitle>
-            <CardDescription className="text-gray-400 text-center">Isi informasi berikut untuk membuat akun</CardDescription>
+            <CardTitle className="text-2xl text-white text-center">Register</CardTitle>
+            <CardDescription className="text-gray-400 text-center">Fill in the information below to create an account</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-4">
@@ -151,11 +151,11 @@ export default function RegisterPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-200">Nama Lengkap</FormLabel>
+                      <FormLabel className="text-gray-200">Full Name</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                          <Input type="text" placeholder="Nama lengkap Anda" className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500" {...field} />
+                          <Input type="text" placeholder="Your full name" className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -172,7 +172,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                          <Input type="email" placeholder="nama@email.com" className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500" {...field} />
+                          <Input type="email" placeholder="your@email.com" className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400 focus:border-green-500 focus:ring-green-500" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -203,7 +203,7 @@ export default function RegisterPage() {
                       {currentPassword && (
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-gray-400">Kekuatan Password:</span>
+                            <span className="text-gray-400">Password Strength:</span>
                             <span className={`font-medium ${strength >= 3 ? "text-green-400" : strength >= 2 ? "text-yellow-400" : "text-red-400"}`}>{getStrengthText(strength)}</span>
                           </div>
                           <div className="w-full bg-gray-700 rounded-full h-1.5">
@@ -221,7 +221,7 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-200">Konfirmasi Password</FormLabel>
+                      <FormLabel className="text-gray-200">Confirm Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -251,13 +251,13 @@ export default function RegisterPage() {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel className="text-sm text-gray-300">
-                          Saya menyetujui{" "}
+                          I agree to the {" "}
                           <Link href="/terms" className="text-green-400 hover:text-green-300 hover:underline">
-                            Syarat dan Ketentuan
+                            Terms and Conditions
                           </Link>{" "}
-                          serta{" "}
+                          and {" "}
                           <Link href="/privacy" className="text-green-400 hover:text-green-300 hover:underline">
-                            Kebijakan Privasi
+                            Privacy Policy
                           </Link>
                         </FormLabel>
                         <FormMessage />
@@ -270,11 +270,11 @@ export default function RegisterPage() {
                   {isLoading ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Membuat Akun...</span>
+                      <span>Creating Account...</span>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <span>Buat Akun</span>
+                      <span>Create Account</span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   )}
@@ -286,9 +286,9 @@ export default function RegisterPage() {
 
         <div className="text-center mt-6">
           <p className="text-gray-400">
-            Sudah punya akun?{" "}
+            Already have an account?{" "}
             <Link href="/signin" className="text-green-400 hover:text-green-300 font-medium hover:underline transition-colors">
-              Masuk sekarang
+              Sign in now
             </Link>
           </p>
         </div>
