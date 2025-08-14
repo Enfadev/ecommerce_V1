@@ -1,22 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
+import { getUserIdFromRequest } from "@/lib/auth-utils";
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const userId = await getUserIdFromRequest(request);
     
-    if (!token) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const payload = await verifyJWT(token);
-    if (!payload || !payload.id) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-
     const cart = await prisma.cart.findUnique({
-      where: { userId: Number(payload.id) },
+      where: { userId },
       include: {
         items: {
           include: {
@@ -32,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     if (!cart) {
       const newCart = await prisma.cart.create({
-        data: { userId: Number(payload.id) },
+        data: { userId },
         include: {
           items: {
             include: {
@@ -57,15 +52,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const userId = await getUserIdFromRequest(request);
     
-    if (!token) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const payload = await verifyJWT(token);
-    if (!payload || !payload.id) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const { productId, quantity = 1 } = await request.json();
@@ -87,12 +77,12 @@ export async function POST(request: NextRequest) {
     }
 
     let cart = await prisma.cart.findUnique({
-      where: { userId: Number(payload.id) }
+      where: { userId }
     });
 
     if (!cart) {
       cart = await prisma.cart.create({
-        data: { userId: Number(payload.id) }
+        data: { userId }
       });
     }
 
@@ -158,19 +148,14 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const userId = await getUserIdFromRequest(request);
     
-    if (!token) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const payload = await verifyJWT(token);
-    if (!payload || !payload.id) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
-
     const cart = await prisma.cart.findUnique({
-      where: { userId: Number(payload.id) }
+      where: { userId }
     });
 
     if (!cart) {

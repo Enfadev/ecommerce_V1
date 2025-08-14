@@ -1,21 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
+import { getUserIdFromRequest } from "@/lib/auth-utils";
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const userId = await getUserIdFromRequest(request);
     
-    if (!token) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const payload = await verifyJWT(token);
-    if (!payload || !payload.id) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const { quantity, selected } = await request.json();
@@ -25,7 +20,7 @@ export async function PUT(
       where: {
         id: itemId,
         cart: {
-          userId: Number(payload.id)
+          userId
         }
       },
       include: {
@@ -78,15 +73,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const userId = await getUserIdFromRequest(request);
     
-    if (!token) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const payload = await verifyJWT(token);
-    if (!payload || !payload.id) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const itemId = parseInt(params.id);
@@ -95,7 +85,7 @@ export async function DELETE(
       where: {
         id: itemId,
         cart: {
-          userId: Number(payload.id)
+          userId
         }
       }
     });
