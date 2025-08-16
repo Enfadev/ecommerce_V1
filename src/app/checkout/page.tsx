@@ -10,6 +10,7 @@ import { Textarea } from "../../components/ui/textarea";
 import { Separator } from "../../components/ui/separator";
 import { Badge } from "../../components/ui/badge";
 import { useState, useEffect } from "react";
+import StripeElementsWrapper from "../../components/StripeElementsWrapper";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -55,18 +56,23 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate required fields
+    // Validasi field
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
       toast.error("Please complete all required fields");
       return;
     }
-
     if (items.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
 
-    // Prepare order data
+    // Jika Credit Card, pembayaran dilakukan via Stripe Elements
+    if (formData.paymentMethod === "Credit Card") {
+      // Stripe Elements akan handle pembayaran, order dibuat setelah sukses
+      return;
+    }
+
+    // Metode lain: langsung buat order
     const orderData: CreateOrderData = {
       customerName: formData.nama,
       customerEmail: formData.email,
@@ -85,11 +91,8 @@ export default function CheckoutPage() {
       discount: 0,
       totalAmount: total,
     };
-
     try {
-      // Create order using API
       const newOrder = await createOrder(orderData);
-      
       if (newOrder) {
         setCreatedOrder(newOrder);
         setSubmitted(true);
@@ -97,7 +100,6 @@ export default function CheckoutPage() {
         toast.success("Order placed successfully!");
       }
     } catch (error) {
-      console.error("Submit order error:", error);
       toast.error("Failed to place order. Please try again.");
     }
   };
@@ -299,6 +301,13 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Tampilkan Stripe Elements jika Credit Card */}
+                  {formData.paymentMethod === "Credit Card" && (
+                    <div className="mt-6">
+                      <StripeElementsWrapper amount={total} email={formData.email} />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
