@@ -11,6 +11,7 @@ import { Separator } from "../../components/ui/separator";
 import { Badge } from "../../components/ui/badge";
 import { useState, useEffect } from "react";
 import StripeElementsWrapper from "../../components/StripeElementsWrapper";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -315,7 +316,25 @@ export default function CheckoutPage() {
               {/* Area pembayaran */}
               {formData.paymentMethod === "Credit Card" ? (
                 <div className="pt-4">
-                  <StripeElementsWrapper amount={total} email={formData.email} />
+                  <StripeElementsWrapper
+                    amount={total}
+                    email={formData.email}
+                    orderData={{
+                      customerName: formData.nama,
+                      customerEmail: formData.email,
+                      customerPhone: formData.phone,
+                      shippingAddress: formData.alamat,
+                      postalCode: formData.kodePos,
+                      notes: formData.catatan,
+                      paymentMethod: formData.paymentMethod,
+                      items: items.map(item => ({ productId: item.productId, quantity: item.quantity })),
+                      subtotal,
+                      shippingFee: ongkir,
+                      tax,
+                      discount: 0,
+                      totalAmount: total,
+                    }}
+                  />
                 </div>
               ) : (
                 <Button

@@ -6,18 +6,17 @@ import PaymentForm from "./PaymentForm";
 
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-if (typeof window !== 'undefined') {
-  // Log ke browser console untuk debug
-  console.log('[STRIPE] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:', publishableKey);
-}
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
+
+import { CreateOrderData } from "../hooks/use-orders";
 
 interface StripeElementsWrapperProps {
   amount: number; // dalam USD
   email: string;
+  orderData: CreateOrderData;
 }
 
-export default function StripeElementsWrapper({ amount, email }: StripeElementsWrapperProps) {
+export default function StripeElementsWrapper({ amount, email, orderData }: StripeElementsWrapperProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   useEffect(() => {
@@ -76,7 +75,7 @@ export default function StripeElementsWrapper({ amount, email }: StripeElementsW
   }
   return (
     <Elements stripe={stripePromise} options={options}>
-      <PaymentForm clientSecret={clientSecret!} />
+      <PaymentForm clientSecret={clientSecret!} orderData={orderData} />
     </Elements>
   );
 }

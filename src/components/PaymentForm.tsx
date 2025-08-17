@@ -1,12 +1,22 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
+import { useOrders } from "../hooks/use-orders";
+import { useCart } from "./cart-context";
+
+
+import type { CreateOrderData } from "../hooks/use-orders";
 
 interface PaymentFormProps {
   clientSecret: string;
+  orderData: CreateOrderData;
 }
 
-export default function PaymentForm({ clientSecret }: PaymentFormProps) {
+export default function PaymentForm({ clientSecret, orderData }: PaymentFormProps) {
+  const router = useRouter();
+  const { createOrder } = useOrders();
+  const { clearCart } = useCart();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -39,12 +49,22 @@ export default function PaymentForm({ clientSecret }: PaymentFormProps) {
       setError(error.message || "Payment failed");
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      setSuccess(true);
+      // Buat order ke backend dan kosongkan cart, lalu redirect
+      try {
+        await createOrder(orderData);
+        await clearCart();
+        setSuccess(true);
+        setTimeout(() => {
+          router.push("/order-history");
+        }, 1200);
+      } catch (e) {
+        setError("Payment succeeded but failed to create order. Please contact support.");
+      }
       setLoading(false);
     }
   };
 
-  if (success) return <div>Payment successful! Thank you.</div>;
+  if (success) return <div>Payment successful! Thank you. Redirecting...</div>;
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "0 auto" }}>
