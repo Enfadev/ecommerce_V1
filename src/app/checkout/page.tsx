@@ -53,12 +53,20 @@ export default function CheckoutPage() {
     }));
   };
 
+  function isValidEmail(email: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validasi field
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
       toast.error("Please complete all required fields");
+      return;
+    }
+    if (!isValidEmail(formData.email)) {
+      toast.error("Please enter a valid email address");
       return;
     }
     if (items.length === 0) {
@@ -174,7 +182,7 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -301,20 +309,26 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Tampilkan Stripe Elements jika Credit Card */}
-                  {formData.paymentMethod === "Credit Card" && (
-                    <div className="mt-6">
-                      <StripeElementsWrapper amount={total} email={formData.email} />
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
-              <Button type="submit" className="w-full" size="lg" disabled={creating}>
-                {creating ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
-              </Button>
-            </form>
+              {/* Area pembayaran */}
+              {formData.paymentMethod === "Credit Card" ? (
+                <div className="pt-4">
+                  <StripeElementsWrapper amount={total} email={formData.email} />
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  className="w-full"
+                  size="lg"
+                  disabled={creating}
+                  onClick={handleSubmit}
+                >
+                  {creating ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Order Summary */}

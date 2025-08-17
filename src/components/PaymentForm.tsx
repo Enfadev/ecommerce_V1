@@ -2,7 +2,11 @@
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 
-export default function PaymentForm() {
+interface PaymentFormProps {
+  clientSecret: string;
+}
+
+export default function PaymentForm({ clientSecret }: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -24,8 +28,7 @@ export default function PaymentForm() {
       return;
     }
     const { error, paymentIntent } = await stripe.confirmCardPayment(
-      // @ts-ignore
-      elements._clientSecret,
+      clientSecret,
       {
         payment_method: {
           card: cardElement,
@@ -45,26 +48,52 @@ export default function PaymentForm() {
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "0 auto" }}>
-      <CardElement options={{ hidePostalCode: true }} />
+      <div style={{
+        background: 'var(--color-card, #fff)',
+        border: '1px solid var(--color-border, #e0e0e0)',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 16,
+      }}>
+        <CardElement
+          options={{
+            hidePostalCode: true,
+            style: {
+              base: {
+                color: 'var(--color-foreground, #222)',
+                fontFamily: 'var(--font-sans, sans-serif)',
+                fontSize: '16px',
+                '::placeholder': {
+                  color: 'var(--color-muted-foreground, #888)',
+                },
+                backgroundColor: 'var(--color-card, #fff)',
+              },
+              invalid: {
+                color: '#df1b41',
+              },
+            },
+          }}
+        />
+      </div>
       <button
         type="submit"
         disabled={!stripe || loading}
         style={{
-          marginTop: 24,
-          background: "#635bff",
-          color: "#fff",
-          padding: "12px 24px",
+          marginTop: 8,
+          background: 'var(--color-primary, #635bff)',
+          color: 'var(--color-primary-foreground, #fff)',
+          padding: '12px 24px',
           borderRadius: 8,
           fontWeight: 600,
           fontSize: 16,
-          border: "none",
-          cursor: loading ? "not-allowed" : "pointer",
+          border: 'none',
+          cursor: loading ? 'not-allowed' : 'pointer',
           opacity: loading ? 0.6 : 1,
         }}
       >
-        {loading ? "Processing..." : "Pay Now"}
+        {loading ? 'Processing...' : 'Pay Now'}
       </button>
-      {error && <div style={{ color: "red", marginTop: 12 }}>{error}</div>}
+      {error && <div style={{ color: '#df1b41', marginTop: 12 }}>{error}</div>}
     </form>
   );
 }

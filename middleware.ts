@@ -34,7 +34,21 @@ export async function middleware(request: NextRequest) {
     pathname === '/jwt-test'
   ) {
     console.log('⏭️ Skipping middleware for:', pathname);
-    return NextResponse.next();
+    // Tambahkan CSP header untuk semua response (termasuk public)
+    const response = NextResponse.next();
+    response.headers.set(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "script-src 'self' https://js.stripe.com 'unsafe-inline'",
+        "script-src-elem 'self' https://js.stripe.com 'unsafe-inline'",
+        "frame-src https://js.stripe.com",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https://*.stripe.com",
+        "connect-src 'self' https://api.stripe.com https://js.stripe.com"
+      ].join('; ') + ';'
+    );
+    return response;
   }
 
   // Check if current path requires authentication
@@ -94,15 +108,25 @@ export async function middleware(request: NextRequest) {
 
     // Create response with user context headers
     const response = NextResponse.next();
-    
     // Add user context to headers for API routes
     response.headers.set('x-user-id', payload.id);
     response.headers.set('x-user-email', payload.email);
     response.headers.set('x-user-role', payload.role);
-    
+    // Tambahkan CSP header juga untuk protected route
+    response.headers.set(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "script-src 'self' https://js.stripe.com 'unsafe-inline'",
+        "script-src-elem 'self' https://js.stripe.com 'unsafe-inline'",
+        "frame-src https://js.stripe.com",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https://*.stripe.com",
+        "connect-src 'self' https://api.stripe.com https://js.stripe.com"
+      ].join('; ') + ';'
+    );
     console.log('✅ Middleware completed successfully for:', pathname);
     console.log('✅ Headers set - User ID:', payload.id, 'Email:', payload.email);
-    
     return response;
   }
 

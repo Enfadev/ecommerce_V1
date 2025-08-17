@@ -34,7 +34,17 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' https://js.stripe.com 'unsafe-inline' 'unsafe-eval'",
+              "script-src-elem 'self' https://js.stripe.com 'unsafe-inline' 'unsafe-eval'",
+              "frame-src https://js.stripe.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://*.stripe.com",
+              "font-src 'self'",
+              "connect-src 'self' https://api.stripe.com https://js.stripe.com",
+              "frame-ancestors 'none'"
+            ].join('; ') + ';',
           },
         ],
       },
