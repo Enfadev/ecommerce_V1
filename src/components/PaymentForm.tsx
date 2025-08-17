@@ -57,7 +57,15 @@ export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess 
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       // Buat order ke backend dan kosongkan cart, lalu redirect
       try {
-        const newOrder = await createOrder(orderData);
+        // Pastikan orderData memiliki semua field yang diperlukan
+        const completeOrderData = {
+          ...orderData,
+          paymentMethod: "Credit Card", // Pastikan paymentMethod ada
+        };
+        
+        console.log("Creating order with data:", completeOrderData); // Debug log
+        
+        const newOrder = await createOrder(completeOrderData);
         await clearCart();
         setCreatedOrder(newOrder);
         
@@ -69,7 +77,8 @@ export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess 
         
         // Fallback jika tidak ada callback
         setSuccess(true);
-      } catch {
+      } catch (error) {
+        console.error("Order creation error:", error); // Debug log
         setError("Payment succeeded but failed to create order. Please contact support.");
       }
       setLoading(false);
@@ -144,33 +153,41 @@ export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess 
             <span>Your payment information is secure and encrypted</span>
           </div>
           
-          <div className="border rounded-lg p-4 bg-card">
-            <CardElement
-              options={{
-                hidePostalCode: true,
-                style: {
-                  base: {
-                    fontSize: '16px',
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
-                    color: 'hsl(var(--foreground))',
-                    '::placeholder': {
-                      color: 'hsl(var(--muted-foreground))',
+          <div className="border rounded-lg p-4 bg-background min-h-[60px] relative">
+            {!stripe || !elements ? (
+              <div className="flex items-center justify-center h-12 text-muted-foreground">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Loading payment form...
+              </div>
+            ) : (
+              <div className="w-full">
+                <CardElement
+                  options={{
+                    hidePostalCode: true,
+                    style: {
+                      base: {
+                        fontSize: '16px',
+                        color: '#ffffff',
+                        fontFamily: 'system-ui, sans-serif',
+                        '::placeholder': {
+                          color: '#9ca3af',
+                        },
+                        iconColor: '#ffffff',
+                        padding: '10px 12px',
+                      },
+                      invalid: {
+                        color: '#ef4444',
+                        iconColor: '#ef4444',
+                      },
+                      complete: {
+                        color: '#ffffff',
+                        iconColor: '#10b981',
+                      },
                     },
-                    backgroundColor: 'transparent',
-                    iconColor: 'hsl(var(--foreground))',
-                    lineHeight: '24px',
-                  },
-                  invalid: {
-                    color: 'hsl(var(--destructive))',
-                    iconColor: 'hsl(var(--destructive))',
-                  },
-                  complete: {
-                    color: 'hsl(var(--foreground))',
-                    iconColor: 'hsl(var(--primary))',
-                  },
-                },
-              }}
-            />
+                  }}
+                />
+              </div>
+            )}
           </div>
           
           {error && (

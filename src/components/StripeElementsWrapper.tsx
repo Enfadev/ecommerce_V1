@@ -11,7 +11,7 @@ const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 import { CreateOrderData, Order } from "../hooks/use-orders";
 
 interface StripeElementsWrapperProps {
-  amount: number; // dalam USD
+  amount: number; 
   email: string;
   orderData: CreateOrderData;
   onPaymentSuccess?: (order: Order) => void;

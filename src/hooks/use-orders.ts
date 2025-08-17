@@ -61,7 +61,7 @@ export interface CreateOrderData {
   shippingAddress: string;
   postalCode?: string;
   notes?: string;
-  paymentMethod?: string;
+  paymentMethod: string; 
   items: {
     productId: number;
     quantity: number;
