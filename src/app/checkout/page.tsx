@@ -334,6 +334,12 @@ export default function CheckoutPage() {
                       discount: 0,
                       totalAmount: total,
                     }}
+                    onPaymentSuccess={(order: Order) => {
+                      setCreatedOrder(order);
+                      setSubmitted(true);
+                      clearCart();
+                      toast.success("Order placed successfully!");
+                    }}
                   />
                 </div>
               ) : (

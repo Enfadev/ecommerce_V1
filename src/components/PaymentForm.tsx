@@ -1,20 +1,24 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import { useState } from "react";
-import { useOrders } from "../hooks/use-orders";
-import { useCart } from "./cart-context";
 
-
-import type { CreateOrderData } from "../hooks/use-orders";
+import { CreateOrderData, Order } from "../hooks/use-orders";
 
 interface PaymentFormProps {
   clientSecret: string;
   orderData: CreateOrderData;
+  onPaymentSuccess?: (order: Order) => void;
 }
 
-export default function PaymentForm({ clientSecret, orderData }: PaymentFormProps) {
-  const router = useRouter();
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { useState } from "react";
+import { useOrders } from "../hooks/use-orders";
+import { useCart } from "./cart-context";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { CheckCircle } from "lucide-react";
+import Link from "next/link";
+
+export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess }: PaymentFormProps) {
   const { createOrder } = useOrders();
   const { clearCart } = useCart();
   const stripe = useStripe();
@@ -22,6 +26,7 @@ export default function PaymentForm({ clientSecret, orderData }: PaymentFormProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,20 +56,77 @@ export default function PaymentForm({ clientSecret, orderData }: PaymentFormProp
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
       // Buat order ke backend dan kosongkan cart, lalu redirect
       try {
-        await createOrder(orderData);
+        const newOrder = await createOrder(orderData);
         await clearCart();
+        setCreatedOrder(newOrder);
+        
+        // Jika ada callback, panggil callback dan jangan tampilkan UI success lokal
+        if (onPaymentSuccess && newOrder) {
+          onPaymentSuccess(newOrder);
+          return;
+        }
+        
+        // Fallback jika tidak ada callback
         setSuccess(true);
-        setTimeout(() => {
-          router.push("/order-history");
-        }, 1200);
-      } catch (e) {
+      } catch {
         setError("Payment succeeded but failed to create order. Please contact support.");
       }
       setLoading(false);
     }
   };
 
-  if (success) return <div>Payment successful! Thank you. Redirecting...</div>;
+  if (success) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="max-w-2xl mx-auto px-4 py-16">
+          <Card className="text-center">
+            <CardContent className="pt-6">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h1 className="text-2xl font-bold mb-2">Payment Successful!</h1>
+              <p className="text-muted-foreground mb-6">
+                Thank you for your payment. Your order has been placed successfully and we will send confirmation to your email soon.
+              </p>
+              
+              {createdOrder && (
+                <div className="bg-muted/30 rounded-lg p-4 mb-6 text-left">
+                  <h3 className="font-semibold mb-2">Order Details</h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span>Order Number:</span>
+                      <span className="font-mono">{createdOrder.orderNumber}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Total Amount:</span>
+                      <span className="font-semibold">${createdOrder.totalAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Payment Method:</span>
+                      <span>{createdOrder.paymentMethod}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Status:</span>
+                      <Badge variant="secondary">{createdOrder.status}</Badge>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex gap-4 justify-center">
+                <Button asChild>
+                  <Link href="/order-history">View Orders</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/">Back to Home</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "0 auto" }}>

@@ -8,15 +8,16 @@ import PaymentForm from "./PaymentForm";
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
-import { CreateOrderData } from "../hooks/use-orders";
+import { CreateOrderData, Order } from "../hooks/use-orders";
 
 interface StripeElementsWrapperProps {
   amount: number; // dalam USD
   email: string;
   orderData: CreateOrderData;
+  onPaymentSuccess?: (order: Order) => void;
 }
 
-export default function StripeElementsWrapper({ amount, email, orderData }: StripeElementsWrapperProps) {
+export default function StripeElementsWrapper({ amount, email, orderData, onPaymentSuccess }: StripeElementsWrapperProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +40,6 @@ export default function StripeElementsWrapper({ amount, email, orderData }: Stri
         colorText: 'var(--color-foreground, #222)',
         colorDanger: '#df1b41',
         colorTextPlaceholder: 'var(--color-muted-foreground, #888)',
-        colorBorder: 'var(--color-border, #e0e0e0)',
         borderRadius: '8px',
         fontFamily: 'var(--font-sans, sans-serif)',
         fontSizeBase: '16px',
@@ -75,7 +75,7 @@ export default function StripeElementsWrapper({ amount, email, orderData }: Stri
   }
   return (
     <Elements stripe={stripePromise} options={options}>
-      <PaymentForm clientSecret={clientSecret!} orderData={orderData} />
+      <PaymentForm clientSecret={clientSecret!} orderData={orderData} onPaymentSuccess={onPaymentSuccess} />
     </Elements>
   );
 }
