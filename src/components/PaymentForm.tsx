@@ -12,11 +12,12 @@ import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import { useOrders } from "../hooks/use-orders";
 import { useCart } from "./cart-context";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, CreditCard, Shield, Lock } from "lucide-react";
 import Link from "next/link";
+import { Alert, AlertDescription } from "./ui/alert";
 
 export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess }: PaymentFormProps) {
   const { createOrder } = useOrders();
@@ -129,53 +130,83 @@ export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess 
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "0 auto" }}>
-      <div style={{
-        background: 'var(--color-card, #fff)',
-        border: '1px solid var(--color-border, #e0e0e0)',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 16,
-      }}>
-        <CardElement
-          options={{
-            hidePostalCode: true,
-            style: {
-              base: {
-                color: 'var(--color-foreground, #222)',
-                fontFamily: 'var(--font-sans, sans-serif)',
-                fontSize: '16px',
-                '::placeholder': {
-                  color: 'var(--color-muted-foreground, #888)',
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5" />
+            Payment Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+            <Shield className="h-4 w-4" />
+            <span>Your payment information is secure and encrypted</span>
+          </div>
+          
+          <div className="border rounded-lg p-4 bg-card">
+            <CardElement
+              options={{
+                hidePostalCode: true,
+                style: {
+                  base: {
+                    fontSize: '16px',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    color: 'hsl(var(--foreground))',
+                    '::placeholder': {
+                      color: 'hsl(var(--muted-foreground))',
+                    },
+                    backgroundColor: 'transparent',
+                    iconColor: 'hsl(var(--foreground))',
+                    lineHeight: '24px',
+                  },
+                  invalid: {
+                    color: 'hsl(var(--destructive))',
+                    iconColor: 'hsl(var(--destructive))',
+                  },
+                  complete: {
+                    color: 'hsl(var(--foreground))',
+                    iconColor: 'hsl(var(--primary))',
+                  },
                 },
-                backgroundColor: 'var(--color-card, #fff)',
-              },
-              invalid: {
-                color: '#df1b41',
-              },
-            },
-          }}
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={!stripe || loading}
-        style={{
-          marginTop: 8,
-          background: 'var(--color-primary, #635bff)',
-          color: 'var(--color-primary-foreground, #fff)',
-          padding: '12px 24px',
-          borderRadius: 8,
-          fontWeight: 600,
-          fontSize: 16,
-          border: 'none',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.6 : 1,
-        }}
-      >
-        {loading ? 'Processing...' : 'Pay Now'}
-      </button>
-      {error && <div style={{ color: '#df1b41', marginTop: 12 }}>{error}</div>}
-    </form>
+              }}
+            />
+          </div>
+          
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          <Button
+            type="submit"
+            className="w-full"
+            size="lg"
+            disabled={!stripe || loading}
+            onClick={handleSubmit}
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Processing Payment...
+              </>
+            ) : (
+              <>
+                <Lock className="h-4 w-4 mr-2" />
+                Pay Securely
+              </>
+            )}
+          </Button>
+          
+          <div className="text-center text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-1">
+              <Shield className="h-3 w-3" />
+              <span>Powered by Stripe - Your payment is secure</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

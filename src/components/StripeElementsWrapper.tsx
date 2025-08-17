@@ -59,9 +59,6 @@ export default function StripeElementsWrapper({ amount, email, orderData, onPaym
         '.Tab, .Block, .Label': {
           color: 'var(--color-foreground, #222)',
         },
-        '::placeholder': {
-          color: 'var(--color-muted-foreground, #888)',
-        },
       },
     },
   };
