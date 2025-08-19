@@ -5,7 +5,22 @@ import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import NextLink from "next/link";
-import { ArrowRight, Star, Truck, Shield, Headphones, Gift, Users, Package, Globe, Calendar } from "lucide-react";
+import { ArrowRight, Star, Truck, Shield, Headphones, Gift } from "lucide-react";
+
+interface HeroSlide {
+  title: string;
+  subtitle: string;
+  description: string;
+  image?: string;
+  buttonText: string;
+  buttonLink: string;
+}
+
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
 
 async function getHomePageData() {
   try {
@@ -20,7 +35,7 @@ async function getHomePageData() {
 export default async function Home() {
   let dbProducts = [];
   let homePageData = null;
-  
+
   try {
     // Try to get data from database
     dbProducts = await prisma.product.findMany({
@@ -71,9 +86,9 @@ export default async function Home() {
         status: "active",
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      },
     ];
-    
+
     homePageData = {
       heroTitle: "Welcome to Our Store",
       heroSubtitle: "Testing JWT Implementation",
@@ -82,11 +97,10 @@ export default async function Home() {
       features: [],
       statsData: [],
       aboutPreview: {},
-      testimonialsData: []
+      testimonialsData: [],
     };
   }
 
-  
   const products = dbProducts.map((p) => ({
     id: p.id,
     name: p.name,
@@ -108,24 +122,29 @@ export default async function Home() {
         description: "Get the best products at the best prices. Limited time offer!",
         image: "/hero1.jpg",
         buttonText: "Shop Now",
-        buttonLink: "/products"
-      }
+        buttonLink: "/products",
+      },
     ],
     features: [
       { icon: "Truck", title: "Free Shipping", description: "Free shipping on orders over $50" },
       { icon: "Shield", title: "Secure Payment", description: "100% secure payment processing" },
       { icon: "Headphones", title: "24/7 Support", description: "Dedicated customer support" },
-      { icon: "Gift", title: "Special Offers", description: "Regular discounts and promotions" }
+      { icon: "Gift", title: "Special Offers", description: "Regular discounts and promotions" },
     ],
     statsData: [
       { label: "Happy Customers", value: "10,000+", icon: "Users" },
       { label: "Products", value: "5,000+", icon: "Package" },
       { label: "Countries", value: "25+", icon: "Globe" },
-      { label: "Years", value: "5+", icon: "Calendar" }
-    ]
+      { label: "Years", value: "5+", icon: "Calendar" },
+    ],
   };
 
   const pageData = homePageData || defaultData;
+
+  // Safely parse JSON data from database
+  const heroSlides = Array.isArray(pageData.heroSlides) ? pageData.heroSlides : defaultData.heroSlides;
+
+  const features = Array.isArray(pageData.features) ? pageData.features : defaultData.features;
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,7 +153,7 @@ export default async function Home() {
         <section className="relative">
           <Carousel className="w-full">
             <CarouselContent>
-              {(pageData.heroSlides || defaultData.heroSlides).map((slide: { title: string; subtitle: string; description: string; buttonText: string; buttonLink: string }, index: number) => (
+              {(heroSlides as HeroSlide[]).map((slide: HeroSlide, index: number) => (
                 <CarouselItem key={index}>
                   <Card className="border-0 overflow-hidden">
                     <div className="relative h-64 md:h-80 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-between px-8 md:px-16">
@@ -164,12 +183,9 @@ export default async function Home() {
         </section>{" "}
         {/* Features Section */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(pageData.features || defaultData.features).map((feature: { icon: string; title: string; description: string }, index: number) => {
-            const IconComponent = feature.icon === 'Truck' ? Truck : 
-                               feature.icon === 'Shield' ? Shield : 
-                               feature.icon === 'Headphones' ? Headphones : 
-                               feature.icon === 'Gift' ? Gift : Truck;
-            
+          {(features as Feature[]).map((feature: Feature, index: number) => {
+            const IconComponent = feature.icon === "Truck" ? Truck : feature.icon === "Shield" ? Shield : feature.icon === "Headphones" ? Headphones : feature.icon === "Gift" ? Gift : Truck;
+
             return (
               <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-center space-x-4">
@@ -307,7 +323,9 @@ export default async function Home() {
                     <Gift className="h-6 w-6 text-primary" />
                     <h3 className="text-2xl font-semibold text-primary">Special Events & Exclusive Rewards!</h3>
                   </div>
-                  <p className="text-muted-foreground text-lg">Write your best review and win attractive prizes every week, including vouchers & free products. Become a ShopZone brand ambassador and enjoy exclusive benefits with a 6-month contract!</p>
+                  <p className="text-muted-foreground text-lg">
+                    Write your best review and win attractive prizes every week, including vouchers & free products. Become a ShopZone brand ambassador and enjoy exclusive benefits with a 6-month contract!
+                  </p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                       <Star className="h-4 w-4 text-yellow-500" />

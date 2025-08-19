@@ -1,9 +1,9 @@
 import React from "react";
 import { products } from "../data/products";
 import { Card } from "./ui/card";
-import { Carousel, CarouselItem, CarouselContent } from "./ui/carousel";
+import { Carousel } from "./ui/carousel";
 import { Badge } from "./ui/badge";
-
+import Image from "next/image";
 
 interface ProductRecommendationProps {
   userId?: string;
@@ -13,9 +13,7 @@ interface ProductRecommendationProps {
   maxItems?: number;
 }
 
-
-function getRecommendedProducts({ userId, wishlist, orderHistory, currentProductId, maxItems = 6 }: ProductRecommendationProps) {
-
+function getRecommendedProducts({ wishlist, orderHistory, currentProductId, maxItems = 6 }: Omit<ProductRecommendationProps, "userId">) {
   let recommended: typeof products = [];
 
   if (wishlist && wishlist.length > 0) {
@@ -31,7 +29,6 @@ function getRecommendedProducts({ userId, wishlist, orderHistory, currentProduct
     }
   }
   if (recommended.length === 0) {
-
     recommended = products
       .filter((p) => p.id !== Number(currentProductId))
       .sort((a, b) => b.stock - a.stock)
@@ -40,8 +37,8 @@ function getRecommendedProducts({ userId, wishlist, orderHistory, currentProduct
   return recommended.slice(0, maxItems);
 }
 
-const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ userId, wishlist, orderHistory, currentProductId, maxItems = 6 }) => {
-  const recommended = getRecommendedProducts({ userId, wishlist, orderHistory, currentProductId, maxItems });
+const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist, orderHistory, currentProductId, maxItems = 6 }) => {
+  const recommended = getRecommendedProducts({ wishlist, orderHistory, currentProductId, maxItems });
 
   if (recommended.length === 0) return null;
 
@@ -52,7 +49,7 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ userId, w
         {recommended.map((product) => (
           <Card key={product.id} className="bg-zinc-900 text-white shadow-lg hover:scale-105 transition-transform duration-300">
             <div className="flex flex-col items-center">
-              <img src={product.image} alt={product.name} className="w-32 h-32 object-cover rounded-lg mb-2" />
+              <Image src={product.image} alt={product.name} className="w-32 h-32 object-cover rounded-lg mb-2" width={128} height={128} />
               <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
               <Badge variant="secondary" className="mb-2">
                 {product.category}
@@ -68,4 +65,3 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ userId, w
 };
 
 export default ProductRecommendation;
-

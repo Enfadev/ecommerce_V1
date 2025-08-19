@@ -20,6 +20,8 @@ interface APIProduct {
   price: number;
   imageUrl: string | null;
   description: string | null;
+  category?: string;
+  stock?: number;
 }
 
 export default function ProductPage() {
@@ -43,7 +45,7 @@ export default function ProductPage() {
       .then((data) => {
         if (Array.isArray(data)) {
           // Map API data to match ProductCard interface
-          const mappedProducts: Product[] = data.map((product: any) => ({
+          const mappedProducts: Product[] = data.map((product: APIProduct) => ({
             id: product.id,
             name: product.name,
             price: product.price,
@@ -68,9 +70,7 @@ export default function ProductPage() {
     let filtered = products.filter((p) => p.name.toLowerCase().includes(localSearch.toLowerCase()));
 
     if (category !== "All") {
-      filtered = filtered.filter((p) =>
-        p.category && p.category.toLowerCase() === category.toLowerCase()
-      );
+      filtered = filtered.filter((p) => p.category && p.category.toLowerCase() === category.toLowerCase());
     }
 
     if (price !== "all") {
@@ -193,7 +193,9 @@ export default function ProductPage() {
               <Search className="w-12 h-12 text-muted-foreground" />
             </div>
             <h3 className="text-xl font-semibold mb-2">{error}</h3>
-            <Button variant="outline" onClick={() => window.location.reload()}>Retry</Button>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Retry
+            </Button>
           </div>
         ) : filteredAndSortedProducts.length === 0 ? (
           <div className="text-center py-20">

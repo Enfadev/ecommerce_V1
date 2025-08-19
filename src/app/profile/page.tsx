@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,11 +15,10 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, MapPin, Calendar, Settings, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown } from "lucide-react";
+import { User, Phone, MapPin, Calendar, Settings, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";
 import ProductRecommendation from "@/components/ProductRecommendation";
-
 
 const profileSchema = z.object({
   name: z.string().min(2, { message: "Nama minimal 2 karakter" }),
@@ -25,7 +26,7 @@ const profileSchema = z.object({
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
   dateOfBirth: z.string().optional(),
-  avatar: z.string().url({ message: "URL avatar tidak valid" }).optional(),
+  image: z.string().url({ message: "URL avatar tidak valid" }).optional(),
 });
 
 const passwordSchema = z
@@ -59,7 +60,7 @@ export default function ProfilePage() {
       phoneNumber: "",
       address: "",
       dateOfBirth: "",
-      avatar: "",
+      image: "",
     },
   });
 
@@ -72,14 +73,12 @@ export default function ProfilePage() {
     },
   });
 
-  
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/signin");
     }
   }, [isAuthenticated, isLoading, router]);
 
-  
   useEffect(() => {
     if (user) {
       profileForm.reset({
@@ -88,7 +87,7 @@ export default function ProfilePage() {
         phoneNumber: user.phoneNumber || "",
         address: user.address || "",
         dateOfBirth: user.dateOfBirth || "",
-        avatar: user.avatar || "",
+        image: user.avatar || "",
       });
     }
   }, [user, profileForm]);
@@ -110,7 +109,7 @@ export default function ProfilePage() {
           type: "error",
         });
       }
-    } catch (error) {
+    } catch {
       setToast({
         show: true,
         message: "Terjadi kesalahan saat memperbarui profil",
@@ -121,17 +120,35 @@ export default function ProfilePage() {
 
   async function onPasswordSubmit(values: PasswordValues) {
     try {
-      
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call the change password API
+      console.log("Password change values:", values); // For future implementation
 
-      setToast({
-        show: true,
-        message: "Password berhasil diubah!",
-        type: "success",
+      const res = await fetch("/api/change-password", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          currentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+        }),
       });
 
-      passwordForm.reset();
-    } catch (error) {
+      if (res.ok) {
+        setToast({
+          show: true,
+          message: "Password berhasil diubah!",
+          type: "success",
+        });
+        passwordForm.reset();
+      } else {
+        const errorData = await res.json();
+        setToast({
+          show: true,
+          message: errorData.error || "Gagal mengubah password",
+          type: "error",
+        });
+      }
+    } catch {
       setToast({
         show: true,
         message: "Terjadi kesalahan saat mengubah password",
@@ -152,7 +169,7 @@ export default function ProfilePage() {
   const updateAvatar = () => {
     if (user?.name) {
       const newAvatarUrl = generateAvatarUrl(user.name);
-      profileForm.setValue("avatar", newAvatarUrl);
+      profileForm.setValue("image", newAvatarUrl);
     }
   };
 
@@ -182,7 +199,7 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="relative">
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-600 shadow-xl">
-                  <img src={profileForm.watch("avatar") || user.avatar || generateAvatarUrl(user.name)} alt="Avatar" className="w-full h-full object-cover" />
+                  <Image src={profileForm.watch("image") || user.avatar || generateAvatarUrl(user.name)} alt="Avatar" className="w-full h-full object-cover" width={128} height={128} />
                 </div>
                 <Button size="sm" variant="secondary" className="absolute bottom-2 right-2 rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
                   <Camera className="h-4 w-4" />
@@ -224,14 +241,18 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                  <Package className="h-4 w-4 mr-2" />
-                  Pesanan
-                </Button>
-                <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                  <Heart className="h-4 w-4 mr-2" />
-                  Wishlist
-                </Button>
+                <Link href="/order-history">
+                  <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                    <Package className="h-4 w-4 mr-2" />
+                    Pesanan
+                  </Button>
+                </Link>
+                <Link href="/wishlist">
+                  <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                    <Heart className="h-4 w-4 mr-2" />
+                    Wishlist
+                  </Button>
+                </Link>
               </div>
             </div>
           </CardContent>
@@ -346,7 +367,7 @@ export default function ProfilePage() {
 
                         <FormField
                           control={profileForm.control}
-                          name="avatar"
+                          name="image"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-gray-200">URL Avatar</FormLabel>
@@ -488,14 +509,18 @@ export default function ProfilePage() {
                 <CardTitle className="text-white text-lg">Aksi Cepat</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
-                  <Package className="h-4 w-4 mr-2" />
-                  Riwayat Pesanan
-                </Button>
-                <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
-                  <Heart className="h-4 w-4 mr-2" />
-                  Daftar Keinginan
-                </Button>
+                <Link href="/order-history">
+                  <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
+                    <Package className="h-4 w-4 mr-2" />
+                    Riwayat Pesanan
+                  </Button>
+                </Link>
+                <Link href="/wishlist">
+                  <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
+                    <Heart className="h-4 w-4 mr-2" />
+                    Daftar Keinginan
+                  </Button>
+                </Link>
                 <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
                   <Settings className="h-4 w-4 mr-2" />
                   Pengaturan

@@ -2,31 +2,26 @@
 import { useState } from "react";
 import { useWishlist } from "@/components/wishlist-context";
 import { useCart } from "@/components/cart-context";
-import { Header } from "@/components/Header";
 import { WishlistProductCard } from "@/components/WishlistProductCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Heart, ShoppingCart, Trash2, Star, Filter, SortAsc, Grid3X3, List, Share2, Download } from "lucide-react";
+import { Heart, ShoppingCart, Trash2, Filter, Grid3X3, List, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import type { Product } from "@/data/products";
 
 type SortOption = "name" | "price-low" | "price-high" | "category";
 type ViewMode = "grid" | "list";
 
 export default function WishlistPage() {
-  const { wishlist, removeFromWishlist, clearWishlist, getWishlistCount } = useWishlist();
+  const { wishlist, clearWishlist, getWishlistCount } = useWishlist();
   const { addToCart } = useCart();
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
-  
   const categories = Array.from(new Set(wishlist.map((product) => product.category)));
 
-  
   const filteredProducts = wishlist.filter((product) => filterCategory === "all" || product.category === filterCategory);
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -49,7 +44,7 @@ export default function WishlistPage() {
     filteredProducts.forEach((product) => {
       if (product.stock > 0) {
         addToCart({
-          id: product.id.toString(),
+          id: product.id,
           name: product.name,
           price: product.price,
           image: product.image,
@@ -72,11 +67,10 @@ export default function WishlistPage() {
           text: `Check out my ${getWishlistCount()} favorite products!`,
           url: window.location.href,
         });
-      } catch (error) {
+      } catch {
         console.log("Sharing cancelled");
       }
     } else {
-      
       navigator.clipboard.writeText(window.location.href);
       toast.success("Wishlist link copied to clipboard!");
     }
@@ -95,7 +89,7 @@ export default function WishlistPage() {
             <div className="text-sm text-muted-foreground">Categories</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-500">Rp {filteredProducts.reduce((sum, product) => sum + product.price, 0).toLocaleString("id-ID")}</div>
+            <div className="text-2xl font-bold text-blue-500">${filteredProducts.reduce((sum, product) => sum + product.price, 0).toLocaleString("en-US")}</div>
             <div className="text-sm text-muted-foreground">Total Value</div>
           </div>
           <div className="text-center">
@@ -210,7 +204,7 @@ export default function WishlistPage() {
           <div className="mb-6">
             <Badge variant="secondary" className="text-sm">
               <Filter className="w-3 h-3 mr-1" />
-              {filteredProducts.length} products in category "{filterCategory}"
+              {filteredProducts.length} products in category &quot;{filterCategory}&quot;
             </Badge>
           </div>
         )}

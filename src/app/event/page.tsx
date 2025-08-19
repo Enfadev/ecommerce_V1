@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Gift, Trophy, Users, Star, Clock, MapPin, ExternalLink, Camera, MessageSquare, Zap, Crown, Sparkles } from "lucide-react";
+import { Calendar, Gift, Trophy, Users, Star, Clock, ExternalLink, Sparkles } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 
 async function getEventPageData() {
@@ -12,6 +12,20 @@ async function getEventPageData() {
     console.error("Error fetching event page data:", error);
     return null;
   }
+}
+
+interface Event {
+  id?: string;
+  title: string;
+  description: string;
+  status?: string;
+  category?: string;
+  featured?: boolean;
+  participants?: string;
+  period?: string;
+  date?: string;
+  prize?: string;
+  type?: string;
 }
 
 export default async function Event() {
@@ -28,23 +42,26 @@ export default async function Event() {
         description: "Up to 70% off on all product categories. Limited time promo!",
         status: "Active",
         category: "sale",
-        featured: true
-      }
+        featured: true,
+      },
     ],
     upcomingEvents: [
       {
         title: "Tech Week 2024",
         date: "2024-10-15",
-        description: "Latest gadgets and electronics at special prices"
-      }
+        description: "Latest gadgets and electronics at special prices",
+      },
     ],
     pastEvents: [],
-    eventCategories: []
+    eventCategories: [],
   };
 
   const pageData = eventPageData || defaultData;
-  const activeEvents = pageData.activeEvents || defaultData.activeEvents;
-  const upcomingEvents = pageData.upcomingEvents || defaultData.upcomingEvents;
+
+  // Ensure activeEvents and upcomingEvents are arrays
+  const activeEvents: Event[] = Array.isArray(pageData.activeEvents) ? (pageData.activeEvents as Event[]) : defaultData.activeEvents;
+
+  const upcomingEvents: Event[] = Array.isArray(pageData.upcomingEvents) ? (pageData.upcomingEvents as Event[]) : defaultData.upcomingEvents;
 
   const pastEvents = [
     {
@@ -78,9 +95,7 @@ export default async function Event() {
               <Sparkles className="w-4 h-4" />
               Events & Giveaways
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">
-              {pageData.heroTitle || "Exciting Events & Promotions"}
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">{pageData.heroTitle || "Exciting Events & Promotions"}</h1>
             <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
               {pageData.heroDescription || "Join our amazing events and take advantage of exclusive promotions, special discounts, and limited-time offers."}
             </p>
@@ -219,7 +234,7 @@ export default async function Event() {
       {/* CTA Section */}
       <section className="py-16 px-4 bg-gradient-to-r from-primary to-primary/80 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Don't Miss the Next Event!</h2>
+          <h2 className="text-3xl font-bold mb-4">Don&apos;t Miss the Next Event!</h2>
           <p className="text-xl opacity-90 mb-8">Follow our social media to get the latest event updates and tips to win prizes</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" className="gap-2">

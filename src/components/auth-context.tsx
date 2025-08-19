@@ -35,13 +35,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     try {
       setIsLoading(true);
-      
+
       // First, check NextAuth session
       const nextAuthCheck = await fetch("/api/auth/session", {
         method: "GET",
-        credentials: 'include',
+        credentials: "include",
         headers: {
-          'Cache-Control': 'no-cache',
+          "Cache-Control": "no-cache",
         },
       });
 
@@ -53,33 +53,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             name: nextAuthData.user.name,
             email: nextAuthData.user.email,
             role: nextAuthData.user.role,
+            phoneNumber: nextAuthData.user.phoneNumber,
+            address: nextAuthData.user.address,
+            dateOfBirth: nextAuthData.user.dateOfBirth,
             avatar: nextAuthData.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(nextAuthData.user.name)}&background=6366f1&color=fff`,
           });
-          console.log('✅ NextAuth user loaded successfully');
+          console.log("✅ NextAuth user loaded successfully");
           return;
         }
       }
-      
+
       // Fallback to original JWT auth check
       const authCheck = await fetch("/api/auth/check", {
         method: "GET",
-        credentials: 'include',
+        credentials: "include",
         headers: {
-          'Cache-Control': 'no-cache',
+          "Cache-Control": "no-cache",
         },
       });
-      
+
       if (!authCheck.ok) {
-        console.log('Auth check failed:', authCheck.status);
+        console.log("Auth check failed:", authCheck.status);
         setUser(null);
         return;
       }
-      
+
       const authData = await authCheck.json();
-      console.log('🔍 Auth check result:', authData);
-      
+      console.log("🔍 Auth check result:", authData);
+
       if (!authData.authenticated) {
-        console.log('Not authenticated:', authData.error);
+        console.log("Not authenticated:", authData.error);
         setUser(null);
         return;
       }
@@ -87,9 +90,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Get full user profile
       const res = await fetch("/api/profile", {
         method: "GET",
-        credentials: 'include',
+        credentials: "include",
         headers: {
-          'Cache-Control': 'no-cache',
+          "Cache-Control": "no-cache",
         },
       });
 
@@ -102,11 +105,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: userData.email,
           role: userData.role,
           createdAt: userData.createdAt,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
+          phoneNumber: userData.phoneNumber,
+          address: userData.address,
+          dateOfBirth: userData.dateOfBirth,
+          avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
         });
-        console.log('✅ User profile loaded successfully');
+        console.log("✅ User profile loaded successfully");
       } else {
-        console.log('❌ Failed to load user profile:', res.status);
+        console.log("❌ Failed to load user profile:", res.status);
         setUser(null);
       }
     } catch (error) {
@@ -120,10 +126,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Load user on component mount
   useEffect(() => {
     const loadUser = async () => {
-      console.log('🔄 Loading user on mount...');
+      console.log("🔄 Loading user on mount...");
       await refreshUser();
     };
-    
+
     loadUser();
   }, []);
 
@@ -133,10 +139,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include', // Include cookies
+        credentials: "include", // Include cookies
         body: JSON.stringify({ email, password }),
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         const userData = data.user;
@@ -146,7 +152,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: userData.email,
           role: userData.role,
           createdAt: userData.createdAt,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
+          phoneNumber: userData.phoneNumber,
+          address: userData.address,
+          dateOfBirth: userData.dateOfBirth,
+          avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
         });
         setIsLoading(false);
         return true;
@@ -167,10 +176,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include', // Include cookies
+        credentials: "include", // Include cookies
         body: JSON.stringify({ name, email, password }),
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         const userData = data.user;
@@ -180,7 +189,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: userData.email,
           role: userData.role,
           createdAt: userData.createdAt,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
+          phoneNumber: userData.phoneNumber,
+          address: userData.address,
+          dateOfBirth: userData.dateOfBirth,
+          avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
         });
         setIsLoading(false);
         return true;
@@ -198,15 +210,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async (): Promise<void> => {
     try {
       // Sign out from NextAuth if available
-      if (typeof window !== 'undefined') {
-        const { signOut: nextAuthSignOut } = await import('next-auth/react');
+      if (typeof window !== "undefined") {
+        const { signOut: nextAuthSignOut } = await import("next-auth/react");
         await nextAuthSignOut({ redirect: false });
       }
-      
+
       // Sign out from regular JWT session
       await fetch("/api/logout", {
         method: "POST",
-        credentials: 'include', // Include cookies
+        credentials: "include", // Include cookies
       });
       setUser(null);
     } catch (error) {
@@ -221,13 +233,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setIsLoading(true);
     try {
-      // Simulate API call for profile update
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          name: userData.name,
+          phoneNumber: userData.phoneNumber,
+          address: userData.address,
+          dateOfBirth: userData.dateOfBirth,
+          image: userData.avatar,
+        }),
+      });
 
-      const updatedUser = { ...user, ...userData };
-      setUser(updatedUser);
-      setIsLoading(false);
-      return true;
+      if (res.ok) {
+        const data = await res.json();
+        const updatedUserData = data.user;
+        setUser({
+          id: updatedUserData.id,
+          name: updatedUserData.name,
+          email: updatedUserData.email,
+          role: updatedUserData.role,
+          phoneNumber: updatedUserData.phoneNumber,
+          address: updatedUserData.address,
+          dateOfBirth: updatedUserData.dateOfBirth,
+          avatar: updatedUserData.image,
+          createdAt: updatedUserData.createdAt,
+        });
+        setIsLoading(false);
+        return true;
+      } else {
+        setIsLoading(false);
+        return false;
+      }
     } catch (error) {
       console.error("Update profile error:", error);
       setIsLoading(false);
