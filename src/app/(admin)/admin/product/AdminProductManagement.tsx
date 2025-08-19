@@ -6,11 +6,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, ArrowUpDown, Download, Layout } from "lucide-react";
+import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, Download, Layout } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-import { ProductForm } from "./ProductForm";
+import { ProductForm } from "@/components/ProductForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface Product {
@@ -77,26 +77,15 @@ export default function AdminProductManagement() {
 
   // State untuk kolom yang ditampilkan
   // Only show important columns by default
-  const defaultImportantColumns = [
-    "imageUrl",
-    "name",
-    "category",
-    "price",
-    "stock",
-    "status",
-    "sku",
-    "brand"
-  ];
+  const defaultImportantColumns = ["imageUrl", "name", "category", "price", "stock", "status", "sku", "brand"];
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultImportantColumns);
 
   // Handler untuk toggle kolom
   const handleToggleColumn = (key: string) => {
-    setVisibleColumns((prev) =>
-      prev.includes(key) ? prev.filter((col) => col !== key) : [...prev, key]
-    );
+    setVisibleColumns((prev) => (prev.includes(key) ? prev.filter((col) => col !== key) : [...prev, key]));
   };
   const [products, setProducts] = useState<Product[]>([]);
-  
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -116,40 +105,14 @@ export default function AdminProductManagement() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [sortBy, setSortBy] = useState<keyof Product>("name");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  
-  const filteredProducts = products
-    .filter((product) => {
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
-      const modifier = sortOrder === "asc" ? 1 : -1;
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return aValue.localeCompare(bValue) * modifier;
-      }
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return (aValue - bValue) * modifier;
-      }
-      return 0;
-    });
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const categories = ["all", ...new Set(products.map((p) => p.category).filter(Boolean))];
-
-  const handleSort = (field: keyof Product) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("asc");
-    }
-  };
 
   const handleAdd = () => {
     setEditingProduct(null);
@@ -162,17 +125,17 @@ export default function AdminProductManagement() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
     try {
-      const res = await fetch('/api/product', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/product", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      if (!res.ok) throw new Error('Failed to delete product');
+      if (!res.ok) throw new Error("Failed to delete product");
       setProducts(products.filter((p) => p.id !== id));
     } catch {
-      alert('Failed to delete product');
+      alert("Failed to delete product");
     }
   };
 
@@ -181,53 +144,53 @@ export default function AdminProductManagement() {
       try {
         let imageUrl = editingProduct.imageUrl;
         let galleryUrls = editingProduct.gallery || [];
-        
+
         // Upload gambar utama jika ada file baru
         if (productData.imageFiles && productData.imageFiles.length > 0) {
-          console.log('Uploading main image...');
+          console.log("Uploading main image...");
           const formData = new FormData();
           formData.append("file", productData.imageFiles[0]);
-          
+
           const uploadRes = await fetch("/api/upload", {
             method: "POST",
             body: formData,
           });
-          
+
           if (!uploadRes.ok) {
             const errorData = await uploadRes.json();
             throw new Error(`Failed to upload image: ${errorData.error}`);
           }
-          
+
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
-          console.log('Main image uploaded successfully:', imageUrl);
+          console.log("Main image uploaded successfully:", imageUrl);
         }
-        
+
         // Upload gallery images jika ada file baru (lebih dari 1 file)
         if (productData.imageFiles && productData.imageFiles.length > 1) {
-          console.log('Uploading gallery images...');
+          console.log("Uploading gallery images...");
           const galleryForm = new FormData();
           productData.imageFiles.slice(1).forEach((file: File) => {
             galleryForm.append("files", file);
           });
-          
+
           const galleryRes = await fetch("/api/upload?gallery=1", {
             method: "POST",
             body: galleryForm,
           });
-          
+
           if (!galleryRes.ok) {
             const errorData = await galleryRes.json();
             throw new Error(`Failed to upload gallery images: ${errorData.error}`);
           }
-          
+
           const galleryData = await galleryRes.json();
           galleryUrls = galleryData.urls;
-          console.log('Gallery images uploaded successfully:', galleryUrls);
+          console.log("Gallery images uploaded successfully:", galleryUrls);
         }
-        
+
         // Update produk ke database dengan semua field
-        console.log('Updating product in database...');
+        console.log("Updating product in database...");
         const res = await fetch(`/api/product`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -250,53 +213,59 @@ export default function AdminProductManagement() {
             gallery: galleryUrls,
           }),
         });
-        
+
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(`Failed to update product: ${errorData.error}`);
         }
-        
+
         const updatedProduct = await res.json();
-        console.log('Product updated successfully:', updatedProduct);
-        
-        setProducts(products.map((p) => (p.id === updatedProduct.id ? {
-          ...updatedProduct,
-          imageUrl: updatedProduct.imageUrl || "/placeholder-image.svg",
-        } : p)));
-        
-        alert('Product updated successfully!');
-      } catch (error: any) {
-        console.error('Update product error:', error);
-        alert(`Failed to update product: ${error?.message || 'Unknown error'}`);
+        console.log("Product updated successfully:", updatedProduct);
+
+        setProducts(
+          products.map((p) =>
+            p.id === updatedProduct.id
+              ? {
+                  ...updatedProduct,
+                  imageUrl: updatedProduct.imageUrl || "/placeholder-image.svg",
+                }
+              : p
+          )
+        );
+
+        alert("Product updated successfully!");
+      } catch (error: unknown) {
+        console.error("Update product error:", error);
+        alert(`Failed to update product: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     } else {
       try {
         let imageUrl = "";
-        
+
         // Upload gambar utama jika ada file baru
         if (productData.imageFiles && productData.imageFiles.length > 0) {
-          console.log('Uploading main image for new product...');
+          console.log("Uploading main image for new product...");
           const formData = new FormData();
           formData.append("file", productData.imageFiles[0]);
-          
+
           const uploadRes = await fetch("/api/upload", {
             method: "POST",
             body: formData,
           });
-          
+
           if (!uploadRes.ok) {
             const errorData = await uploadRes.json();
             throw new Error(`Failed to upload image: ${errorData.error}`);
           }
-          
+
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
-          console.log('Main image uploaded successfully:', imageUrl);
+          console.log("Main image uploaded successfully:", imageUrl);
         }
-        
+
         // Note: For new products, we'll just use the main image
         // Gallery can be added later in edit mode
-        console.log('Creating new product...');
+        console.log("Creating new product...");
         const res = await fetch("/api/product", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -317,28 +286,31 @@ export default function AdminProductManagement() {
             promoExpired: productData.promoExpired,
           }),
         });
-        
+
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(`Failed to add product: ${errorData.error}`);
         }
-        
+
         const newProduct = await res.json();
-        console.log('Product created successfully:', newProduct);
-        
-        setProducts([{
-          ...newProduct,
-          imageUrl: newProduct.imageUrl || "/placeholder-image.svg",
-          category: newProduct.category || "General",
-          stock: newProduct.stock || 0,
-          status: newProduct.status || "active",
-          createdAt: new Date(newProduct.createdAt).toLocaleDateString("en-US"),
-        }, ...products]);
-        
-        alert('Product added successfully!');
-      } catch (error: any) {
-        console.error('Add product error:', error);
-        alert(`Failed to add product: ${error?.message || 'Unknown error'}`);
+        console.log("Product created successfully:", newProduct);
+
+        setProducts([
+          {
+            ...newProduct,
+            imageUrl: newProduct.imageUrl || "/placeholder-image.svg",
+            category: newProduct.category || "General",
+            stock: newProduct.stock || 0,
+            status: newProduct.status || "active",
+            createdAt: new Date(newProduct.createdAt).toLocaleDateString("en-US"),
+          },
+          ...products,
+        ]);
+
+        alert("Product added successfully!");
+      } catch (error: unknown) {
+        console.error("Add product error:", error);
+        alert(`Failed to add product: ${error instanceof Error ? error.message : "Unknown error"}`);
       }
     }
     setShowForm(false);
@@ -397,7 +369,7 @@ export default function AdminProductManagement() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Active Products</p>
-              <p className="text-xl font-bold">{products.filter((p) => p.stock > 0).length}</p>
+              <p className="text-xl font-bold">{products.filter((p) => (p.stock ?? 0) > 0).length}</p>
             </div>
           </div>
         </Card>
@@ -408,7 +380,7 @@ export default function AdminProductManagement() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Low Stock</p>
-              <p className="text-xl font-bold">{products.filter((p) => p.stock < 10 && p.stock > 0).length}</p>
+              <p className="text-xl font-bold">{products.filter((p) => (p.stock ?? 0) < 10 && (p.stock ?? 0) > 0).length}</p>
             </div>
           </div>
         </Card>
@@ -419,7 +391,7 @@ export default function AdminProductManagement() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Out of Stock</p>
-              <p className="text-xl font-bold">{products.filter((p) => p.stock === 0).length}</p>
+              <p className="text-xl font-bold">{products.filter((p) => (p.stock ?? 0) === 0).length}</p>
             </div>
           </div>
         </Card>
@@ -444,14 +416,10 @@ export default function AdminProductManagement() {
               <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
                 <DropdownMenuLabel>Show/Hide Columns</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {allColumns.map(col => (
+                {allColumns.map((col) => (
                   <DropdownMenuItem key={col.key} asChild>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.includes(col.key)}
-                        onChange={() => handleToggleColumn(col.key)}
-                      />
+                      <input type="checkbox" checked={visibleColumns.includes(col.key)} onChange={() => handleToggleColumn(col.key)} />
                       {col.label}
                     </label>
                   </DropdownMenuItem>
@@ -470,7 +438,7 @@ export default function AdminProductManagement() {
                 <DropdownMenuLabel>Select Category</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {categories.map((category) => (
-                  <DropdownMenuItem key={category} onClick={() => setSelectedCategory(category || "all")}> 
+                  <DropdownMenuItem key={category} onClick={() => setSelectedCategory(category || "all")}>
                     {category === "all" ? "All Categories" : category}
                   </DropdownMenuItem>
                 ))}
@@ -509,79 +477,77 @@ export default function AdminProductManagement() {
             <Table className="min-w-full">
               <TableHeader>
                 <TableRow className="bg-muted/30">
-                <TableHead className="w-12 text-center sticky left-0 bg-muted/30 z-10 border-r shadow-sm">#</TableHead>
-                {allColumns.map(col => visibleColumns.includes(col.key) && (
-                  <TableHead key={col.key} className="text-center whitespace-nowrap min-w-[160px] px-4 py-3">
-                    {col.label}
-                  </TableHead>
-                ))}
-                <TableHead className="w-24 text-center sticky right-0 bg-muted/30 z-10 border-l shadow-sm">Action</TableHead>
+                  <TableHead className="w-12 text-center sticky left-0 bg-muted/30 z-10 border-r shadow-sm">#</TableHead>
+                  {allColumns.map(
+                    (col) =>
+                      visibleColumns.includes(col.key) && (
+                        <TableHead key={col.key} className="text-center whitespace-nowrap min-w-[160px] px-4 py-3">
+                          {col.label}
+                        </TableHead>
+                      )
+                  )}
+                  <TableHead className="w-24 text-center sticky right-0 bg-muted/30 z-10 border-l shadow-sm">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProducts.map((product, index) => (
                   <TableRow key={product.id} className="hover:bg-muted/20">
-                    <TableCell className="text-center sticky left-0 bg-background z-10 border-r font-medium shadow-sm">
-                      {index + 1}
-                    </TableCell>
-                    {allColumns.map(col => visibleColumns.includes(col.key) && (
-                      <TableCell key={col.key} className="text-center whitespace-nowrap min-w-[160px] px-4 py-4">
-                        {col.key === "imageUrl"
-                          ? (product.imageUrl ? 
-                              <div className="flex justify-center">
-                                <Image src={product.imageUrl} alt={product.name} width={64} height={64} className="object-cover rounded-lg border" />
-                              </div>
-                              : <div className="flex justify-center"><Package className="w-8 h-8 text-muted-foreground" /></div>)
-                          : col.key === "gallery"
-                            ? (product.gallery && product.gallery.length > 0 ? (
+                    <TableCell className="text-center sticky left-0 bg-background z-10 border-r font-medium shadow-sm">{index + 1}</TableCell>
+                    {allColumns.map(
+                      (col) =>
+                        visibleColumns.includes(col.key) && (
+                          <TableCell key={col.key} className="text-center whitespace-nowrap min-w-[160px] px-4 py-4">
+                            {col.key === "imageUrl" ? (
+                              product.imageUrl ? (
+                                <div className="flex justify-center">
+                                  <Image src={product.imageUrl} alt={product.name} width={64} height={64} className="object-cover rounded-lg border" />
+                                </div>
+                              ) : (
+                                <div className="flex justify-center">
+                                  <Package className="w-8 h-8 text-muted-foreground" />
+                                </div>
+                              )
+                            ) : col.key === "gallery" ? (
+                              product.gallery && product.gallery.length > 0 ? (
                                 <div className="flex gap-2 flex-wrap justify-center max-w-[140px] mx-auto">
                                   {product.gallery.slice(0, 3).map((url, idx) => (
                                     <Image key={idx} src={url} alt={`Gallery ${idx + 1}`} width={32} height={32} className="object-cover rounded border" />
                                   ))}
-                                  {product.gallery.length > 3 && (
-                                    <div className="w-8 h-8 bg-muted rounded flex items-center justify-center text-xs font-medium border">
-                                      +{product.gallery.length - 3}
-                                    </div>
-                                  )}
+                                  {product.gallery.length > 3 && <div className="w-8 h-8 bg-muted rounded flex items-center justify-center text-xs font-medium border">+{product.gallery.length - 3}</div>}
                                 </div>
-                              ) : <span className="text-muted-foreground">-</span>)
-                            : col.key === "price" || col.key === "hargaDiskon"
-                              ? (product[col.key as keyof Product] ? 
-                                  <span className="font-semibold text-base">${product[col.key as keyof Product]}</span> 
-                                  : <span className="text-muted-foreground">-</span>)
-                              : col.key === "createdAt" || col.key === "updatedAt"
-                                ? (product[col.key as keyof Product] ? 
-                                    <span className="text-sm font-medium">{new Date(product[col.key as keyof Product] as string).toLocaleDateString()}</span> 
-                                    : <span className="text-muted-foreground">-</span>)
-                                : col.key === "status"
-                                  ? (
-                                      <Badge variant="outline" className={`${getStatusColor(product.status || "", product.stock || 0)} px-3 py-1 font-medium`}>
-                                        {getStatusText(product.status || "", product.stock || 0)}
-                                      </Badge>
-                                    )
-                                  : col.key === "stock"
-                                    ? (
-                                        <span className={`font-bold text-base ${
-                                          (product.stock || 0) === 0 ? "text-red-500" : 
-                                          (product.stock || 0) < 10 ? "text-yellow-600" : 
-                                          "text-green-600"
-                                        }`}>
-                                          {product.stock || 0}
-                                        </span>
-                                      )
-                                    : col.key === "name"
-                                      ? (
-                                          <span className="max-w-[140px] truncate block font-medium text-sm" title={String(product[col.key as keyof Product] || "-")}>
-                                            {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
-                                          </span>
-                                        )
-                                      : (
-                                          <span className="max-w-[140px] truncate block text-sm" title={String(product[col.key as keyof Product] || "-")}>
-                                            {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
-                                          </span>
-                                        )}
-                      </TableCell>
-                    ))}
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )
+                            ) : col.key === "price" || col.key === "hargaDiskon" ? (
+                              product[col.key as keyof Product] ? (
+                                <span className="font-semibold text-base">${product[col.key as keyof Product]}</span>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )
+                            ) : col.key === "createdAt" || col.key === "updatedAt" ? (
+                              product[col.key as keyof Product] ? (
+                                <span className="text-sm font-medium">{new Date(product[col.key as keyof Product] as string).toLocaleDateString()}</span>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )
+                            ) : col.key === "status" ? (
+                              <Badge variant="outline" className={`${getStatusColor(product.status || "", product.stock || 0)} px-3 py-1 font-medium`}>
+                                {getStatusText(product.status || "", product.stock || 0)}
+                              </Badge>
+                            ) : col.key === "stock" ? (
+                              <span className={`font-bold text-base ${(product.stock || 0) === 0 ? "text-red-500" : (product.stock || 0) < 10 ? "text-yellow-600" : "text-green-600"}`}>{product.stock || 0}</span>
+                            ) : col.key === "name" ? (
+                              <span className="max-w-[140px] truncate block font-medium text-sm" title={String(product[col.key as keyof Product] || "-")}>
+                                {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
+                              </span>
+                            ) : (
+                              <span className="max-w-[140px] truncate block text-sm" title={String(product[col.key as keyof Product] || "-")}>
+                                {product[col.key as keyof Product] || <span className="text-muted-foreground">-</span>}
+                              </span>
+                            )}
+                          </TableCell>
+                        )
+                    )}
                     <TableCell className="text-center sticky right-0 bg-background z-10 border-l shadow-sm">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -627,26 +593,30 @@ export default function AdminProductManagement() {
           <DialogHeader>
             <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
           </DialogHeader>
-          <ProductForm 
-            product={editingProduct ? {
-              id: editingProduct.id,
-              name: editingProduct.name,
-              price: editingProduct.price,
-              description: editingProduct.description || "",
-              category: editingProduct.category || "",
-              stock: editingProduct.stock || 0,
-              status: editingProduct.status || "active",
-              sku: editingProduct.sku || "",
-              brand: editingProduct.brand || "",
-              slug: editingProduct.slug || "",
-              metaTitle: editingProduct.metaTitle || "",
-              metaDescription: editingProduct.metaDescription || "",
-              hargaDiskon: editingProduct.hargaDiskon || 0,
-              promoExpired: editingProduct.promoExpired || "",
-              gallery: editingProduct.gallery || []
-            } : undefined} 
-            onSave={handleSave} 
-            onCancel={() => setShowForm(false)} 
+          <ProductForm
+            product={
+              editingProduct
+                ? {
+                    id: editingProduct.id,
+                    name: editingProduct.name,
+                    price: editingProduct.price,
+                    description: editingProduct.description || "",
+                    category: editingProduct.category || "",
+                    stock: editingProduct.stock || 0,
+                    status: editingProduct.status || "active",
+                    sku: editingProduct.sku || "",
+                    brand: editingProduct.brand || "",
+                    slug: editingProduct.slug || "",
+                    metaTitle: editingProduct.metaTitle || "",
+                    metaDescription: editingProduct.metaDescription || "",
+                    hargaDiskon: editingProduct.hargaDiskon || 0,
+                    promoExpired: editingProduct.promoExpired || "",
+                    gallery: editingProduct.gallery || [],
+                  }
+                : undefined
+            }
+            onSave={handleSave}
+            onCancel={() => setShowForm(false)}
           />
         </DialogContent>
       </Dialog>

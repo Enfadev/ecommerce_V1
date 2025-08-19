@@ -49,10 +49,10 @@ export default function AdminOrderManagement() {
   const [updating, setUpdating] = useState<string | null>(null);
 
   const handlePageChange = (newPage: number) => {
-    fetchOrders({ 
-      page: newPage, 
-      status: selectedStatus, 
-      search: searchQuery 
+    fetchOrders({
+      page: newPage,
+      status: selectedStatus,
+      search: searchQuery,
     });
   };
 
@@ -60,7 +60,8 @@ export default function AdminOrderManagement() {
     setSearchQuery(value);
     // Debounced fetch will be triggered after 500ms of no changes
     setTimeout(() => {
-      if (value === searchQuery) { // Ensure the value hasn't changed
+      if (value === searchQuery) {
+        // Ensure the value hasn't changed
         fetchOrders({
           page: 1,
           status: selectedStatus,
@@ -84,7 +85,7 @@ export default function AdminOrderManagement() {
     try {
       await updateOrder(orderId, { status: newStatus });
     } catch (error) {
-      console.error('Failed to update order status:', error);
+      console.error("Failed to update order status:", error);
     } finally {
       setUpdating(null);
     }
@@ -95,7 +96,7 @@ export default function AdminOrderManagement() {
     try {
       await updateOrder(orderId, { paymentStatus: newPaymentStatus });
     } catch (error) {
-      console.error('Failed to update payment status:', error);
+      console.error("Failed to update payment status:", error);
     } finally {
       setUpdating(null);
     }
@@ -195,12 +196,7 @@ export default function AdminOrderManagement() {
             <span className="font-medium">Error loading orders</span>
           </div>
           <p className="text-red-700 mt-1">{error}</p>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="mt-2"
-            onClick={() => fetchOrders({ page: 1, status: selectedStatus, search: searchQuery })}
-          >
+          <Button variant="outline" size="sm" className="mt-2" onClick={() => fetchOrders({ page: 1, status: selectedStatus, search: searchQuery })}>
             Try Again
           </Button>
         </div>
@@ -378,7 +374,9 @@ export default function AdminOrderManagement() {
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
+                      <p className="font-medium">
+                        {order.items.length} item{order.items.length > 1 ? "s" : ""}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {order.items[0]?.name}
                         {order.items.length > 1 && ` +${order.items.length - 1} more`}
@@ -402,11 +400,7 @@ export default function AdminOrderManagement() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" disabled={updating === order.id}>
-                          {updating === order.id ? (
-                            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                          ) : (
-                            <MoreHorizontal className="w-4 h-4" />
-                          )}
+                          {updating === order.id ? <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div> : <MoreHorizontal className="w-4 h-4" />}
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -419,11 +413,7 @@ export default function AdminOrderManagement() {
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                         {["pending", "processing", "shipped", "delivered", "cancelled"].map((status) => (
-                          <DropdownMenuItem 
-                            key={status} 
-                            onClick={() => handleStatusChange(order.id, status as Order["status"])} 
-                            disabled={order.status === status || updating === order.id}
-                          >
+                          <DropdownMenuItem key={status} onClick={() => handleStatusChange(order.id, status as Order["status"])} disabled={order.status === status || updating === order.id}>
                             {getStatusIcon(status)}
                             <span className="ml-2">{getStatusText(status)}</span>
                           </DropdownMenuItem>
@@ -431,11 +421,7 @@ export default function AdminOrderManagement() {
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Payment Status</DropdownMenuLabel>
                         {["pending", "paid", "failed"].map((paymentStatus) => (
-                          <DropdownMenuItem 
-                            key={paymentStatus} 
-                            onClick={() => handlePaymentStatusChange(order.id, paymentStatus as Order["paymentStatus"])} 
-                            disabled={order.paymentStatus === paymentStatus || updating === order.id}
-                          >
+                          <DropdownMenuItem key={paymentStatus} onClick={() => handlePaymentStatusChange(order.id, paymentStatus as Order["paymentStatus"])} disabled={order.paymentStatus === paymentStatus || updating === order.id}>
                             <span className="ml-2">{getPaymentStatusText(paymentStatus)}</span>
                           </DropdownMenuItem>
                         ))}
@@ -447,31 +433,21 @@ export default function AdminOrderManagement() {
             )}
           </TableBody>
         </Table>
-        
+
         {/* Pagination */}
         {pagination.totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t">
             <div className="text-sm text-muted-foreground">
-              Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
+              Showing {(pagination.page - 1) * pagination.limit + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page <= 1 || loading}
-                onClick={() => handlePageChange(pagination.page - 1)}
-              >
+              <Button variant="outline" size="sm" disabled={pagination.page <= 1 || loading} onClick={() => handlePageChange(pagination.page - 1)}>
                 Previous
               </Button>
               <span className="text-sm text-muted-foreground">
                 Page {pagination.page} of {pagination.totalPages}
               </span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={pagination.page >= pagination.totalPages || loading}
-                onClick={() => handlePageChange(pagination.page + 1)}
-              >
+              <Button variant="outline" size="sm" disabled={pagination.page >= pagination.totalPages || loading} onClick={() => handlePageChange(pagination.page + 1)}>
                 Next
               </Button>
             </div>

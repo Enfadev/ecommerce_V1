@@ -1,5 +1,5 @@
-import AdminProductPage from "@/components/AdminProductPage";
+import AdminProductManagement from "./AdminProductManagement";
 
-export default function AdminProduct() {
-  return <AdminProductPage />;
+export default function ProductPage() {
+  return <AdminProductManagement />;
 }
