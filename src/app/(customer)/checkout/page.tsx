@@ -1,16 +1,16 @@
 "use client";
 
-import { useCart } from "../../components/cart-context";
-import { useOrders, CreateOrderData, Order } from "../../hooks/use-orders";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { Textarea } from "../../components/ui/textarea";
-import { Separator } from "../../components/ui/separator";
-import { Badge } from "../../components/ui/badge";
+import { useCart } from "@/components/cart-context";
+import { useOrders, CreateOrderData, Order } from "@/hooks/use-orders";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
-import StripeElementsWrapper from "../../components/StripeElementsWrapper";
+import StripeElementsWrapper from "@/components/StripeElementsWrapper";
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
