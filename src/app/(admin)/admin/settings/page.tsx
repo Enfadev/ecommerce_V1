@@ -20,6 +20,8 @@ interface AdminSettingsPageProps {
 }
 
 export default function AdminSettingsPage({ activeSubTab = "general", onSubTabChange }: AdminSettingsPageProps) {
+  const [currentTab, setCurrentTab] = useState(activeSubTab);
+  const [pageTab, setPageTab] = useState("home");
   const [generalSettings, setGeneralSettings] = useState({
     storeName: "E-Commerce Store",
     storeDescription: "Trusted online store",
@@ -36,6 +38,11 @@ export default function AdminSettingsPage({ activeSubTab = "general", onSubTabCh
     darkMode: false,
     customCSS: "",
   });
+
+  const handleTabChange = (tab: string) => {
+    setCurrentTab(tab);
+    onSubTabChange?.(tab);
+  };
 
   const handleSaveGeneral = async () => {
     // TODO: Implement save general settings
@@ -56,7 +63,7 @@ export default function AdminSettingsPage({ activeSubTab = "general", onSubTabCh
         </div>
       </div>
 
-      <Tabs value={activeSubTab} onValueChange={onSubTabChange} className="space-y-6">
+      <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -138,7 +145,7 @@ export default function AdminSettingsPage({ activeSubTab = "general", onSubTabCh
             <p className="text-muted-foreground mb-6">Manage and edit your website pages content</p>
           </div>
 
-          <Tabs defaultValue="home" className="space-y-4">
+          <Tabs value={pageTab} onValueChange={setPageTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="home" className="flex items-center gap-2">
                 <Home className="w-4 h-4" />
