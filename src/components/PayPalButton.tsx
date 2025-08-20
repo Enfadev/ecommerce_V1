@@ -4,28 +4,68 @@ import { useEffect, useRef } from "react";
 interface PayPalButtonProps {
   total: number;
   currency?: string;
-  onApprove: (details: any) => void;
-  onError?: (err: any) => void;
+  onApprove: (details: unknown) => void;
+  onError?: (err: unknown) => void;
 }
 
-  export default function PayPalButton({ total, currency = "USD", onApprove, onError }: PayPalButtonProps) {
-    const paypalRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-      if (!paypalRef.current) return;
-      paypalRef.current.innerHTML = "";
-      if (!(window as any).paypal) {
-        const script = document.createElement("script");
-        script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&disable-funding=card`;
-        script.async = true;
-        script.onload = () => renderButton();
-        document.body.appendChild(script);
-        return;
-      }
-      renderButton();
-      function renderButton() {
-        if (!paypalRef.current) return;
-        (window as any).paypal.Buttons({
-          createOrder: async () => {
+// PayPal SDK types
+declare global {
+  interface Window {
+    paypal?: {
+      Buttons: (config: {
+        createOrder: () => Promise<string>;
+        onApprove: (data: { orderID: string }) => Promise<void>;
+        onError: (err: unknown) => void;
+        style?: {
+          layout: string;
+          color: string;
+          shape: string;
+          label: string;
+        };
+      }) => {
+        render: (element: HTMLElement) => void;
+      };
+    };
+  }
+}
+
+export default function PayPalButton({ total, currency = "USD", onApprove, onError }: PayPalButtonProps) {
+  const paypalRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const currentRef = paypalRef.current;
+    if (!currentRef) return;
+    
+    currentRef.innerHTML = "";
+    
+    // Check if PayPal client ID is available
+    if (!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID) {
+      console.error("NEXT_PUBLIC_PAYPAL_CLIENT_ID is not configured");
+      if (onError) onError({ message: "PayPal client ID is not configured" });
+      return;
+    }
+    
+    if (!window.paypal) {
+      const script = document.createElement("script");
+      // Remove disable-funding=card as it can cause issues with some client IDs
+      script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}`;
+      script.async = true;
+      script.onload = () => renderButton();
+      script.onerror = () => {
+        console.error("Failed to load PayPal SDK");
+        if (onError) onError({ message: "Failed to load PayPal SDK" });
+      };
+      document.body.appendChild(script);
+      return;
+    }
+    renderButton();
+    
+    function renderButton() {
+      if (!currentRef || !window.paypal) return;
+      
+      window.paypal.Buttons({
+        createOrder: async () => {
+          try {
             const res = await fetch("/api/checkout/paypal-create-order", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -33,29 +73,49 @@ interface PayPalButtonProps {
             });
             const data = await res.json();
             if (!res.ok || !data.id) {
-              if (onError) onError(data.error || 'Failed to create PayPal order');
-              throw new Error(data.error || 'Failed to create PayPal order');
+              const errorMessage = data.error || 'Failed to create PayPal order';
+              if (onError) onError({ message: errorMessage });
+              throw new Error(errorMessage);
             }
             return data.id;
-          },
-          onApprove: async (data: any) => {
+          } catch (error) {
+            console.error("PayPal createOrder error:", error);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to create PayPal order';
+            if (onError) onError({ message: errorMessage });
+            throw error;
+          }
+        },
+        onApprove: async (data: { orderID: string }) => {
+          try {
             const res = await fetch("/api/checkout/paypal-capture-order", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ orderID: data.orderID }),
             });
             const details = await res.json();
+            if (!res.ok) {
+              const errorMessage = details.error || 'Failed to capture PayPal payment';
+              if (onError) onError({ message: errorMessage });
+              return;
+            }
             onApprove(details);
-          },
-          onError: (err: any) => {
-            if (onError) onError(err);
-          },
-          style: { layout: "vertical", color: "gold", shape: "rect", label: "paypal" },
-        }).render(paypalRef.current);
-      }
-      return () => {
-        if (paypalRef.current) paypalRef.current.innerHTML = "";
-      };
-    }, [total, currency, onApprove, onError]);
-    return <div ref={paypalRef} />;
-  }
+          } catch (error) {
+            console.error("PayPal onApprove error:", error);
+            if (onError) onError(error);
+          }
+        },
+        onError: (err: unknown) => {
+          console.error("PayPal button error:", err);
+          if (onError) onError(err);
+        },
+        style: { layout: "vertical", color: "gold", shape: "rect", label: "paypal" },
+      }).render(currentRef);
+    }
+    
+    return () => {
+      if (currentRef) currentRef.innerHTML = "";
+    };
+  }, [total, currency, onApprove, onError]);
+  
+  return <div ref={paypalRef} />;
+}
