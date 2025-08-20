@@ -22,6 +22,9 @@ async function getAccessToken() {
 export async function POST(req: NextRequest) {
   try {
     const { total, currency = 'USD' } = await req.json();
+    if (typeof total !== 'number' || isNaN(total) || total <= 0) {
+      return NextResponse.json({ error: 'Invalid total amount' }, { status: 400 });
+    }
     const accessToken = await getAccessToken();
     const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
       method: 'POST',
@@ -42,8 +45,16 @@ export async function POST(req: NextRequest) {
       }),
     });
     const data = await res.json();
-    if (!res.ok) {
-      return NextResponse.json({ error: data }, { status: 400 });
+    if (!res.ok || !data.id) {
+      let errorMsg = 'Failed to create PayPal order';
+      if (data && typeof data === 'object') {
+        if (data.message) errorMsg = data.message;
+        else if (data.error_description) errorMsg = data.error_description;
+        else if (data.error && typeof data.error === 'string') errorMsg = data.error;
+        else if (data.details && Array.isArray(data.details) && data.details[0]?.issue) errorMsg = data.details[0].issue;
+        else errorMsg = JSON.stringify(data);
+      }
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
     }
     return NextResponse.json({ id: data.id });
   } catch (error: any) {

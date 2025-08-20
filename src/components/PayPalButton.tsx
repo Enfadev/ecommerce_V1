@@ -32,6 +32,10 @@ interface PayPalButtonProps {
               body: JSON.stringify({ total, currency }),
             });
             const data = await res.json();
+            if (!res.ok || !data.id) {
+              if (onError) onError(data.error || 'Failed to create PayPal order');
+              throw new Error(data.error || 'Failed to create PayPal order');
+            }
             return data.id;
           },
           onApprove: async (data: any) => {
