@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,47 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, subDays, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-  RadialBarChart,
-  RadialBar,
-  Legend
-} from "recharts";
-import {
-  TrendingUp,
-  TrendingDown,
-  Calendar as CalendarIcon,
-  Download,
-  Filter,
-  BarChart3,
-  PieChart as PieChartIcon,
-  Activity,
-  Users,
-  ShoppingCart,
-  DollarSign,
-  Package,
-  Star,
-  Clock,
-  ArrowUpRight,
-  ArrowDownRight,
-  RefreshCw,
-  FileText,
-  Loader2
-} from "lucide-react";
+import { format, subDays } from "date-fns";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
+import { TrendingUp, TrendingDown, Calendar as CalendarIcon, Download, BarChart3, Activity, Users, ShoppingCart, DollarSign, Package, Star, Clock, ArrowUpRight, ArrowDownRight, RefreshCw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AnalyticsData {
@@ -108,14 +70,14 @@ interface AnalyticsData {
   }>;
 }
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0', '#ffb347', '#87ceeb'];
+const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#8dd1e1", "#d084d0", "#ffb347", "#87ceeb"];
 
 const PERIOD_OPTIONS = [
   { value: "7d", label: "Last 7 Days" },
   { value: "30d", label: "Last 30 Days" },
   { value: "90d", label: "Last 90 Days" },
   { value: "1y", label: "Last Year" },
-  { value: "custom", label: "Custom Range" }
+  { value: "custom", label: "Custom Range" },
 ];
 
 export default function AdminAnalytics() {
@@ -125,36 +87,32 @@ export default function AdminAnalytics() {
   const [selectedPeriod, setSelectedPeriod] = useState("30d");
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: subDays(new Date(), 30),
-    to: new Date()
+    to: new Date(),
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  useEffect(() => {
-    fetchAnalyticsData();
-  }, [selectedPeriod, dateRange]);
-
-  const fetchAnalyticsData = async () => {
+  const fetchAnalyticsData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams({
         period: selectedPeriod,
         from: dateRange.from.toISOString(),
-        to: dateRange.to.toISOString()
+        to: dateRange.to.toISOString(),
       });
 
       const response = await fetch(`/api/admin/analytics?${params}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch analytics data');
+        throw new Error("Failed to fetch analytics data");
       }
-      
+
       const analyticsData = await response.json();
       setData(analyticsData);
     } catch (error) {
-      console.error('Error fetching analytics data:', error);
-      setError('Failed to load analytics data');
-      
+      console.error("Error fetching analytics data:", error);
+      setError("Failed to load analytics data");
+
       // Set fallback data for demonstration
       setData({
         overview: {
@@ -165,7 +123,7 @@ export default function AdminAnalytics() {
           revenueGrowth: 0,
           ordersGrowth: 0,
           customersGrowth: 0,
-          avgOrderValue: 0
+          avgOrderValue: 0,
         },
         salesTrend: [],
         topProducts: [],
@@ -174,29 +132,33 @@ export default function AdminAnalytics() {
           newCustomers: 0,
           returningCustomers: 0,
           customerRetentionRate: 0,
-          avgCustomerLifetime: 0
+          avgCustomerLifetime: 0,
         },
         orderAnalytics: {
           averageOrderValue: 0,
           ordersPerDay: 0,
           completionRate: 0,
-          cancelationRate: 0
+          cancelationRate: 0,
         },
         performanceMetrics: [],
-        timeSeriesData: []
+        timeSeriesData: [],
       });
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPeriod, dateRange]);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [fetchAnalyticsData]);
 
   const handlePeriodChange = (period: string) => {
     setSelectedPeriod(period);
-    
+
     if (period !== "custom") {
       const now = new Date();
       let from: Date;
-      
+
       switch (period) {
         case "7d":
           from = subDays(now, 7);
@@ -213,29 +175,23 @@ export default function AdminAnalytics() {
         default:
           from = subDays(now, 30);
       }
-      
+
       setDateRange({ from, to: now });
     }
   };
 
   const exportData = () => {
     if (!data) return;
-    
-    const csvContent = [
-      ['Date', 'Revenue', 'Orders', 'New Customers'],
-      ...data.timeSeriesData.map(item => [
-        item.date,
-        item.revenue.toString(),
-        item.orders.toString(),
-        item.newCustomers.toString()
-      ])
-    ].map(row => row.join(',')).join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const csvContent = [["Date", "Revenue", "Orders", "New Customers"], ...data.timeSeriesData.map((item) => [item.date, item.revenue.toString(), item.orders.toString(), item.newCustomers.toString()])]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `analytics-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    a.download = `analytics-${format(new Date(), "yyyy-MM-dd")}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -255,7 +211,7 @@ export default function AdminAnalytics() {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
         <div className="text-center">
-          <p className="text-lg text-red-500 mb-4">{error || 'Failed to load analytics data'}</p>
+          <p className="text-lg text-red-500 mb-4">{error || "Failed to load analytics data"}</p>
           <Button onClick={fetchAnalyticsData}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Try Again
@@ -271,11 +227,9 @@ export default function AdminAnalytics() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Analytics & Reports</h1>
-          <p className="text-muted-foreground mt-1">
-            Analyze store performance and business insights
-          </p>
+          <p className="text-muted-foreground mt-1">Analyze store performance and business insights</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Select value={selectedPeriod} onValueChange={handlePeriodChange}>
             <SelectTrigger className="w-40">
@@ -289,7 +243,7 @@ export default function AdminAnalytics() {
               ))}
             </SelectContent>
           </Select>
-          
+
           {selectedPeriod === "custom" && (
             <Popover open={showDatePicker} onOpenChange={setShowDatePicker}>
               <PopoverTrigger asChild>
@@ -312,7 +266,7 @@ export default function AdminAnalytics() {
               </PopoverContent>
             </Popover>
           )}
-          
+
           <Button onClick={exportData} variant="outline" className="gap-2">
             <Download className="w-4 h-4" />
             Export
@@ -328,16 +282,10 @@ export default function AdminAnalytics() {
               <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
               <p className="text-2xl font-bold">${data.overview.totalRevenue.toLocaleString()}</p>
               <div className="flex items-center gap-1">
-                {data.overview.revenueGrowth >= 0 ? (
-                  <ArrowUpRight className="w-4 h-4 text-green-500" />
-                ) : (
-                  <ArrowDownRight className="w-4 h-4 text-red-500" />
-                )}
-                <span className={cn(
-                  "text-sm font-medium",
-                  data.overview.revenueGrowth >= 0 ? "text-green-500" : "text-red-500"
-                )}>
-                  {data.overview.revenueGrowth >= 0 ? '+' : ''}{data.overview.revenueGrowth.toFixed(1)}%
+                {data.overview.revenueGrowth >= 0 ? <ArrowUpRight className="w-4 h-4 text-green-500" /> : <ArrowDownRight className="w-4 h-4 text-red-500" />}
+                <span className={cn("text-sm font-medium", data.overview.revenueGrowth >= 0 ? "text-green-500" : "text-red-500")}>
+                  {data.overview.revenueGrowth >= 0 ? "+" : ""}
+                  {data.overview.revenueGrowth.toFixed(1)}%
                 </span>
                 <span className="text-sm text-muted-foreground">vs last period</span>
               </div>
@@ -354,16 +302,10 @@ export default function AdminAnalytics() {
               <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
               <p className="text-2xl font-bold">{data.overview.totalOrders.toLocaleString()}</p>
               <div className="flex items-center gap-1">
-                {data.overview.ordersGrowth >= 0 ? (
-                  <ArrowUpRight className="w-4 h-4 text-green-500" />
-                ) : (
-                  <ArrowDownRight className="w-4 h-4 text-red-500" />
-                )}
-                <span className={cn(
-                  "text-sm font-medium",
-                  data.overview.ordersGrowth >= 0 ? "text-green-500" : "text-red-500"
-                )}>
-                  {data.overview.ordersGrowth >= 0 ? '+' : ''}{data.overview.ordersGrowth.toFixed(1)}%
+                {data.overview.ordersGrowth >= 0 ? <ArrowUpRight className="w-4 h-4 text-green-500" /> : <ArrowDownRight className="w-4 h-4 text-red-500" />}
+                <span className={cn("text-sm font-medium", data.overview.ordersGrowth >= 0 ? "text-green-500" : "text-red-500")}>
+                  {data.overview.ordersGrowth >= 0 ? "+" : ""}
+                  {data.overview.ordersGrowth.toFixed(1)}%
                 </span>
                 <span className="text-sm text-muted-foreground">vs last period</span>
               </div>
@@ -380,16 +322,10 @@ export default function AdminAnalytics() {
               <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
               <p className="text-2xl font-bold">{data.overview.totalCustomers.toLocaleString()}</p>
               <div className="flex items-center gap-1">
-                {data.overview.customersGrowth >= 0 ? (
-                  <ArrowUpRight className="w-4 h-4 text-green-500" />
-                ) : (
-                  <ArrowDownRight className="w-4 h-4 text-red-500" />
-                )}
-                <span className={cn(
-                  "text-sm font-medium",
-                  data.overview.customersGrowth >= 0 ? "text-green-500" : "text-red-500"
-                )}>
-                  {data.overview.customersGrowth >= 0 ? '+' : ''}{data.overview.customersGrowth.toFixed(1)}%
+                {data.overview.customersGrowth >= 0 ? <ArrowUpRight className="w-4 h-4 text-green-500" /> : <ArrowDownRight className="w-4 h-4 text-red-500" />}
+                <span className={cn("text-sm font-medium", data.overview.customersGrowth >= 0 ? "text-green-500" : "text-red-500")}>
+                  {data.overview.customersGrowth >= 0 ? "+" : ""}
+                  {data.overview.customersGrowth.toFixed(1)}%
                 </span>
                 <span className="text-sm text-muted-foreground">vs last period</span>
               </div>
@@ -443,20 +379,14 @@ export default function AdminAnalytics() {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="date" className="text-xs" />
                     <YAxis className="text-xs" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{
                         backgroundColor: "hsl(var(--background))",
                         border: "1px solid hsl(var(--border))",
                         borderRadius: "8px",
                       }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="revenue" 
-                      stroke="hsl(var(--primary))" 
-                      fill="hsl(var(--primary))" 
-                      fillOpacity={0.2}
-                    />
+                    <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -473,15 +403,7 @@ export default function AdminAnalytics() {
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie
-                      data={data.topCategories}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percentage }) => `${name} ${percentage}%`}
-                    >
+                    <Pie data={data.topCategories} cx="50%" cy="50%" outerRadius={100} fill="#8884d8" dataKey="value" label={({ name, percentage }) => `${name} ${percentage}%`}>
                       {data.topCategories.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
@@ -508,27 +430,15 @@ export default function AdminAnalytics() {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="date" className="text-xs" />
                     <YAxis className="text-xs" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{
                         backgroundColor: "hsl(var(--background))",
                         border: "1px solid hsl(var(--border))",
                         borderRadius: "8px",
                       }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="orders" 
-                      stroke="#8884d8" 
-                      strokeWidth={2}
-                      name="Orders"
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="customers" 
-                      stroke="#82ca9d" 
-                      strokeWidth={2}
-                      name="Customers"
-                    />
+                    <Line type="monotone" dataKey="orders" stroke="#8884d8" strokeWidth={2} name="Orders" />
+                    <Line type="monotone" dataKey="customers" stroke="#82ca9d" strokeWidth={2} name="Customers" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -560,16 +470,10 @@ export default function AdminAnalytics() {
                     <div className="text-right">
                       <p className="font-semibold">${product.revenue.toLocaleString()}</p>
                       <div className="flex items-center gap-1">
-                        {product.growth >= 0 ? (
-                          <ArrowUpRight className="w-3 h-3 text-green-500" />
-                        ) : (
-                          <ArrowDownRight className="w-3 h-3 text-red-500" />
-                        )}
-                        <span className={cn(
-                          "text-xs",
-                          product.growth >= 0 ? "text-green-500" : "text-red-500"
-                        )}>
-                          {product.growth >= 0 ? '+' : ''}{product.growth.toFixed(1)}%
+                        {product.growth >= 0 ? <ArrowUpRight className="w-3 h-3 text-green-500" /> : <ArrowDownRight className="w-3 h-3 text-red-500" />}
+                        <span className={cn("text-xs", product.growth >= 0 ? "text-green-500" : "text-red-500")}>
+                          {product.growth >= 0 ? "+" : ""}
+                          {product.growth.toFixed(1)}%
                         </span>
                       </div>
                     </div>
@@ -596,7 +500,7 @@ export default function AdminAnalytics() {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="date" className="text-xs" />
                     <YAxis className="text-xs" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{
                         backgroundColor: "hsl(var(--background))",
                         border: "1px solid hsl(var(--border))",
@@ -623,7 +527,7 @@ export default function AdminAnalytics() {
                 </div>
               </div>
               <div className="space-y-4">
-                {data.topProducts.map((product, index) => (
+                {data.topProducts.map((product) => (
                   <div key={product.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -637,7 +541,8 @@ export default function AdminAnalytics() {
                     <div className="text-right">
                       <p className="font-semibold">${product.revenue.toLocaleString()}</p>
                       <Badge variant={product.growth >= 0 ? "default" : "destructive"}>
-                        {product.growth >= 0 ? '+' : ''}{product.growth.toFixed(1)}%
+                        {product.growth >= 0 ? "+" : ""}
+                        {product.growth.toFixed(1)}%
                       </Badge>
                     </div>
                   </div>
@@ -661,11 +566,11 @@ export default function AdminAnalytics() {
                       <span className="text-sm text-muted-foreground">{category.percentage}%</span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="h-2 rounded-full" 
-                        style={{ 
+                      <div
+                        className="h-2 rounded-full"
+                        style={{
                           width: `${category.percentage}%`,
-                          backgroundColor: COLORS[index % COLORS.length]
+                          backgroundColor: COLORS[index % COLORS.length],
                         }}
                       />
                     </div>
@@ -734,29 +639,15 @@ export default function AdminAnalytics() {
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="date" className="text-xs" />
                   <YAxis className="text-xs" />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--background))",
                       border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                     }}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="newCustomers" 
-                    stackId="1"
-                    stroke="#8884d8" 
-                    fill="#8884d8" 
-                    name="New Customers"
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="returningCustomers" 
-                    stackId="1"
-                    stroke="#82ca9d" 
-                    fill="#82ca9d" 
-                    name="Returning Customers"
-                  />
+                  <Area type="monotone" dataKey="newCustomers" stackId="1" stroke="#8884d8" fill="#8884d8" name="New Customers" />
+                  <Area type="monotone" dataKey="returningCustomers" stackId="1" stroke="#82ca9d" fill="#82ca9d" name="Returning Customers" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -822,20 +713,11 @@ export default function AdminAnalytics() {
                       <span className="text-sm text-muted-foreground">
                         {metric.value} / {metric.target}
                       </span>
-                      <Badge variant={metric.performance >= 80 ? "default" : metric.performance >= 60 ? "secondary" : "destructive"}>
-                        {metric.performance.toFixed(0)}%
-                      </Badge>
+                      <Badge variant={metric.performance >= 80 ? "default" : metric.performance >= 60 ? "secondary" : "destructive"}>{metric.performance.toFixed(0)}%</Badge>
                     </div>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className={cn(
-                        "h-2 rounded-full transition-all",
-                        metric.performance >= 80 ? "bg-green-500" : 
-                        metric.performance >= 60 ? "bg-yellow-500" : "bg-red-500"
-                      )}
-                      style={{ width: `${Math.min(metric.performance, 100)}%` }}
-                    />
+                    <div className={cn("h-2 rounded-full transition-all", metric.performance >= 80 ? "bg-green-500" : metric.performance >= 60 ? "bg-yellow-500" : "bg-red-500")} style={{ width: `${Math.min(metric.performance, 100)}%` }} />
                   </div>
                 </div>
               ))}

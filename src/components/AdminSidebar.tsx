@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,35 +12,35 @@ import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, Che
 import { Input } from "@/components/ui/input";
 import { LucideIcon } from "lucide-react";
 
-interface AdminSidebarProps {
-  activeSection: string;
-  onSectionChange: (section: string) => void;
-}
-
 interface MenuItem {
   id: string;
   label: string;
   icon: LucideIcon;
+  href: string;
   badge?: string | null;
 }
 
 const menuItems: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, badge: null },
-  { id: "products", label: "Products", icon: Package, badge: null },
-  { id: "orders", label: "Orders", icon: ShoppingCart, badge: "12" },
-  { id: "customers", label: "Customers", icon: Users, badge: null },
-  { id: "inventory", label: "Inventory", icon: Package2, badge: null },
-  { id: "analytics", label: "Analytics", icon: BarChart3, badge: null },
-  { id: "settings", label: "Settings", icon: Settings, badge: null },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/admin", badge: null },
+  { id: "products", label: "Products", icon: Package, href: "/admin/product", badge: null },
+  { id: "orders", label: "Orders", icon: ShoppingCart, href: "/admin/orders", badge: "12" },
+  { id: "customers", label: "Customers", icon: Users, href: "/admin/customers", badge: null },
+  { id: "inventory", label: "Inventory", icon: Package2, href: "/admin/inventory", badge: null },
+  { id: "analytics", label: "Analytics", icon: BarChart3, href: "/admin/analytics", badge: null },
+  { id: "settings", label: "Settings", icon: Settings, href: "/admin/settings", badge: null },
 ];
 
-export default function AdminSidebar({ activeSection, onSectionChange }: AdminSidebarProps) {
+export default function AdminSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const { stats } = useOrders();
 
-  const handleNavigation = (section: string) => {
-    onSectionChange(section);
+  const isActiveRoute = (href: string) => {
+    if (href === "/admin") {
+      return pathname === "/admin";
+    }
+    return pathname?.startsWith(href);
   };
 
   return (
@@ -76,32 +77,25 @@ export default function AdminSidebar({ activeSection, onSectionChange }: AdminSi
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeSection === item.id;
+          const isActive = isActiveRoute(item.href);
           const badgeValue = item.id === "orders" ? stats.total : item.badge;
 
           return (
-            <Button
-              key={item.id}
-              variant={isActive ? "default" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3 h-10",
-                isCollapsed && "px-2 justify-center",
-                isActive && "bg-primary text-primary-foreground shadow-sm"
-              )}
-              onClick={() => handleNavigation(item.id)}
-            >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <>
-                  <span className="flex-1 text-left">{item.label}</span>
-                  {badgeValue ? (
-                    <Badge variant={isActive ? "secondary" : "outline"} className="h-5 px-1.5 text-xs">
-                      {badgeValue}
-                    </Badge>
-                  ) : null}
-                </>
-              )}
-            </Button>
+            <Link key={item.id} href={item.href}>
+              <Button variant={isActive ? "default" : "ghost"} className={cn("w-full justify-start gap-3 h-10", isCollapsed && "px-2 justify-center", isActive && "bg-primary text-primary-foreground shadow-sm")}>
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && (
+                  <>
+                    <span className="flex-1 text-left">{item.label}</span>
+                    {badgeValue ? (
+                      <Badge variant={isActive ? "secondary" : "outline"} className="h-5 px-1.5 text-xs">
+                        {badgeValue}
+                      </Badge>
+                    ) : null}
+                  </>
+                )}
+              </Button>
+            </Link>
           );
         })}
       </nav>

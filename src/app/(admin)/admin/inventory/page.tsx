@@ -1,18 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Badge } from "./ui/badge";
-import { products as productsData, Product } from "../data/products";
-import { Package, AlertTriangle, CheckCircle, Search, Filter, Download, RefreshCw } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-
+import Image from "next/image";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { products as productsData, Product } from "@/data/products";
+import { Package, AlertTriangle, CheckCircle, Search, Download, RefreshCw } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function InventoryManager() {
-  
   const [products, setProducts] = useState<Product[]>(
     productsData.map((p) => ({
       ...p,
@@ -24,26 +22,23 @@ export default function InventoryManager() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  
   const handleEditStock = (id: number) => {
     setEditId(id);
     const prod = products.find((p: Product) => p.id === id);
     setNewStock(prod?.stock ?? 0);
   };
 
-  
   const handleSaveStock = (id: number) => {
     setProducts((prev: Product[]) => prev.map((p: Product) => (p.id === id ? { ...p, stock: newStock } : p)));
     setEditId(null);
   };
 
   const getStockStatus = (stock: number) => {
-  if (stock === 0) return { status: "out", text: "Out of Stock", color: "bg-red-500/10 text-red-500 border-red-500/20", icon: AlertTriangle };
-  if (stock < 10) return { status: "low", text: "Low Stock", color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", icon: AlertTriangle };
-  return { status: "good", text: "In Stock", color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle };
+    if (stock === 0) return { status: "out", text: "Out of Stock", color: "bg-red-500/10 text-red-500 border-red-500/20", icon: AlertTriangle };
+    if (stock < 10) return { status: "low", text: "Low Stock", color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", icon: AlertTriangle };
+    return { status: "good", text: "In Stock", color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle };
   };
 
-  
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
@@ -52,13 +47,12 @@ export default function InventoryManager() {
 
   const categories = ["all", ...new Set(products.map((p) => p.category))];
 
-  
   const stats = {
     total: products.length,
     outOfStock: products.filter((p) => p.stock === 0).length,
     lowStock: products.filter((p) => p.stock < 10 && p.stock > 0).length,
     goodStock: products.filter((p) => p.stock >= 10).length,
-  totalValue: products.reduce((sum, p) => sum + p.price * p.stock, 0),
+    totalValue: products.reduce((sum, p) => sum + p.price * p.stock, 0),
   };
 
   return (
@@ -190,9 +184,11 @@ export default function InventoryManager() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>
                     <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                      <img
+                      <Image
                         src={product.image}
                         alt={product.name}
+                        width={48}
+                        height={48}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
