@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../[...nextauth]/route';
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface SessionUser {
   id?: string;
@@ -13,30 +13,33 @@ interface SessionUser {
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (session && session.user) {
       return NextResponse.json({
         authenticated: true,
         user: {
-          id: session.user.id || '',
-          name: session.user.name || '',
-          email: session.user.email || '',
-          role: (session.user as SessionUser).role || 'USER',
+          id: session.user.id || "",
+          name: session.user.name || "",
+          email: session.user.email || "",
+          role: (session.user as SessionUser).role || "USER",
           image: session.user.image,
-        }
+        },
       });
     }
 
     return NextResponse.json({
       authenticated: false,
-      user: null
+      user: null,
     });
   } catch (error) {
-    console.error('Auth check error:', error);
-    return NextResponse.json({
-      authenticated: false,
-      user: null,
-      error: 'Internal server error'
-    }, { status: 500 });
+    console.error("Auth check error:", error);
+    return NextResponse.json(
+      {
+        authenticated: false,
+        user: null,
+        error: "Internal server error",
+      },
+      { status: 500 }
+    );
   }
 }

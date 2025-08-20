@@ -115,7 +115,7 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
                       e.stopPropagation();
                       e.preventDefault();
                       addToCart({
-                        id: product.id.toString(),
+                        id: product.id,
                         name: product.name,
                         price: product.price,
                         image: product.image,
@@ -190,7 +190,7 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
                     e.preventDefault();
                     e.stopPropagation();
                     addToCart({
-                      id: String(product.id),
+                      id: product.id,
                       name: product.name,
                       price: product.price,
                       image: product.image,
@@ -238,7 +238,7 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
             onClick={(e) => {
               e.preventDefault();
               addToCart({
-                id: String(product.id),
+                id: product.id,
                 name: product.name,
                 price: product.price,
                 image: product.image,

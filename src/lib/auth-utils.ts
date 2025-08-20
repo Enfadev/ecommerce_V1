@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { verifyJWT } from "@/lib/jwt";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../app/api/auth/[...nextauth]/route";
+import { authOptions } from "./auth";
 
 export async function getUserIdFromRequest(request: NextRequest): Promise<number | null> {
   // Try NextAuth session first

@@ -1,33 +1,42 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-
+// eslint-disable-next-line prefer-const
 let reviews: Record<string, Array<{ rating: number; comment: string; user?: string; date: string }>> = {};
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { productId } = req.query;
-  if (!productId || typeof productId !== "string") {
-    return res.status(400).json({ error: "productId required" });
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const productId = searchParams.get("productId");
+
+  if (!productId) {
+    return NextResponse.json({ error: "productId required" }, { status: 400 });
   }
 
-  if (req.method === "GET") {
-    return res.status(200).json(reviews[productId] || []);
+  return NextResponse.json(reviews[productId] || []);
+}
+
+export async function POST(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const productId = searchParams.get("productId");
+
+  if (!productId) {
+    return NextResponse.json({ error: "productId required" }, { status: 400 });
   }
 
-  if (req.method === "POST") {
-    const { rating, comment, user } = req.body;
-    if (!rating || !comment) {
-      return res.status(400).json({ error: "Rating & comment required" });
-    }
-    const review = {
-      rating: Number(rating),
-      comment: String(comment),
-      user: user || "Anonim",
-      date: new Date().toISOString(),
-    };
-    if (!reviews[productId]) reviews[productId] = [];
-    reviews[productId].unshift(review);
-    return res.status(201).json(review);
+  const { rating, comment, user } = await request.json();
+
+  if (!rating || !comment) {
+    return NextResponse.json({ error: "Rating & comment required" }, { status: 400 });
   }
 
-  return res.status(405).json({ error: "Method not allowed" });
+  const review = {
+    rating: Number(rating),
+    comment: String(comment),
+    user: user || "Anonim",
+    date: new Date().toISOString(),
+  };
+
+  if (!reviews[productId]) reviews[productId] = [];
+  reviews[productId].unshift(review);
+
+  return NextResponse.json(review, { status: 201 });
 }

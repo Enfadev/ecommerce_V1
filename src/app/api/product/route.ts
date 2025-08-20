@@ -1,40 +1,43 @@
-import { unlink } from 'fs/promises';
-import path from 'path';
+import { unlink } from "fs/promises";
+import path from "path";
 
 export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
     if (!id) {
-      return NextResponse.json({ error: 'Product ID is required' }, { status: 400 });
+      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
     }
-    
+
     const product = await prisma.product.findUnique({ where: { id: Number(id) } });
     if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
-    
+
     await prisma.product.delete({ where: { id: Number(id) } });
-    
-    if (product.imageUrl && product.imageUrl.startsWith('/uploads/')) {
-      const filePath = path.join(process.cwd(), 'public', product.imageUrl);
+
+    if (product.imageUrl && product.imageUrl.startsWith("/uploads/")) {
+      const filePath = path.join(process.cwd(), "public", product.imageUrl);
       try {
         await unlink(filePath);
       } catch {}
     }
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
   }
 }
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (id) {
-      const p = await prisma.product.findUnique({ where: { id: Number(id) } });
+      const p = await prisma.product.findUnique({
+        where: { id: Number(id) },
+        include: { category: true },
+      });
       if (!p) return NextResponse.json({ error: "Product not found" }, { status: 404 });
       const result = {
         id: p.id,
@@ -43,7 +46,7 @@ export async function GET(req: Request) {
         price: p.price,
         imageUrl: p.imageUrl,
         brand: p.brand,
-        category: p.category, 
+        category: p.category?.name || null,
         categoryId: p.categoryId,
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,
@@ -59,33 +62,33 @@ export async function GET(req: Request) {
       return NextResponse.json(result);
     } else {
       // Filtering
-      const category = searchParams.get('category');
-      const price = searchParams.get('price');
-      const q = searchParams.get('q');
+      const category = searchParams.get("category");
+      const price = searchParams.get("price");
+      const q = searchParams.get("q");
       let where: any = {};
-      if (category && category !== 'All') {
+      if (category && category !== "All") {
         where.category = category;
       }
       if (q) {
-        where.name = { contains: q, mode: 'insensitive' };
+        where.name = { contains: q, mode: "insensitive" };
       }
-      if (price && price !== 'all') {
+      if (price && price !== "all") {
         // price value format: lt{max}, {min}-{max}, gt{min}
-        if (price.startsWith('lt')) {
-          const max = Number(price.replace('lt', ''));
+        if (price.startsWith("lt")) {
+          const max = Number(price.replace("lt", ""));
           if (!isNaN(max)) where.price = { lt: max };
-        } else if (price.includes('-')) {
-          const [min, max] = price.split('-').map(Number);
+        } else if (price.includes("-")) {
+          const [min, max] = price.split("-").map(Number);
           if (!isNaN(min) && !isNaN(max)) where.price = { gte: min, lte: max };
-        } else if (price.startsWith('gt')) {
-          const min = Number(price.replace('gt', ''));
+        } else if (price.startsWith("gt")) {
+          const min = Number(price.replace("gt", ""));
           if (!isNaN(min)) where.price = { gt: min };
         }
       }
       const products = await prisma.product.findMany({
         where,
-        orderBy: { id: 'desc' },
-        include: { category: true }, 
+        orderBy: { id: "desc" },
+        include: { category: true },
       });
       const result = products.map((p) => ({
         id: p.id,
@@ -94,7 +97,7 @@ export async function GET(req: Request) {
         price: p.price,
         imageUrl: p.imageUrl,
         brand: p.brand,
-        category: p.category?.name || null, 
+        category: p.category?.name || null,
         categoryId: p.categoryId,
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,
@@ -110,32 +113,15 @@ export async function GET(req: Request) {
       return NextResponse.json(result);
     }
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch product data' }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch product data" }, { status: 500 });
   }
 }
 export async function PUT(req: Request) {
   try {
-    const {
-      id,
-      name,
-      description,
-      price,
-      imageUrl,
-      category,
-      stock,
-      status,
-      sku,
-      brand,
-      slug,
-      metaTitle,
-      metaDescription,
-      discountPrice,
-      promoExpired,
-      gallery
-    } = await req.json();
-    
+    const { id, name, description, price, imageUrl, category, stock, status, sku, brand, slug, metaTitle, metaDescription, discountPrice, promoExpired, gallery } = await req.json();
+
     if (!id || !name || !price) {
-      return NextResponse.json({ error: 'ID, name, and price are required' }, { status: 400 });
+      return NextResponse.json({ error: "ID, name, and price are required" }, { status: 400 });
     }
 
     // Handle category relationship
@@ -145,7 +131,7 @@ export async function PUT(req: Request) {
       const categoryRecord = await prisma.category.upsert({
         where: { name: category },
         update: {},
-        create: { name: category }
+        create: { name: category },
       });
       categoryData = { categoryId: categoryRecord.id };
     }
@@ -159,45 +145,30 @@ export async function PUT(req: Request) {
         imageUrl,
         ...categoryData,
         stock: stock ? Number(stock) : 0,
-        status: status || 'active',
+        status: status || "active",
         sku,
         brand,
         slug,
         metaTitle,
         metaDescription,
-        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === '' ? null : parseFloat(discountPrice),
+        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
         promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
     });
-    
+
     return NextResponse.json(product);
   } catch (error) {
-    console.error('Update product error:', error);
-    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
+    console.error("Update product error:", error);
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const { 
-      name, 
-      description, 
-      price, 
-      imageUrl, 
-      discountPrice,
-      category,
-      stock,
-      status,
-      sku,
-      brand,
-      slug,
-      metaTitle,
-      metaDescription,
-      promoExpired
-    } = await req.json();
-    
+    const { name, description, price, imageUrl, discountPrice, category, stock, status, sku, brand, slug, metaTitle, metaDescription, promoExpired } = await req.json();
+
     if (!name || !price) {
-      return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
+      return NextResponse.json({ error: "Name and price are required" }, { status: 400 });
     }
 
     // Handle category relationship
@@ -207,7 +178,7 @@ export async function POST(req: Request) {
       const categoryRecord = await prisma.category.upsert({
         where: { name: category },
         update: {},
-        create: { name: category }
+        create: { name: category },
       });
       categoryData = { categoryId: categoryRecord.id };
     }
@@ -218,10 +189,10 @@ export async function POST(req: Request) {
         description,
         price: parseFloat(price),
         imageUrl,
-        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === '' ? null : parseFloat(discountPrice),
+        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
         ...categoryData,
         stock: stock ? Number(stock) : 0,
-        status: status || 'active',
+        status: status || "active",
         sku,
         brand,
         slug,
@@ -230,10 +201,10 @@ export async function POST(req: Request) {
         promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
     });
-    
+
     return NextResponse.json(product);
   } catch (error) {
-    console.error('Create product error:', error);
-    return NextResponse.json({ error: 'Failed to add product' }, { status: 500 });
+    console.error("Create product error:", error);
+    return NextResponse.json({ error: "Failed to add product" }, { status: 500 });
   }
 }

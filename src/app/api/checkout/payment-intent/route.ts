@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import { NextRequest, NextResponse } from "next/server";
+import Stripe from "stripe";
 
 const secretKey = process.env.STRIPE_SECRET_KEY;
-console.log('DEBUG STRIPE_SECRET_KEY:', secretKey);
+console.log("DEBUG STRIPE_SECRET_KEY:", secretKey);
 if (!secretKey) {
-  throw new Error('STRIPE_SECRET_KEY is not set in environment variables.');
+  throw new Error("STRIPE_SECRET_KEY is not set in environment variables.");
 }
 const stripe = new Stripe(secretKey, {
-  apiVersion: '2023-10-16',
+  apiVersion: "2025-07-30.basil",
 });
 
 function isValidEmail(email: string) {
@@ -18,20 +18,21 @@ export async function POST(req: NextRequest) {
   try {
     const { amount, email } = await req.json();
     if (!isValidEmail(email)) {
-      return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
+      return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
     }
     // amount dalam USD, dikali 100 untuk cents
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
-      currency: 'usd',
+      currency: "usd",
       receipt_email: email,
       metadata: {
-        integration_check: 'elements',
+        integration_check: "elements",
       },
     });
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
-  } catch (error: any) {
-    console.error('STRIPE PAYMENTINTENT ERROR:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("STRIPE PAYMENTINTENT ERROR:", error);
+    const errorMessage = error instanceof Error ? error.message : "Payment intent creation failed";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

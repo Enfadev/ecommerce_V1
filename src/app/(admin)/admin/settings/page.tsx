@@ -14,13 +14,8 @@ import AdminAboutPageEditor from "@/components/AdminAboutPageEditor";
 import AdminEventPageEditor from "@/components/AdminEventPageEditor";
 import AdminProductPageEditor from "@/components/AdminProductPageEditor";
 
-interface AdminSettingsPageProps {
-  activeSubTab?: string;
-  onSubTabChange?: (subTab: string) => void;
-}
-
-export default function AdminSettingsPage({ activeSubTab = "general", onSubTabChange }: AdminSettingsPageProps) {
-  const [currentTab, setCurrentTab] = useState(activeSubTab);
+export default function AdminSettingsPage() {
+  const [currentTab, setCurrentTab] = useState("general");
   const [pageTab, setPageTab] = useState("home");
   const [generalSettings, setGeneralSettings] = useState({
     storeName: "E-Commerce Store",
@@ -41,7 +36,6 @@ export default function AdminSettingsPage({ activeSubTab = "general", onSubTabCh
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
-    onSubTabChange?.(tab);
   };
 
   const handleSaveGeneral = async () => {

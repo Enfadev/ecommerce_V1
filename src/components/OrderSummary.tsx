@@ -6,7 +6,7 @@ interface OrderSummaryProps {
 }
 
 export function OrderSummary({ items }: OrderSummaryProps) {
-  const total = items.reduce((sum, item) => sum + item.price * (item.qty || 1), 0);
+  const total = items.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
   return (
     <section className="bg-card rounded-lg p-6 shadow">
       <h2 className="text-lg font-bold mb-4">Ringkasan Pesanan</h2>
@@ -17,9 +17,9 @@ export function OrderSummary({ items }: OrderSummaryProps) {
           {items.map((item) => (
             <li key={item.id} className="flex justify-between items-center">
               <span>
-                {item.name} x{item.qty || 1}
+                {item.name} x{item.quantity || 1}
               </span>
-              <span>Rp {(item.price * (item.qty || 1)).toLocaleString("id-ID")}</span>
+              <span>Rp {(item.price * (item.quantity || 1)).toLocaleString("id-ID")}</span>
             </li>
           ))}
         </ul>

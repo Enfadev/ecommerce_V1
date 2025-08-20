@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Target, Award, Heart, Shield, Truck, Clock, Star, MapPin, Phone, Mail, Globe } from "lucide-react";
- import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 async function getAboutPageData() {
   try {
@@ -65,13 +65,20 @@ export default async function About() {
         title: "Quality Products",
         description: "Only selling original products with official warranty",
       },
-    ]
+    ],
+  };
+
+  type PageDataType = {
+    statistics?: Array<{ label: string; value: string; icon: string }>;
+    features?: Array<{ icon: string; title: string; description: string }>;
+    teamMembers?: Array<{ name: string; role: string; image: string; bio: string }>;
+    [key: string]: unknown;
   };
 
   const pageData = aboutPageData || defaultData;
-  const stats = pageData.statistics || defaultData.statistics;
-  const features = pageData.features || defaultData.features;
-  const team = pageData.teamMembers || [];
+  const stats = (pageData as PageDataType).statistics || defaultData.statistics;
+  const features = (pageData as PageDataType).features || defaultData.features;
+  const team = (pageData as PageDataType).teamMembers || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -81,12 +88,8 @@ export default async function About() {
           <Badge variant="secondary" className="mb-4">
             {pageData.heroSubtitle}
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">
-            {pageData.heroTitle}
-          </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">
-            {pageData.heroDescription}
-          </p>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">{pageData.heroTitle}</h1>
+          <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto">{pageData.heroDescription}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gap-2">
               <Heart className="w-5 h-5" />
@@ -103,17 +106,18 @@ export default async function About() {
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  {stat.icon && typeof stat.icon === "function" ? (
-                    <stat.icon className="w-8 h-8 mx-auto mb-4 text-primary" />
-                  ) : null}
-                  <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </CardContent>
-              </Card>
-            ))}
+            {stats.map((stat: { label: string; value: string; icon: string }, index: number) => {
+              const IconComponent = iconMap[stat.icon] || iconMap.Star;
+              return (
+                <Card key={index} className="text-center p-6 hover:shadow-lg transition-shadow">
+                  <CardContent className="p-0">
+                    <IconComponent className="w-8 h-8 mx-auto mb-4 text-primary" />
+                    <div className="text-3xl font-bold text-primary mb-2">{stat.value}</div>
+                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -173,14 +177,10 @@ export default async function About() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature: any, index: number) => (
+            {features.map((feature: { icon: string; title: string; description: string }, index: number) => (
               <Card key={index} className="p-6 text-center hover:shadow-lg transition-all hover:-translate-y-1">
                 <CardContent className="p-0">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    {iconMap[feature.icon] ? (
-                      React.createElement(iconMap[feature.icon], { className: "w-6 h-6 text-primary" })
-                    ) : null}
-                  </div>
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">{iconMap[feature.icon] ? React.createElement(iconMap[feature.icon], { className: "w-6 h-6 text-primary" }) : null}</div>
                   <h3 className="font-semibold mb-3">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </CardContent>
@@ -199,7 +199,7 @@ export default async function About() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member: any, index: number) => (
+            {team.map((member: { name: string; role: string; image?: string; bio?: string }, index: number) => (
               <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <CardContent className="p-0">
                   <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
@@ -210,7 +210,7 @@ export default async function About() {
                     <Badge variant="secondary" className="mb-3">
                       {member.role}
                     </Badge>
-                    <p className="text-sm text-muted-foreground">{member.description}</p>
+                    <p className="text-sm text-muted-foreground">{member.bio}</p>
                   </div>
                 </CardContent>
               </Card>

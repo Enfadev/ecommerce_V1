@@ -3,8 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { verifyJWT } from "@/lib/jwt";
 
 // GET /api/orders/[id] - Get specific order
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const authHeader = request.headers.get("authorization");
     const token = authHeader?.replace("Bearer ", "") || request.cookies.get("auth-token")?.value;
 
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const orderId = parseInt(id);
     if (isNaN(orderId)) {
       return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
     }
@@ -62,8 +63,9 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT /api/orders/[id] - Update order (for admin or limited user updates)
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const authHeader = request.headers.get("authorization");
     const token = authHeader?.replace("Bearer ", "") || request.cookies.get("auth-token")?.value;
 
@@ -76,7 +78,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const orderId = parseInt(params.id);
+    const orderId = parseInt(id);
     if (isNaN(orderId)) {
       return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
     }
@@ -101,24 +103,24 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 
     // Prepare update data
-    const updateData: any = {};
-    
+    const updateData: Record<string, unknown> = {};
+
     if (status !== undefined) {
       updateData.status = status;
     }
-    
+
     if (trackingNumber !== undefined) {
       updateData.trackingNumber = trackingNumber;
     }
-    
+
     if (paymentStatus !== undefined) {
       updateData.paymentStatus = paymentStatus;
     }
-    
+
     if (paymentProof !== undefined) {
       updateData.paymentProof = paymentProof;
     }
-    
+
     if (notes !== undefined) {
       updateData.notes = notes;
     }

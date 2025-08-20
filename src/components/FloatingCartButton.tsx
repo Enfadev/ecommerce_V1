@@ -22,7 +22,7 @@ export function FloatingCartButton() {
     toast.success("Menuju halaman checkout...");
   };
 
-  const handleRemoveItem = (id: string, name: string) => {
+  const handleRemoveItem = (id: number, name: string) => {
     removeFromCart(id);
     toast.success(`${name} telah dihapus dari keranjang`);
   };
@@ -88,14 +88,14 @@ export function FloatingCartButton() {
                         </div>
 
                         <div className="flex items-center gap-2 mt-2">
-                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.qty - 1)} disabled={item.qty === 1} className="h-8 w-8 p-0">
+                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.quantity - 1)} disabled={item.quantity === 1} className="h-8 w-8 p-0">
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="text-sm font-medium w-8 text-center">{item.qty}</span>
-                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.qty + 1)} className="h-8 w-8 p-0">
+                          <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                          <Button variant="outline" size="sm" onClick={() => updateQty(item.id, item.quantity + 1)} className="h-8 w-8 p-0">
                             <Plus className="h-3 w-3" />
                           </Button>
-                          <div className="ml-auto text-sm font-semibold">Rp {(item.price * item.qty).toLocaleString()}</div>
+                          <div className="ml-auto text-sm font-semibold">Rp {(item.price * item.quantity).toLocaleString()}</div>
                         </div>
                       </div>
                     </div>
