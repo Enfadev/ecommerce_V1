@@ -40,12 +40,12 @@ export async function middleware(request: NextRequest) {
       'Content-Security-Policy',
       [
         "default-src 'self'",
-        "script-src 'self' https://js.stripe.com 'unsafe-inline'",
-        "script-src-elem 'self' https://js.stripe.com 'unsafe-inline'",
-        "frame-src https://js.stripe.com",
+        "script-src 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
+        "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
+  "frame-src https://js.stripe.com https://www.paypal.com https://sandbox.paypal.com",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: https://*.stripe.com",
-        "connect-src 'self' https://api.stripe.com https://js.stripe.com"
+  "img-src 'self' data: blob: https://*.stripe.com https://www.paypal.com https://www.paypalobjects.com https://ui-avatars.com",
+  "connect-src 'self' https://api.stripe.com https://js.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://www.paypal.com https://www.sandbox.paypal.com"
       ].join('; ') + ';'
     );
     return response;
@@ -117,12 +117,12 @@ export async function middleware(request: NextRequest) {
       'Content-Security-Policy',
       [
         "default-src 'self'",
-        "script-src 'self' https://js.stripe.com 'unsafe-inline'",
-        "script-src-elem 'self' https://js.stripe.com 'unsafe-inline'",
-        "frame-src https://js.stripe.com",
+        "script-src 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
+        "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
+        "frame-src https://js.stripe.com https://www.paypal.com",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: https://*.stripe.com",
-        "connect-src 'self' https://api.stripe.com https://js.stripe.com"
+        "img-src 'self' data: https://*.stripe.com https://www.paypal.com",
+        "connect-src 'self' https://api.stripe.com https://js.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://www.paypal.com"
       ].join('; ') + ';'
     );
     console.log('✅ Middleware completed successfully for:', pathname);

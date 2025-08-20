@@ -42,13 +42,13 @@ const nextConfig: NextConfig = {
             value:
               [
                 "default-src 'self'",
-                "script-src 'self' https://js.stripe.com 'unsafe-inline' 'unsafe-eval'",
-                "script-src-elem 'self' https://js.stripe.com 'unsafe-inline' 'unsafe-eval'",
-                "frame-src https://js.stripe.com",
+                "script-src 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline' 'unsafe-eval'",
+                "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline' 'unsafe-eval'",
+                "frame-src https://js.stripe.com https://www.paypal.com https://sandbox.paypal.com",
                 "style-src 'self' 'unsafe-inline'",
-                "img-src 'self' data: blob: https://*.stripe.com",
+                "img-src 'self' data: blob: https://*.stripe.com https://www.paypal.com https://www.paypalobjects.com https://ui-avatars.com",
                 "font-src 'self'",
-                "connect-src 'self' https://api.stripe.com https://js.stripe.com",
+                "connect-src 'self' https://api.stripe.com https://js.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://www.paypal.com https://www.sandbox.paypal.com",
                 "frame-ancestors 'none'",
               ].join("; ") + ";",
           },

@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import StripeElementsWrapper from "@/components/StripeElementsWrapper";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -249,7 +250,7 @@ export default function CheckoutPage() {
                         <div className={`w-3 h-3 rounded-full ${formData.paymentMethod === "E-Wallet" ? "bg-primary" : "bg-muted"}`}></div>
                         <div>
                           <p className="font-medium">E-Wallet</p>
-                          <p className="text-sm text-muted-foreground">OVO, GoPay, DANA, LinkAja</p>
+                          <p className="text-sm text-muted-foreground">PayPal, Alipay, WeChat Pay</p>
                         </div>
                       </div>
                     </div>
@@ -312,6 +313,42 @@ export default function CheckoutPage() {
                       clearCart();
                       toast.success("Order placed successfully!");
                     }}
+                  />
+                </div>
+              ) : formData.paymentMethod === "E-Wallet" ? (
+                <div className="pt-4 flex flex-col gap-4">
+                  <PayPalButton
+                    total={total}
+                    currency="USD"
+                    onApprove={async (details) => {
+                      const orderData = {
+                        customerName: formData.nama,
+                        customerEmail: formData.email,
+                        customerPhone: formData.phone,
+                        shippingAddress: formData.alamat,
+                        postalCode: formData.kodePos,
+                        notes: formData.catatan,
+                        paymentMethod: "PayPal",
+                        items: items.map(item => ({ productId: item.productId, quantity: item.quantity })),
+                        subtotal,
+                        shippingFee: ongkir,
+                        tax,
+                        discount: 0,
+                        totalAmount: total,
+                      };
+                      try {
+                        const newOrder = await createOrder(orderData);
+                        if (newOrder) {
+                          setCreatedOrder(newOrder);
+                          setSubmitted(true);
+                          clearCart();
+                          toast.success("Order placed successfully via PayPal!");
+                        }
+                      } catch {
+                        toast.error("Failed to save order after PayPal payment.");
+                      }
+                    }}
+                    onError={() => toast.error("PayPal payment failed.")}
                   />
                 </div>
               ) : (
