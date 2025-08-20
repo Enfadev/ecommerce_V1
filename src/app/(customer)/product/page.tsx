@@ -7,7 +7,7 @@ import { ProductFilter } from "@/components/ProductFilter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { Search, Grid, List, Filter, SortAsc, SortDesc } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -24,7 +24,7 @@ interface APIProduct {
   stock?: number;
 }
 
-export default function ProductPage() {
+function ProductPageContent() {
   const searchParams = useSearchParams();
   const search = searchParams.get("q") || "";
   const category = searchParams.get("category") || "All";
@@ -232,5 +232,13 @@ export default function ProductPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function ProductPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductPageContent />
+    </Suspense>
   );
 }

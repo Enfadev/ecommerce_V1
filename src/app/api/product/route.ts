@@ -22,7 +22,7 @@ export async function DELETE(req: Request) {
       } catch {}
     }
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
   }
 }
@@ -65,9 +65,23 @@ export async function GET(req: Request) {
       const category = searchParams.get("category");
       const price = searchParams.get("price");
       const q = searchParams.get("q");
-      let where: any = {};
+
+      interface WhereClause {
+        categoryId?: number;
+        name?: { contains: string; mode: "insensitive" };
+        price?: { lt?: number; gte?: number; lte?: number };
+      }
+
+      const where: WhereClause = {};
+
       if (category && category !== "All") {
-        where.category = category;
+        // Assuming category is passed as ID or we need to look it up
+        const categoryRecord = await prisma.category.findFirst({
+          where: { name: category },
+        });
+        if (categoryRecord) {
+          where.categoryId = categoryRecord.id;
+        }
       }
       if (q) {
         where.name = { contains: q, mode: "insensitive" };
@@ -82,7 +96,7 @@ export async function GET(req: Request) {
           if (!isNaN(min) && !isNaN(max)) where.price = { gte: min, lte: max };
         } else if (price.startsWith("gt")) {
           const min = Number(price.replace("gt", ""));
-          if (!isNaN(min)) where.price = { gt: min };
+          if (!isNaN(min)) where.price = { gte: min };
         }
       }
       const products = await prisma.product.findMany({
@@ -112,13 +126,13 @@ export async function GET(req: Request) {
       }));
       return NextResponse.json(result);
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch product data" }, { status: 500 });
   }
 }
 export async function PUT(req: Request) {
   try {
-    const { id, name, description, price, imageUrl, category, stock, status, sku, brand, slug, metaTitle, metaDescription, discountPrice, promoExpired, gallery } = await req.json();
+    const { id, name, description, price, imageUrl, category, stock, status, sku, brand, slug, metaTitle, metaDescription, discountPrice, promoExpired } = await req.json();
 
     if (!id || !name || !price) {
       return NextResponse.json({ error: "ID, name, and price are required" }, { status: 400 });

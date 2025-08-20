@@ -11,11 +11,10 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import StripeElementsWrapper from "@/components/StripeElementsWrapper";
-import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CheckCircle, ArrowLeft, Package, CreditCard, Truck, Tag, AlertCircle } from "lucide-react";
+import { CheckCircle, ArrowLeft, Package, CreditCard, Truck, Tag } from "lucide-react";
 import { toast } from "sonner";
 
 export default function CheckoutPage() {
@@ -39,7 +38,6 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + ongkir + tax;
 
-  
   useEffect(() => {
     if (items.length === 0 && !submitted) {
       toast.error("Your cart is empty");
@@ -90,7 +88,7 @@ export default function CheckoutPage() {
       postalCode: formData.kodePos,
       notes: formData.catatan,
       paymentMethod: formData.paymentMethod,
-      items: items.map(item => ({
+      items: items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
       })),
@@ -108,7 +106,7 @@ export default function CheckoutPage() {
         clearCart();
         toast.success("Order placed successfully!");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to place order. Please try again.");
     }
   };
@@ -123,10 +121,8 @@ export default function CheckoutPage() {
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
               <h1 className="text-2xl font-bold mb-2">Order Placed Successfully!</h1>
-              <p className="text-muted-foreground mb-6">
-                Thank you for your order. We will process it and send confirmation to your email soon.
-              </p>
-              
+              <p className="text-muted-foreground mb-6">Thank you for your order. We will process it and send confirmation to your email soon.</p>
+
               {createdOrder && (
                 <div className="bg-muted/30 rounded-lg p-4 mb-6 text-left">
                   <h3 className="font-semibold mb-2">Order Details</h3>
@@ -150,7 +146,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
               )}
-              
+
               <div className="flex gap-4 justify-center">
                 <Button asChild>
                   <Link href="/order-history">View Orders</Link>
@@ -231,18 +227,12 @@ export default function CheckoutPage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
                     {/* Bank Transfer */}
-                    <div 
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                        formData.paymentMethod === "Bank Transfer" 
-                          ? "border-primary bg-primary/5" 
-                          : "border-muted hover:border-primary/50"
-                      }`}
-                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "Bank Transfer"}))}
+                    <div
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.paymentMethod === "Bank Transfer" ? "border-primary bg-primary/5" : "border-muted hover:border-primary/50"}`}
+                      onClick={() => setFormData((prev) => ({ ...prev, paymentMethod: "Bank Transfer" }))}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          formData.paymentMethod === "Bank Transfer" ? "bg-primary" : "bg-muted"
-                        }`}></div>
+                        <div className={`w-3 h-3 rounded-full ${formData.paymentMethod === "Bank Transfer" ? "bg-primary" : "bg-muted"}`}></div>
                         <div>
                           <p className="font-medium">Bank Transfer</p>
                           <p className="text-sm text-muted-foreground">Pay via bank transfer (manual confirmation)</p>
@@ -251,18 +241,12 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* E-Wallet */}
-                    <div 
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                        formData.paymentMethod === "E-Wallet" 
-                          ? "border-primary bg-primary/5" 
-                          : "border-muted hover:border-primary/50"
-                      }`}
-                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "E-Wallet"}))}
+                    <div
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.paymentMethod === "E-Wallet" ? "border-primary bg-primary/5" : "border-muted hover:border-primary/50"}`}
+                      onClick={() => setFormData((prev) => ({ ...prev, paymentMethod: "E-Wallet" }))}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          formData.paymentMethod === "E-Wallet" ? "bg-primary" : "bg-muted"
-                        }`}></div>
+                        <div className={`w-3 h-3 rounded-full ${formData.paymentMethod === "E-Wallet" ? "bg-primary" : "bg-muted"}`}></div>
                         <div>
                           <p className="font-medium">E-Wallet</p>
                           <p className="text-sm text-muted-foreground">OVO, GoPay, DANA, LinkAja</p>
@@ -271,18 +255,12 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Credit Card */}
-                    <div 
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                        formData.paymentMethod === "Credit Card" 
-                          ? "border-primary bg-primary/5" 
-                          : "border-muted hover:border-primary/50"
-                      }`}
-                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "Credit Card"}))}
+                    <div
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.paymentMethod === "Credit Card" ? "border-primary bg-primary/5" : "border-muted hover:border-primary/50"}`}
+                      onClick={() => setFormData((prev) => ({ ...prev, paymentMethod: "Credit Card" }))}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          formData.paymentMethod === "Credit Card" ? "bg-primary" : "bg-muted"
-                        }`}></div>
+                        <div className={`w-3 h-3 rounded-full ${formData.paymentMethod === "Credit Card" ? "bg-primary" : "bg-muted"}`}></div>
                         <div>
                           <p className="font-medium">Credit Card</p>
                           <p className="text-sm text-muted-foreground">Visa, Mastercard, JCB</p>
@@ -291,18 +269,12 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Cash on Delivery */}
-                    <div 
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                        formData.paymentMethod === "Cash on Delivery" 
-                          ? "border-primary bg-primary/5" 
-                          : "border-muted hover:border-primary/50"
-                      }`}
-                      onClick={() => setFormData(prev => ({...prev, paymentMethod: "Cash on Delivery"}))}
+                    <div
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${formData.paymentMethod === "Cash on Delivery" ? "border-primary bg-primary/5" : "border-muted hover:border-primary/50"}`}
+                      onClick={() => setFormData((prev) => ({ ...prev, paymentMethod: "Cash on Delivery" }))}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          formData.paymentMethod === "Cash on Delivery" ? "bg-primary" : "bg-muted"
-                        }`}></div>
+                        <div className={`w-3 h-3 rounded-full ${formData.paymentMethod === "Cash on Delivery" ? "bg-primary" : "bg-muted"}`}></div>
                         <div>
                           <p className="font-medium">Cash on Delivery</p>
                           <p className="text-sm text-muted-foreground">Pay when package arrives</p>
@@ -327,7 +299,7 @@ export default function CheckoutPage() {
                       postalCode: formData.kodePos,
                       notes: formData.catatan,
                       paymentMethod: formData.paymentMethod,
-                      items: items.map(item => ({ productId: item.productId, quantity: item.quantity })),
+                      items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
                       subtotal,
                       shippingFee: ongkir,
                       tax,
@@ -343,13 +315,7 @@ export default function CheckoutPage() {
                   />
                 </div>
               ) : (
-                <Button
-                  type="button"
-                  className="w-full"
-                  size="lg"
-                  disabled={creating}
-                  onClick={handleSubmit}
-                >
+                <Button type="button" className="w-full" size="lg" disabled={creating} onClick={handleSubmit}>
                   {creating ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
                 </Button>
               )}
@@ -382,11 +348,7 @@ export default function CheckoutPage() {
                         <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
                         <div className="flex items-center justify-between mt-1">
                           <span className="text-sm text-muted-foreground">x{typeof item.quantity === "number" && item.quantity > 0 ? item.quantity : 1}</span>
-                          <span className="text-sm font-semibold">${
-                            typeof item.price === "number" && typeof item.quantity === "number" && item.price > 0 && item.quantity > 0
-                              ? (item.price * item.quantity).toFixed(2)
-                              : "0.00"
-                          }</span>
+                          <span className="text-sm font-semibold">${typeof item.price === "number" && typeof item.quantity === "number" && item.price > 0 && item.quantity > 0 ? (item.price * item.quantity).toFixed(2) : "0.00"}</span>
                         </div>
                       </div>
                     </div>

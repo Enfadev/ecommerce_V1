@@ -87,21 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const {
-      customerName,
-      customerEmail,
-      customerPhone,
-      shippingAddress,
-      postalCode,
-      notes,
-      paymentMethod,
-      items,
-      subtotal,
-      shippingFee,
-      tax,
-      discount,
-      totalAmount,
-    } = body;
+    const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
 
     // Validate required fields
     if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !items || items.length === 0) {
@@ -112,7 +98,7 @@ export async function POST(request: NextRequest) {
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
     // Start transaction
-    const order = await prisma.$transaction(async (tx: any) => {
+    const order = await prisma.$transaction(async (tx) => {
       // Validate stock for all items
       for (const item of items) {
         const product = await tx.product.findUnique({
@@ -219,11 +205,11 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Create order error:", error);
-    
+
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
-    
+
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

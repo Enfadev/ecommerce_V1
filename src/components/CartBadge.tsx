@@ -2,7 +2,6 @@
 
 import { useCart } from "./cart-context";
 import { Badge } from "./ui/badge";
-import { ShoppingCart } from "lucide-react";
 
 export function CartBadge() {
   const { getTotalItems } = useCart();

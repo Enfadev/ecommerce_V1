@@ -59,7 +59,6 @@ export default function RegisterPage() {
     },
   });
 
-  
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/");
@@ -87,7 +86,7 @@ export default function RegisterPage() {
           type: "error",
         });
       }
-    } catch (error) {
+    } catch {
       setToast({
         show: true,
         message: "An error occurred during registration.",
@@ -125,7 +124,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-  {toast.show && <Toast title={toast.type === "success" ? "Success!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
+      {toast.show && <Toast title={toast.type === "success" ? "Success!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
 
       <div className="w-full max-w-lg">
         {/* Header with Logo */}
@@ -251,11 +250,11 @@ export default function RegisterPage() {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel className="text-sm text-gray-300">
-                          I agree to the {" "}
+                          I agree to the{" "}
                           <Link href="/terms" className="text-green-400 hover:text-green-300 hover:underline">
                             Terms and Conditions
                           </Link>{" "}
-                          and {" "}
+                          and{" "}
                           <Link href="/privacy" className="text-green-400 hover:text-green-300 hover:underline">
                             Privacy Policy
                           </Link>

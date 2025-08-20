@@ -13,7 +13,7 @@ import { ShoppingCart, Plus, Minus, Trash2, X, Tag, ShoppingBag } from "lucide-r
 import { toast } from "sonner";
 
 export function CartDrawer() {
-  const { items, removeFromCart, clearCart, updateQty, isLoading } = useCart();
+  const { items, removeFromCart, clearCart, updateQty } = useCart();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 

@@ -7,8 +7,8 @@ import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import OrderRatingModal from "./OrderRatingModal";
-import { Package, Truck, CheckCircle, XCircle, Clock, Calendar, MapPin, CreditCard, RefreshCw, User, Phone, Mail, Download, ExternalLink, Copy, Star } from "lucide-react";
-import { Order, OrderStatus } from "./OrderHistoryPage";
+import { Package, Truck, CheckCircle, XCircle, Clock, Calendar, MapPin, CreditCard, RefreshCw, Download, ExternalLink, Copy, Star } from "lucide-react";
+import { Order } from "./OrderHistoryPage";
 import { toast } from "sonner";
 
 interface OrderDetailModalProps {
@@ -22,7 +22,6 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
 
   if (!order) return null;
 
-  
   const statusConfig = {
     Pending: {
       icon: Clock,
@@ -58,7 +57,6 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
 
   const StatusIcon = statusConfig[order.status].icon;
 
-  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
       day: "2-digit",
@@ -69,7 +67,6 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
     });
   };
 
-  
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -78,7 +75,6 @@ export default function OrderDetailModal({ order, isOpen, onClose }: OrderDetail
     }).format(amount);
   };
 
-  
   const subtotal = order.items.reduce((total, item) => total + item.price * item.qty, 0);
   const shipping = 25000;
   const tax = subtotal * 0.11;

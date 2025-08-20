@@ -8,7 +8,8 @@ import { useWishlist } from "./wishlist-context";
 import { toast } from "sonner";
 import type { Product } from "../data/products";
 import Link from "next/link";
-import { Heart, ShoppingCart, Star, Trash2, Share2, Eye, Package } from "lucide-react";
+import Image from "next/image";
+import { Heart, ShoppingCart, Star, Share2, Eye, Package } from "lucide-react";
 
 interface WishlistProductCardProps {
   product: Product;
@@ -27,7 +28,7 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
           text: `Lihat produk ${product.name} dengan harga Rp ${product.price.toLocaleString("id-ID")}`,
           url: `${window.location.origin}/product/${product.id}`,
         });
-      } catch (error) {
+      } catch {
         console.log("Sharing cancelled");
       }
     } else {
@@ -43,15 +44,16 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
           <div className="flex gap-4">
             <Link href={`/product/${product.id}`} className="flex-shrink-0">
               <div className="w-24 h-24 bg-gradient-to-br from-muted to-muted/50 rounded-lg flex items-center justify-center overflow-hidden relative">
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
+                  width={96}
+                  height={96}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = `/placeholder-image.svg`;
                   }}
-                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
@@ -156,15 +158,16 @@ export function WishlistProductCard({ product, viewMode = "grid" }: WishlistProd
 
         <Link href={`/product/${product.id}`} className="block">
           <div className="relative overflow-hidden group/image">
-            <img
+            <Image
               src={product.image}
               alt={product.name}
+              width={300}
+              height={192}
               className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = `/placeholder-image.svg`;
               }}
-              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
 

@@ -30,12 +30,11 @@ export function SavedItemsProvider({ children }: { children: ReactNode }) {
   const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  
   useEffect(() => {
     try {
       const saved = localStorage.getItem("saved-items");
       if (saved) {
-        const parsedItems = JSON.parse(saved).map((item: any) => ({
+        const parsedItems = JSON.parse(saved).map((item: SavedItem & { savedAt: string }) => ({
           ...item,
           savedAt: new Date(item.savedAt),
         }));
@@ -48,7 +47,6 @@ export function SavedItemsProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  
   useEffect(() => {
     if (isLoaded) {
       try {
@@ -72,7 +70,6 @@ export function SavedItemsProvider({ children }: { children: ReactNode }) {
   }
 
   function moveToCart(id: string) {
-    
     removeFromSaved(id);
   }
 

@@ -1,9 +1,7 @@
-
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function ProductFilter() {
-
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -12,9 +10,7 @@ export function ProductFilter() {
   const selectedPrice = searchParams.get("price") || "all";
 
   const [categories, setCategories] = useState<string[]>(["All"]);
-  const [priceRanges, setPriceRanges] = useState<Array<{ label: string; value: string }>>([
-    { label: "All", value: "all" },
-  ]);
+  const [priceRanges, setPriceRanges] = useState<Array<{ label: string; value: string }>>([{ label: "All", value: "all" }]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,20 +22,19 @@ export function ProductFilter() {
         // Kategori
         setCategories(["All", ...data.categories.filter((c: string) => !!c)]);
         // Rentang harga
+        interface PriceRange {
+          label: string;
+          min: number | null;
+          max: number | null;
+        }
+
         setPriceRanges(
-          data.priceRanges.map((r: any) => ({
+          data.priceRanges.map((r: PriceRange) => ({
             label: r.label,
-            value:
-              r.min === null && r.max === null
-                ? "all"
-                : r.min === null
-                ? `lt${r.max}`
-                : r.max === null
-                ? `gt${r.min}`
-                : `${r.min}-${r.max}`,
+            value: r.min === null && r.max === null ? "all" : r.min === null ? `lt${r.max}` : r.max === null ? `gt${r.min}` : `${r.min}-${r.max}`,
           }))
         );
-      } catch (e) {
+      } catch {
         // fallback jika error
         setCategories(["All"]);
         setPriceRanges([{ label: "All", value: "all" }]);

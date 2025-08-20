@@ -8,8 +8,7 @@ import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
-import { Filter, Calendar as CalendarIcon, X, RotateCcw } from "lucide-react";
-import { OrderStatus } from "./OrderHistoryPage";
+import { Filter, RotateCcw } from "lucide-react";
 
 interface AdvancedFilterModalProps {
   onApplyFilters: (filters: FilterOptions) => void;

@@ -5,7 +5,6 @@ import { z } from "zod";
 import { Input } from "./ui/input";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
-import { Card } from "./ui/card";
 import { Label } from "./ui/label";
 import Image from "next/image";
 
@@ -60,9 +59,9 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     reset,
   } = useForm({
     resolver: zodResolver(productSchema),
-    defaultValues: product || { 
-      name: "", 
-      price: 0, 
+    defaultValues: product || {
+      name: "",
+      price: 0,
       description: "",
       category: "",
       stock: 0,
@@ -73,7 +72,7 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
       metaTitle: "",
       metaDescription: "",
       hargaDiskon: 0,
-      promoExpired: ""
+      promoExpired: "",
     },
   });
 
@@ -86,7 +85,7 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
       setImagePreviews([product.imageUrl]);
     }
     if (product?.gallery) {
-      setImagePreviews([product.imageUrl || '', ...product.gallery].filter(Boolean));
+      setImagePreviews([product.imageUrl || "", ...product.gallery].filter(Boolean));
     }
   }, [product]);
 
@@ -96,7 +95,7 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     setImagePreviews(files.map((file) => URL.createObjectURL(file)));
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: ProductFormData) => {
     const submitData: ProductFormData = {
       ...data,
       id: product?.id,
@@ -113,7 +112,7 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
       <div>
         <Label>Product Name</Label>
-        <Input {...register("name" )} />
+        <Input {...register("name")} />
         {errors.name && <p className="text-red-500 text-xs">{errors.name.message as string}</p>}
       </div>
       <div>
@@ -172,7 +171,7 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
         {imagePreviews.length > 0 && (
           <div className="flex gap-2 mt-2 flex-wrap">
             {imagePreviews.map((src, idx) => (
-              <img key={idx} src={src} alt={`Preview ${idx + 1}`} className="w-20 h-20 object-cover rounded" />
+              <Image key={idx} src={src} alt={`Preview ${idx + 1}`} width={80} height={80} className="w-20 h-20 object-cover rounded" />
             ))}
           </div>
         )}

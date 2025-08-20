@@ -8,23 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Package, 
-  Search, 
-  Filter, 
-  Calendar,
-  MapPin,
-  CreditCard,
-  Eye,
-  ArrowLeft,
-  Loader2,
-  ShoppingBag,
-  Clock
-} from "lucide-react";
+import { Package, Search, Filter, Calendar, MapPin, CreditCard, Eye, ArrowLeft, Loader2, ShoppingBag, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { toast } from "sonner";
 
 const statusStyles = {
   PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
@@ -58,13 +45,14 @@ export default function OrderHistoryPageNew() {
   }, [fetchOrders]);
 
   // Filter orders based on search and status
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         order.items.some(item => item.productName.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+  const filteredOrders = orders.filter((order) => {
+    const matchesSearch =
+      order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.items.some((item) => item.productName.toLowerCase().includes(searchTerm.toLowerCase()));
+
     const matchesStatus = statusFilter === "all" || order.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -81,11 +69,7 @@ export default function OrderHistoryPageNew() {
       <div className="min-h-screen bg-background">
         <main className="max-w-4xl mx-auto px-4 py-8">
           <div className="mb-6">
-            <Button 
-              variant="ghost" 
-              onClick={() => setSelectedOrder(null)}
-              className="mb-4"
-            >
+            <Button variant="ghost" onClick={() => setSelectedOrder(null)} className="mb-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Orders
             </Button>
@@ -100,17 +84,11 @@ export default function OrderHistoryPageNew() {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-lg font-semibold">Order #{selectedOrder.orderNumber}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Placed {formatDistanceToNow(new Date(selectedOrder.createdAt), { addSuffix: true })}
-                    </p>
+                    <p className="text-sm text-muted-foreground">Placed {formatDistanceToNow(new Date(selectedOrder.createdAt), { addSuffix: true })}</p>
                   </div>
                   <div className="text-right">
-                    <Badge className={statusStyles[selectedOrder.status]}>
-                      {statusLabels[selectedOrder.status]}
-                    </Badge>
-                    <div className="text-2xl font-bold text-primary mt-2">
-                      {formatCurrency(selectedOrder.totalAmount)}
-                    </div>
+                    <Badge className={statusStyles[selectedOrder.status]}>{statusLabels[selectedOrder.status]}</Badge>
+                    <div className="text-2xl font-bold text-primary mt-2">{formatCurrency(selectedOrder.totalAmount)}</div>
                   </div>
                 </div>
               </CardContent>
@@ -129,31 +107,15 @@ export default function OrderHistoryPageNew() {
                   {selectedOrder.items.map((item) => (
                     <div key={item.id} className="flex gap-4 p-4 border rounded-lg">
                       <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                        {item.productImage ? (
-                          <Image 
-                            src={item.productImage} 
-                            alt={item.productName}
-                            width={64}
-                            height={64}
-                            className="object-cover"
-                          />
-                        ) : (
-                          <Package className="h-6 w-6 text-muted-foreground" />
-                        )}
+                        {item.productImage ? <Image src={item.productImage} alt={item.productName} width={64} height={64} className="object-cover" /> : <Package className="h-6 w-6 text-muted-foreground" />}
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium">{item.productName}</h4>
                         <div className="flex justify-between items-center mt-2">
-                          <span className="text-sm text-muted-foreground">
-                            Quantity: {item.quantity}
-                          </span>
+                          <span className="text-sm text-muted-foreground">Quantity: {item.quantity}</span>
                           <div className="text-right">
-                            <div className="text-sm text-muted-foreground">
-                              {formatCurrency(item.productPrice)} each
-                            </div>
-                            <div className="font-semibold">
-                              {formatCurrency(item.productPrice * item.quantity)}
-                            </div>
+                            <div className="text-sm text-muted-foreground">{formatCurrency(item.productPrice)} each</div>
+                            <div className="font-semibold">{formatCurrency(item.productPrice * item.quantity)}</div>
                           </div>
                         </div>
                       </div>
@@ -215,9 +177,7 @@ export default function OrderHistoryPageNew() {
                     <div className="text-sm text-muted-foreground">
                       <div>{selectedOrder.customerPhone}</div>
                       <div className="mt-2">{selectedOrder.shippingAddress}</div>
-                      {selectedOrder.postalCode && (
-                        <div>{selectedOrder.postalCode}</div>
-                      )}
+                      {selectedOrder.postalCode && <div>{selectedOrder.postalCode}</div>}
                     </div>
                   </div>
                 </CardContent>
@@ -233,9 +193,7 @@ export default function OrderHistoryPageNew() {
                 <CardContent>
                   <div className="space-y-2">
                     <div className="font-medium">{selectedOrder.paymentMethod}</div>
-                    <div className="text-sm text-muted-foreground">
-                      Payment on {formatDate(selectedOrder.createdAt)}
-                    </div>
+                    <div className="text-sm text-muted-foreground">Payment on {formatDate(selectedOrder.createdAt)}</div>
                   </div>
                 </CardContent>
               </Card>
@@ -279,12 +237,7 @@ export default function OrderHistoryPageNew() {
               <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search by order number, product name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+                  <Input placeholder="Search by order number, product name..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10" />
                 </div>
               </div>
               <div className="flex gap-2">
@@ -341,12 +294,8 @@ export default function OrderHistoryPageNew() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <Badge className={statusStyles[order.status]}>
-                        {statusLabels[order.status]}
-                      </Badge>
-                      <div className="text-lg font-bold text-primary mt-2">
-                        {formatCurrency(order.totalAmount)}
-                      </div>
+                      <Badge className={statusStyles[order.status]}>{statusLabels[order.status]}</Badge>
+                      <div className="text-lg font-bold text-primary mt-2">{formatCurrency(order.totalAmount)}</div>
                     </div>
                   </div>
 
@@ -355,43 +304,23 @@ export default function OrderHistoryPageNew() {
                     {order.items.slice(0, 3).map((item) => (
                       <div key={item.id} className="flex gap-3 text-sm">
                         <div className="w-8 h-8 bg-muted rounded flex items-center justify-center overflow-hidden">
-                          {item.productImage ? (
-                            <Image 
-                              src={item.productImage} 
-                              alt={item.productName}
-                              width={32}
-                              height={32}
-                              className="object-cover"
-                            />
-                          ) : (
-                            <Package className="h-4 w-4 text-muted-foreground" />
-                          )}
+                          {item.productImage ? <Image src={item.productImage} alt={item.productName} width={32} height={32} className="object-cover" /> : <Package className="h-4 w-4 text-muted-foreground" />}
                         </div>
                         <div className="flex-1">
                           <span className="font-medium">{item.productName}</span>
                           <span className="text-muted-foreground ml-2">x{item.quantity}</span>
                         </div>
-                        <span className="font-semibold">
-                          {formatCurrency(item.productPrice * item.quantity)}
-                        </span>
+                        <span className="font-semibold">{formatCurrency(item.productPrice * item.quantity)}</span>
                       </div>
                     ))}
-                    {order.items.length > 3 && (
-                      <div className="text-sm text-muted-foreground">
-                        +{order.items.length - 3} more items
-                      </div>
-                    )}
+                    {order.items.length > 3 && <div className="text-sm text-muted-foreground">+{order.items.length - 3} more items</div>}
                   </div>
 
                   <div className="flex justify-between items-center">
                     <div className="text-sm text-muted-foreground">
                       {order.items.length} item{order.items.length > 1 ? "s" : ""} • {order.paymentMethod}
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setSelectedOrder(order)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>
                       <Eye className="h-4 w-4 mr-2" />
                       View Details
                     </Button>
@@ -406,11 +335,7 @@ export default function OrderHistoryPageNew() {
               <div className="text-center py-8">
                 <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No Orders Found</h3>
-                <p className="text-muted-foreground mb-4">
-                  {searchTerm || statusFilter !== "all" 
-                    ? "No orders match your current filters."
-                    : "You haven't placed any orders yet."}
-                </p>
+                <p className="text-muted-foreground mb-4">{searchTerm || statusFilter !== "all" ? "No orders match your current filters." : "You haven't placed any orders yet."}</p>
                 <Button asChild>
                   <Link href="/product">Start Shopping</Link>
                 </Button>

@@ -44,7 +44,6 @@ export default function SignInPage() {
     },
   });
 
-  
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/");
@@ -72,7 +71,7 @@ export default function SignInPage() {
           type: "error",
         });
       }
-    } catch (error) {
+    } catch {
       setToast({
         show: true,
         message: "An error occurred during sign in.",
@@ -150,7 +149,7 @@ export default function SignInPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="rememberMe" className="rounded border-gray-600 bg-gray-700" {...form.register("rememberMe" )} />
+                    <input type="checkbox" id="rememberMe" className="rounded border-gray-600 bg-gray-700" {...form.register("rememberMe")} />
                     <label htmlFor="rememberMe" className="text-sm text-gray-300">
                       Remember me
                     </label>

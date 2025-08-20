@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Card } from "./ui/card";
 import { Label } from "./ui/label";
 
 const productSchema = z.object({
@@ -15,9 +14,11 @@ const productSchema = z.object({
   description: z.string().optional(),
 });
 
+type ProductData = z.infer<typeof productSchema>;
+
 type ProductFormProps = {
-  product?: any;
-  onSave: (product: any) => void;
+  product?: ProductData;
+  onSave: (product: ProductData) => void;
   onCancel: () => void;
 };
 
@@ -32,7 +33,7 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     defaultValues: product || { name: "", price: 0, image: "", description: "" },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: ProductData) => {
     onSave({ ...product, ...data });
     reset();
   };

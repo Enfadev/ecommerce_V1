@@ -1,8 +1,5 @@
 "use client";
 import { useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface CheckoutButtonProps {
   items: Array<{ name: string; price: number; quantity: number }>;

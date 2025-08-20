@@ -7,7 +7,7 @@ import { Separator } from "./ui/separator";
 import { ShoppingCart, Package, Clock } from "lucide-react";
 
 export function CartSummaryWidget() {
-  const { items, getTotalItems, getTotalPrice } = useCart();
+  const { getTotalItems, getTotalPrice } = useCart();
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
 

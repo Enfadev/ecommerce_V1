@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,7 +6,6 @@ import { Avatar } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-
 
 interface StarRatingProps {
   rating: number;
@@ -24,7 +23,6 @@ function StarRating({ rating, setRating, readOnly = false }: StarRatingProps) {
     </div>
   );
 }
-
 
 interface ReviewFormProps {
   productId: number;
@@ -60,7 +58,7 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
       setRating(0);
       setComment("");
       onSubmitted();
-    } catch (err) {
+    } catch {
       setError("Terjadi kesalahan.");
     }
     setLoading(false);
@@ -82,7 +80,6 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
   );
 }
 
-
 interface ReviewListProps {
   productId: number;
 }
@@ -96,7 +93,7 @@ function ReviewList({ productId }: ReviewListProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     setLoading(true);
     const res = await fetch(`/api/review?productId=${productId}`);
     if (!res.ok) {
@@ -117,11 +114,11 @@ function ReviewList({ productId }: ReviewListProps) {
       setReviews([]);
     }
     setLoading(false);
-  };
+  }, [productId]);
 
   useEffect(() => {
     fetchReviews();
-  }, [productId]);
+  }, [fetchReviews]);
 
   if (loading) return <Skeleton className="h-32 w-full" />;
   if (!reviews.length) return <div className="text-zinc-400">Belum ada review.</div>;
@@ -144,7 +141,6 @@ function ReviewList({ productId }: ReviewListProps) {
     </div>
   );
 }
-
 
 interface ProductReviewSectionProps {
   productId: number;
