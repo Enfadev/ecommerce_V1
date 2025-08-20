@@ -41,8 +41,8 @@ export async function middleware(request: NextRequest) {
       [
         "default-src 'self'",
         "script-src 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
-        "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
-  "frame-src https://js.stripe.com https://www.paypal.com https://sandbox.paypal.com",
+    "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
+  "frame-src https://js.stripe.com https://www.paypal.com https://sandbox.paypal.com https://www.sandbox.paypal.com",
         "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.stripe.com https://www.paypal.com https://www.paypalobjects.com https://ui-avatars.com",
   "connect-src 'self' https://api.stripe.com https://js.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://www.paypal.com https://www.sandbox.paypal.com"

@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation";
 import { CheckCircle, ArrowLeft, Package, CreditCard, Truck, Tag } from "lucide-react";
 import { toast } from "sonner";
 
+import PayPalButton from "@/components/PayPalButton";
+
 export default function CheckoutPage() {
   const { items, clearCart, getTotalPrice, getTotalItems } = useCart();
   const { createOrder, creating } = useOrders();
