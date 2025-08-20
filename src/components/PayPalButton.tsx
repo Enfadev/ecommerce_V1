@@ -21,6 +21,8 @@ declare global {
           color: string;
           shape: string;
           label: string;
+          tagline?: boolean;
+          height?: number;
         };
       }) => {
         render: (element: HTMLElement) => void;
@@ -47,8 +49,8 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
     
     if (!window.paypal) {
       const script = document.createElement("script");
-      // Remove disable-funding=card as it can cause issues with some client IDs
-      script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}`;
+      // Disable card funding to only show PayPal wallet options
+      script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&disable-funding=card,credit,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort,venmo`;
       script.async = true;
       script.onload = () => renderButton();
       script.onerror = () => {
@@ -108,7 +110,14 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
           console.error("PayPal button error:", err);
           if (onError) onError(err);
         },
-        style: { layout: "vertical", color: "gold", shape: "rect", label: "paypal" },
+        style: { 
+          layout: "vertical", 
+          color: "blue", 
+          shape: "rect", 
+          label: "paypal",
+          tagline: false,
+          height: 45
+        },
       }).render(currentRef);
     }
     

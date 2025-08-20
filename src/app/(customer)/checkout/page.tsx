@@ -252,7 +252,7 @@ export default function CheckoutPage() {
                         <div className={`w-3 h-3 rounded-full ${formData.paymentMethod === "E-Wallet" ? "bg-primary" : "bg-muted"}`}></div>
                         <div>
                           <p className="font-medium">E-Wallet</p>
-                          <p className="text-sm text-muted-foreground">PayPal, Alipay, WeChat Pay</p>
+                          <p className="text-sm text-muted-foreground">PayPal Balance & Bank Account</p>
                         </div>
                       </div>
                     </div>
@@ -319,10 +319,13 @@ export default function CheckoutPage() {
                 </div>
               ) : formData.paymentMethod === "E-Wallet" ? (
                 <div className="pt-4 flex flex-col gap-4">
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Pay with your PayPal balance or linked bank account. Credit card payments are handled separately above.
+                  </div>
                   <PayPalButton
                     total={total}
                     currency="USD"
-                    onApprove={async (details) => {
+                    onApprove={async () => {
                       const orderData = {
                         customerName: formData.nama,
                         customerEmail: formData.email,
