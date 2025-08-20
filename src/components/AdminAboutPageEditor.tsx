@@ -246,28 +246,15 @@ export default function AdminAboutPageEditor() {
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Hero Title</label>
-            <Input
-              value={data.heroTitle}
-              onChange={(e) => setData({ ...data, heroTitle: e.target.value })}
-              placeholder="About page title"
-            />
+            <Input value={data.heroTitle} onChange={(e) => setData({ ...data, heroTitle: e.target.value })} placeholder="About page title" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-            <Input
-              value={data.heroSubtitle}
-              onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })}
-              placeholder="About page subtitle"
-            />
+            <Input value={data.heroSubtitle} onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })} placeholder="About page subtitle" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Hero Description</label>
-            <Textarea
-              value={data.heroDescription}
-              onChange={(e) => setData({ ...data, heroDescription: e.target.value })}
-              placeholder="About page description"
-              rows={3}
-            />
+            <Textarea value={data.heroDescription} onChange={(e) => setData({ ...data, heroDescription: e.target.value })} placeholder="About page description" rows={3} />
           </div>
         </CardContent>
       </Card>
@@ -280,30 +267,15 @@ export default function AdminAboutPageEditor() {
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Company Story</label>
-            <Textarea
-              value={data.companyStory}
-              onChange={(e) => setData({ ...data, companyStory: e.target.value })}
-              placeholder="Tell your company story..."
-              rows={5}
-            />
+            <Textarea value={data.companyStory} onChange={(e) => setData({ ...data, companyStory: e.target.value })} placeholder="Tell your company story..." rows={5} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Mission</label>
-            <Textarea
-              value={data.mission}
-              onChange={(e) => setData({ ...data, mission: e.target.value })}
-              placeholder="Company mission statement..."
-              rows={3}
-            />
+            <Textarea value={data.mission} onChange={(e) => setData({ ...data, mission: e.target.value })} placeholder="Company mission statement..." rows={3} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Vision</label>
-            <Textarea
-              value={data.vision}
-              onChange={(e) => setData({ ...data, vision: e.target.value })}
-              placeholder="Company vision statement..."
-              rows={3}
-            />
+            <Textarea value={data.vision} onChange={(e) => setData({ ...data, vision: e.target.value })} placeholder="Company vision statement..." rows={3} />
           </div>
         </CardContent>
       </Card>
@@ -331,23 +303,10 @@ export default function AdminAboutPageEditor() {
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Icon name"
-                  value={value.icon}
-                  onChange={(e) => updateValue(index, "icon", e.target.value)}
-                />
-                <Input
-                  placeholder="Value title"
-                  value={value.title}
-                  onChange={(e) => updateValue(index, "title", e.target.value)}
-                />
+                <Input placeholder="Icon name" value={value.icon} onChange={(e) => updateValue(index, "icon", e.target.value)} />
+                <Input placeholder="Value title" value={value.title} onChange={(e) => updateValue(index, "title", e.target.value)} />
                 <div className="md:col-span-2">
-                  <Textarea
-                    placeholder="Value description"
-                    value={value.description}
-                    onChange={(e) => updateValue(index, "description", e.target.value)}
-                    rows={2}
-                  />
+                  <Textarea placeholder="Value description" value={value.description} onChange={(e) => updateValue(index, "description", e.target.value)} rows={2} />
                 </div>
               </CardContent>
             </Card>
@@ -378,21 +337,43 @@ export default function AdminAboutPageEditor() {
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input
-                  placeholder="Statistic label"
-                  value={stat.label}
-                  onChange={(e) => updateStatistic(index, "label", e.target.value)}
-                />
-                <Input
-                  placeholder="Statistic value"
-                  value={stat.value}
-                  onChange={(e) => updateStatistic(index, "value", e.target.value)}
-                />
-                <Input
-                  placeholder="Icon name"
-                  value={stat.icon}
-                  onChange={(e) => updateStatistic(index, "icon", e.target.value)}
-                />
+                <Input placeholder="Statistic label" value={stat.label} onChange={(e) => updateStatistic(index, "label", e.target.value)} />
+                <Input placeholder="Statistic value" value={stat.value} onChange={(e) => updateStatistic(index, "value", e.target.value)} />
+                <Input placeholder="Icon name" value={stat.icon} onChange={(e) => updateStatistic(index, "icon", e.target.value)} />
+              </CardContent>
+            </Card>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Features */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Features</CardTitle>
+            <Button onClick={addFeature}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Feature
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {data.features.map((feature, index) => (
+            <Card key={index} className="border-l-4 border-orange-500">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <h4 className="font-medium">Feature {index + 1}</h4>
+                  <Button variant="outline" size="sm" onClick={() => removeFeature(index)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input placeholder="Icon name" value={feature.icon} onChange={(e) => updateFeature(index, "icon", e.target.value)} />
+                <Input placeholder="Feature title" value={feature.title} onChange={(e) => updateFeature(index, "title", e.target.value)} />
+                <div className="md:col-span-2">
+                  <Textarea placeholder="Feature description" value={feature.description} onChange={(e) => updateFeature(index, "description", e.target.value)} rows={2} />
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -422,28 +403,11 @@ export default function AdminAboutPageEditor() {
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input
-                  placeholder="Member name"
-                  value={member.name}
-                  onChange={(e) => updateTeamMember(index, "name", e.target.value)}
-                />
-                <Input
-                  placeholder="Role/Position"
-                  value={member.role}
-                  onChange={(e) => updateTeamMember(index, "role", e.target.value)}
-                />
-                <Input
-                  placeholder="Image URL"
-                  value={member.image}
-                  onChange={(e) => updateTeamMember(index, "image", e.target.value)}
-                />
+                <Input placeholder="Member name" value={member.name} onChange={(e) => updateTeamMember(index, "name", e.target.value)} />
+                <Input placeholder="Role/Position" value={member.role} onChange={(e) => updateTeamMember(index, "role", e.target.value)} />
+                <Input placeholder="Image URL" value={member.image} onChange={(e) => updateTeamMember(index, "image", e.target.value)} />
                 <div className="md:col-span-3">
-                  <Textarea
-                    placeholder="Member description"
-                    value={member.description}
-                    onChange={(e) => updateTeamMember(index, "description", e.target.value)}
-                    rows={2}
-                  />
+                  <Textarea placeholder="Member description" value={member.description} onChange={(e) => updateTeamMember(index, "description", e.target.value)} rows={2} />
                 </div>
               </CardContent>
             </Card>
@@ -474,23 +438,10 @@ export default function AdminAboutPageEditor() {
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Year"
-                  value={event.year}
-                  onChange={(e) => updateTimelineEvent(index, "year", e.target.value)}
-                />
-                <Input
-                  placeholder="Event title"
-                  value={event.title}
-                  onChange={(e) => updateTimelineEvent(index, "title", e.target.value)}
-                />
+                <Input placeholder="Year" value={event.year} onChange={(e) => updateTimelineEvent(index, "year", e.target.value)} />
+                <Input placeholder="Event title" value={event.title} onChange={(e) => updateTimelineEvent(index, "title", e.target.value)} />
                 <div className="md:col-span-2">
-                  <Textarea
-                    placeholder="Event description"
-                    value={event.description}
-                    onChange={(e) => updateTimelineEvent(index, "description", e.target.value)}
-                    rows={2}
-                  />
+                  <Textarea placeholder="Event description" value={event.description} onChange={(e) => updateTimelineEvent(index, "description", e.target.value)} rows={2} />
                 </div>
               </CardContent>
             </Card>

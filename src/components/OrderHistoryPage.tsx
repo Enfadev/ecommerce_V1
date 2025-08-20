@@ -470,7 +470,7 @@ export default function OrderHistoryPage() {
             <TabsTrigger value="all" className="text-xs">
               All ({orders?.length || 0})
             </TabsTrigger>
-            {Object.entries(statusConfig).map(([status, config]) => (
+            {Object.entries(statusConfig).map(([status]) => (
               <TabsTrigger key={status} value={status} className="text-xs">
                 {status} ({orderCounts[status] || 0})
               </TabsTrigger>

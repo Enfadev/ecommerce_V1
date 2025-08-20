@@ -88,26 +88,18 @@ export default function AdminProductPageEditor() {
           // Ensure arrays are properly handled from JSON fields
           const processedData = {
             ...pageData,
-            featuredCategories: Array.isArray(pageData.featuredCategories) 
-              ? pageData.featuredCategories 
-              : [],
-            filterOptions: Array.isArray(pageData.filterOptions) 
-              ? pageData.filterOptions 
-              : [],
-            sortOptions: Array.isArray(pageData.sortOptions) 
-              ? pageData.sortOptions 
-              : [],
-            seoContent: Array.isArray(pageData.seoContent) 
-              ? pageData.seoContent 
-              : (pageData.seoContent ? [pageData.seoContent] : []),
+            featuredCategories: Array.isArray(pageData.featuredCategories) ? pageData.featuredCategories : [],
+            filterOptions: Array.isArray(pageData.filterOptions) ? pageData.filterOptions : [],
+            sortOptions: Array.isArray(pageData.sortOptions) ? pageData.sortOptions : [],
+            seoContent: Array.isArray(pageData.seoContent) ? pageData.seoContent : pageData.seoContent ? [pageData.seoContent] : [],
             promotionalBanner: pageData.promotionalBanner || {
               title: "",
               description: "",
               buttonText: "",
               buttonLink: "",
               bgColor: "#3b82f6",
-              isActive: false
-            }
+              isActive: false,
+            },
           };
           setData(processedData);
         }
@@ -153,11 +145,9 @@ export default function AdminProductPageEditor() {
       link: "/category/new",
       bgColor: "bg-blue-100",
     };
-    setData({ 
-      ...data, 
-      featuredCategories: Array.isArray(data.featuredCategories) 
-        ? [...data.featuredCategories, newCategory]
-        : [newCategory]
+    setData({
+      ...data,
+      featuredCategories: Array.isArray(data.featuredCategories) ? [...data.featuredCategories, newCategory] : [newCategory],
     });
   };
 
@@ -180,15 +170,20 @@ export default function AdminProductPageEditor() {
       label: "New Filter",
       options: ["Option 1", "Option 2"],
     };
-    setData({ ...data, filterOptions: [...data.filterOptions, newFilter] });
+    setData({
+      ...data,
+      filterOptions: Array.isArray(data.filterOptions) ? [...data.filterOptions, newFilter] : [newFilter],
+    });
   };
 
   const removeFilterOption = (index: number) => {
+    if (!Array.isArray(data.filterOptions)) return;
     const newFilters = data.filterOptions.filter((_, i) => i !== index);
     setData({ ...data, filterOptions: newFilters });
   };
 
   const updateFilterOption = (index: number, field: keyof FilterOption, value: string | string[]) => {
+    if (!Array.isArray(data.filterOptions)) return;
     const newFilters = [...data.filterOptions];
     newFilters[index] = { ...newFilters[index], [field]: value };
     setData({ ...data, filterOptions: newFilters });
@@ -199,11 +194,9 @@ export default function AdminProductPageEditor() {
       value: "new_sort",
       label: "New Sort Option",
     };
-    setData({ 
-      ...data, 
-      sortOptions: Array.isArray(data.sortOptions) 
-        ? [...data.sortOptions, newSort]
-        : [newSort]
+    setData({
+      ...data,
+      sortOptions: Array.isArray(data.sortOptions) ? [...data.sortOptions, newSort] : [newSort],
     });
   };
 
@@ -226,11 +219,9 @@ export default function AdminProductPageEditor() {
       content: "SEO content description",
       type: "text",
     };
-    setData({ 
-      ...data, 
-      seoContent: Array.isArray(data.seoContent) 
-        ? [...data.seoContent, newContent]
-        : [newContent]
+    setData({
+      ...data,
+      seoContent: Array.isArray(data.seoContent) ? [...data.seoContent, newContent] : [newContent],
     });
   };
 
@@ -273,28 +264,15 @@ export default function AdminProductPageEditor() {
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Hero Title</label>
-            <Input
-              value={data.heroTitle}
-              onChange={(e) => setData({ ...data, heroTitle: e.target.value })}
-              placeholder="Product page title"
-            />
+            <Input value={data.heroTitle} onChange={(e) => setData({ ...data, heroTitle: e.target.value })} placeholder="Product page title" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-            <Input
-              value={data.heroSubtitle}
-              onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })}
-              placeholder="Product page subtitle"
-            />
+            <Input value={data.heroSubtitle} onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })} placeholder="Product page subtitle" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Hero Description</label>
-            <Textarea
-              value={data.heroDescription}
-              onChange={(e) => setData({ ...data, heroDescription: e.target.value })}
-              placeholder="Product page description"
-              rows={3}
-            />
+            <Textarea value={data.heroDescription} onChange={(e) => setData({ ...data, heroDescription: e.target.value })} placeholder="Product page description" rows={3} />
           </div>
         </CardContent>
       </Card>
@@ -386,48 +364,74 @@ export default function AdminProductPageEditor() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {Array.isArray(data.featuredCategories) && data.featuredCategories.map((category, index) => (
-            <Card key={index} className="border-l-4 border-blue-500">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Category {index + 1}</h4>
-                  <Button variant="outline" size="sm" onClick={() => removeFeaturedCategory(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Category name"
-                  value={category.name}
-                  onChange={(e) => updateFeaturedCategory(index, "name", e.target.value)}
-                />
-                <Input
-                  placeholder="Category link"
-                  value={category.link}
-                  onChange={(e) => updateFeaturedCategory(index, "link", e.target.value)}
-                />
-                <Input
-                  placeholder="Image URL"
-                  value={category.image}
-                  onChange={(e) => updateFeaturedCategory(index, "image", e.target.value)}
-                />
-                <Input
-                  placeholder="Background color class"
-                  value={category.bgColor}
-                  onChange={(e) => updateFeaturedCategory(index, "bgColor", e.target.value)}
-                />
-                <div className="md:col-span-2">
-                  <Textarea
-                    placeholder="Category description"
-                    value={category.description}
-                    onChange={(e) => updateFeaturedCategory(index, "description", e.target.value)}
-                    rows={2}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {Array.isArray(data.featuredCategories) &&
+            data.featuredCategories.map((category, index) => (
+              <Card key={index} className="border-l-4 border-blue-500">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Category {index + 1}</h4>
+                    <Button variant="outline" size="sm" onClick={() => removeFeaturedCategory(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input placeholder="Category name" value={category.name} onChange={(e) => updateFeaturedCategory(index, "name", e.target.value)} />
+                  <Input placeholder="Category link" value={category.link} onChange={(e) => updateFeaturedCategory(index, "link", e.target.value)} />
+                  <Input placeholder="Image URL" value={category.image} onChange={(e) => updateFeaturedCategory(index, "image", e.target.value)} />
+                  <Input placeholder="Background color class" value={category.bgColor} onChange={(e) => updateFeaturedCategory(index, "bgColor", e.target.value)} />
+                  <div className="md:col-span-2">
+                    <Textarea placeholder="Category description" value={category.description} onChange={(e) => updateFeaturedCategory(index, "description", e.target.value)} rows={2} />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+        </CardContent>
+      </Card>
+
+      {/* Filter Options */}
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Filter Options</CardTitle>
+            <Button onClick={addFilterOption}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Filter
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {Array.isArray(data.filterOptions) &&
+            data.filterOptions.map((filter, index) => (
+              <Card key={index} className="border-l-4 border-orange-500">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Filter {index + 1}</h4>
+                    <Button variant="outline" size="sm" onClick={() => removeFilterOption(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input placeholder="Filter type" value={filter.type} onChange={(e) => updateFilterOption(index, "type", e.target.value)} />
+                  <Input placeholder="Filter label" value={filter.label} onChange={(e) => updateFilterOption(index, "label", e.target.value)} />
+                  <div className="md:col-span-2">
+                    <Textarea
+                      placeholder="Filter options (comma-separated)"
+                      value={Array.isArray(filter.options) ? filter.options.join(", ") : ""}
+                      onChange={(e) =>
+                        updateFilterOption(
+                          index,
+                          "options",
+                          e.target.value.split(", ").filter((opt) => opt.trim())
+                        )
+                      }
+                      rows={2}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
         </CardContent>
       </Card>
 
@@ -443,30 +447,23 @@ export default function AdminProductPageEditor() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {Array.isArray(data.sortOptions) && data.sortOptions.map((sort, index) => (
-            <Card key={index} className="border-l-4 border-green-500">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Sort Option {index + 1}</h4>
-                  <Button variant="outline" size="sm" onClick={() => removeSortOption(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Sort value"
-                  value={sort.value}
-                  onChange={(e) => updateSortOption(index, "value", e.target.value)}
-                />
-                <Input
-                  placeholder="Sort label"
-                  value={sort.label}
-                  onChange={(e) => updateSortOption(index, "label", e.target.value)}
-                />
-              </CardContent>
-            </Card>
-          ))}
+          {Array.isArray(data.sortOptions) &&
+            data.sortOptions.map((sort, index) => (
+              <Card key={index} className="border-l-4 border-green-500">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Sort Option {index + 1}</h4>
+                    <Button variant="outline" size="sm" onClick={() => removeSortOption(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input placeholder="Sort value" value={sort.value} onChange={(e) => updateSortOption(index, "value", e.target.value)} />
+                  <Input placeholder="Sort label" value={sort.label} onChange={(e) => updateSortOption(index, "label", e.target.value)} />
+                </CardContent>
+              </Card>
+            ))}
         </CardContent>
       </Card>
 
@@ -482,38 +479,26 @@ export default function AdminProductPageEditor() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {Array.isArray(data.seoContent) && data.seoContent.map((content, index) => (
-            <Card key={index} className="border-l-4 border-purple-500">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Content Block {index + 1}</h4>
-                  <Button variant="outline" size="sm" onClick={() => removeSeoContent(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Content title"
-                  value={content.title}
-                  onChange={(e) => updateSeoContent(index, "title", e.target.value)}
-                />
-                <Input
-                  placeholder="Content type"
-                  value={content.type}
-                  onChange={(e) => updateSeoContent(index, "type", e.target.value)}
-                />
-                <div className="md:col-span-2">
-                  <Textarea
-                    placeholder="Content description"
-                    value={content.content}
-                    onChange={(e) => updateSeoContent(index, "content", e.target.value)}
-                    rows={3}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {Array.isArray(data.seoContent) &&
+            data.seoContent.map((content, index) => (
+              <Card key={index} className="border-l-4 border-purple-500">
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Content Block {index + 1}</h4>
+                    <Button variant="outline" size="sm" onClick={() => removeSeoContent(index)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input placeholder="Content title" value={content.title} onChange={(e) => updateSeoContent(index, "title", e.target.value)} />
+                  <Input placeholder="Content type" value={content.type} onChange={(e) => updateSeoContent(index, "type", e.target.value)} />
+                  <div className="md:col-span-2">
+                    <Textarea placeholder="Content description" value={content.content} onChange={(e) => updateSeoContent(index, "content", e.target.value)} rows={3} />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
         </CardContent>
       </Card>
     </div>
