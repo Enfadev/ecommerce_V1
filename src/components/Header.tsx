@@ -8,7 +8,7 @@ import { useState } from "react";
 import { CartDrawer } from "./CartDrawer";
 import { WishlistBadge } from "./WishlistBadge";
 import { Search, Menu, Heart, User, ShoppingBag, LogOut, Settings, Crown } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "./ui/sheet";
 import { useAuth } from "./auth-context";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Badge } from "./ui/badge";
@@ -179,6 +179,7 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[280px] sm:w-[320px] p-0">
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="p-4 border-b bg-muted/20">
