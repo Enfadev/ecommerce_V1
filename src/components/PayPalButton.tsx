@@ -157,11 +157,11 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
         },
         style: { 
           layout: "horizontal", 
-          color: "black", 
+          color: "blue", 
           shape: "rect", 
           label: "pay",
           tagline: false,
-          height: 48
+          height: 40
         },
       }).render(currentRef);
     }
@@ -175,8 +175,8 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
   }, [total, currency, onApprove, onError]);
   
   return (
-    <div className="paypal-button-wrapper w-full rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 overflow-hidden border border-border/50">
-      <div ref={paypalRef} />
+    <div className="paypal-button-container w-full">
+      <div ref={paypalRef} className="w-full" />
     </div>
   );
 }

@@ -220,13 +220,28 @@
   }
 
   /* PayPal Button Styling */
-  .paypal-button-wrapper iframe {
-    border-radius: 0.75rem !important;
-    overflow: hidden !important;
+  .paypal-button-container {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Style the PayPal button iframe to match theme */
+  .paypal-button-container iframe {
+    border-radius: 0.375rem !important;
+    width: 100% !important;
+    height: 40px !important;
+    border: none !important;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
   }
   
-  .paypal-button-wrapper [data-funding-source] {
-    border-radius: 0.75rem !important;
-    overflow: hidden !important;
+  .paypal-button-container [data-funding-source] {
+    border-radius: 0.375rem !important;
+    height: 40px !important;
+    border: none !important;
+  }
+
+  .paypal-button-container .paypal-button {
+    height: 40px !important;
+    border-radius: 0.375rem !important;
   }
 }
