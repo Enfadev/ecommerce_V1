@@ -44,7 +44,7 @@ export function Header() {
 
   return (
     <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto flex items-center justify-between py-4 px-4 lg:px-8" aria-label="Main Navigation">
+      <nav className="max-w-7xl mx-auto flex items-center justify-between py-3 px-3 sm:px-4 lg:px-8" aria-label="Main Navigation">
         {/* Logo */}
         <Link href="/" className="font-bold text-2xl tracking-tight bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent hover:scale-105 transition-transform">
           ShopZone
@@ -81,10 +81,10 @@ export function Header() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1 sm:space-x-2">
           {/* Mobile Search */}
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Search className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="md:hidden h-9 w-9">
+            <Search className="h-4 w-4" />
           </Button>
 
           {/* Wishlist */}
@@ -174,76 +174,92 @@ export function Header() {
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden">
+              <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 ml-1">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-              <div className="flex flex-col space-y-4 mt-6">
-                {/* User Info in Mobile */}
-                {isAuthenticated && user && (
-                  <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">{getUserInitials(user.name)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                    </div>
+            <SheetContent side="right" className="w-[280px] sm:w-[320px] p-0">
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="p-4 border-b bg-muted/20">
+                  <h2 className="font-semibold text-lg">Menu</h2>
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto p-4">
+                  <div className="flex flex-col space-y-1">
+                    {/* User Info in Mobile */}
+                    {isAuthenticated && user && (
+                      <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg mb-4">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={user.avatar} alt={user.name} />
+                          <AvatarFallback className="bg-primary text-primary-foreground">{getUserInitials(user.name)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-sm">{user.name}</p>
+                          <p className="text-xs text-muted-foreground">{user.email}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Navigation Links */}
+                    <Link href="/product" className="flex items-center px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                      Products
+                    </Link>
+                    <Link href="/about" className="flex items-center px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                      About
+                    </Link>
+                    <Link href="/event" className="flex items-center px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                      Events
+                    </Link>
+                    <Link href="/contact" className="flex items-center px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                      Contact
+                    </Link>
+
+                    {user?.role === "ADMIN" && (
+                      <Link href="/admin" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                        <Crown className="h-4 w-4" />
+                        Admin Panel
+                      </Link>
+                    )}
+
+                    <hr className="my-4" />
+
+                    {/* User Actions */}
+                    {isAuthenticated ? (
+                      <>
+                        <Link href="/profile" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                          <User className="h-4 w-4" />
+                          Profile
+                        </Link>
+                        <Link href="/wishlist" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                          <Heart className="h-4 w-4" />
+                          Wishlist
+                        </Link>
+                        <Link href="/order-history" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                          <ShoppingBag className="h-4 w-4" />
+                          Order History
+                        </Link>
+                      </>
+                    ) : (
+                      <div className="space-y-2 mt-4">
+                        <Button asChild className="w-full">
+                          <Link href="/signin">Sign In</Link>
+                        </Button>
+                        <Button variant="outline" asChild className="w-full">
+                          <Link href="/register">Register</Link>
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                )}
-
-                {/* Navigation Links */}
-                <Link href="/product" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  Products
-                </Link>
-                <Link href="/about" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  About
-                </Link>
-                <Link href="/event" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  Events
-                </Link>
-                <Link href="/contact" className="text-sm font-medium py-2 hover:text-primary transition-colors">
-                  Contact
-                </Link>
-
-                {user?.role === "ADMIN" && (
-                  <Link href="/admin" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
-                    <Crown className="h-4 w-4" />
-                    Admin Panel
-                  </Link>
-                )}
-
-                <hr className="my-4" />
-
-                {/* User Actions */}
-                {isAuthenticated ? (
-                  <>
-                    <Link href="/profile" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Profile
-                    </Link>
-                    <Link href="/wishlist" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
-                      <Heart className="h-4 w-4" />
-                      Wishlist
-                    </Link>
-                    <Link href="/order-history" className="text-sm font-medium py-2 hover:text-primary transition-colors flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4" />
-                      Order History
-                    </Link>
-                    <Button variant="outline" className="mt-4 justify-start" onClick={handleSignOut}>
+                </div>
+                
+                {/* Footer - Sign Out Button */}
+                {isAuthenticated && (
+                  <div className="p-4 border-t bg-muted/10">
+                    <Button variant="outline" className="w-full justify-start" onClick={handleSignOut}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <div className="space-y-2 mt-4">
-                    <Button asChild className="w-full">
-                      <Link href="/signin">Sign In</Link>
-                    </Button>
-                    <Button variant="outline" asChild className="w-full">
-                      <Link href="/register">Register</Link>
                     </Button>
                   </div>
                 )}
