@@ -103,8 +103,8 @@ export default function WishlistPage() {
 
   if (wishlist.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="max-w-6xl mx-auto px-4 py-10">
+      <div className="bg-background">
+        <div className="py-10">
           <div className="text-center py-20">
             <div className="mx-auto mb-6 w-24 h-24 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
               <Heart className="w-12 h-12 text-pink-500" />
@@ -118,14 +118,14 @@ export default function WishlistPage() {
               </Button>
             </Link>
           </div>
-        </main>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="max-w-7xl mx-auto px-4 py-10">
+    <div className="bg-background">
+      <div className="py-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
@@ -247,7 +247,7 @@ export default function WishlistPage() {
             </CardContent>
           </Card>
         )}
-      </main>
+      </div>
     </div>
   );
 }

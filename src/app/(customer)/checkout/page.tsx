@@ -39,11 +39,11 @@ export default function CheckoutPage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch('/api/profile');
+        const response = await fetch("/api/profile");
         if (response.ok) {
           const profile = await response.json();
           if (profile) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
               ...prev,
               nama: profile.name || "",
               email: profile.email || "",
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
           }
         }
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
+        console.error("Failed to fetch user profile:", error);
       }
     };
 
@@ -67,11 +67,7 @@ export default function CheckoutPage() {
 
   // Check if form is valid
   const isFormValid = () => {
-    return formData.nama.trim() !== "" &&
-           formData.email.trim() !== "" &&
-           formData.phone.trim() !== "" &&
-           formData.alamat.trim() !== "" &&
-           isValidEmail(formData.email);
+    return formData.nama.trim() !== "" && formData.email.trim() !== "" && formData.phone.trim() !== "" && formData.alamat.trim() !== "" && isValidEmail(formData.email);
   };
 
   useEffect(() => {
@@ -88,9 +84,7 @@ export default function CheckoutPage() {
 
     const filterPayPalErrors = (...args: unknown[]) => {
       const message = String(args[0]);
-      if (message.includes('paypal_js_sdk') || 
-          message.includes('unhandled_exception') ||
-          message.includes('global_session_not_found')) {
+      if (message.includes("paypal_js_sdk") || message.includes("unhandled_exception") || message.includes("global_session_not_found")) {
         return; // Suppress PayPal SDK internal errors
       }
       originalError(...args);
@@ -98,7 +92,7 @@ export default function CheckoutPage() {
 
     const filterPayPalWarnings = (...args: unknown[]) => {
       const message = String(args[0]);
-      if (message.includes('paypal')) {
+      if (message.includes("paypal")) {
         return; // Suppress PayPal warnings
       }
       originalWarn(...args);
@@ -181,9 +175,9 @@ export default function CheckoutPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="max-w-2xl mx-auto px-4 py-16">
-          <Card className="text-center">
+      <div className="bg-background">
+        <div className="py-16">
+          <Card className="text-center max-w-2xl mx-auto">
             <CardContent className="pt-6">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -225,14 +219,14 @@ export default function CheckoutPage() {
               </div>
             </CardContent>
           </Card>
-        </main>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="max-w-6xl mx-auto px-4 py-8">
+    <div className="bg-background">
+      <div>
         <div className="mb-6">
           <Button variant="ghost" asChild className="mb-4">
             <Link href="/">
@@ -386,44 +380,42 @@ export default function CheckoutPage() {
                 <div className="pt-4 flex flex-col gap-4">
                   {!isFormValid() ? (
                     <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
-                      <p className="text-amber-800 text-sm">
-                        ⚠️ Please fill in all required fields above before proceeding with PayPal payment.
-                      </p>
+                      <p className="text-amber-800 text-sm">⚠️ Please fill in all required fields above before proceeding with PayPal payment.</p>
                     </div>
                   ) : (
                     <PayPalButton
-                    total={total}
-                    currency="USD"
-                    onApprove={async () => {
-                      const orderData = {
-                        customerName: formData.nama,
-                        customerEmail: formData.email,
-                        customerPhone: formData.phone,
-                        shippingAddress: formData.alamat,
-                        postalCode: formData.kodePos,
-                        notes: formData.catatan,
-                        paymentMethod: "PayPal",
-                        items: items.map(item => ({ productId: item.productId, quantity: item.quantity })),
-                        subtotal,
-                        shippingFee: ongkir,
-                        tax,
-                        discount: 0,
-                        totalAmount: total,
-                      };
-                      try {
-                        const newOrder = await createOrder(orderData);
-                        if (newOrder) {
-                          setCreatedOrder(newOrder);
-                          setSubmitted(true);
-                          clearCart();
-                          toast.success("Order placed successfully via PayPal!");
+                      total={total}
+                      currency="USD"
+                      onApprove={async () => {
+                        const orderData = {
+                          customerName: formData.nama,
+                          customerEmail: formData.email,
+                          customerPhone: formData.phone,
+                          shippingAddress: formData.alamat,
+                          postalCode: formData.kodePos,
+                          notes: formData.catatan,
+                          paymentMethod: "PayPal",
+                          items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+                          subtotal,
+                          shippingFee: ongkir,
+                          tax,
+                          discount: 0,
+                          totalAmount: total,
+                        };
+                        try {
+                          const newOrder = await createOrder(orderData);
+                          if (newOrder) {
+                            setCreatedOrder(newOrder);
+                            setSubmitted(true);
+                            clearCart();
+                            toast.success("Order placed successfully via PayPal!");
+                          }
+                        } catch {
+                          toast.error("Failed to save order after PayPal payment.");
                         }
-                      } catch {
-                        toast.error("Failed to save order after PayPal payment.");
-                      }
-                    }}
-                    onError={() => toast.error("PayPal payment failed.")}
-                  />
+                      }}
+                      onError={() => toast.error("PayPal payment failed.")}
+                    />
                   )}
                 </div>
               ) : (
@@ -504,7 +496,7 @@ export default function CheckoutPage() {
             </Card>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

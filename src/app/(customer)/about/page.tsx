@@ -81,10 +81,10 @@ export default async function About() {
   const team = (pageData as PageDataType).teamMembers || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="bg-gradient-to-b from-background to-muted/20">
       {/* Hero Section */}
-      <section className="relative py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative py-20">
+        <div className="text-center">
           <Badge variant="secondary" className="mb-4">
             {pageData.heroSubtitle}
           </Badge>
@@ -103,8 +103,8 @@ export default async function About() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16">
+        <div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat: { label: string; value: string; icon: string }, index: number) => {
               const IconComponent = iconMap[stat.icon] || iconMap.Star;
@@ -123,8 +123,8 @@ export default async function About() {
       </section>
 
       {/* Vision & Mission */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16">
+        <div>
           <div className="grid md:grid-cols-2 gap-12">
             <Card className="p-8 hover:shadow-lg transition-shadow">
               <CardContent className="p-0">
@@ -169,8 +169,8 @@ export default async function About() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16 bg-muted/30">
+        <div>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Why Choose ShopZone?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">We are committed to providing the best service with various advantages that make your shopping experience even more special.</p>
@@ -191,8 +191,8 @@ export default async function About() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16">
+        <div>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Our Best Team</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Meet the experienced professionals dedicated to making ShopZone the leading platform in Indonesia.</p>
@@ -220,8 +220,8 @@ export default async function About() {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 px-4 bg-primary/5">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-16 bg-primary/5">
+        <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">Let&apos;s Collaborate!</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">Are you a supplier, brand partner, or have a business idea? We are open to building mutually beneficial partnerships.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

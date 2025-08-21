@@ -189,10 +189,10 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8">
       {toast.show && <Toast title={toast.type === "success" ? "Berhasil!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
 
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div>
         {/* Header Profile */}
         <Card className="mb-8 bg-gray-800/80 backdrop-blur-sm border-gray-700 shadow-2xl">
           <CardContent className="p-8">

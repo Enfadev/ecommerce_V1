@@ -57,10 +57,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   if (error || !product) return notFound();
 
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="bg-background font-sans">
       {/* Header sudah global di layout */}
-      <main className="max-w-3xl mx-auto px-4 py-10 flex flex-col gap-8">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+      <div className="py-10 flex flex-col gap-8">
+        <div className="flex flex-col md:flex-row gap-8 items-start max-w-3xl mx-auto">
           <div className="w-full md:w-1/2 aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
             <Image src={product.image} alt={product.name} width={400} height={400} className="object-cover w-full h-full" />
           </div>
@@ -93,7 +93,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           {/* Product recommendations */}
           <ProductRecommendation currentProductId={product.id.toString()} maxItems={6} />
         </React.Suspense>
-      </main>
+      </div>
     </div>
   );
 }

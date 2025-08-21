@@ -59,7 +59,7 @@ const iconMap: { [key: string]: React.ComponentType<React.SVGProps<SVGSVGElement
   Twitter,
   Instagram,
   Youtube,
-  Globe
+  Globe,
 };
 
 export default function Contact() {
@@ -168,7 +168,7 @@ export default function Contact() {
       { name: "Instagram", link: "#", icon: "Instagram", color: "text-pink-600" },
       { name: "Twitter", link: "#", icon: "Twitter", color: "text-blue-400" },
       { name: "YouTube", link: "#", icon: "Youtube", color: "text-red-600" },
-    ]
+    ],
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -201,26 +201,22 @@ export default function Contact() {
     );
   }
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="bg-gradient-to-b from-background to-muted/20">
       {/* Hero Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-20">
+        <div className="text-center">
           <Badge variant="secondary" className="mb-4 gap-2">
             <Headphones className="w-4 h-4" />
             {contactData.heroSubtitle}
           </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">
-            {contactData.heroTitle}
-          </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-            {contactData.heroDescription}
-          </p>
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-6">{contactData.heroTitle}</h1>
+          <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">{contactData.heroDescription}</p>
         </div>
       </section>
 
       {/* Contact Methods */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16">
+        <div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {contactData.contactMethods.map((method, index) => {
               const IconComponent = iconMap[method.icon] || Phone;
@@ -244,8 +240,8 @@ export default function Contact() {
       </section>
 
       {/* Contact Form & Info */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16">
+        <div>
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <Card className="p-8">
@@ -263,31 +259,13 @@ export default function Contact() {
                       <label htmlFor="name" className="block text-sm font-medium mb-2">
                         Full Name *
                       </label>
-                      <Input 
-                        id="name" 
-                        name="name" 
-                        type="text" 
-                        value={formData.name} 
-                        onChange={handleInputChange} 
-                        placeholder="Enter your full name" 
-                        required 
-                        className="h-12" 
-                      />
+                      <Input id="name" name="name" type="text" value={formData.name} onChange={handleInputChange} placeholder="Enter your full name" required className="h-12" />
                     </div>
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium mb-2">
                         Email *
                       </label>
-                      <Input 
-                        id="email" 
-                        name="email" 
-                        type="email" 
-                        value={formData.email} 
-                        onChange={handleInputChange} 
-                        placeholder="example@email.com" 
-                        required 
-                        className="h-12" 
-                      />
+                      <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="example@email.com" required className="h-12" />
                     </div>
                   </div>
 
@@ -295,32 +273,14 @@ export default function Contact() {
                     <label htmlFor="subject" className="block text-sm font-medium mb-2">
                       Subject *
                     </label>
-                    <Input 
-                      id="subject" 
-                      name="subject" 
-                      type="text" 
-                      value={formData.subject} 
-                      onChange={handleInputChange} 
-                      placeholder="Your message subject" 
-                      required 
-                      className="h-12" 
-                    />
+                    <Input id="subject" name="subject" type="text" value={formData.subject} onChange={handleInputChange} placeholder="Your message subject" required className="h-12" />
                   </div>
 
                   <div>
                     <label htmlFor="message" className="block text-sm font-medium mb-2">
                       Message *
                     </label>
-                    <Textarea 
-                      id="message" 
-                      name="message" 
-                      value={formData.message} 
-                      onChange={handleInputChange} 
-                      placeholder="Write your message or question..." 
-                      rows={6} 
-                      required 
-                      className="resize-none" 
-                    />
+                    <Textarea id="message" name="message" value={formData.message} onChange={handleInputChange} placeholder="Write your message or question..." rows={6} required className="resize-none" />
                   </div>
 
                   <Button type="submit" className="w-full h-12 gap-2" disabled={isSubmitting}>
@@ -381,9 +341,7 @@ export default function Contact() {
                   {contactData.businessHours.map((hour, index) => (
                     <div key={index} className="flex justify-between items-center py-2">
                       <span>{hour.day}</span>
-                      <span className={hour.closed ? "text-muted-foreground" : "font-medium"}>
-                        {hour.closed ? "Closed" : hour.hours}
-                      </span>
+                      <span className={hour.closed ? "text-muted-foreground" : "font-medium"}>{hour.closed ? "Closed" : hour.hours}</span>
                     </div>
                   ))}
                   <div className="pt-4 border-t">
@@ -400,19 +358,15 @@ export default function Contact() {
       </section>
 
       {/* Social Media */}
-      <section className="py-16 px-4 bg-muted/30">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-16 bg-muted/30">
+        <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">Follow Our Social Media</h2>
           <p className="text-muted-foreground mb-8">Get the latest updates, exclusive promos, and shopping tips</p>
           <div className="flex justify-center gap-6">
             {contactData.socialMedia.map((social, index) => {
               const IconComponent = iconMap[social.icon] || Globe;
               return (
-                <a 
-                  key={index} 
-                  href={social.link} 
-                  className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1"
-                >
+                <a key={index} href={social.link} className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1">
                   <IconComponent className={`w-7 h-7 ${social.color}`} />
                 </a>
               );

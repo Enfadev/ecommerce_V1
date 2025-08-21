@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -17,6 +18,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex-1 overflow-auto">
         <div className="p-6">{children}</div>
       </div>
+
+      <Toaster />
     </div>
   );
 }

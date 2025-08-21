@@ -83,7 +83,7 @@ export default function SignInPage() {
   // ...existing code...
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4">
       {toast.show && <Toast title={toast.type === "success" ? "Success!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
 
       <div className="w-full max-w-lg">

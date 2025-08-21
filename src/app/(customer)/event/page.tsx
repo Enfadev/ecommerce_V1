@@ -85,11 +85,11 @@ export default async function Event() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="bg-gradient-to-b from-background to-muted/20">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 overflow-hidden">
+      <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent"></div>
-        <div className="max-w-6xl mx-auto relative">
+        <div className="relative">
           <div className="text-center">
             <Badge variant="secondary" className="mb-4 gap-2">
               <Sparkles className="w-4 h-4" />
@@ -104,8 +104,8 @@ export default async function Event() {
       </section>
 
       {/* Active Events */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16">
+        <div>
           <div className="flex items-center gap-3 mb-8">
             <Trophy className="w-8 h-8 text-primary" />
             <h2 className="text-3xl font-bold">Active Events</h2>
@@ -161,8 +161,8 @@ export default async function Event() {
       </section>
 
       {/* Upcoming Events */}
-      <section className="py-16 px-4 bg-muted/30">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16 bg-muted/30">
+        <div>
           <div className="flex items-center gap-3 mb-8">
             <Clock className="w-8 h-8 text-primary" />
             <h2 className="text-3xl font-bold">Upcoming Events</h2>
@@ -200,8 +200,8 @@ export default async function Event() {
       </section>
 
       {/* Past Events Winners */}
-      <section className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16">
+        <div>
           <div className="flex items-center gap-3 mb-8">
             <Star className="w-8 h-8 text-primary" />
             <h2 className="text-3xl font-bold">Previous Winners</h2>
@@ -232,8 +232,8 @@ export default async function Event() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-primary to-primary/80 text-white">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-16 bg-gradient-to-r from-primary to-primary/80 text-white">
+        <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">Don&apos;t Miss the Next Event!</h2>
           <p className="text-xl opacity-90 mb-8">Follow our social media to get the latest event updates and tips to win prizes</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

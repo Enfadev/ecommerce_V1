@@ -2,10 +2,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export default function FAQ() {
   return (
-    <div className="min-h-screen bg-background font-sans flex flex-col">
-      <main className="max-w-6xl mx-auto px-4 py-16 flex flex-col gap-8">
+    <div className="bg-background font-sans flex flex-col">
+      <div className="py-16 flex flex-col gap-8">
         <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions (FAQ)</h1>
-        <Accordion type="single" collapsible className="max-w-6xl mx-auto">
+        <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>How do I place an order?</AccordionTrigger>
             <AccordionContent>Select your desired product, click &quot;Buy Now&quot;, then follow the instructions to complete payment.</AccordionContent>
@@ -27,7 +27,7 @@ export default function FAQ() {
             <AccordionContent>You can contact us via email at support@ecommerce.com or WhatsApp at 0812-3456-7890.</AccordionContent>
           </AccordionItem>
         </Accordion>
-      </main>
+      </div>
     </div>
   );
 }
