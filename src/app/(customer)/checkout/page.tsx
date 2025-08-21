@@ -81,6 +81,38 @@ export default function CheckoutPage() {
     }
   }, [items.length, submitted, router]);
 
+  // Suppress PayPal console errors globally for this page
+  useEffect(() => {
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    const filterPayPalErrors = (...args: unknown[]) => {
+      const message = String(args[0]);
+      if (message.includes('paypal_js_sdk') || 
+          message.includes('unhandled_exception') ||
+          message.includes('global_session_not_found')) {
+        return; // Suppress PayPal SDK internal errors
+      }
+      originalError(...args);
+    };
+
+    const filterPayPalWarnings = (...args: unknown[]) => {
+      const message = String(args[0]);
+      if (message.includes('paypal')) {
+        return; // Suppress PayPal warnings
+      }
+      originalWarn(...args);
+    };
+
+    console.error = filterPayPalErrors;
+    console.warn = filterPayPalWarnings;
+
+    return () => {
+      console.error = originalError;
+      console.warn = originalWarn;
+    };
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData((prev) => ({
       ...prev,

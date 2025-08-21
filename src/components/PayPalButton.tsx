@@ -47,12 +47,47 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
       return;
     }
     
+    // Suppress PayPal SDK console errors
+    const originalConsoleError = console.error;
+    const originalConsoleWarn = console.warn;
+    
+    const suppressPayPalErrors = (...args: unknown[]) => {
+      const message = args[0];
+      if (typeof message === 'string' && (
+        message.includes('paypal_js_sdk') || 
+        message.includes('unhandled_exception') ||
+        message.includes('global_session_not_found')
+      )) {
+        // Suppress PayPal SDK internal errors
+        return;
+      }
+      originalConsoleError(...args);
+    };
+    
+    const suppressPayPalWarnings = (...args: unknown[]) => {
+      const message = args[0];
+      if (typeof message === 'string' && message.includes('paypal')) {
+        return;
+      }
+      originalConsoleWarn(...args);
+    };
+    
+    console.error = suppressPayPalErrors;
+    console.warn = suppressPayPalWarnings;
+    
     if (!window.paypal) {
       const script = document.createElement("script");
       // More comprehensive disable funding to force PayPal balance only
       script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&disable-funding=card,credit,paylater,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort,venmo&enable-funding=paypal`;
       script.async = true;
-      script.onload = () => renderButton();
+      script.onload = () => {
+        try {
+          renderButton();
+        } catch (error) {
+          console.log('PayPal button render error (suppressed):', error);
+          if (onError) onError(error);
+        }
+      };
       script.onerror = () => {
         console.error("Failed to load PayPal SDK");
         if (onError) onError({ message: "Failed to load PayPal SDK" });
@@ -60,7 +95,13 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
       document.body.appendChild(script);
       return;
     }
-    renderButton();
+    
+    try {
+      renderButton();
+    } catch (error) {
+      console.log('PayPal button initialization error (suppressed):', error);
+      if (onError) onError(error);
+    }
     
     function renderButton() {
       if (!currentRef || !window.paypal) return;
@@ -127,6 +168,9 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
     
     return () => {
       if (currentRef) currentRef.innerHTML = "";
+      // Restore original console methods
+      console.error = originalConsoleError;
+      console.warn = originalConsoleWarn;
     };
   }, [total, currency, onApprove, onError]);
   
