@@ -11,7 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import StripeElementsWrapper from "@/components/StripeElementsWrapper";
-import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -36,10 +35,44 @@ export default function CheckoutPage() {
   });
   const router = useRouter();
 
+  // Auto-fill user profile data
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile');
+        if (response.ok) {
+          const profile = await response.json();
+          if (profile) {
+            setFormData(prev => ({
+              ...prev,
+              nama: profile.name || "",
+              email: profile.email || "",
+              phone: profile.phoneNumber || "",
+              alamat: profile.address || "",
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
   const subtotal = getTotalPrice();
   const ongkir = subtotal >= 250 ? 0 : 15; // Free shipping over $250
   const tax = subtotal * 0.1; // 10% tax
   const total = subtotal + ongkir + tax;
+
+  // Check if form is valid
+  const isFormValid = () => {
+    return formData.nama.trim() !== "" &&
+           formData.email.trim() !== "" &&
+           formData.phone.trim() !== "" &&
+           formData.alamat.trim() !== "" &&
+           isValidEmail(formData.email);
+  };
 
   useEffect(() => {
     if (items.length === 0 && !submitted) {
@@ -320,9 +353,19 @@ export default function CheckoutPage() {
               ) : formData.paymentMethod === "E-Wallet" ? (
                 <div className="pt-4 flex flex-col gap-4">
                   <div className="text-sm text-muted-foreground mb-2">
-                    Pay with your PayPal balance or linked bank account. Credit card payments are handled separately above.
+                    <p className="font-medium mb-1">⚠️ PayPal Testing Instructions:</p>
+                    <p>• Pay with your PayPal balance or linked bank account</p>
+                    <p>• If asked for card info, skip/cancel and select &quot;PayPal Balance&quot;</p>
+                    <p>• Make sure your PayPal sandbox account has sufficient balance</p>
                   </div>
-                  <PayPalButton
+                  {!isFormValid() ? (
+                    <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
+                      <p className="text-amber-800 text-sm">
+                        ⚠️ Please fill in all required fields above before proceeding with PayPal payment.
+                      </p>
+                    </div>
+                  ) : (
+                    <PayPalButton
                     total={total}
                     currency="USD"
                     onApprove={async () => {
@@ -355,6 +398,7 @@ export default function CheckoutPage() {
                     }}
                     onError={() => toast.error("PayPal payment failed.")}
                   />
+                  )}
                 </div>
               ) : (
                 <Button type="button" className="w-full" size="lg" disabled={creating} onClick={handleSubmit}>

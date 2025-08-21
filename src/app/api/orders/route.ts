@@ -87,10 +87,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log('Order creation request body:', JSON.stringify(body, null, 2));
+    
     const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
 
     // Validate required fields
     if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !items || items.length === 0) {
+      console.error('Missing required fields:', {
+        customerName: !!customerName,
+        customerEmail: !!customerEmail,
+        customerPhone: !!customerPhone,
+        shippingAddress: !!shippingAddress,
+        items: !!items && items.length > 0
+      });
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 

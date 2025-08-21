@@ -49,32 +49,55 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
     
-    const { total, currency = 'USD' } = await req.json();
+    const requestBody = await req.json();
+    console.log('PayPal create order request:', requestBody);
+    
+    const { total, currency = 'USD' } = requestBody;
     if (typeof total !== 'number' || isNaN(total) || total <= 0) {
+      console.error('Invalid total amount:', total);
       return NextResponse.json({ error: 'Invalid total amount' }, { status: 400 });
     }
     
     const accessToken = await getAccessToken();
+    
+    const orderPayload = {
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          amount: {
+            currency_code: currency,
+            value: total.toFixed(2),
+          },
+        },
+      ],
+      application_context: {
+        return_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout`,
+        brand_name: 'Your Store',
+        landing_page: 'LOGIN',
+        shipping_preference: 'NO_SHIPPING',
+        user_action: 'PAY_NOW'
+      }
+    };
+    
+    console.log('PayPal order payload:', JSON.stringify(orderPayload, null, 2));
+    
     const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({
-        intent: 'CAPTURE',
-        purchase_units: [
-          {
-            amount: {
-              currency_code: currency,
-              value: total.toFixed(2),
-            },
-          },
-        ],
-      }),
+      body: JSON.stringify(orderPayload),
     });
     
     const data = await res.json();
+    console.log('PayPal API response:', {
+      status: res.status,
+      statusText: res.statusText,
+      data: JSON.stringify(data, null, 2)
+    });
+    
     if (!res.ok || !data.id) {
       let errorMsg = 'Failed to create PayPal order';
       console.error('PayPal order creation failed:', {

@@ -49,8 +49,8 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
     
     if (!window.paypal) {
       const script = document.createElement("script");
-      // Disable card funding to only show PayPal wallet options
-      script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&disable-funding=card,credit,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort,venmo`;
+      // More comprehensive disable funding to force PayPal balance only
+      script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&disable-funding=card,credit,paylater,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort,venmo&enable-funding=paypal`;
       script.async = true;
       script.onload = () => renderButton();
       script.onerror = () => {
@@ -65,15 +65,19 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
     function renderButton() {
       if (!currentRef || !window.paypal) return;
       
+      console.log('PayPal SDK loaded, rendering button...');
+      
       window.paypal.Buttons({
         createOrder: async () => {
           try {
+            console.log('Creating PayPal order with:', { total, currency });
             const res = await fetch("/api/checkout/paypal-create-order", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ total, currency }),
             });
             const data = await res.json();
+            console.log('PayPal create order response:', data);
             if (!res.ok || !data.id) {
               const errorMessage = data.error || 'Failed to create PayPal order';
               if (onError) onError({ message: errorMessage });
