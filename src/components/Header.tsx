@@ -58,9 +58,6 @@ export function Header() {
           <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
             About
           </Link>
-          <Link href="/event" className="text-sm font-medium hover:text-primary transition-colors">
-            Events
-          </Link>
           <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors">
             Contact
           </Link>
@@ -209,9 +206,6 @@ export function Header() {
                     </Link>
                     <Link href="/about" className="flex items-center px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
                       About
-                    </Link>
-                    <Link href="/event" className="flex items-center px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
-                      Events
                     </Link>
                     <Link href="/contact" className="flex items-center px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
                       Contact

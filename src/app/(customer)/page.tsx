@@ -5,7 +5,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import NextLink from "next/link";
-import { ArrowRight, Star, Truck, Shield, Headphones, Gift } from "lucide-react";
+import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 
 interface HeroSlide {
   title: string;
@@ -310,50 +310,8 @@ export default async function Home() {
             </CardContent>
           </Card>
         </div>
-      </section>{" "}
-      {/* Event & Giveaway */}
-      <section>
-        <h2 className="text-3xl font-bold mb-8">Events & Giveaways</h2>
-        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-          <CardContent className="p-8">
-            <div className="flex flex-col lg:flex-row items-center gap-8">
-              <div className="flex-1 space-y-4">
-                <div className="flex items-center gap-2">
-                  <Gift className="h-6 w-6 text-primary" />
-                  <h3 className="text-2xl font-semibold text-primary">Special Events & Exclusive Rewards!</h3>
-                </div>
-                <p className="text-muted-foreground text-lg">
-                  Write your best review and win attractive prizes every week, including vouchers & free products. Become a ShopZone brand ambassador and enjoy exclusive benefits with a 6-month contract!
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Star className="h-4 w-4 text-yellow-500" />
-                    <span>Creative Product Photo Event (July 20-27, 2025)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Star className="h-4 w-4 text-yellow-500" />
-                    <span>Best Review Giveaway (August 1-10, 2025)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Star className="h-4 w-4 text-yellow-500" />
-                    <span>Weekly Flash Quiz with Prizes</span>
-                  </div>
-                </div>
-                <Button size="lg" className="mt-6" asChild>
-                  <NextLink href="/event">
-                    View Details & Join Event <ArrowRight className="ml-2 h-4 w-4" />
-                  </NextLink>
-                </Button>
-              </div>
-              <div className="flex-shrink-0">
-                <div className="w-48 h-48 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-full flex items-center justify-center">
-                  <Gift className="w-24 h-24 text-primary" />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>{" "}
+      </section>
+      
       {/* Featured Products */}
       <section>
         <div className="flex items-center justify-between mb-8">

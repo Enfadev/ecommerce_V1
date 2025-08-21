@@ -48,18 +48,6 @@ model AboutPage {
   updatedAt       DateTime @updatedAt
 }
 
-model EventPage {
-  id              Int      @id @default(autoincrement())
-  heroTitle       String
-  heroSubtitle    String
-  heroDescription String
-  activeEvents    Json // Array of active events
-  upcomingEvents  Json // Array of upcoming events
-  pastEvents      Json // Array of past events
-  eventCategories Json // Array of event categories
-  updatedAt       DateTime @updatedAt
-}
-
 model ProductPage {
   id                 Int      @id @default(autoincrement())
   heroTitle          String

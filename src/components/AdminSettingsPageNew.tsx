@@ -20,14 +20,12 @@ import {
   Palette,
   Home,
   Info,
-  Calendar,
   Package,
   MessageCircle
 } from "lucide-react";
 import AdminContactPageEditor from "./AdminContactPageEditor";
 import AdminHomePageEditor from "./AdminHomePageEditor";
 import AdminAboutPageEditor from "./AdminAboutPageEditor";
-import AdminEventPageEditor from "./AdminEventPageEditor";
 import AdminProductPageEditor from "./AdminProductPageEditor";
 
 export default function AdminSettingsPage() {
@@ -185,10 +183,7 @@ export default function AdminSettingsPage() {
                 <Package className="w-4 h-4" />
                 Products
               </TabsTrigger>
-              <TabsTrigger value="events" className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Events
-              </TabsTrigger>
+
               <TabsTrigger value="contact" className="flex items-center gap-2">
                 <MessageCircle className="w-4 h-4" />
                 Contact
@@ -207,9 +202,7 @@ export default function AdminSettingsPage() {
               <AdminProductPageEditor />
             </TabsContent>
 
-            <TabsContent value="events">
-              <AdminEventPageEditor />
-            </TabsContent>
+
 
             <TabsContent value="contact">
               <AdminContactPageEditor />

@@ -38,11 +38,6 @@ export default function Footer() {
                 </NextLink>
               </li>
               <li>
-                <NextLink href="/event" className="text-muted-foreground hover:text-primary transition-colors">
-                  Events & Promos
-                </NextLink>
-              </li>
-              <li>
                 <NextLink href="/about" className="text-muted-foreground hover:text-primary transition-colors">
                   About Us
                 </NextLink>

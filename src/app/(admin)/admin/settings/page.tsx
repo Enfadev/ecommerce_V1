@@ -7,11 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Palette, Home, Info, Calendar, Package, MessageCircle } from "lucide-react";
+import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Palette, Home, Info, Package, MessageCircle } from "lucide-react";
 import AdminContactPageEditor from "@/components/AdminContactPageEditor";
 import AdminHomePageEditor from "@/components/AdminHomePageEditor";
 import AdminAboutPageEditor from "@/components/AdminAboutPageEditor";
-import AdminEventPageEditor from "@/components/AdminEventPageEditor";
 import AdminProductPageEditor from "@/components/AdminProductPageEditor";
 
 export default function AdminSettingsPage() {
@@ -153,10 +152,7 @@ export default function AdminSettingsPage() {
                 <Package className="w-4 h-4" />
                 Products
               </TabsTrigger>
-              <TabsTrigger value="events" className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Events
-              </TabsTrigger>
+
               <TabsTrigger value="contact" className="flex items-center gap-2">
                 <MessageCircle className="w-4 h-4" />
                 Contact
@@ -175,9 +171,7 @@ export default function AdminSettingsPage() {
               <AdminProductPageEditor />
             </TabsContent>
 
-            <TabsContent value="events">
-              <AdminEventPageEditor />
-            </TabsContent>
+
 
             <TabsContent value="contact">
               <AdminContactPageEditor />
