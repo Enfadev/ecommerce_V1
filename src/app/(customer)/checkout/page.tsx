@@ -317,7 +317,7 @@ export default function CheckoutPage() {
                         <div className={`w-3 h-3 rounded-full ${formData.paymentMethod === "E-Wallet" ? "bg-primary" : "bg-muted"}`}></div>
                         <div>
                           <p className="font-medium">E-Wallet</p>
-                          <p className="text-sm text-muted-foreground">PayPal Balance & Bank Account</p>
+                          <p className="text-sm text-muted-foreground">Fast & secure digital payment</p>
                         </div>
                       </div>
                     </div>
@@ -384,12 +384,6 @@ export default function CheckoutPage() {
                 </div>
               ) : formData.paymentMethod === "E-Wallet" ? (
                 <div className="pt-4 flex flex-col gap-4">
-                  <div className="text-sm text-muted-foreground mb-2">
-                    <p className="font-medium mb-1">⚠️ PayPal Testing Instructions:</p>
-                    <p>• Pay with your PayPal balance or linked bank account</p>
-                    <p>• If asked for card info, skip/cancel and select &quot;PayPal Balance&quot;</p>
-                    <p>• Make sure your PayPal sandbox account has sufficient balance</p>
-                  </div>
                   {!isFormValid() ? (
                     <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
                       <p className="text-amber-800 text-sm">
