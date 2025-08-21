@@ -9,9 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, Layout } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-import { ProductForm } from "@/components/ProductForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+import { EnhancedProductForm } from "@/components/EnhancedProductForm";
 import { AdminExportButton } from "@/components/AdminExportButton";
 
 interface Product {
@@ -42,16 +42,32 @@ interface ProductFormData {
   description?: string;
   category?: string;
   stock?: number;
-  status?: string;
+  status?: "active" | "inactive" | "draft";
   sku?: string;
   brand?: string;
   slug?: string;
   metaTitle?: string;
   metaDescription?: string;
-  hargaDiskon?: number;
+  discountPrice?: number | null;
   promoExpired?: string;
   imageFile?: File;
   imageFiles?: File[];
+  gallery?: string[];
+  // Enhanced fields
+  weight?: number;
+  dimensions?: string;
+  tags?: string[];
+  featured?: boolean;
+  allowBackorder?: boolean;
+  trackQuantity?: boolean;
+  requiresShipping?: boolean;
+  taxable?: boolean;
+  compareAtPrice?: number | null;
+  costPerItem?: number | null;
+  barcode?: string;
+  warranty?: string;
+  minimumOrderQuantity?: number;
+  maximumOrderQuantity?: number;
 }
 
 export default function AdminProductManagement() {
@@ -209,7 +225,7 @@ export default function AdminProductManagement() {
             slug: productData.slug,
             metaTitle: productData.metaTitle,
             metaDescription: productData.metaDescription,
-            discountPrice: productData.hargaDiskon, // Map hargaDiskon to discountPrice
+            discountPrice: productData.discountPrice,
             promoExpired: productData.promoExpired,
             gallery: galleryUrls,
           }),
@@ -283,7 +299,7 @@ export default function AdminProductManagement() {
             slug: productData.slug,
             metaTitle: productData.metaTitle,
             metaDescription: productData.metaDescription,
-            discountPrice: productData.hargaDiskon,
+            discountPrice: productData.discountPrice,
             promoExpired: productData.promoExpired,
           }),
         });
@@ -591,36 +607,48 @@ export default function AdminProductManagement() {
       </Card>
 
       {/* Product Form Dialog */}
+      {/* Enhanced Product Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+        <DialogContent className="max-w-[95vw] w-full sm:max-w-[90vw] lg:max-w-6xl max-h-[95vh] overflow-hidden p-0">
+          <DialogHeader className="px-4 py-3 sm:px-6 sm:py-4 border-b">
+            <DialogTitle className="text-lg sm:text-xl">
+              {editingProduct ? 'Edit Product' : 'Add New Product'}
+            </DialogTitle>
           </DialogHeader>
-          <ProductForm
-            product={
-              editingProduct
-                ? {
-                    id: editingProduct.id,
-                    name: editingProduct.name,
-                    price: editingProduct.price,
-                    description: editingProduct.description || "",
-                    category: editingProduct.category || "",
-                    stock: editingProduct.stock || 0,
-                    status: editingProduct.status || "active",
-                    sku: editingProduct.sku || "",
-                    brand: editingProduct.brand || "",
-                    slug: editingProduct.slug || "",
-                    metaTitle: editingProduct.metaTitle || "",
-                    metaDescription: editingProduct.metaDescription || "",
-                    hargaDiskon: editingProduct.hargaDiskon || 0,
-                    promoExpired: editingProduct.promoExpired || "",
-                    gallery: editingProduct.gallery || [],
-                  }
-                : undefined
-            }
-            onSave={handleSave}
-            onCancel={() => setShowForm(false)}
-          />
+          <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-60px)] sm:max-h-[calc(95vh-80px)]">
+            <EnhancedProductForm
+              product={
+                editingProduct
+                  ? {
+                      id: editingProduct.id,
+                      name: editingProduct.name,
+                      price: editingProduct.price,
+                      description: editingProduct.description || "",
+                      category: editingProduct.category || "",
+                      stock: editingProduct.stock || 0,
+                      status: (editingProduct.status as "active" | "inactive" | "draft") || "active",
+                      sku: editingProduct.sku || "",
+                      brand: editingProduct.brand || "",
+                      slug: editingProduct.slug || "",
+                      metaTitle: editingProduct.metaTitle || "",
+                      metaDescription: editingProduct.metaDescription || "",
+                      discountPrice: editingProduct.hargaDiskon || null,
+                      promoExpired: editingProduct.promoExpired || "",
+                      gallery: editingProduct.gallery || [],
+                      // Enhanced fields with defaults
+                      featured: false,
+                      allowBackorder: false,
+                      trackQuantity: true,
+                      requiresShipping: true,
+                      taxable: true,
+                      tags: [],
+                    }
+                  : undefined
+              }
+              onSave={handleSave}
+              onCancel={() => setShowForm(false)}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
