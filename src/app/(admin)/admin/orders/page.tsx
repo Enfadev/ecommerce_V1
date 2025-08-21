@@ -5,11 +5,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, MoreHorizontal, Download, Calendar } from "lucide-react";
+import { Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, MoreHorizontal, Calendar } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useOrders } from "@/hooks/useOrders";
+import { AdminExportButton } from "@/components/AdminExportButton";
 
 interface Order {
   id: string;
@@ -209,10 +210,12 @@ export default function AdminOrderManagement() {
           <p className="text-muted-foreground mt-1">Manage all customer orders</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
+          <AdminExportButton 
+            data={orders as unknown as Record<string, unknown>[]} 
+            filename={`orders-${new Date().toISOString().split('T')[0]}`}
+            type="orders"
+            className=""
+          />
           <Button variant="outline" className="gap-2">
             <Calendar className="w-4 h-4" />
             Date Filter

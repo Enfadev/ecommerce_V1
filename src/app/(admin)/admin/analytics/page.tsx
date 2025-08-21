@@ -10,8 +10,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format, subDays } from "date-fns";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
-import { TrendingUp, TrendingDown, Calendar as CalendarIcon, Download, BarChart3, Activity, Users, ShoppingCart, DollarSign, Package, Star, Clock, ArrowUpRight, ArrowDownRight, RefreshCw, Loader2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Calendar as CalendarIcon, BarChart3, Activity, Users, ShoppingCart, DollarSign, Package, Star, Clock, ArrowUpRight, ArrowDownRight, RefreshCw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AdminExportButton } from "@/components/AdminExportButton";
 
 interface AnalyticsData {
   overview: {
@@ -180,22 +181,6 @@ export default function AdminAnalytics() {
     }
   };
 
-  const exportData = () => {
-    if (!data) return;
-
-    const csvContent = [["Date", "Revenue", "Orders", "New Customers"], ...data.timeSeriesData.map((item) => [item.date, item.revenue.toString(), item.orders.toString(), item.newCustomers.toString()])]
-      .map((row) => row.join(","))
-      .join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `analytics-${format(new Date(), "yyyy-MM-dd")}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
@@ -267,10 +252,12 @@ export default function AdminAnalytics() {
             </Popover>
           )}
 
-          <Button onClick={exportData} variant="outline" className="gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
+          <AdminExportButton 
+            data={data?.timeSeriesData as unknown as Record<string, unknown>[] || []} 
+            filename={`analytics-detailed-${new Date().toISOString().split('T')[0]}`}
+            type="analytics"
+            className=""
+          />
         </div>
       </div>
 

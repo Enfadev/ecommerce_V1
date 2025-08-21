@@ -5,10 +5,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Eye, Edit, Trash2, Users, Mail, Phone, Calendar, MoreHorizontal, ArrowUpDown, Download, UserPlus, Loader2 } from "lucide-react";
+import { Search, Filter, Eye, Edit, Trash2, Users, Mail, Phone, Calendar, MoreHorizontal, ArrowUpDown, UserPlus, Loader2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AdminExportButton } from "@/components/AdminExportButton";
 
 interface Customer {
   id: string;
@@ -215,10 +216,12 @@ export default function AdminCustomerManagement() {
           <p className="text-muted-foreground mt-1">Manage customer data and analyze purchase behavior</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
+          <AdminExportButton 
+            data={filteredCustomers as unknown as Record<string, unknown>[]} 
+            filename={`customers-${new Date().toISOString().split('T')[0]}`}
+            type="customers"
+            className=""
+          />
           <Button className="gap-2">
             <UserPlus className="w-4 h-4" />
             Add Customer

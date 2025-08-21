@@ -6,12 +6,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, Download, Layout } from "lucide-react";
+import { Search, Filter, Plus, Eye, Edit, Trash2, Package, MoreHorizontal, Layout } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { ProductForm } from "@/components/ProductForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AdminExportButton } from "@/components/AdminExportButton";
 
 interface Product {
   id: number;
@@ -338,10 +339,12 @@ export default function AdminProductManagement() {
           <p className="text-muted-foreground mt-1">Manage all products in your store</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
+          <AdminExportButton 
+            data={filteredProducts as unknown as Record<string, unknown>[]} 
+            filename={`products-${new Date().toISOString().split('T')[0]}`}
+            type="products"
+            className=""
+          />
           <Button onClick={handleAdd} className="gap-2">
             <Plus className="w-4 h-4" />
             Add Product
