@@ -609,14 +609,15 @@ export default function AdminProductManagement() {
       {/* Product Form Dialog */}
       {/* Enhanced Product Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-[95vw] w-full sm:max-w-[90vw] lg:max-w-6xl max-h-[95vh] overflow-hidden p-0">
-          <DialogHeader className="px-4 py-3 sm:px-6 sm:py-4 border-b">
-            <DialogTitle className="text-lg sm:text-xl">
+        <DialogContent className="max-w-6xl w-[95vw] h-[85vh] overflow-hidden p-0 grid grid-rows-[auto_1fr]">
+          <DialogHeader className="px-6 py-4 border-b shrink-0">
+            <DialogTitle className="text-xl">
               {editingProduct ? 'Edit Product' : 'Add New Product'}
             </DialogTitle>
           </DialogHeader>
-          <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(95vh-60px)] sm:max-h-[calc(95vh-80px)]">
-            <EnhancedProductForm
+          <div className="overflow-y-auto min-h-0">
+            <div className="p-6">
+              <EnhancedProductForm
               product={
                 editingProduct
                   ? {
@@ -648,6 +649,7 @@ export default function AdminProductManagement() {
               onSave={handleSave}
               onCancel={() => setShowForm(false)}
             />
+            </div>
           </div>
         </DialogContent>
       </Dialog>

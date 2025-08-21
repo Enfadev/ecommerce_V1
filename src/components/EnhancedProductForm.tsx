@@ -14,7 +14,7 @@ import { Switch } from "./ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Separator } from "./ui/separator";
 import Image from "next/image";
-import { Upload, X, Plus, AlertCircle, Package, Tag, Globe, BarChart, Calendar, DollarSign } from "lucide-react";
+import { Upload, X, Plus, AlertCircle, Package, Tag, Globe, BarChart, DollarSign } from "lucide-react";
 import { Alert, AlertDescription } from "./ui/alert";
 
 const productSchema = z.object({
@@ -197,36 +197,33 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 h-auto">
-            <TabsTrigger value="basic" className="flex items-center gap-1 p-3 text-xs sm:text-sm">
-              <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Basic Info</span>
-              <span className="sm:hidden">Basic</span>
-            </TabsTrigger>
-            <TabsTrigger value="pricing" className="flex items-center gap-1 p-3 text-xs sm:text-sm">
-              <DollarSign className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Pricing</span>
-              <span className="sm:hidden">Price</span>
-            </TabsTrigger>
-            <TabsTrigger value="inventory" className="flex items-center gap-1 p-3 text-xs sm:text-sm">
-              <BarChart className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Inventory</span>
-              <span className="sm:hidden">Stock</span>
-            </TabsTrigger>
-            <TabsTrigger value="seo" className="flex items-center gap-1 p-3 text-xs sm:text-sm">
-              <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">SEO & Media</span>
-              <span className="sm:hidden">SEO</span>
-            </TabsTrigger>
-            <TabsTrigger value="advanced" className="flex items-center gap-1 p-3 text-xs sm:text-sm">
-              <Tag className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Advanced</span>
-              <span className="sm:hidden">More</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto">
+            <TabsList className="inline-flex w-auto min-w-full h-auto p-1 bg-muted rounded-lg">
+              <TabsTrigger value="basic" className="flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap">
+                <Package className="w-4 h-4 shrink-0" />
+                Basic Info
+              </TabsTrigger>
+              <TabsTrigger value="pricing" className="flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap">
+                <DollarSign className="w-4 h-4 shrink-0" />
+                Pricing
+              </TabsTrigger>
+              <TabsTrigger value="inventory" className="flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap">
+                <BarChart className="w-4 h-4 shrink-0" />
+                Inventory
+              </TabsTrigger>
+              <TabsTrigger value="seo" className="flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap">
+                <Globe className="w-4 h-4 shrink-0" />
+                SEO & Media
+              </TabsTrigger>
+              <TabsTrigger value="advanced" className="flex items-center gap-2 px-6 py-3 text-sm font-medium whitespace-nowrap">
+                <Tag className="w-4 h-4 shrink-0" />
+                Advanced
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Basic Information Tab */}
-          <TabsContent value="basic" className="space-y-4">
+          <TabsContent value="basic" className="space-y-4 h-[500px] overflow-y-auto">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -369,7 +366,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
           </TabsContent>
 
           {/* Pricing Tab */}
-          <TabsContent value="pricing" className="space-y-4">
+          <TabsContent value="pricing" className="space-y-4 h-[500px] overflow-y-auto">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -467,7 +464,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
           </TabsContent>
 
           {/* Inventory Tab */}
-          <TabsContent value="inventory" className="space-y-4">
+          <TabsContent value="inventory" className="space-y-4 h-[500px] overflow-y-auto">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -568,7 +565,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
           </TabsContent>
 
           {/* SEO & Media Tab */}
-          <TabsContent value="seo" className="space-y-4">
+          <TabsContent value="seo" className="space-y-4 h-[500px] overflow-y-auto">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -660,7 +657,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
           </TabsContent>
 
           {/* Advanced Tab */}
-          <TabsContent value="advanced" className="space-y-4">
+          <TabsContent value="advanced" className="space-y-4 h-[500px] overflow-y-auto">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

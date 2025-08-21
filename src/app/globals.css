@@ -244,4 +244,43 @@
     height: 40px !important;
     border-radius: 0.375rem !important;
   }
+
+  /* Fixed Modal Styling */
+  .fixed-modal {
+    display: flex;
+    flex-direction: column;
+    width: 100% !important;
+    max-width: 1152px !important; /* 6xl */
+    height: 90vh !important;
+    max-height: 90vh !important;
+    min-height: 90vh !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  /* Ensure tabs don't cause layout shifts */
+  .fixed-modal .tab-content {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* Mobile responsive modal */
+  @media (max-width: 1200px) {
+    .fixed-modal {
+      max-width: 95vw !important;
+      width: 95vw !important;
+      margin: 0 2.5vw;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .fixed-modal {
+      height: 95vh !important;
+      max-height: 95vh !important;
+      min-height: 95vh !important;
+    }
+  }
 }
