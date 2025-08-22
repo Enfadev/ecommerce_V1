@@ -55,81 +55,101 @@ export function ProductFilter() {
   }
 
   return (
-    <div className="space-y-4 p-6 bg-card rounded-lg border shadow-sm">
-      <h3 className="font-semibold text-lg mb-4">Product Filter</h3>
-
-      {/* Category Filter */}
-      <div className="space-y-3">
-        <span className="text-sm font-medium text-muted-foreground">Category:</span>
-        <div className="flex flex-wrap gap-2">
-          {loading ? (
-            <span className="text-muted-foreground">Loading...</span>
-          ) : (
-            categories.map((cat) => (
-              <button
-                key={cat}
-                className={`px-4 py-2 rounded-full text-sm border-2 transition-all hover:scale-105 ${
-                  selectedCategory === cat ? "bg-primary text-primary-foreground border-primary shadow-lg" : "bg-background text-foreground border-muted-foreground/20 hover:border-primary/50"
-                }`}
-                onClick={() => setParam("category", cat)}
-                type="button"
-              >
-                {cat}
-              </button>
-            ))
-          )}
-        </div>
+    <div className="bg-card/50 backdrop-blur-sm rounded-3xl border border-border/40 overflow-hidden">
+      {/* Header */}
+      <div className="px-8 py-6 bg-gradient-to-r from-muted/30 to-muted/10 border-b border-border/20">
+        <h3 className="text-xl font-medium tracking-tight text-foreground">Filters</h3>
       </div>
 
-      {/* Price Filter */}
-      <div className="space-y-3">
-        <span className="text-sm font-medium text-muted-foreground">Price Range:</span>
-        <div className="flex flex-wrap gap-2">
-          {loading ? (
-            <span className="text-muted-foreground">Loading...</span>
-          ) : (
-            priceRanges.map((range) => (
-              <button
-                key={range.value}
-                className={`px-4 py-2 rounded-full text-sm border-2 transition-all hover:scale-105 ${
-                  selectedPrice === range.value ? "bg-primary text-primary-foreground border-primary shadow-lg" : "bg-background text-foreground border-muted-foreground/20 hover:border-primary/50"
-                }`}
-                onClick={() => setParam("price", range.value)}
-                type="button"
-              >
-                {range.label}
-              </button>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Active Filters */}
-      {(selectedCategory !== "All" || selectedPrice !== "all") && (
-        <div className="pt-4 border-t">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-sm font-medium text-muted-foreground">Active Filters:</span>
+      <div className="p-8 space-y-8">
+        {/* Category Filter */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-primary rounded-full"></div>
+            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Category</span>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {selectedCategory !== "All" && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-                Category: {selectedCategory}
-                <button onClick={() => setParam("category", "All")} className="ml-1 hover:bg-primary/20 rounded-full p-0.5">
-                  ×
+          <div className="flex flex-wrap gap-3">
+            {loading ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm">Loading...</span>
+              </div>
+            ) : (
+              categories.map((cat) => (
+                <button
+                  key={cat}
+                  className={`group relative px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
+                    selectedCategory === cat ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" : "bg-muted/40 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                  }`}
+                  onClick={() => setParam("category", cat)}
+                  type="button"
+                >
+                  <span className="relative z-10">{cat}</span>
+                  {selectedCategory === cat && <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-sm"></div>}
                 </button>
-              </span>
-            )}
-            {selectedPrice !== "all" && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
-                Price: {priceRanges.find((p) => p.value === selectedPrice)?.label}
-                <button onClick={() => setParam("price", "all")} className="ml-1 hover:bg-primary/20 rounded-full p-0.5">
-                  ×
-                </button>
-              </span>
+              ))
             )}
           </div>
         </div>
-      )}
+
+        {/* Price Filter */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-primary rounded-full"></div>
+            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Price Range</span>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {loading ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm">Loading...</span>
+              </div>
+            ) : (
+              priceRanges.map((range) => (
+                <button
+                  key={range.value}
+                  className={`group relative px-6 py-3 rounded-2xl text-sm font-medium transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
+                    selectedPrice === range.value ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25" : "bg-muted/40 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                  }`}
+                  onClick={() => setParam("price", range.value)}
+                  type="button"
+                >
+                  <span className="relative z-10">{range.label}</span>
+                  {selectedPrice === range.value && <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-sm"></div>}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Active Filters */}
+        {(selectedCategory !== "All" || selectedPrice !== "all") && (
+          <div className="pt-6 border-t border-border/20">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-1 h-4 bg-accent rounded-full"></div>
+              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Active</span>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {selectedCategory !== "All" && (
+                <div className="group inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-2xl text-sm font-medium border border-primary/20">
+                  <span>Category: {selectedCategory}</span>
+                  <button onClick={() => setParam("category", "All")} className="flex items-center justify-center w-5 h-5 bg-primary/20 hover:bg-primary/30 rounded-full transition-colors duration-200">
+                    <span className="text-xs leading-none">×</span>
+                  </button>
+                </div>
+              )}
+              {selectedPrice !== "all" && (
+                <div className="group inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-2xl text-sm font-medium border border-primary/20">
+                  <span>Price: {priceRanges.find((p) => p.value === selectedPrice)?.label}</span>
+                  <button onClick={() => setParam("price", "all")} className="flex items-center justify-center w-5 h-5 bg-primary/20 hover:bg-primary/30 rounded-full transition-colors duration-200">
+                    <span className="text-xs leading-none">×</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

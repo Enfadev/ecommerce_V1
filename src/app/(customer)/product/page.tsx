@@ -126,11 +126,16 @@ function ProductPageContent() {
         </div>
 
         {/* Search & Filter Section */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+        <div className="flex flex-col lg:flex-row gap-4 mb-8">
           <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input placeholder="Search for products you want..." value={localSearch} onChange={(e) => setLocalSearch(e.target.value)} className="pl-10 h-12 text-base border-2 focus:border-primary/50" />
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 w-5 h-5 group-focus-within:text-primary transition-colors duration-200 z-10 pointer-events-none" />
+              <Input
+                placeholder="Search for products you want..."
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                className="pl-12 pr-4 h-14 text-base bg-background/50 backdrop-blur-sm border-0 rounded-2xl shadow-sm focus:shadow-lg focus:bg-background transition-all duration-300 placeholder:text-muted-foreground/50 relative"
+              />
             </div>
           </div>
 
@@ -138,27 +143,47 @@ function ProductPageContent() {
             {/* Sort Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="lg" className="gap-2">
+                <Button variant="outline" size="lg" className="h-14 px-6 gap-3 bg-background/50 backdrop-blur-sm border-0 rounded-2xl shadow-sm hover:shadow-lg hover:bg-background transition-all duration-300">
                   {getSortIcon()}
-                  Sort
+                  <span className="font-medium">Sort</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSortBy("newest")}>Newest</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-asc")}>Name A-Z</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-desc")}>Name Z-A</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-asc")}>Lowest Price</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-desc")}>Highest Price</DropdownMenuItem>
+              <DropdownMenuContent className="rounded-xl border-0 shadow-xl backdrop-blur-sm bg-background/95 p-2">
+                <DropdownMenuItem onClick={() => setSortBy("newest")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                  Newest First
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("name-asc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                  Name A-Z
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("name-desc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                  Name Z-A
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("price-asc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                  Lowest Price
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("price-desc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                  Highest Price
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* View Mode Toggle */}
-            <div className="flex border rounded-lg overflow-hidden">
-              <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")} className="rounded-none">
-                <Grid className="w-4 h-4" />
+            <div className="flex bg-background/50 backdrop-blur-sm rounded-2xl shadow-sm p-1">
+              <Button
+                variant={viewMode === "grid" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className={`h-12 w-12 rounded-xl transition-all duration-200 ${viewMode === "grid" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 text-muted-foreground"}`}
+              >
+                <Grid className="w-5 h-5" />
               </Button>
-              <Button variant={viewMode === "list" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("list")} className="rounded-none">
-                <List className="w-4 h-4" />
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className={`h-12 w-12 rounded-xl transition-all duration-200 ${viewMode === "list" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 text-muted-foreground"}`}
+              >
+                <List className="w-5 h-5" />
               </Button>
             </div>
           </div>

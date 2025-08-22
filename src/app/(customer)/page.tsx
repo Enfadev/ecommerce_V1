@@ -5,7 +5,6 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import NextLink from "next/link";
-import Image from "next/image";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 
 interface HeroSlide {
