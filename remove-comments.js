@@ -4,6 +4,7 @@ const path = require('path');
 // Function to remove non-section comments from a file
 function removeComments(content) {
   // Remove single line comments (// comments) but keep JSX comments ({/* ... */})
+  // Remove inline comments that are not section comments
   let result = content;
   
   // Remove single line // comments that are not URLs or JSX
