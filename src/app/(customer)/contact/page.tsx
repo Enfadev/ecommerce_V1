@@ -200,7 +200,7 @@ export default function Contact() {
     );
   }
   return (
-    <div className="bg-gradient-to-b from-background to-muted/20">
+    <div>
       {/* Hero Section */}
       <section className="py-20">
         <div className="text-center">
@@ -357,7 +357,7 @@ export default function Contact() {
       </section>
 
       {/* Social Media */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 bg-muted/30 rounded-2xl">
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">Follow Our Social Media</h2>
           <p className="text-muted-foreground mb-8">Get the latest updates, exclusive promos, and shopping tips</p>

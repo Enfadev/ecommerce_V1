@@ -79,7 +79,7 @@ export default async function About() {
   const team = (pageData as PageDataType).teamMembers || [];
 
   return (
-    <div className="bg-gradient-to-b from-background to-muted/20">
+    <div>
       {/* Hero Section */}
       <section className="relative py-20">
         <div className="text-center">
@@ -167,7 +167,7 @@ export default async function About() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16">
         <div>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Why Choose ShopZone?</h2>
@@ -198,27 +198,23 @@ export default async function About() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {team.map((member: { name: string; role: string; image?: string; bio?: string }, index: number) => (
-              <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                    <Users className="w-20 h-20 text-muted-foreground" />
+              <div key={index} className="group">
+                <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 dark:border-gray-800">
+                  <div className="w-24 h-24 bg-gradient-to-br from-primary/10 to-primary/5 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <Users className="w-12 h-12 text-primary" />
                   </div>
-                  <div className="p-6 text-center">
-                    <h3 className="font-semibold text-lg mb-1">{member.name}</h3>
-                    <Badge variant="secondary" className="mb-3">
-                      {member.role}
-                    </Badge>
-                    <p className="text-sm text-muted-foreground">{member.bio}</p>
-                  </div>
-                </CardContent>
-              </Card>
+                  <h3 className="font-bold text-xl mb-2 text-gray-900 dark:text-white">{member.name}</h3>
+                  <div className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4">{member.role}</div>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{member.bio}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Contact CTA */}
-      <section className="py-16 bg-primary/5">
+      <section className="py-16 bg-primary/5 rounded-2xl">
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-4">Let&apos;s Collaborate!</h2>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">Are you a supplier, brand partner, or have a business idea? We are open to building mutually beneficial partnerships.</p>
