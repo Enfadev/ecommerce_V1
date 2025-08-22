@@ -93,8 +93,8 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist,
         </CarouselContent>
 
         <div className="hidden md:block ">
-          <CarouselPrevious className="rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg -left-3" />
-          <CarouselNext className="rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg -right-3" />
+          <CarouselPrevious className="rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg -left-4" />
+          <CarouselNext className="rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg -right-4" />
         </div>
       </Carousel>
     </section>

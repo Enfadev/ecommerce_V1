@@ -188,7 +188,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8">
+    <div className="py-8">
       {toast.show && <Toast title={toast.type === "success" ? "Berhasil!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
 
       <div>
@@ -557,10 +557,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Product Recommendations */}
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-white mb-6">Rekomendasi Untuk Anda</h2>
-          <ProductRecommendation maxItems={4} />
-        </div>
+        {/* <ProductRecommendation maxItems={4} /> */}
       </div>
     </div>
   );

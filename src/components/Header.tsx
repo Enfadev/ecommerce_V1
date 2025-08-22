@@ -95,7 +95,7 @@ export function Header() {
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-auto px-3 rounded-full">
+                <Button variant="ghost" className="relative h-10 w-auto px-3 rounded-2xl">
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user.avatar} alt={user.name} />
