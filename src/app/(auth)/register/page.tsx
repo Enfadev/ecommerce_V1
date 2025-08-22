@@ -10,7 +10,6 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// ...existing code...
 import { Eye, EyeOff, Mail, Lock, User, ShoppingBag, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";

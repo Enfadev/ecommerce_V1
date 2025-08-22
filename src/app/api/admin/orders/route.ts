@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Build where clause
     const where: Record<string, unknown> = {};
 
     if (status && status !== "all") {
@@ -24,7 +23,6 @@ export async function GET(request: NextRequest) {
       where.OR = [{ orderNumber: { contains: search } }, { customerName: { contains: search } }, { customerEmail: { contains: search } }];
     }
 
-    // Get orders with related data
     const orders = await prisma.order.findMany({
       where,
       include: {
@@ -55,10 +53,8 @@ export async function GET(request: NextRequest) {
       take: limit,
     });
 
-    // Get total count for pagination
     const totalOrders = await prisma.order.count({ where });
 
-    // Get order statistics
     const stats = await prisma.order.groupBy({
       by: ["status"],
       _count: {
@@ -75,7 +71,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Format the response
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formattedOrders = orders.map((order: any) => ({
       id: order.orderNumber,
@@ -107,7 +102,6 @@ export async function GET(request: NextRequest) {
       notes: order.notes,
     }));
 
-    // Format statistics
     const orderStats = {
       total: totalOrders,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

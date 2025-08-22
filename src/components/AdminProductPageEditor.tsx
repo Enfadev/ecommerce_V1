@@ -85,7 +85,6 @@ export default function AdminProductPageEditor() {
       if (res.ok) {
         const pageData = await res.json();
         if (pageData) {
-          // Ensure arrays are properly handled from JSON fields
           const processedData = {
             ...pageData,
             featuredCategories: Array.isArray(pageData.featuredCategories) ? pageData.featuredCategories : [],

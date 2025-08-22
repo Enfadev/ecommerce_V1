@@ -9,13 +9,11 @@ export const config = {
   },
 };
 
-// Security configurations
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
 function sanitizeFilename(filename: string): string {
-  // Remove any path traversal attempts and dangerous characters
   return filename
     .replace(/[^a-zA-Z0-9.-]/g, '-')
     .replace(/\.+/g, '.')
@@ -24,12 +22,10 @@ function sanitizeFilename(filename: string): string {
 }
 
 function validateFileType(file: File): boolean {
-  // Check MIME type
   if (!ALLOWED_FILE_TYPES.includes(file.type)) {
     return false;
   }
   
-  // Check file extension
   const extension = path.extname(file.name).toLowerCase();
   return ALLOWED_EXTENSIONS.includes(extension);
 }
@@ -41,7 +37,6 @@ export async function POST(req: Request) {
     const isGallery = url.searchParams.get('gallery') === '1';
     
     if (isGallery) {
-      // Handle multiple files for gallery
       const files = formData.getAll('files') as File[];
       
       if (!files || files.length === 0) {
@@ -53,7 +48,6 @@ export async function POST(req: Request) {
       await mkdir(uploadDir, { recursive: true });
 
       for (const file of files) {
-        // Validate each file
         if (!validateFileType(file)) {
           return NextResponse.json({ 
             error: `Invalid file type for ${file.name}. Only JPEG, PNG, and WebP images are allowed.` 
@@ -68,7 +62,6 @@ export async function POST(req: Request) {
 
         const buffer = Buffer.from(await file.arrayBuffer());
         
-        // Convert to WebP and compress
         const webpBuffer = await sharp(buffer)
           .webp({ quality: 80 })
           .resize(1920, 1920, { 
@@ -77,7 +70,6 @@ export async function POST(req: Request) {
           })
           .toBuffer();
         
-        // Sanitize filename and add timestamp
         const sanitizedName = sanitizeFilename(file.name.replace(/\.[^/.]+$/, ''));
         const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${sanitizedName}.webp`;
         const filePath = path.join(uploadDir, filename);
@@ -88,21 +80,18 @@ export async function POST(req: Request) {
       
       return NextResponse.json({ urls: uploadedUrls });
     } else {
-      // Handle single file upload
       const file = formData.get('file') as File;
       
       if (!file) {
         return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
       }
 
-      // Validate file type
       if (!validateFileType(file)) {
         return NextResponse.json({ 
           error: 'Invalid file type. Only JPEG, PNG, and WebP images are allowed.' 
         }, { status: 400 });
       }
 
-      // Validate file size
       if (file.size > MAX_FILE_SIZE) {
         return NextResponse.json({ 
           error: `File too large. Maximum size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.` 
@@ -113,7 +102,6 @@ export async function POST(req: Request) {
       const uploadDir = path.join(process.cwd(), 'public', 'uploads');
       await mkdir(uploadDir, { recursive: true });
       
-      // Convert to WebP and compress
       const webpBuffer = await sharp(buffer)
         .webp({ quality: 80 })
         .resize(1920, 1920, { 
@@ -122,7 +110,6 @@ export async function POST(req: Request) {
         })
         .toBuffer();
       
-      // Sanitize filename and add timestamp
       const sanitizedName = sanitizeFilename(file.name.replace(/\.[^/.]+$/, ''));
       const filename = `${Date.now()}-${sanitizedName}.webp`;
       const filePath = path.join(uploadDir, filename);
@@ -133,7 +120,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ url });
     }
   } catch (error) {
-    // Log error safely without exposing sensitive information
     if (process.env.NODE_ENV !== 'production') {
       console.error('Upload error:', error);
     }

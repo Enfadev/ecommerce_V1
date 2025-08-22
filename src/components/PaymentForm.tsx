@@ -55,30 +55,26 @@ export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess 
       setError(error.message || "Payment failed");
       setLoading(false);
     } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      // Buat order ke backend dan kosongkan cart, lalu redirect
       try {
-        // Pastikan orderData memiliki semua field yang diperlukan
         const completeOrderData = {
           ...orderData,
-          paymentMethod: "Credit Card", // Pastikan paymentMethod ada
+          paymentMethod: "Credit Card",
         };
         
-        console.log("Creating order with data:", completeOrderData); // Debug log
+        console.log("Creating order with data:", completeOrderData);
         
         const newOrder = await createOrder(completeOrderData);
         await clearCart();
         setCreatedOrder(newOrder);
         
-        // Jika ada callback, panggil callback dan jangan tampilkan UI success lokal
         if (onPaymentSuccess && newOrder) {
           onPaymentSuccess(newOrder);
           return;
         }
         
-        // Fallback jika tidak ada callback
         setSuccess(true);
       } catch (error) {
-        console.error("Order creation error:", error); // Debug log
+        console.error("Order creation error:", error);
         setError("Payment succeeded but failed to create order. Please contact support.");
       }
       setLoading(false);

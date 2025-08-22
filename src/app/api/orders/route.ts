@@ -4,7 +4,6 @@ import { verifyJWT } from "@/lib/jwt";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURNED";
 
-// GET /api/orders - Get user orders
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -71,7 +70,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/orders - Create new order
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get("authorization");
@@ -91,7 +89,6 @@ export async function POST(request: NextRequest) {
     
     const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
 
-    // Validate required fields
     if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !items || items.length === 0) {
       console.error('Missing required fields:', {
         customerName: !!customerName,
@@ -103,12 +100,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Generate unique order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
-    // Start transaction
     const order = await prisma.$transaction(async (tx) => {
-      // Validate stock for all items
       for (const item of items) {
         const product = await tx.product.findUnique({
           where: { id: item.productId },
@@ -124,7 +118,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Create the order
       const newOrder = await tx.order.create({
         data: {
           orderNumber,
@@ -141,18 +134,16 @@ export async function POST(request: NextRequest) {
           tax: tax || 0,
           discount: discount || 0,
           totalAmount,
-          estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+          estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         },
       });
 
-      // Create order items and update product stock
       for (const item of items) {
         const product = await tx.product.findUnique({
           where: { id: item.productId },
         });
 
         if (product) {
-          // Create order item
           await tx.orderItem.create({
             data: {
               orderId: newOrder.id,
@@ -164,7 +155,6 @@ export async function POST(request: NextRequest) {
             },
           });
 
-          // Update product stock
           await tx.product.update({
             where: { id: item.productId },
             data: {
@@ -176,7 +166,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Clear user's cart
       const userCart = await tx.cart.findUnique({
         where: { userId: parseInt(decoded.id) },
       });
@@ -190,7 +179,6 @@ export async function POST(request: NextRequest) {
       return newOrder;
     });
 
-    // Fetch the complete order with items for response
     const completeOrder = await prisma.order.findUnique({
       where: { id: order.id },
       include: {

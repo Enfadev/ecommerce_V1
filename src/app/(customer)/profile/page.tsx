@@ -120,8 +120,7 @@ export default function ProfilePage() {
 
   async function onPasswordSubmit(values: PasswordValues) {
     try {
-      // Call the change password API
-      console.log("Password change values:", values); // For future implementation
+      console.log("Password change values:", values);
 
       const res = await fetch("/api/change-password", {
         method: "PUT",

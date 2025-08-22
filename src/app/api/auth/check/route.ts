@@ -3,7 +3,6 @@ import { verifyJWT } from '@/lib/jwt';
 
 export async function GET(request: NextRequest) {
   try {
-    // Debug cookie information
     const cookies = request.cookies.getAll();
     const authToken = request.cookies.get('auth-token')?.value;
     
@@ -18,7 +17,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Verify JWT
     const payload = await verifyJWT(authToken);
     
     if (!payload) {

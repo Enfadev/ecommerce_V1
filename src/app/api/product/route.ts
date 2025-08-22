@@ -61,7 +61,6 @@ export async function GET(req: Request) {
       };
       return NextResponse.json(result);
     } else {
-      // Filtering
       const category = searchParams.get("category");
       const price = searchParams.get("price");
       const q = searchParams.get("q");
@@ -75,7 +74,6 @@ export async function GET(req: Request) {
       const where: WhereClause = {};
 
       if (category && category !== "All") {
-        // Assuming category is passed as ID or we need to look it up
         const categoryRecord = await prisma.category.findFirst({
           where: { name: category },
         });
@@ -87,7 +85,6 @@ export async function GET(req: Request) {
         where.name = { contains: q, mode: "insensitive" };
       }
       if (price && price !== "all") {
-        // price value format: lt{max}, {min}-{max}, gt{min}
         if (price.startsWith("lt")) {
           const max = Number(price.replace("lt", ""));
           if (!isNaN(max)) where.price = { lt: max };
@@ -138,10 +135,8 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "ID, name, and price are required" }, { status: 400 });
     }
 
-    // Handle category relationship
     let categoryData = {};
     if (category) {
-      // First, find or create the category
       const categoryRecord = await prisma.category.upsert({
         where: { name: category },
         update: {},
@@ -185,10 +180,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name and price are required" }, { status: 400 });
     }
 
-    // Handle category relationship
     let categoryData = {};
     if (category) {
-      // First, find or create the category
       const categoryRecord = await prisma.category.upsert({
         where: { name: category },
         update: {},

@@ -122,7 +122,7 @@ export function sanitizeHtml(input: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+    .replace(/\
 }
 
 export function sanitizeSql(input: string): string {
@@ -131,5 +131,5 @@ export function sanitizeSql(input: string): string {
     .replace(/;/g, '')
     .replace(/--/g, '')
     .replace(/\/\*/g, '')
-    .replace(/\*\//g, '');
+    .replace(/\*\
 }

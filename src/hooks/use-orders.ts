@@ -132,7 +132,6 @@ export function useOrders() {
       const data = await response.json();
       toast.success("Order created successfully!");
       
-      // Refresh orders list
       await fetchOrders();
       
       return data.order;
@@ -145,7 +144,6 @@ export function useOrders() {
     }
   };
 
-  // Get single order
   const getOrder = async (orderId: number): Promise<Order | null> => {
     try {
       const response = await fetch(`/api/orders/${orderId}`, {
@@ -166,7 +164,6 @@ export function useOrders() {
     }
   };
 
-  // Update order (for admin or limited user updates)
   const updateOrder = async (
     orderId: number,
     updates: {
@@ -195,7 +192,6 @@ export function useOrders() {
       const data = await response.json();
       toast.success("Order updated successfully!");
       
-      // Refresh orders list
       await fetchOrders();
       
       return data.order;

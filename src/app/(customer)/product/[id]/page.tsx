@@ -33,7 +33,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         const res = await fetch(`/api/product?id=${_params.id}`);
         if (!res.ok) throw new Error("Product not found");
         const data = await res.json();
-        // Map API response to expected format
         const mappedProduct: ProductDetail = {
           id: data.id,
           name: data.name,

@@ -82,7 +82,6 @@ export default function Contact() {
           if (data) {
             setContactData(data);
           } else {
-            // Set default data if no data in database
             setContactData(getDefaultContactData());
           }
         } else {

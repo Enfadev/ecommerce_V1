@@ -39,12 +39,10 @@ export default function OrderHistoryPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  // Fetch orders on component mount
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
-  // Filter orders based on search and status
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -44,7 +44,6 @@ function ProductPageContent() {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          // Map API data to match ProductCard interface
           const mappedProducts: Product[] = data.map((product: APIProduct) => ({
             id: product.id,
             name: product.name,

@@ -35,7 +35,6 @@ export default function CheckoutPage() {
   });
   const router = useRouter();
 
-  // Auto-fill user profile data
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -61,11 +60,10 @@ export default function CheckoutPage() {
   }, []);
 
   const subtotal = getTotalPrice();
-  const ongkir = subtotal >= 250 ? 0 : 15; // Free shipping over $250
-  const tax = subtotal * 0.1; // 10% tax
+  const ongkir = subtotal >= 250 ? 0 : 15;
+  const tax = subtotal * 0.1;
   const total = subtotal + ongkir + tax;
 
-  // Check if form is valid
   const isFormValid = () => {
     return formData.nama.trim() !== "" && formData.email.trim() !== "" && formData.phone.trim() !== "" && formData.alamat.trim() !== "" && isValidEmail(formData.email);
   };
@@ -77,7 +75,6 @@ export default function CheckoutPage() {
     }
   }, [items.length, submitted, router]);
 
-  // Suppress PayPal console errors globally for this page
   useEffect(() => {
     const originalError = console.error;
     const originalWarn = console.warn;
@@ -85,7 +82,7 @@ export default function CheckoutPage() {
     const filterPayPalErrors = (...args: unknown[]) => {
       const message = String(args[0]);
       if (message.includes("paypal_js_sdk") || message.includes("unhandled_exception") || message.includes("global_session_not_found")) {
-        return; // Suppress PayPal SDK internal errors
+        return;
       }
       originalError(...args);
     };
@@ -93,7 +90,7 @@ export default function CheckoutPage() {
     const filterPayPalWarnings = (...args: unknown[]) => {
       const message = String(args[0]);
       if (message.includes("paypal")) {
-        return; // Suppress PayPal warnings
+        return;
       }
       originalWarn(...args);
     };
@@ -121,7 +118,6 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validasi field
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
       toast.error("Please complete all required fields");
       return;
@@ -135,13 +131,10 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Jika Credit Card, pembayaran dilakukan via Stripe Elements
     if (formData.paymentMethod === "Credit Card") {
-      // Stripe Elements akan handle pembayaran, order dibuat setelah sukses
       return;
     }
 
-    // Metode lain: langsung buat order
     const orderData: CreateOrderData = {
       customerName: formData.nama,
       customerEmail: formData.email,

@@ -51,7 +51,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
-  // Load cart from database when user is authenticated
   const refreshCart = useCallback(async () => {
     if (!isAuthenticated) {
       setItems([]);
@@ -134,7 +133,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         toast.success(data.message || "Item added to cart");
-        await refreshCart(); // Refresh to get updated cart
+        await refreshCart();
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to add item to cart");
@@ -160,7 +159,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         toast.success(data.message || "Item removed from cart");
-        await refreshCart(); // Refresh to get updated cart
+        await refreshCart();
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to remove item");
@@ -214,7 +213,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.ok) {
-        await refreshCart(); // Refresh to get updated cart
+        await refreshCart();
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to update quantity");
@@ -253,7 +252,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.ok) {
-        await refreshCart(); // Refresh to get updated cart
+        await refreshCart();
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to update selection");
@@ -281,7 +280,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.ok) {
-        await refreshCart(); // Refresh to get updated cart
+        await refreshCart();
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to select all items");
@@ -309,7 +308,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.ok) {
-        await refreshCart(); // Refresh to get updated cart
+        await refreshCart();
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to deselect all items");
@@ -341,7 +340,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         toast.success(data.message || `${selectedCount} item(s) removed from cart`);
-        await refreshCart(); // Refresh to get updated cart
+        await refreshCart();
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to remove selected items");

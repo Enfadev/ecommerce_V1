@@ -8,8 +8,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 export async function POST(req: NextRequest) {
   try {
     const { items, email } = await req.json();
-    // items: [{ name, price, quantity }]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const line_items = items.map((item: any) => ({
       price_data: {
         currency: "usd",

@@ -79,7 +79,6 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-  // Set initial image preview if editing existing product
   useEffect(() => {
     if (product?.imageUrl) {
       setImagePreviews([product.imageUrl]);

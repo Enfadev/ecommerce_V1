@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
     if (!isValidEmail(email)) {
       return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
     }
-    // amount dalam USD, dikali 100 untuk cents
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(amount * 100),
       currency: "usd",

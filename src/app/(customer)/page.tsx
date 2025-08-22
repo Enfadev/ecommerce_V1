@@ -37,7 +37,6 @@ export default async function Home() {
   let homePageData = null;
 
   try {
-    // Try to get data from database
     dbProducts = await prisma.product.findMany({
       orderBy: { createdAt: "desc" },
       take: 8,
@@ -45,7 +44,6 @@ export default async function Home() {
     homePageData = await getHomePageData();
   } catch (error) {
     console.error("Database connection error, using mock data:", error);
-    // Use mock data when database is not available
     dbProducts = [
       {
         id: 1,
@@ -110,7 +108,6 @@ export default async function Home() {
     stock: 50,
   }));
 
-  // Default fallback data
   const defaultData = {
     heroTitle: "Welcome to Our Store",
     heroSubtitle: "Quality Products",
@@ -141,7 +138,6 @@ export default async function Home() {
 
   const pageData = homePageData || defaultData;
 
-  // Safely parse JSON data from database
   const heroSlides = Array.isArray(pageData.heroSlides) ? pageData.heroSlides : defaultData.heroSlides;
 
   const features = Array.isArray(pageData.features) ? pageData.features : defaultData.features;

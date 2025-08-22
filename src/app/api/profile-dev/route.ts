@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Mock user data for development testing
 const mockUser = {
   id: '1',
   name: 'Test User',
@@ -12,7 +11,6 @@ const mockUser = {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user info from middleware headers
     const userId = request.headers.get('x-user-id');
     const userEmail = request.headers.get('x-user-email');
     const userRole = request.headers.get('x-user-role');
@@ -21,7 +19,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    // Return mock user data with info from JWT
     const user = {
       id: userId,
       name: mockUser.name,

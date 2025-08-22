@@ -38,12 +38,10 @@ export default function AdminSettingsPage() {
   };
 
   const handleSaveGeneral = async () => {
-    // TODO: Implement save general settings
     console.log("Saving general settings:", generalSettings);
   };
 
   const handleSaveTheme = async () => {
-    // TODO: Implement save theme settings
     console.log("Saving theme settings:", themeSettings);
   };
 
@@ -170,7 +168,6 @@ export default function AdminSettingsPage() {
             <TabsContent value="products">
               <AdminProductPageEditor />
             </TabsContent>
-
 
 
             <TabsContent value="contact">

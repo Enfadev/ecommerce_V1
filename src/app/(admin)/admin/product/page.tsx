@@ -53,7 +53,6 @@ interface ProductFormData {
   imageFile?: File;
   imageFiles?: File[];
   gallery?: string[];
-  // Enhanced fields
   weight?: number;
   dimensions?: string;
   tags?: string[];
@@ -71,7 +70,6 @@ interface ProductFormData {
 }
 
 export default function AdminProductManagement() {
-  // Daftar semua field produk yang bisa ditampilkan
   const allColumns = [
     { key: "imageUrl", label: "Image" },
     { key: "name", label: "Name" },
@@ -92,12 +90,9 @@ export default function AdminProductManagement() {
     { key: "updatedAt", label: "Updated At" },
   ];
 
-  // State untuk kolom yang ditampilkan
-  // Only show important columns by default
   const defaultImportantColumns = ["imageUrl", "name", "category", "price", "stock", "status", "sku", "brand"];
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultImportantColumns);
 
-  // Handler untuk toggle kolom
   const handleToggleColumn = (key: string) => {
     setVisibleColumns((prev) => (prev.includes(key) ? prev.filter((col) => col !== key) : [...prev, key]));
   };
@@ -162,7 +157,6 @@ export default function AdminProductManagement() {
         let imageUrl = editingProduct.imageUrl;
         let galleryUrls = editingProduct.gallery || [];
 
-        // Upload gambar utama jika ada file baru
         if (productData.imageFiles && productData.imageFiles.length > 0) {
           console.log("Uploading main image...");
           const formData = new FormData();
@@ -183,7 +177,6 @@ export default function AdminProductManagement() {
           console.log("Main image uploaded successfully:", imageUrl);
         }
 
-        // Upload gallery images jika ada file baru (lebih dari 1 file)
         if (productData.imageFiles && productData.imageFiles.length > 1) {
           console.log("Uploading gallery images...");
           const galleryForm = new FormData();
@@ -206,7 +199,6 @@ export default function AdminProductManagement() {
           console.log("Gallery images uploaded successfully:", galleryUrls);
         }
 
-        // Update produk ke database dengan semua field
         console.log("Updating product in database...");
         const res = await fetch(`/api/product`, {
           method: "PUT",
@@ -259,7 +251,6 @@ export default function AdminProductManagement() {
       try {
         let imageUrl = "";
 
-        // Upload gambar utama jika ada file baru
         if (productData.imageFiles && productData.imageFiles.length > 0) {
           console.log("Uploading main image for new product...");
           const formData = new FormData();
@@ -280,8 +271,6 @@ export default function AdminProductManagement() {
           console.log("Main image uploaded successfully:", imageUrl);
         }
 
-        // Note: For new products, we'll just use the main image
-        // Gallery can be added later in edit mode
         console.log("Creating new product...");
         const res = await fetch("/api/product", {
           method: "POST",
@@ -636,7 +625,6 @@ export default function AdminProductManagement() {
                       discountPrice: editingProduct.hargaDiskon || null,
                       promoExpired: editingProduct.promoExpired || "",
                       gallery: editingProduct.gallery || [],
-                      // Enhanced fields with defaults
                       featured: false,
                       allowBackorder: false,
                       trackQuantity: true,

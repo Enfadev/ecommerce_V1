@@ -37,7 +37,6 @@ async function getAccessToken() {
 
 export async function POST(req: NextRequest) {
   try {
-    // Validate environment variables
     if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
       console.error('PayPal credentials missing:', {
         clientId: !!PAYPAL_CLIENT_ID,

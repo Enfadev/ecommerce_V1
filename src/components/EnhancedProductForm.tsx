@@ -115,7 +115,6 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
     }
   }, [product]);
 
-  // Auto-generate slug from name
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');

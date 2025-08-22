@@ -8,7 +8,6 @@ interface PayPalButtonProps {
   onError?: (err: unknown) => void;
 }
 
-// PayPal SDK types
 declare global {
   interface Window {
     paypal?: {
@@ -40,14 +39,12 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
     
     currentRef.innerHTML = "";
     
-    // Check if PayPal client ID is available
     if (!process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID) {
       console.error("NEXT_PUBLIC_PAYPAL_CLIENT_ID is not configured");
       if (onError) onError({ message: "PayPal client ID is not configured" });
       return;
     }
     
-    // Suppress PayPal SDK console errors
     const originalConsoleError = console.error;
     const originalConsoleWarn = console.warn;
     
@@ -58,7 +55,6 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
         message.includes('unhandled_exception') ||
         message.includes('global_session_not_found')
       )) {
-        // Suppress PayPal SDK internal errors
         return;
       }
       originalConsoleError(...args);
@@ -77,7 +73,6 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
     
     if (!window.paypal) {
       const script = document.createElement("script");
-      // More comprehensive disable funding to force PayPal balance only
       script.src = `https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=${currency}&disable-funding=card,credit,paylater,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort,venmo&enable-funding=paypal`;
       script.async = true;
       script.onload = () => {
@@ -168,7 +163,6 @@ export default function PayPalButton({ total, currency = "USD", onApprove, onErr
     
     return () => {
       if (currentRef) currentRef.innerHTML = "";
-      // Restore original console methods
       console.error = originalConsoleError;
       console.warn = originalConsoleWarn;
     };

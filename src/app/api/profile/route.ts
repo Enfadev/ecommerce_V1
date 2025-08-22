@@ -6,13 +6,11 @@ export async function GET(request: NextRequest) {
   try {
     console.log("📍 Profile API called");
 
-    // Try to get user info from middleware headers first
     let userId = request.headers.get("x-user-id");
     let userEmail = request.headers.get("x-user-email");
 
     console.log("🔍 Middleware headers - User ID:", userId, "Email:", userEmail);
 
-    // If no user ID from middleware, try to get from JWT cookie directly
     if (!userId) {
       console.log("⚠️ No user ID from middleware, checking JWT directly...");
 
@@ -39,7 +37,6 @@ export async function GET(request: NextRequest) {
 
     console.log("👤 Getting profile for user ID:", userId);
 
-    // Get user from database
     const user = await prisma.user.findUnique({
       where: { id: parseInt(userId) },
       select: {
@@ -86,18 +83,15 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT /api/profile - Update user profile
 export async function PUT(request: NextRequest) {
   try {
     console.log("📍 Profile Update API called");
 
-    // Try to get user info from middleware headers first
     let userId = request.headers.get("x-user-id");
     let userEmail = request.headers.get("x-user-email");
 
     console.log("🔍 Middleware headers - User ID:", userId, "Email:", userEmail);
 
-    // If no user ID from middleware, try to get from JWT cookie directly
     if (!userId) {
       console.log("⚠️ No user ID from middleware, checking JWT directly...");
 
@@ -127,7 +121,6 @@ export async function PUT(request: NextRequest) {
 
     console.log("👤 Updating profile for user ID:", userId);
 
-    // Update user in database
     const updatedUser = await prisma.user.update({
       where: { id: parseInt(userId) },
       data: {

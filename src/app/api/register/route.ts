@@ -8,7 +8,6 @@ export async function POST(req: Request) {
   try {
     const requestData = await req.json();
     
-    // Validate input using Zod schema
     const validation = validateInput(registerSchema, requestData);
     if (!validation.success) {
       return NextResponse.json({ 
@@ -19,16 +18,13 @@ export async function POST(req: Request) {
 
     const { name, email, password } = validation.data!;
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json({ error: 'Email is already registered' }, { status: 409 });
     }
 
-    // Hash password
     const hashedPassword = await hash(password, 12);
 
-    // Create user
     const user = await prisma.user.create({
       data: {
         name,
@@ -45,14 +41,12 @@ export async function POST(req: Request) {
       },
     });
 
-    // Generate JWT token
     const token = await signJWT({
       id: user.id.toString(),
       email: user.email,
       role: user.role,
     });
 
-    // Create response
     const response = NextResponse.json({
       user: {
         ...user,
@@ -66,7 +60,6 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
-    // Only log detailed errors in development
     if (process.env.NODE_ENV !== 'production') {
       console.error('Registration error:', error);
     }

@@ -1,5 +1,4 @@
 import React from "react";
-// ...existing code...
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,6 @@ export default async function About() {
   };
   const aboutPageData = await getAboutPageData();
 
-  // Default fallback data
   const defaultData = {
     heroTitle: "About Our Company",
     heroSubtitle: "Your Trusted Shopping Partner",

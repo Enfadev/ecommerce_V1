@@ -114,7 +114,6 @@ export default function AdminAnalytics() {
       console.error("Error fetching analytics data:", error);
       setError("Failed to load analytics data");
 
-      // Set fallback data for demonstration
       setData({
         overview: {
           totalRevenue: 0,

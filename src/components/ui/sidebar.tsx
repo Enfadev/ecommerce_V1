@@ -70,7 +70,6 @@ function SidebarProvider({
   const [openMobile, setOpenMobile] = React.useState(false)
 
   
-  
   const [_open, _setOpen] = React.useState(defaultOpen)
   const open = openProp ?? _open
   const setOpen = React.useCallback(
@@ -109,7 +108,6 @@ function SidebarProvider({
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [toggleSidebar])
 
-  
   
   const state = open ? "expanded" : "collapsed"
 

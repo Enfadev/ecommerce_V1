@@ -90,7 +90,7 @@ export default function AdminCustomerManagement() {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchCustomers();
-    }, 300); // Debounce search
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [fetchCustomers]);
@@ -149,10 +149,8 @@ export default function AdminCustomerManagement() {
         throw new Error("Failed to delete customer");
       }
 
-      // Remove customer from local state
       setCustomers(customers.filter((customer) => customer.id !== customerId));
 
-      // Refresh stats
       await fetchCustomers();
     } catch (error) {
       console.error("Error deleting customer:", error);

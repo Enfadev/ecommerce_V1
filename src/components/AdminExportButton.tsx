@@ -83,7 +83,6 @@ export function AdminExportButton({ data, filename, type, className = "" }: Expo
   };
 
   const formatAnalyticsForExport = (analytics: Record<string, unknown>[]) => {
-    // Analytics data structure may vary, adjust as needed
     return analytics.map(item => ({
       Date: item.date || new Date().toLocaleDateString(),
       'Total Sales': item.totalSales || 0,
@@ -124,14 +123,12 @@ export function AdminExportButton({ data, filename, type, className = "" }: Expo
       const formattedData = formatDataForExport(data, type);
 
       if (format === 'csv') {
-        // Convert to CSV
         const headers = Object.keys(formattedData[0]);
         const csvContent = [
           headers.join(','),
           ...formattedData.map(row =>
             headers.map(header => {
               const value = (row as Record<string, unknown>)[header];
-              // Escape commas and quotes in CSV
               if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
                 return `"${value.replace(/"/g, '""')}"`;
               }
@@ -140,7 +137,6 @@ export function AdminExportButton({ data, filename, type, className = "" }: Expo
           )
         ].join('\n');
 
-        // Download CSV
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -151,7 +147,6 @@ export function AdminExportButton({ data, filename, type, className = "" }: Expo
         link.click();
         document.body.removeChild(link);
       } else if (format === 'json') {
-        // Download JSON
         const jsonContent = JSON.stringify(formattedData, null, 2);
         const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
         const link = document.createElement('a');

@@ -7,7 +7,6 @@ export async function POST() {
       message: 'Logout successful'
     });
 
-    // Clear auth cookie
     clearAuthCookie(response);
 
     return response;

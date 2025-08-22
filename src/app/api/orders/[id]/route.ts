@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyJWT } from "@/lib/jwt";
 
-// GET /api/orders/[id] - Get specific order
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
@@ -62,7 +61,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-// PUT /api/orders/[id] - Update order (for admin or limited user updates)
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
@@ -86,13 +84,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const body = await request.json();
     const { status, trackingNumber, paymentStatus, paymentProof, notes } = body;
 
-    // Check if user owns this order or is admin
     const existingOrder = await prisma.order.findFirst({
       where: {
         id: orderId,
         OR: [
           { userId: parseInt(decoded.id) },
-          // If user is admin, allow access to any order
           ...(decoded.role === "ADMIN" ? [{}] : []),
         ],
       },
@@ -102,7 +98,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    // Prepare update data
     const updateData: Record<string, unknown> = {};
 
     if (status !== undefined) {

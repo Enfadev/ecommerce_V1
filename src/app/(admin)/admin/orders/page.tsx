@@ -59,10 +59,8 @@ export default function AdminOrderManagement() {
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    // Debounced fetch will be triggered after 500ms of no changes
     setTimeout(() => {
       if (value === searchQuery) {
-        // Ensure the value hasn't changed
         fetchOrders({
           page: 1,
           status: selectedStatus,

@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-// ...existing code...
 import { Eye, EyeOff, Mail, Lock, ShoppingBag, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";
@@ -80,7 +79,6 @@ export default function SignInPage() {
     }
   }
 
-  // ...existing code...
 
   return (
     <div className="flex items-center justify-center p-4">

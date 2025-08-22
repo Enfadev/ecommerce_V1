@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
     const fromParam = searchParams.get('from');
     const toParam = searchParams.get('to');
 
-    // Calculate date range
     let fromDate: Date;
     let toDate = new Date();
 
@@ -37,7 +36,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Get overview data
     const [
       totalOrders,
       totalSales,
@@ -50,13 +48,11 @@ export async function GET(request: NextRequest) {
       previousPeriodSales,
       previousPeriodCustomers
     ] = await Promise.all([
-      // Total counts
       prisma.order.count(),
       prisma.order.aggregate({ _sum: { totalAmount: true } }),
       prisma.user.count({ where: { role: 'USER' } }),
       prisma.product.count({ where: { status: 'active' } }),
       
-      // Current period
       prisma.order.aggregate({
         where: { createdAt: { gte: fromDate, lte: toDate } },
         _sum: { totalAmount: true },
@@ -73,7 +69,6 @@ export async function GET(request: NextRequest) {
         }
       }),
       
-      // Previous period (for comparison)
       prisma.order.aggregate({
         where: { 
           createdAt: { 
@@ -104,7 +99,6 @@ export async function GET(request: NextRequest) {
       })
     ]);
 
-    // Calculate growth percentages
     const revenueGrowth = previousPeriodSales._sum.totalAmount && previousPeriodSales._sum.totalAmount > 0
       ? ((currentPeriodSales._sum.totalAmount || 0) - (previousPeriodSales._sum.totalAmount || 0)) / (previousPeriodSales._sum.totalAmount || 0) * 100
       : 0;
@@ -121,7 +115,6 @@ export async function GET(request: NextRequest) {
       ? (currentPeriodSales._sum.totalAmount || 0) / currentPeriodOrders._count
       : 0;
 
-    // Get sales trend data (daily data for the period)
     const salesTrend = [];
     const days = Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24));
     
@@ -154,7 +147,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Get top products
     const topProductsData = await prisma.orderItem.groupBy({
       by: ['productId'],
       _sum: { quantity: true, productPrice: true },
@@ -169,7 +161,6 @@ export async function GET(request: NextRequest) {
           where: { id: item.productId }
         });
 
-        // Calculate growth (simplified - comparing with previous period)
         const previousPeriodSales = await prisma.orderItem.aggregate({
           where: {
             productId: item.productId,
@@ -197,7 +188,6 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    // Get category distribution
     const categoryData = await prisma.category.findMany({
       include: {
         products: {
@@ -240,7 +230,6 @@ export async function GET(request: NextRequest) {
       };
     }).filter(cat => cat.value > 0).sort((a, b) => b.value - a.value);
 
-    // Get customer analytics
     const [newCustomers, returningCustomersCount] = await Promise.all([
       prisma.user.count({
         where: {
@@ -274,7 +263,6 @@ export async function GET(request: NextRequest) {
       ? (returningCustomersCount.length / totalCustomersInPeriod.length) * 100 
       : 0;
 
-    // Get order analytics
     const orders = await prisma.order.findMany({
       where: {
         createdAt: { gte: fromDate, lte: toDate }
@@ -294,16 +282,14 @@ export async function GET(request: NextRequest) {
     const cancelationRate = totalOrdersInPeriod > 0 ? (cancelledOrders / totalOrdersInPeriod) * 100 : 0;
     const ordersPerDay = days > 0 ? totalOrdersInPeriod / days : 0;
 
-    // Generate time series data
     const timeSeriesData = salesTrend.map(day => ({
       date: day.date,
       orders: day.orders,
       revenue: day.revenue,
-      newCustomers: Math.floor(day.customers * 0.7), // Approximate new customers
-      returningCustomers: Math.floor(day.customers * 0.3) // Approximate returning customers
+      newCustomers: Math.floor(day.customers * 0.7),
+      returningCustomers: Math.floor(day.customers * 0.3)
     }));
 
-    // Performance metrics (example targets)
     const performanceMetrics = [
       {
         metric: 'Revenue Target',
@@ -331,7 +317,6 @@ export async function GET(request: NextRequest) {
       }
     ];
 
-    // Ensure we have some fallback data if no data exists
     const fallbackSalesTrend = salesTrend.length === 0 ? [
       { date: format(new Date(), 'MMM dd'), revenue: 0, orders: 0, customers: 0 }
     ] : salesTrend;
@@ -373,7 +358,7 @@ export async function GET(request: NextRequest) {
         newCustomers,
         returningCustomers: returningCustomersCount.length,
         customerRetentionRate,
-        avgCustomerLifetime: 180 // Placeholder - would need more complex calculation
+        avgCustomerLifetime: 180
       },
       orderAnalytics: {
         averageOrderValue: avgOrderValue,
@@ -396,7 +381,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Helper function to generate colors
 function getRandomColor(index: number) {
   const colors = [
     '#8884d8', '#82ca9d', '#ffc658', '#ff7300', 

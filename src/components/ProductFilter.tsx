@@ -19,9 +19,7 @@ export function ProductFilter() {
       try {
         const res = await fetch("/api/product/filter-options");
         const data = await res.json();
-        // Kategori
         setCategories(["All", ...data.categories.filter((c: string) => !!c)]);
-        // Rentang harga
         interface PriceRange {
           label: string;
           min: number | null;
@@ -35,7 +33,6 @@ export function ProductFilter() {
           }))
         );
       } catch {
-        // fallback jika error
         setCategories(["All"]);
         setPriceRanges([{ label: "All", value: "all" }]);
       }

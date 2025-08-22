@@ -5,13 +5,11 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // Get current date for calculations
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    // Get total sales and orders
     const totalOrders = await prisma.order.count();
     const totalSales = await prisma.order.aggregate({
       _sum: {
@@ -19,7 +17,6 @@ export async function GET() {
       },
     });
 
-    // Get monthly sales for current month
     const currentMonthSales = await prisma.order.aggregate({
       where: {
         createdAt: {
@@ -32,7 +29,6 @@ export async function GET() {
       _count: true,
     });
 
-    // Get last month sales for comparison
     const lastMonthSales = await prisma.order.aggregate({
       where: {
         createdAt: {
@@ -46,21 +42,18 @@ export async function GET() {
       _count: true,
     });
 
-    // Get total products
     const totalProducts = await prisma.product.count({
       where: {
         status: 'active',
       },
     });
 
-    // Get total customers
     const totalCustomers = await prisma.user.count({
       where: {
         role: 'USER',
       },
     });
 
-    // Get customers for current month
     const currentMonthCustomers = await prisma.user.count({
       where: {
         role: 'USER',
@@ -70,7 +63,6 @@ export async function GET() {
       },
     });
 
-    // Get customers for last month
     const lastMonthCustomers = await prisma.user.count({
       where: {
         role: 'USER',
@@ -81,7 +73,6 @@ export async function GET() {
       },
     });
 
-    // Calculate growth percentages
     const salesGrowth = lastMonthSales._sum.totalAmount && lastMonthSales._sum.totalAmount > 0
       ? ((currentMonthSales._sum.totalAmount || 0) - (lastMonthSales._sum.totalAmount || 0)) / (lastMonthSales._sum.totalAmount || 0) * 100
       : 0;
@@ -94,7 +85,6 @@ export async function GET() {
       ? ((currentMonthCustomers - lastMonthCustomers) / lastMonthCustomers) * 100
       : 0;
 
-    // Get sales data for the last 6 months
     const salesData = [];
     for (let i = 5; i >= 0; i--) {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -121,7 +111,6 @@ export async function GET() {
       });
     }
 
-    // Get category distribution
     const categoryData = await prisma.category.findMany({
       include: {
         products: {
@@ -144,7 +133,6 @@ export async function GET() {
       };
     }).filter(cat => cat.value > 0);
 
-    // Get recent orders
     const recentOrders = await prisma.order.findMany({
       take: 4,
       orderBy: {
@@ -155,7 +143,6 @@ export async function GET() {
       },
     });
 
-    // Get top products
     const topProducts = await prisma.orderItem.groupBy({
       by: ['productId'],
       _sum: {
@@ -201,7 +188,6 @@ export async function GET() {
       date: getRelativeTime(order.createdAt),
     }));
 
-    // Stats cards data
     const statsCards = [
       {
         title: "Total Sales",
@@ -250,7 +236,6 @@ export async function GET() {
   }
 }
 
-// Helper functions
 function getRandomColor() {
   const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0'];
   return colors[Math.floor(Math.random() * colors.length)];

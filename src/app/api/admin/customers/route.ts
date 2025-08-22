@@ -20,16 +20,14 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Build where clause
     const where: WhereClause = {
-      role: "USER", // Only get customers, not admins
+      role: "USER",
     };
 
     if (search) {
       where.OR = [{ name: { contains: search, mode: "insensitive" } }, { email: { contains: search, mode: "insensitive" } }];
     }
 
-    // Get customers with their order data
     const customers = await prisma.user.findMany({
       where,
       include: {
@@ -52,18 +50,15 @@ export async function GET(request: NextRequest) {
       take: limit,
     });
 
-    // Get total count for pagination
     const totalCustomers = await prisma.user.count({
       where,
     });
 
-    // Transform data to match frontend interface
     const transformedCustomers = customers.map((customer) => {
       const totalOrders = customer.orders.length;
       const totalSpent = customer.orders.reduce((sum: number, order: { totalAmount: number }) => sum + order.totalAmount, 0);
       const lastOrder = customer.orders.length > 0 ? customer.orders[0].createdAt : null;
 
-      // Determine status based on recent activity
       let status: "active" | "inactive" | "blocked" = "active";
       if (customer.orders.length === 0) {
         status = "inactive";
@@ -80,8 +75,8 @@ export async function GET(request: NextRequest) {
         dbId: customer.id,
         name: customer.name,
         email: customer.email,
-        phone: "+1 555-" + String(Math.floor(Math.random() * 900) + 100) + "-" + String(Math.floor(Math.random() * 9000) + 1000), // Generate fake phone
-        address: "Address not provided", // We don't have address in user table
+        phone: "+1 555-" + String(Math.floor(Math.random() * 900) + 100) + "-" + String(Math.floor(Math.random() * 9000) + 1000),
+        address: "Address not provided",
         joinDate: customer.createdAt.toISOString().split("T")[0],
         lastOrder: lastOrder ? lastOrder.toISOString().split("T")[0] : "Never",
         totalOrders,
@@ -90,7 +85,6 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Calculate stats
     const allCustomers = await prisma.user.findMany({
       where: { role: "USER" },
       include: {
@@ -110,7 +104,7 @@ export async function GET(request: NextRequest) {
       total: allCustomers.length,
       active: transformedCustomers.filter((c) => c.status === "active").length,
       inactive: transformedCustomers.filter((c) => c.status === "inactive").length,
-      blocked: 0, // We don't have blocked functionality yet
+      blocked: 0,
       newThisMonth: allCustomers.filter((customer) => new Date(customer.createdAt) >= startOfMonth).length,
       totalRevenue: allCustomers.reduce((sum, customer) => sum + customer.orders.reduce((orderSum, order) => orderSum + order.totalAmount, 0), 0),
     };
@@ -141,8 +135,6 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
     }
 
-    // For now, we'll just return success since we don't have status field in user table
-    // In a real implementation, you might want to add a status field to the User model
 
     return NextResponse.json({
       success: true,
@@ -165,7 +157,6 @@ export async function DELETE(request: NextRequest) {
 
     const dbId = parseInt(customerId.replace("CUST-", ""));
 
-    // Check if customer exists
     const customer = await prisma.user.findUnique({
       where: { id: dbId },
     });
@@ -174,7 +165,6 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Customer not found" }, { status: 404 });
     }
 
-    // Delete customer (this will cascade delete orders due to foreign key)
     await prisma.user.delete({
       where: { id: dbId },
     });

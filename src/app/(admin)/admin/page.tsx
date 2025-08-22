@@ -237,7 +237,6 @@ export default function AdminPage() {
 
       if (format === 'csv') {
         if (type === 'full-report') {
-          // Convert full report to CSV-friendly format
           const reportData = data as Record<string, unknown>;
           const summary = reportData.summary as Record<string, unknown>;
           const csvData = [

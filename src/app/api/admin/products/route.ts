@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // Build where clause
     const where: Record<string, unknown> = {};
 
     if (search) {
@@ -28,7 +27,6 @@ export async function GET(request: NextRequest) {
       where.category = category;
     }
 
-    // Get products with related data
     const products = await prisma.product.findMany({
       where,
       include: {
@@ -52,23 +50,17 @@ export async function GET(request: NextRequest) {
       take: limit,
     });
 
-    // Get total count for pagination
     const totalCount = await prisma.product.count({ where });
 
-    // Format products with calculated fields
     const formattedProducts = products.map(product => {
-      // Calculate total sales
       const totalSold = product.orderItems.reduce((sum, item) => {
-        // Only count completed orders
         if (item.order.status === 'COMPLETED' || item.order.status === 'DELIVERED') {
           return sum + item.quantity;
         }
         return sum;
       }, 0);
 
-      // Calculate total revenue
       const totalRevenue = product.orderItems.reduce((sum, item) => {
-        // Only count completed orders
         if (item.order.status === 'COMPLETED' || item.order.status === 'DELIVERED') {
           return sum + (item.quantity * product.price);
         }
@@ -127,7 +119,6 @@ export async function POST(request: NextRequest) {
       isActive = true,
     } = body;
 
-    // Validate required fields
     if (!name || !description || !price || !category || stock === undefined) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -220,13 +211,11 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Check if product has orders
     const orderCount = await prisma.orderItem.count({
       where: { productId: id },
     });
 
     if (orderCount > 0) {
-      // Don't delete, just deactivate
       const product = await prisma.product.update({
         where: { id },
         data: { isActive: false },
@@ -237,7 +226,6 @@ export async function DELETE(request: NextRequest) {
       });
     }
 
-    // Safe to delete if no orders
     await prisma.product.delete({
       where: { id },
     });

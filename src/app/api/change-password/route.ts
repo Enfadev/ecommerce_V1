@@ -3,18 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { verifyJWT } from "@/lib/jwt";
 import bcrypt from "bcryptjs";
 
-// PUT /api/change-password - Change user password
 export async function PUT(request: NextRequest) {
   try {
     console.log("📍 Change Password API called");
 
-    // Try to get user info from middleware headers first
     let userId = request.headers.get("x-user-id");
     let userEmail = request.headers.get("x-user-email");
 
     console.log("🔍 Middleware headers - User ID:", userId, "Email:", userEmail);
 
-    // If no user ID from middleware, try to get from JWT cookie directly
     if (!userId) {
       console.log("⚠️ No user ID from middleware, checking JWT directly...");
 
@@ -48,7 +45,6 @@ export async function PUT(request: NextRequest) {
 
     console.log("👤 Changing password for user ID:", userId);
 
-    // Get current user to verify current password
     const user = await prisma.user.findUnique({
       where: { id: parseInt(userId) },
       select: {
@@ -62,17 +58,14 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "User not found or password not set" }, { status: 404 });
     }
 
-    // Verify current password
     const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
     if (!isCurrentPasswordValid) {
       console.log("❌ Current password is incorrect for user:", userId);
       return NextResponse.json({ error: "Current password is incorrect" }, { status: 400 });
     }
 
-    // Hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
 
-    // Update password in database
     await prisma.user.update({
       where: { id: parseInt(userId) },
       data: {
