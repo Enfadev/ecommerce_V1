@@ -11,7 +11,6 @@ import { Search, Menu, Heart, User, ShoppingBag, LogOut, Settings, Crown } from 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "./ui/sheet";
 import { useAuth } from "./auth-context";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export function Header() {
@@ -104,11 +103,6 @@ export function Header() {
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start">
                       <span className="text-sm font-medium">{user.name}</span>
-                      {user.role === "ADMIN" && (
-                        <Badge variant="secondary" className="text-xs bg-blue-600 text-white">
-                          Admin
-                        </Badge>
-                      )}
                     </div>
                   </div>
                 </Button>

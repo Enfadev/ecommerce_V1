@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/useOrders";
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, Home } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LucideIcon } from "lucide-react";
 
@@ -75,6 +75,17 @@ export default function AdminSidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
+        {/* Back to Home Button */}
+        <Link href="/">
+          <Button variant="outline" className={cn("w-full justify-start gap-3 h-10 border-dashed", isCollapsed && "px-2 justify-center")}>
+            <Home className="w-5 h-5 flex-shrink-0" />
+            {!isCollapsed && <span className="flex-1 text-left">Back to Home</span>}
+          </Button>
+        </Link>
+
+        {/* Divider */}
+        <div className="border-t border-border my-2"></div>
+
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = isActiveRoute(item.href);
