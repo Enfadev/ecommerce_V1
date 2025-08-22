@@ -56,42 +56,86 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   if (error || !product) return notFound();
 
   return (
-    <div className="bg-background font-sans">
-      {/* Header sudah global di layout */}
-      <div className="py-10 flex flex-col gap-8">
-        <div className="flex flex-col md:flex-row gap-8 items-start max-w-3xl mx-auto">
-          <div className="w-full md:w-1/2 aspect-square bg-muted rounded-lg overflow-hidden flex items-center justify-center">
-            <Image src={product.image} alt={product.name} width={400} height={400} className="object-cover w-full h-full" />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        {/* Main Product Section */}
+        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+          {/* Product Image */}
+          <div className="group">
+            <div className="relative w-full aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 shadow-lg border border-border/50 hover:shadow-xl transition-all duration-300">
+              <div className="relative w-full h-full rounded-2xl overflow-hidden bg-white/50 backdrop-blur-sm">
+                <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+              </div>
+            </div>
           </div>
-          <div className="w-full md:w-1/2 flex flex-col gap-4">
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-            <div className="text-lg text-muted-foreground mb-2">Category: {product.category}</div>
-            <div className="text-2xl font-semibold text-primary mb-4">${product.price.toLocaleString()}</div>
-            <button
-              className="bg-primary text-primary-foreground rounded-md px-6 py-3 font-semibold hover:bg-primary/80 transition"
-              onClick={() =>
-                addToCart({
-                  id: product.id,
-                  name: product.name,
-                  price: product.price,
-                  image: product.image,
-                })
-              }
-            >
-              Add to Cart
-            </button>
+
+          {/* Product Info */}
+          <div className="flex flex-col justify-center space-y-8">
+            <div className="space-y-6">
+              <div className="inline-flex items-center">
+                <span className="px-4 py-2 bg-foreground/5 text-foreground text-sm font-medium rounded-full border border-border/30">{product.category}</span>
+              </div>
+
+              <h1 className="text-4xl lg:text-5xl font-light text-foreground leading-tight">{product.name}</h1>
+
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-semibold text-foreground">${product.price.toLocaleString()}</span>
+                <span className="text-muted-foreground text-lg">USD</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <button
+                className="w-full bg-foreground text-background hover:bg-foreground/90 rounded-2xl px-8 py-4 font-medium text-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+                onClick={() =>
+                  addToCart({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                  })
+                }
+              >
+                Add to Cart
+              </button>
+
+              <div className="flex gap-3">
+                <button className="flex-1 border border-border rounded-2xl px-6 py-3 font-medium text-foreground hover:bg-muted/50 transition-colors">Add to Wishlist</button>
+                <button className="flex-1 border border-border rounded-2xl px-6 py-3 font-medium text-foreground hover:bg-muted/50 transition-colors">Share</button>
+              </div>
+            </div>
           </div>
         </div>
-        <section className="mt-8">
-          <h2 className="text-xl font-bold mb-2">Product Description</h2>
-          <p className="text-muted-foreground">Product description is not available yet.</p>
-        </section>
-        {/* Review & Rating Section */}
-        <React.Suspense fallback={<div>Loading reviews...</div>}>
-          <ProductReviewSection productId={product.id} />
-          {/* Product recommendations */}
-          <ProductRecommendation currentProductId={product.id.toString()} maxItems={6} />
-        </React.Suspense>
+
+        {/* Product Description Section */}
+        {product.description && (
+          <div className="bg-card rounded-2xl shadow-sm border p-6 mb-8">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Description</h2>
+            <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+          </div>
+        )}
+
+        {/* Reviews and Recommendations */}
+        <div className="space-y-8">
+          <React.Suspense
+            fallback={
+              <div className="bg-card rounded-2xl shadow-sm border p-8 text-center">
+                <div className="inline-flex items-center gap-2 text-muted-foreground">
+                  <div className="w-4 h-4 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin"></div>
+                  Loading reviews...
+                </div>
+              </div>
+            }
+          >
+            <div className="bg-card rounded-2xl shadow-sm border overflow-hidden">
+              <ProductReviewSection productId={product.id} />
+            </div>
+
+            <div className="bg-card rounded-2xl shadow-sm border overflow-hidden">
+              <ProductRecommendation currentProductId={product.id.toString()} maxItems={6} />
+            </div>
+          </React.Suspense>
+        </div>
       </div>
     </div>
   );

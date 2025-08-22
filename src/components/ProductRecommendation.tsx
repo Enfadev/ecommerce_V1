@@ -1,9 +1,11 @@
 import React from "react";
 import { products } from "../data/products";
 import { Card } from "./ui/card";
-import { Carousel } from "./ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 interface ProductRecommendationProps {
   userId?: string;
@@ -43,22 +45,57 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist,
   if (recommended.length === 0) return null;
 
   return (
-    <section className="w-full py-6">
-      <h2 className="text-xl font-bold mb-4 text-white">Rekomendasi Untuk Anda</h2>
-      <Carousel className="dark">
-        {recommended.map((product) => (
-          <Card key={product.id} className="bg-zinc-900 text-white shadow-lg hover:scale-105 transition-transform duration-300">
-            <div className="flex flex-col items-center">
-              <Image src={product.image} alt={product.name} className="w-32 h-32 object-cover rounded-lg mb-2" width={128} height={128} />
-              <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-              <Badge variant="secondary" className="mb-2">
-                {product.category}
-              </Badge>
-              {/* Deskripsi tidak tersedia di Product, bisa tambahkan jika ada */}
-              <span className="font-bold text-green-400">Rp{product.price.toLocaleString()}</span>
-            </div>
-          </Card>
-        ))}
+    <section className="w-full p-6 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Recommended for You</h2>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">Carefully selected products just for you</p>
+      </div>
+
+      <Carousel
+        opts={{
+          align: "start",
+          loop: false,
+        }}
+        className="w-full"
+      >
+        <CarouselContent className="-ml-2 md:-ml-4">
+          {recommended.map((product) => (
+            <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+              <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white dark:bg-gray-900 shadow-sm hover:shadow-xl transition-all duration-300 ease-out transform hover:-translate-y-1">
+                <div className="aspect-square relative overflow-hidden rounded-t-2xl bg-gray-50 dark:bg-gray-800">
+                  <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+
+                <div className="p-4 space-y-3">
+                  <div className="space-y-2">
+                    <Badge variant="secondary" className="text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full px-2 py-1">
+                      {product.category}
+                    </Badge>
+
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight line-clamp-2">{product.name}</h3>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-lg font-bold text-gray-900 dark:text-gray-100">${product.price.toLocaleString()}</span>
+                      {product.stock > 0 ? <span className="text-xs text-green-600 dark:text-green-400 font-medium">In Stock</span> : <span className="text-xs text-red-600 dark:text-red-400 font-medium">Out of Stock</span>}
+                    </div>
+
+                    <Button size="sm" className="rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors duration-200" asChild>
+                      <Link href={`/products/${product.id}`}>View</Link>
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+
+        <div className="hidden md:block ">
+          <CarouselPrevious className="rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg -left-3" />
+          <CarouselNext className="rounded-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-lg -right-3" />
+        </div>
       </Carousel>
     </section>
   );
