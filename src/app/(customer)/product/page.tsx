@@ -116,7 +116,7 @@ function ProductPageContent() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-background to-muted/20">
+    <div>
       <div>
         {/* Hero Section */}
         <div className="text-center py-12 mb-8">
