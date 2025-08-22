@@ -1,40 +1,40 @@
-import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcryptjs';
+import { PrismaClient } from "@prisma/client";
+import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting database seeding...');
-  
+  console.log("Starting database seeding...");
+
   // Seed Users
-  console.log('Seeding users...');
-  const adminEmail = 'admin@demo.com';
+  console.log("Seeding users...");
+  const adminEmail = "admin@demo.com";
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {},
     create: {
-      name: 'Admin',
+      name: "Admin",
       email: adminEmail,
-      password: await hash('Admin1234', 10),
-      role: 'ADMIN',
+      password: await hash("Admin1234", 10),
+      role: "ADMIN",
     },
   });
 
-  const userEmail = 'user@demo.com';
+  const userEmail = "user@demo.com";
   const user = await prisma.user.upsert({
     where: { email: userEmail },
     update: {},
     create: {
-      name: 'User',
+      name: "User",
       email: userEmail,
-      password: await hash('User1234', 10),
-      role: 'USER',
+      password: await hash("User1234", 10),
+      role: "USER",
     },
   });
 
   // Seed categories
-  console.log('Seeding categories...');
-  const categoryNames = ['Electronics', 'Fashion', 'Home', 'Sports', 'Books'];
+  console.log("Seeding categories...");
+  const categoryNames = ["Electronics", "Fashion", "Home", "Sports", "Books"];
   const categories = [];
   for (const name of categoryNames) {
     const category = await prisma.category.upsert({
@@ -46,24 +46,24 @@ async function main() {
   }
 
   // Seed products with all fields
-  console.log('Seeding products...');
+  console.log("Seeding products...");
   for (let i = 1; i <= 30; i++) {
     const category = categories[i % categories.length];
     const productData = {
       name: `Product ${i}`,
       description: `Description for product ${i}`,
       price: 100 + i * 10,
-  imageUrl: "",
-      brand: `Brand ${((i % 5) + 1)}`,
+      imageUrl: "",
+      brand: `Brand ${(i % 5) + 1}`,
       categoryId: category.id,
-      discountPrice: i % 2 === 0 ? (80 + i * 8) : null,
+      discountPrice: i % 2 === 0 ? 80 + i * 8 : null,
       metaDescription: `Meta description for product ${i}`,
       metaTitle: `Meta title for product ${i}`,
       promoExpired: i % 3 === 0 ? new Date(Date.now() + 86400000 * i) : null,
       sku: `SKU${1000 + i}`,
       slug: `product-${i}`,
       stock: 10 + i,
-      status: 'active',
+      status: "active",
     };
 
     await prisma.product.upsert({
@@ -74,7 +74,7 @@ async function main() {
   }
 
   // Seed HomePage
-  console.log('Seeding home page...');
+  console.log("Seeding home page...");
   await prisma.homePage.upsert({
     where: { id: 1 },
     update: {},
@@ -89,7 +89,7 @@ async function main() {
           description: "Discover our exclusive collection with up to 50% off",
           image: "/uploads/hero1.jpg",
           buttonText: "Shop Now",
-          buttonLink: "/products"
+          buttonLink: "/products",
         },
         {
           title: "Fast & Free Delivery",
@@ -97,7 +97,7 @@ async function main() {
           description: "Get your orders delivered within 24 hours at no extra cost",
           image: "/uploads/hero2.jpg",
           buttonText: "Learn More",
-          buttonLink: "/about"
+          buttonLink: "/about",
         },
         {
           title: "24/7 Customer Support",
@@ -105,43 +105,43 @@ async function main() {
           description: "Our dedicated support team is available round the clock",
           image: "/uploads/hero3.jpg",
           buttonText: "Contact Us",
-          buttonLink: "/contact"
-        }
+          buttonLink: "/contact",
+        },
       ],
       features: [
         {
           icon: "Truck",
           title: "Free Shipping",
-          description: "Free shipping on orders over $50"
+          description: "Free shipping on orders over $50",
         },
         {
           icon: "Shield",
           title: "Secure Payment",
-          description: "100% secure payment processing"
+          description: "100% secure payment processing",
         },
         {
           icon: "HeartHandshake",
           title: "Quality Guarantee",
-          description: "30-day money back guarantee"
+          description: "30-day money back guarantee",
         },
         {
           icon: "Headphones",
           title: "24/7 Support",
-          description: "Dedicated customer support"
-        }
+          description: "Dedicated customer support",
+        },
       ],
       statsData: [
         { label: "Happy Customers", value: "10,000+", icon: "Users" },
         { label: "Products Sold", value: "50,000+", icon: "Package" },
         { label: "Countries Served", value: "25+", icon: "Globe" },
-        { label: "Years Experience", value: "5+", icon: "Calendar" }
+        { label: "Years Experience", value: "5+", icon: "Calendar" },
       ],
       aboutPreview: {
         title: "About Our Company",
         description: "We are passionate about delivering quality products and exceptional customer service. Our journey began with a simple mission: to make premium products accessible to everyone.",
         image: "/uploads/about-preview.jpg",
         buttonText: "Learn More About Us",
-        buttonLink: "/about"
+        buttonLink: "/about",
       },
       testimonialsData: [
         {
@@ -149,28 +149,28 @@ async function main() {
           role: "Regular Customer",
           content: "Amazing quality products and fast delivery. I've been shopping here for over a year and never disappointed!",
           avatar: "/uploads/avatar1.jpg",
-          rating: 5
+          rating: 5,
         },
         {
           name: "Michael Chen",
           role: "Business Owner",
           content: "Excellent customer service and competitive prices. Highly recommended for anyone looking for quality products.",
           avatar: "/uploads/avatar2.jpg",
-          rating: 5
+          rating: 5,
         },
         {
           name: "Emily Davis",
           role: "Loyal Customer",
           content: "The user experience is fantastic and the product quality exceeded my expectations. Will definitely shop again!",
           avatar: "/uploads/avatar3.jpg",
-          rating: 5
-        }
-      ]
+          rating: 5,
+        },
+      ],
     },
   });
 
   // Seed AboutPage
-  console.log('Seeding about page...');
+  console.log("Seeding about page...");
   await prisma.aboutPage.upsert({
     where: { id: 1 },
     update: {},
@@ -178,54 +178,55 @@ async function main() {
       heroTitle: "About Our Company",
       heroSubtitle: "Your Trusted Shopping Partner",
       heroDescription: "We are committed to providing the best shopping experience with quality products, competitive prices, and exceptional customer service.",
-      companyStory: "Founded in 2019, our company started with a simple vision: to make quality products accessible to everyone. What began as a small startup has grown into a trusted brand serving thousands of customers worldwide. We believe in the power of innovation, customer satisfaction, and continuous improvement.",
+      companyStory:
+        "Founded in 2019, our company started with a simple vision: to make quality products accessible to everyone. What began as a small startup has grown into a trusted brand serving thousands of customers worldwide. We believe in the power of innovation, customer satisfaction, and continuous improvement.",
       mission: "To provide customers with the highest quality products at competitive prices while delivering exceptional customer service and building long-lasting relationships.",
       vision: "To become the leading e-commerce platform that connects people with the products they love, making shopping convenient, enjoyable, and trustworthy.",
       values: [
         {
           title: "Quality First",
-          description: "We never compromise on product quality and ensure every item meets our high standards."
+          description: "We never compromise on product quality and ensure every item meets our high standards.",
         },
         {
           title: "Customer Focus",
-          description: "Our customers are at the heart of everything we do. Their satisfaction is our top priority."
+          description: "Our customers are at the heart of everything we do. Their satisfaction is our top priority.",
         },
         {
           title: "Innovation",
-          description: "We continuously innovate to improve our products, services, and customer experience."
+          description: "We continuously innovate to improve our products, services, and customer experience.",
         },
         {
           title: "Integrity",
-          description: "We conduct business with honesty, transparency, and ethical practices."
-        }
+          description: "We conduct business with honesty, transparency, and ethical practices.",
+        },
       ],
       statistics: [
         { label: "Years in Business", value: "5+", icon: "Calendar" },
         { label: "Happy Customers", value: "10,000+", icon: "Users" },
         { label: "Products Available", value: "5,000+", icon: "Package" },
-        { label: "Team Members", value: "50+", icon: "UserCheck" }
+        { label: "Team Members", value: "50+", icon: "UserCheck" },
       ],
       features: [
         {
           icon: "Award",
           title: "Award Winning Service",
-          description: "Recognized for excellence in customer service and product quality."
+          description: "Recognized for excellence in customer service and product quality.",
         },
         {
           icon: "Globe",
           title: "Worldwide Shipping",
-          description: "We deliver to customers across the globe with reliable shipping partners."
+          description: "We deliver to customers across the globe with reliable shipping partners.",
         },
         {
           icon: "Shield",
           title: "Secure Shopping",
-          description: "Your personal and payment information is always protected."
+          description: "Your personal and payment information is always protected.",
         },
         {
           icon: "Clock",
           title: "Fast Processing",
-          description: "Orders are processed quickly and shipped within 24 hours."
-        }
+          description: "Orders are processed quickly and shipped within 24 hours.",
+        },
       ],
       teamMembers: [
         {
@@ -236,8 +237,8 @@ async function main() {
           social: {
             linkedin: "#",
             twitter: "#",
-            email: "john@company.com"
-          }
+            email: "john@company.com",
+          },
         },
         {
           name: "Jane Williams",
@@ -247,8 +248,8 @@ async function main() {
           social: {
             linkedin: "#",
             github: "#",
-            email: "jane@company.com"
-          }
+            email: "jane@company.com",
+          },
         },
         {
           name: "Mike Johnson",
@@ -257,150 +258,47 @@ async function main() {
           image: "/uploads/team3.jpg",
           social: {
             linkedin: "#",
-            email: "mike@company.com"
-          }
-        }
+            email: "mike@company.com",
+          },
+        },
       ],
       timeline: [
         {
           year: "2019",
           title: "Company Founded",
-          description: "Started as a small startup with big dreams and a customer-first approach."
+          description: "Started as a small startup with big dreams and a customer-first approach.",
         },
         {
           year: "2020",
           title: "First 1,000 Customers",
-          description: "Reached our first milestone and expanded our product catalog."
+          description: "Reached our first milestone and expanded our product catalog.",
         },
         {
           year: "2021",
           title: "International Expansion",
-          description: "Extended our services to international markets and partnered with global suppliers."
+          description: "Extended our services to international markets and partnered with global suppliers.",
         },
         {
           year: "2022",
           title: "Mobile App Launch",
-          description: "Launched our mobile application to provide better shopping experience."
+          description: "Launched our mobile application to provide better shopping experience.",
         },
         {
           year: "2023",
           title: "10,000+ Happy Customers",
-          description: "Celebrated serving over 10,000 satisfied customers worldwide."
+          description: "Celebrated serving over 10,000 satisfied customers worldwide.",
         },
         {
           year: "2024",
           title: "Award Recognition",
-          description: "Received multiple awards for customer service excellence and innovation."
-        }
-      ]
-    },
-  });
-
-  // Seed EventPage
-  console.log('Seeding event page...');
-  await prisma.eventPage.upsert({
-    where: { id: 1 },
-    update: {},
-    create: {
-      heroTitle: "Exciting Events & Promotions",
-      heroSubtitle: "Don't Miss Out!",
-      heroDescription: "Join our amazing events and take advantage of exclusive promotions, special discounts, and limited-time offers.",
-      activeEvents: [
-        {
-          title: "Summer Sale 2024",
-          description: "Get up to 70% off on all summer collections. Limited time offer with free shipping on orders over $100.",
-          image: "/uploads/event1.jpg",
-          startDate: "2024-06-01",
-          endDate: "2024-08-31",
-          status: "active",
-          category: "sale",
-          featured: true,
-          details: {
-            discount: "Up to 70% OFF",
-            shipping: "Free shipping over $100",
-            categories: ["Fashion", "Sports", "Electronics"],
-            terms: "Valid until August 31, 2024. Cannot be combined with other offers."
-          }
+          description: "Received multiple awards for customer service excellence and innovation.",
         },
-        {
-          title: "Black Friday Mega Sale",
-          description: "The biggest sale of the year! Incredible discounts on thousands of products across all categories.",
-          image: "/uploads/event2.jpg",
-          startDate: "2024-11-29",
-          endDate: "2024-12-02",
-          status: "upcoming",
-          category: "sale",
-          featured: true,
-          details: {
-            discount: "Up to 80% OFF",
-            shipping: "Free worldwide shipping",
-            categories: ["All Categories"],
-            terms: "Limited time offer. While stocks last."
-          }
-        },
-        {
-          title: "Customer Appreciation Day",
-          description: "Special day dedicated to our loyal customers with exclusive perks and rewards.",
-          image: "/uploads/event4.jpg",
-          startDate: "2024-09-15",
-          endDate: "2024-09-15",
-          status: "upcoming",
-          category: "special",
-          featured: true,
-          details: {
-            discount: "Special member prices",
-            shipping: "Free shipping for all members",
-            categories: ["All Categories"],
-            terms: "Exclusive for registered members only."
-          }
-        }
       ],
-      upcomingEvents: [
-        {
-          title: "Tech Week 2024",
-          date: "2024-10-15",
-          description: "Latest gadgets and electronics at special prices"
-        },
-        {
-          title: "Holiday Collection Launch",
-          date: "2024-11-01", 
-          description: "New holiday collection with exclusive designs"
-        },
-        {
-          title: "End of Year Clearance",
-          date: "2024-12-15",
-          description: "Final clearance sale before new year inventory"
-        }
-      ],
-      pastEvents: [
-        {
-          title: "New Year Flash Sale",
-          description: "Start the new year with amazing deals! 24-hour flash sale with unbeatable prices.",
-          image: "/uploads/event3.jpg",
-          startDate: "2024-01-01",
-          endDate: "2024-01-02",
-          status: "completed",
-          category: "flash-sale",
-          featured: false,
-          details: {
-            discount: "Up to 60% OFF",
-            shipping: "Express delivery available",
-            categories: ["Electronics", "Home", "Books"],
-            terms: "24-hour flash sale only. Limited quantities available."
-          }
-        }
-      ],
-      eventCategories: [
-        { name: "Flash Sales", slug: "flash-sale", color: "#ef4444" },
-        { name: "Seasonal Sales", slug: "seasonal", color: "#3b82f6" },
-        { name: "Special Events", slug: "special", color: "#8b5cf6" },
-        { name: "Product Launches", slug: "launch", color: "#10b981" }
-      ]
     },
   });
 
   // Seed ProductPage
-  console.log('Seeding product page...');
+  console.log("Seeding product page...");
   await prisma.productPage.upsert({
     where: { id: 1 },
     update: {},
@@ -414,29 +312,29 @@ async function main() {
           description: "Latest gadgets and tech accessories",
           image: "/uploads/category-electronics.jpg",
           productCount: 150,
-          featured: true
+          featured: true,
         },
         {
           name: "Fashion",
           description: "Trendy clothing and accessories",
           image: "/uploads/category-fashion.jpg",
           productCount: 300,
-          featured: true
+          featured: true,
         },
         {
           name: "Home & Garden",
           description: "Everything for your home and garden",
           image: "/uploads/category-home.jpg",
           productCount: 200,
-          featured: true
+          featured: true,
         },
         {
           name: "Sports & Outdoors",
           description: "Gear for active lifestyle",
           image: "/uploads/category-sports.jpg",
           productCount: 120,
-          featured: false
-        }
+          featured: false,
+        },
       ],
       filterOptions: [
         {
@@ -447,8 +345,8 @@ async function main() {
             { label: "$25 - $50", value: "25-50" },
             { label: "$50 - $100", value: "50-100" },
             { label: "$100 - $200", value: "100-200" },
-            { label: "Over $200", value: "200+" }
-          ]
+            { label: "Over $200", value: "200+" },
+          ],
         },
         {
           type: "brand",
@@ -458,19 +356,19 @@ async function main() {
             { label: "Brand 2", value: "brand-2" },
             { label: "Brand 3", value: "brand-3" },
             { label: "Brand 4", value: "brand-4" },
-            { label: "Brand 5", value: "brand-5" }
-          ]
+            { label: "Brand 5", value: "brand-5" },
+          ],
         },
         {
           type: "rating",
-          label: "Customer Rating", 
+          label: "Customer Rating",
           options: [
             { label: "4 Stars & Up", value: "4+" },
             { label: "3 Stars & Up", value: "3+" },
             { label: "2 Stars & Up", value: "2+" },
-            { label: "1 Star & Up", value: "1+" }
-          ]
-        }
+            { label: "1 Star & Up", value: "1+" },
+          ],
+        },
       ],
       sortOptions: [
         { label: "Featured", value: "featured" },
@@ -478,7 +376,7 @@ async function main() {
         { label: "Price: Low to High", value: "price-asc" },
         { label: "Price: High to Low", value: "price-desc" },
         { label: "Customer Rating", value: "rating" },
-        { label: "Newest First", value: "newest" }
+        { label: "Newest First", value: "newest" },
       ],
       promotionalBanner: {
         title: "Special Offer!",
@@ -487,19 +385,19 @@ async function main() {
         buttonLink: "/products?discount=20",
         backgroundColor: "#3b82f6",
         textColor: "#ffffff",
-        active: true
+        active: true,
       },
       seoContent: {
         metaTitle: "Premium Products - Quality You Can Trust",
         metaDescription: "Discover our extensive collection of premium products with competitive prices, fast shipping, and excellent customer service.",
         keywords: ["products", "shopping", "quality", "premium", "online store"],
-        canonicalUrl: "/products"
-      }
+        canonicalUrl: "/products",
+      },
     },
   });
 
   // Seed ContactPage
-  console.log('Seeding contact page...');
+  console.log("Seeding contact page...");
   await prisma.contactPage.upsert({
     where: { id: 1 },
     update: {},
@@ -575,19 +473,19 @@ async function main() {
     },
   });
 
-  console.log('✅ Database seeding completed successfully!');
+  console.log("✅ Database seeding completed successfully!");
   console.log(`👤 Users created: Admin (${admin.email}), User (${user.email})`);
   console.log(`📦 Products created: 30`);
   console.log(`🏷️ Categories created: ${categories.length}`);
-  console.log(`📄 Pages seeded: HomePage, AboutPage, EventPage, ProductPage, ContactPage`);
-  console.log('\n🔐 Login credentials:');
+  console.log(`📄 Pages seeded: HomePage, AboutPage, ProductPage, ContactPage`);
+  console.log("\n🔐 Login credentials:");
   console.log(`Admin: ${adminEmail} / Admin1234`);
   console.log(`User: ${userEmail} / User1234`);
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error during seeding:', e);
+    console.error("❌ Error during seeding:", e);
     process.exit(1);
   })
   .finally(async () => {

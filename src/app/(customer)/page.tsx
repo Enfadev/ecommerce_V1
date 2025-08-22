@@ -5,6 +5,7 @@ import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import NextLink from "next/link";
+import Image from "next/image";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 
 interface HeroSlide {
@@ -149,37 +150,62 @@ export default async function Home() {
   return (
     <div className="space-y-12">
       {/* Hero Carousel */}
-      <section className="relative">
+      <section className="relative overflow-hidden rounded-2xl">
         <Carousel className="w-full">
           <CarouselContent>
             {(heroSlides as HeroSlide[]).map((slide: HeroSlide, index: number) => (
               <CarouselItem key={index}>
-                <Card className="border-0 overflow-hidden">
-                  <div className="relative h-64 md:h-80 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-between px-8 md:px-16">
-                    <div className="text-white space-y-4 z-10">
-                      <Badge className="bg-yellow-500 text-black font-semibold">� {slide.subtitle}</Badge>
-                      <h1 className="text-2xl md:text-4xl font-bold">{slide.title}</h1>
-                      <p className="text-blue-100 max-w-md">{slide.description}</p>
-                      <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50" asChild>
-                        <NextLink href={slide.buttonLink || "/products"}>
-                          {slide.buttonText} <ArrowRight className="ml-2 h-4 w-4" />
-                        </NextLink>
-                      </Button>
-                    </div>
-                    <div className="hidden md:block absolute right-8 top-1/2 transform -translate-y-1/2">
-                      <div className="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center">
-                        <Gift className="w-16 h-16 text-white" />
+                <div className="relative h-[60vh] min-h-[500px] flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 overflow-hidden">
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-20 right-20 w-48 h-48 bg-white rounded-full blur-3xl"></div>
+                    <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-white rounded-full blur-2xl"></div>
+                  </div>
+
+                  {/* Content Container */}
+                  <div className="container mx-auto px-4 relative z-10">
+                    <div className="flex items-center justify-center min-h-[400px]">
+                      {/* Center Content */}
+                      <div className="text-center space-y-6 max-w-4xl">
+                        <div className="space-y-2">
+                          <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30 transition-colors">{slide.subtitle}</Badge>
+                          <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">{slide.title}</h1>
+                        </div>
+
+                        <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">{slide.description}</p>
+
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                          <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90 font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg" asChild>
+                            <NextLink href={slide.buttonLink}>
+                              {slide.buttonText}
+                              <ArrowRight className="ml-2 h-5 w-5" />
+                            </NextLink>
+                          </Button>
+                          <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3 rounded-full transition-all duration-300" asChild>
+                            <NextLink href="/about">Learn More</NextLink>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-4" />
-          <CarouselNext className="right-4" />
+
+          {/* Navigation Arrows */}
+          <CarouselPrevious className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
+          <CarouselNext className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
+
+          {/* Dot Indicators */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+            {(heroSlides as HeroSlide[]).map((_, index) => (
+              <button key={index} className="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300" aria-label={`Go to slide ${index + 1}`} />
+            ))}
+          </div>
         </Carousel>
-      </section>{" "}
+      </section>
       {/* Features Section */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {(features as Feature[]).map((feature: Feature, index: number) => {
@@ -244,74 +270,85 @@ export default async function Home() {
       {/* This Week's Promo */}
       <section>
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">This Week&apos;s Promo</h2>
+          <div>
+            <h2 className="text-3xl font-bold">This Week&apos;s Promo</h2>
+            <p className="text-muted-foreground">Special deals just for you</p>
+          </div>
           <Button variant="outline" asChild>
             <NextLink href="/product">
-              View All Promos <ArrowRight className="ml-2 h-4 w-4" />
+              View All <ArrowRight className="ml-2 h-4 w-4" />
             </NextLink>
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-0">
-              <div className="relative">
-                <div className="h-48 bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
-                  <div className="text-6xl">🎧</div>
-                </div>
-                <Badge className="absolute top-4 left-4 bg-pink-600 text-white">FLASH SALE</Badge>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Flash Sale Card */}
+          <div className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-pink-200 dark:hover:border-pink-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl">🎧</div>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400">Flash Sale</span>
               </div>
-              <div className="p-6 space-y-2">
-                <h3 className="font-semibold text-lg">Wireless Headphone</h3>
+
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Premium Wireless Headphone</h3>
+
+              <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground text-sm line-through">Rp 600.000</span>
-                  <span className="text-2xl font-bold text-primary">Rp 450.000</span>
+                  <span className="text-sm text-gray-500 line-through">$150.00</span>
+                  <span className="text-2xl font-bold text-pink-600">$89.99</span>
                 </div>
-                <p className="text-xs text-muted-foreground">Today only!</p>
-                <Button className="w-full mt-4 group-hover:bg-primary/90">Buy Now</Button>
+                <p className="text-xs text-pink-600 font-medium">⏰ Ends in 6 hours</p>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-0">
-              <div className="relative">
-                <div className="h-48 bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                  <div className="text-6xl">👕</div>
-                </div>
-                <Badge className="absolute top-4 left-4 bg-blue-600 text-white">DISKON 30%</Badge>
+
+              <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white">Add to Cart</Button>
+            </div>
+          </div>
+
+          {/* Discount Card */}
+          <div className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl">👕</div>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">30% Off</span>
               </div>
-              <div className="p-6 space-y-2">
-                <h3 className="font-semibold text-lg">T-shirt Unisex</h3>
+
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Premium Cotton T-Shirt</h3>
+
+              <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground text-sm line-through">Rp 170.000</span>
-                  <span className="text-2xl font-bold text-primary">Rp 120.000</span>
+                  <span className="text-sm text-gray-500 line-through">$50.00</span>
+                  <span className="text-2xl font-bold text-blue-600">$35.00</span>
                 </div>
-                <p className="text-xs text-muted-foreground">Limited stock!</p>
-                <Button className="w-full mt-4 group-hover:bg-primary/90">Buy Now</Button>
+                <p className="text-xs text-blue-600 font-medium">📦 Only 12 left in stock</p>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-0">
-              <div className="relative">
-                <div className="h-48 bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                  <div className="text-6xl">⌚</div>
-                </div>
-                <Badge className="absolute top-4 left-4 bg-green-600 text-white">GRATIS ONGKIR</Badge>
+
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Add to Cart</Button>
+            </div>
+          </div>
+
+          {/* Free Shipping Card */}
+          <div className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-green-200 dark:hover:border-green-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-4xl">⌚</div>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">Free Ship</span>
               </div>
-              <div className="p-6 space-y-2">
-                <h3 className="font-semibold text-lg">Smart Watch</h3>
+
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Smart Watch Series 9</h3>
+
+              <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground text-sm line-through">Rp 1.000.000</span>
-                  <span className="text-2xl font-bold text-primary">Rp 800.000</span>
+                  <span className="text-sm text-gray-500 line-through">$399.99</span>
+                  <span className="text-2xl font-bold text-green-600">$299.99</span>
                 </div>
-                <p className="text-xs text-muted-foreground">Java & Bali area only</p>
-                <Button className="w-full mt-4 group-hover:bg-primary/90">Buy Now</Button>
+                <p className="text-xs text-green-600 font-medium">🚚 Free shipping nationwide</p>
               </div>
-            </CardContent>
-          </Card>
+
+              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Add to Cart</Button>
+            </div>
+          </div>
         </div>
       </section>
-      
       {/* Featured Products */}
       <section>
         <div className="flex items-center justify-between mb-8">
