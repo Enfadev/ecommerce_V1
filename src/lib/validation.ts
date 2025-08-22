@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { validatePassword } from './password-validation';
 
-// Custom password validator for Zod
 const passwordValidator = z.string().refine(
   (password: string) => {
     const result = validatePassword(password);
@@ -11,8 +10,6 @@ const passwordValidator = z.string().refine(
     message: 'Password does not meet security requirements',
   }
 );
-
-// User registration schema
 export const registerSchema = z.object({
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
@@ -27,7 +24,6 @@ export const registerSchema = z.object({
   password: passwordValidator,
 });
 
-// User signin schema
 export const signinSchema = z.object({
   email: z.string()
     .email('Invalid email format')
@@ -38,7 +34,6 @@ export const signinSchema = z.object({
     .min(1, 'Password is required'),
 });
 
-// Product schema
 export const productSchema = z.object({
   name: z.string()
     .min(1, 'Product name is required')
@@ -76,7 +71,6 @@ export const productSchema = z.object({
     .optional(),
 });
 
-// Contact form schema
 export const contactSchema = z.object({
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
@@ -95,7 +89,6 @@ export const contactSchema = z.object({
     .max(2000, 'Message must not exceed 2000 characters'),
 });
 
-// File upload schema
 export const fileUploadSchema = z.object({
   file: z.object({
     name: z.string(),
@@ -106,7 +99,6 @@ export const fileUploadSchema = z.object({
   }),
 });
 
-// Generic validation helper
 export function validateInput<T>(schema: z.ZodSchema<T>, data: unknown): {
   success: boolean;
   data?: T;
@@ -124,7 +116,6 @@ export function validateInput<T>(schema: z.ZodSchema<T>, data: unknown): {
   }
 }
 
-// XSS prevention helper
 export function sanitizeHtml(input: string): string {
   return input
     .replace(/</g, '&lt;')
@@ -134,7 +125,6 @@ export function sanitizeHtml(input: string): string {
     .replace(/\//g, '&#x2F;');
 }
 
-// SQL injection prevention (additional safety)
 export function sanitizeSql(input: string): string {
   return input
     .replace(/'/g, "''")

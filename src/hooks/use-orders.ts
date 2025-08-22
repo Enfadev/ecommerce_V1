@@ -23,7 +23,6 @@ export interface Order {
   status: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURNED";
   paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
   
-  // Customer Information
   customerName: string;
   customerEmail: string;
   customerPhone: string;
@@ -31,26 +30,21 @@ export interface Order {
   postalCode?: string;
   notes?: string;
   
-  // Payment Information
   paymentMethod: string;
   paymentProof?: string;
   
-  // Price Information
   subtotal: number;
   shippingFee: number;
   tax: number;
   discount: number;
   totalAmount: number;
   
-  // Shipping Information
   trackingNumber?: string;
   estimatedDelivery?: string;
   
-  // Timestamps
   createdAt: string;
   updatedAt: string;
   
-  // Relations
   items: OrderItem[];
 }
 
@@ -88,7 +82,6 @@ export function useOrders() {
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  // Fetch user orders
   const fetchOrders = useCallback(async (page = 1, limit = 10, status?: string) => {
     setLoading(true);
     try {
@@ -119,7 +112,6 @@ export function useOrders() {
     }
   }, []);
 
-  // Create new order
   const createOrder = async (orderData: CreateOrderData): Promise<Order | null> => {
     setCreating(true);
     try {

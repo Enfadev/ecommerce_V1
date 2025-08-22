@@ -1,16 +1,13 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Get JWT secret with fallback for development
 const getJWTSecret = () => {
   const jwtSecret = process.env.JWT_SECRET;
   
-  // In production, JWT_SECRET is required
   if (process.env.NODE_ENV === 'production' && !jwtSecret) {
     throw new Error('JWT_SECRET environment variable is required in production');
   }
   
-  // For development, provide a default secret but warn
   if (!jwtSecret) {
     console.warn('⚠️  Using default JWT secret for development. Set JWT_SECRET in .env.local for production!');
     return 'your-fallback-secret-key-min-32-characters-long-dev-only';
@@ -33,7 +30,6 @@ export interface CustomJWTPayload {
   exp?: number;
 }
 
-// Sign JWT token
 export async function signJWT(payload: Omit<CustomJWTPayload, 'iat' | 'exp'>) {
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
@@ -44,7 +40,6 @@ export async function signJWT(payload: Omit<CustomJWTPayload, 'iat' | 'exp'>) {
   return token;
 }
 
-// Verify JWT token
 export async function verifyJWT(token: string): Promise<CustomJWTPayload | null> {
   try {
     console.log('🔍 Verifying JWT token...');
@@ -73,12 +68,10 @@ export async function verifyJWT(token: string): Promise<CustomJWTPayload | null>
   }
 }
 
-// Get token from request cookies
 export function getTokenFromRequest(request: NextRequest): string | undefined {
   return request.cookies.get('auth-token')?.value;
 }
 
-// Get user from token in request
 export async function getUserFromRequest(request: NextRequest): Promise<CustomJWTPayload | null> {
   const token = getTokenFromRequest(request);
   if (!token) return null;
@@ -86,34 +79,30 @@ export async function getUserFromRequest(request: NextRequest): Promise<CustomJW
   return await verifyJWT(token);
 }
 
-// Check if user is authenticated from request
 export async function isAuthenticatedRequest(request: NextRequest): Promise<boolean> {
   const user = await getUserFromRequest(request);
   return !!user;
 }
 
-// Check if user is admin from request
 export async function isAdminRequest(request: NextRequest): Promise<boolean> {
   const user = await getUserFromRequest(request);
   return user?.role === 'ADMIN';
 }
 
-// Set auth cookie in response
 export function setAuthCookie(response: NextResponse, token: string): NextResponse {
   const isProduction = process.env.NODE_ENV === 'production';
   
   response.cookies.set('auth-token', token, {
     httpOnly: true,
-    secure: isProduction, // Only secure in production
-    sameSite: isProduction ? 'strict' : 'lax', // More permissive in development
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    secure: isProduction,
+    sameSite: isProduction ? 'strict' : 'lax',
+    maxAge: 60 * 60 * 24 * 7,
     path: '/',
-    domain: isProduction ? undefined : undefined, // Let browser set domain
+    domain: isProduction ? undefined : undefined,
   });
   return response;
 }
 
-// Clear auth cookie in response
 export function clearAuthCookie(response: NextResponse): NextResponse {
   const isProduction = process.env.NODE_ENV === 'production';
   

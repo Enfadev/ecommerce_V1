@@ -140,7 +140,6 @@ export function useOrders(): UseOrdersResult {
         throw new Error('Failed to update order');
       }
 
-      // Refresh current page after update
       await fetchOrders();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update order');
@@ -148,7 +147,6 @@ export function useOrders(): UseOrdersResult {
     }
   };
 
-  // Initial load only
   useEffect(() => {
     if (!initializedRef.current) {
       initializedRef.current = true;

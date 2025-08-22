@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
 
 export async function getUserIdFromRequest(request: NextRequest): Promise<number | null> {
-  // Try NextAuth session first
   try {
     const session = await getServerSession(authOptions);
     if (session?.user?.id) {
@@ -14,7 +13,6 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<number
     console.log("NextAuth session check failed:", error);
   }
 
-  // Fallback to JWT token
   try {
     const token = request.cookies.get("auth-token")?.value;
     if (token) {

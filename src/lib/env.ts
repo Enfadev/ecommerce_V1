@@ -24,7 +24,6 @@ function validateJWTSecret(secret: string): string {
   return secret;
 }
 
-// Validate all required environment variables
 export const env: EnvironmentConfig = {
   JWT_SECRET: validateJWTSecret(
     validateEnvironmentVariable('JWT_SECRET', process.env.JWT_SECRET)
@@ -34,7 +33,6 @@ export const env: EnvironmentConfig = {
   NODE_ENV: process.env.NODE_ENV || 'development',
 };
 
-// Export individual environment variables for convenience
 export const {
   JWT_SECRET,
   JWT_EXPIRES_IN,

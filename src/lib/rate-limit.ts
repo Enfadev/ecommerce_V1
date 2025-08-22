@@ -7,7 +7,6 @@ interface RateLimitStore {
   };
 }
 
-// In-memory store for rate limiting (use Redis in production)
 const store: RateLimitStore = {};
 
 export interface RateLimitConfig {
@@ -15,29 +14,19 @@ export interface RateLimitConfig {
   windowMs: number;
 }
 
-// Default configurations for different endpoints
 export const rateLimitConfigs = {
-  // Authentication endpoints - stricter limits
-  auth: { requests: 5, windowMs: 15 * 60 * 1000 }, // 5 requests per 15 minutes
-  
-  // API endpoints - moderate limits
-  api: { requests: 100, windowMs: 15 * 60 * 1000 }, // 100 requests per 15 minutes
-  
-  // Upload endpoints - very strict
-  upload: { requests: 10, windowMs: 60 * 60 * 1000 }, // 10 requests per hour
-  
-  // Admin endpoints - moderate but monitored
-  admin: { requests: 50, windowMs: 15 * 60 * 1000 }, // 50 requests per 15 minutes
+  auth: { requests: 5, windowMs: 15 * 60 * 1000 },
+  api: { requests: 100, windowMs: 15 * 60 * 1000 },
+  upload: { requests: 10, windowMs: 60 * 60 * 1000 },
+  admin: { requests: 50, windowMs: 15 * 60 * 1000 },
 };
 
 export function getRateLimitKey(request: NextRequest, identifier?: string): string {
-  // Use custom identifier or fall back to IP
   const id = identifier || getClientIP(request) || 'unknown';
   return `rate-limit:${id}`;
 }
 
 export function getClientIP(request: NextRequest): string | null {
-  // Get IP from various headers (for different deployment scenarios)
   const forwarded = request.headers.get('x-forwarded-for');
   const realIP = request.headers.get('x-real-ip');
   const cfConnectingIP = request.headers.get('cf-connecting-ip');
@@ -54,7 +43,6 @@ export function getClientIP(request: NextRequest): string | null {
     return cfConnectingIP;
   }
   
-  // Fallback - in serverless environments, IP might not be available
   return null;
 }
 
@@ -65,12 +53,10 @@ export function checkRateLimit(
   const now = Date.now();
   const windowStart = now - config.windowMs;
   
-  // Clean up old entries
   if (store[key] && store[key].resetTime < windowStart) {
     delete store[key];
   }
   
-  // Initialize or get current count
   if (!store[key]) {
     store[key] = {
       count: 1,
@@ -83,7 +69,6 @@ export function checkRateLimit(
     };
   }
   
-  // Check if limit exceeded
   if (store[key].count >= config.requests) {
     return {
       allowed: false,
@@ -92,7 +77,6 @@ export function checkRateLimit(
     };
   }
   
-  // Increment count
   store[key].count++;
   
   return {
@@ -126,7 +110,6 @@ export function createRateLimitResponse(
   );
 }
 
-// Helper function to apply rate limiting to API routes
 export function withRateLimit(
   handler: (request: NextRequest) => Promise<Response>,
   config: RateLimitConfig,
@@ -140,7 +123,6 @@ export function withRateLimit(
       return createRateLimitResponse(resetTime, remaining);
     }
     
-    // Add rate limit headers to successful responses
     const response = await handler(request);
     
     if (response.headers) {
