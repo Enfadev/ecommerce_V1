@@ -18,25 +18,24 @@ import { Badge } from "@/components/ui/badge";
 import { User, Phone, MapPin, Calendar, Settings, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { Toast } from "@/components/ui/toast";
-import ProductRecommendation from "@/components/ProductRecommendation";
 
 const profileSchema = z.object({
-  name: z.string().min(2, { message: "Nama minimal 2 karakter" }),
-  email: z.string().email({ message: "Email tidak valid" }),
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  email: z.string().email({ message: "Invalid email address" }),
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
   dateOfBirth: z.string().optional(),
-  image: z.string().url({ message: "URL avatar tidak valid" }).optional(),
+  image: z.string().url({ message: "Invalid avatar URL" }).optional(),
 });
 
 const passwordSchema = z
   .object({
-    currentPassword: z.string().min(6, { message: "Password lama minimal 6 karakter" }),
-    newPassword: z.string().min(8, { message: "Password baru minimal 8 karakter" }),
+    currentPassword: z.string().min(6, { message: "Current password must be at least 6 characters" }),
+    newPassword: z.string().min(8, { message: "New password must be at least 8 characters" }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Konfirmasi password tidak cocok",
+    message: "Password confirmation doesn't match",
     path: ["confirmPassword"],
   });
 
@@ -99,20 +98,20 @@ export default function ProfilePage() {
       if (success) {
         setToast({
           show: true,
-          message: "Profil berhasil diperbarui!",
+          message: "Profile updated successfully!",
           type: "success",
         });
       } else {
         setToast({
           show: true,
-          message: "Gagal memperbarui profil. Silakan coba lagi.",
+          message: "Failed to update profile. Please try again.",
           type: "error",
         });
       }
     } catch {
       setToast({
         show: true,
-        message: "Terjadi kesalahan saat memperbarui profil",
+        message: "An error occurred while updating profile",
         type: "error",
       });
     }
@@ -135,7 +134,7 @@ export default function ProfilePage() {
       if (res.ok) {
         setToast({
           show: true,
-          message: "Password berhasil diubah!",
+          message: "Password changed successfully!",
           type: "success",
         });
         passwordForm.reset();
@@ -143,14 +142,14 @@ export default function ProfilePage() {
         const errorData = await res.json();
         setToast({
           show: true,
-          message: errorData.error || "Gagal mengubah password",
+          message: errorData.error || "Failed to change password",
           type: "error",
         });
       }
     } catch {
       setToast({
         show: true,
-        message: "Terjadi kesalahan saat mengubah password",
+        message: "An error occurred while changing password",
         type: "error",
       });
     }
@@ -177,7 +176,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4 mx-auto" />
-          <p className="text-gray-400">Memuat profil...</p>
+          <p className="text-gray-400">Loading profile...</p>
         </div>
       </div>
     );
@@ -189,7 +188,7 @@ export default function ProfilePage() {
 
   return (
     <div className="py-8">
-      {toast.show && <Toast title={toast.type === "success" ? "Berhasil!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
+      {toast.show && <Toast title={toast.type === "success" ? "Success!" : "Error!"} description={toast.message} variant={toast.type} onClose={() => setToast({ ...toast, show: false })} />}
 
       <div>
         {/* Header Profile */}
@@ -233,7 +232,7 @@ export default function ProfilePage() {
                   {user.createdAt && (
                     <div className="flex items-center gap-2 text-gray-300">
                       <Calendar className="h-4 w-4" />
-                      <span>Bergabung {new Date(user.createdAt).getFullYear()}</span>
+                      <span>Joined {new Date(user.createdAt).getFullYear()}</span>
                     </div>
                   )}
                 </div>
@@ -243,7 +242,7 @@ export default function ProfilePage() {
                 <Link href="/order-history">
                   <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                     <Package className="h-4 w-4 mr-2" />
-                    Pesanan
+                    Orders
                   </Button>
                 </Link>
                 <Link href="/wishlist">
@@ -265,15 +264,15 @@ export default function ProfilePage() {
               <TabsList className="bg-gray-800 border-gray-700">
                 <TabsTrigger value="profile" className="data-[state=active]:bg-gray-700">
                   <User className="h-4 w-4 mr-2" />
-                  Profil
+                  Profile
                 </TabsTrigger>
                 <TabsTrigger value="security" className="data-[state=active]:bg-gray-700">
                   <Shield className="h-4 w-4 mr-2" />
-                  Keamanan
+                  Security
                 </TabsTrigger>
                 <TabsTrigger value="settings" className="data-[state=active]:bg-gray-700">
                   <Settings className="h-4 w-4 mr-2" />
-                  Pengaturan
+                  Settings
                 </TabsTrigger>
               </TabsList>
 
@@ -283,9 +282,9 @@ export default function ProfilePage() {
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
                       <Edit3 className="h-5 w-5" />
-                      Edit Profil
+                      Edit Profile
                     </CardTitle>
-                    <CardDescription className="text-gray-400">Perbarui informasi profil Anda</CardDescription>
+                    <CardDescription className="text-gray-400">Update your profile information</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Form {...profileForm}>
@@ -296,9 +295,9 @@ export default function ProfilePage() {
                             name="name"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-gray-200">Nama Lengkap</FormLabel>
+                                <FormLabel className="text-gray-200">Full Name</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Nama lengkap" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                                  <Input placeholder="Full name" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -326,9 +325,9 @@ export default function ProfilePage() {
                             name="phoneNumber"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-gray-200">Nomor Telepon</FormLabel>
+                                <FormLabel className="text-gray-200">Phone Number</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="+62 812 3456 7890" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                                  <Input placeholder="+1 234 567 8900" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -340,7 +339,7 @@ export default function ProfilePage() {
                             name="dateOfBirth"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-gray-200">Tanggal Lahir</FormLabel>
+                                <FormLabel className="text-gray-200">Date of Birth</FormLabel>
                                 <FormControl>
                                   <Input type="date" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
                                 </FormControl>
@@ -355,9 +354,9 @@ export default function ProfilePage() {
                           name="address"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Alamat</FormLabel>
+                              <FormLabel className="text-gray-200">Address</FormLabel>
                               <FormControl>
-                                <Textarea placeholder="Alamat lengkap Anda" className="bg-gray-700/50 border-gray-600 text-white resize-none" rows={3} {...field} />
+                                <Textarea placeholder="Your complete address" className="bg-gray-700/50 border-gray-600 text-white resize-none" rows={3} {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -369,7 +368,7 @@ export default function ProfilePage() {
                           name="image"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">URL Avatar</FormLabel>
+                              <FormLabel className="text-gray-200">Avatar URL</FormLabel>
                               <FormControl>
                                 <Input type="url" placeholder="https://example.com/avatar.jpg" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
                               </FormControl>
@@ -380,7 +379,7 @@ export default function ProfilePage() {
 
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
                           <Save className="h-4 w-4 mr-2" />
-                          Simpan Perubahan
+                          Save Changes
                         </Button>
                       </form>
                     </Form>
@@ -394,9 +393,9 @@ export default function ProfilePage() {
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
                       <Shield className="h-5 w-5" />
-                      Keamanan Akun
+                      Account Security
                     </CardTitle>
-                    <CardDescription className="text-gray-400">Kelola password dan keamanan akun Anda</CardDescription>
+                    <CardDescription className="text-gray-400">Manage your password and account security</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Form {...passwordForm}>
@@ -406,7 +405,7 @@ export default function ProfilePage() {
                           name="currentPassword"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Password Lama</FormLabel>
+                              <FormLabel className="text-gray-200">Current Password</FormLabel>
                               <FormControl>
                                 <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
                               </FormControl>
@@ -420,7 +419,7 @@ export default function ProfilePage() {
                           name="newPassword"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Password Baru</FormLabel>
+                              <FormLabel className="text-gray-200">New Password</FormLabel>
                               <FormControl>
                                 <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
                               </FormControl>
@@ -434,7 +433,7 @@ export default function ProfilePage() {
                           name="confirmPassword"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-gray-200">Konfirmasi Password Baru</FormLabel>
+                              <FormLabel className="text-gray-200">Confirm New Password</FormLabel>
                               <FormControl>
                                 <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
                               </FormControl>
@@ -445,7 +444,7 @@ export default function ProfilePage() {
 
                         <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
                           <Shield className="h-4 w-4 mr-2" />
-                          Ubah Password
+                          Change Password
                         </Button>
                       </form>
                     </Form>
@@ -459,29 +458,29 @@ export default function ProfilePage() {
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
                       <Settings className="h-5 w-5" />
-                      Pengaturan Akun
+                      Account Settings
                     </CardTitle>
-                    <CardDescription className="text-gray-400">Kelola preferensi dan pengaturan akun</CardDescription>
+                    <CardDescription className="text-gray-400">Manage your preferences and account settings</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
                         <div>
-                          <h4 className="text-white font-medium">Notifikasi Email</h4>
-                          <p className="text-gray-400 text-sm">Terima update tentang pesanan dan promosi</p>
+                          <h4 className="text-white font-medium">Email Notifications</h4>
+                          <p className="text-gray-400 text-sm">Receive updates about orders and promotions</p>
                         </div>
                         <Button variant="outline" size="sm" className="border-gray-600">
-                          Aktif
+                          Active
                         </Button>
                       </div>
 
                       <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
                         <div>
-                          <h4 className="text-white font-medium">Notifikasi Push</h4>
-                          <p className="text-gray-400 text-sm">Terima notifikasi langsung di browser</p>
+                          <h4 className="text-white font-medium">Push Notifications</h4>
+                          <p className="text-gray-400 text-sm">Receive notifications directly in browser</p>
                         </div>
                         <Button variant="outline" size="sm" className="border-gray-600">
-                          Nonaktif
+                          Inactive
                         </Button>
                       </div>
                     </div>
@@ -491,7 +490,7 @@ export default function ProfilePage() {
                     <div className="space-y-4">
                       <Button variant="destructive" className="w-full" onClick={handleSignOut}>
                         <LogOut className="h-4 w-4 mr-2" />
-                        Keluar dari Akun
+                        Sign Out
                       </Button>
                     </div>
                   </CardContent>
@@ -505,24 +504,24 @@ export default function ProfilePage() {
             {/* Quick Actions */}
             <Card className="bg-gray-800/80 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white text-lg">Aksi Cepat</CardTitle>
+                <CardTitle className="text-white text-lg">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link href="/order-history">
                   <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
                     <Package className="h-4 w-4 mr-2" />
-                    Riwayat Pesanan
+                    Order History
                   </Button>
                 </Link>
                 <Link href="/wishlist">
                   <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
                     <Heart className="h-4 w-4 mr-2" />
-                    Daftar Keinginan
+                    Wishlist
                   </Button>
                 </Link>
                 <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
                   <Settings className="h-4 w-4 mr-2" />
-                  Pengaturan
+                  Settings
                 </Button>
               </CardContent>
             </Card>
@@ -530,23 +529,23 @@ export default function ProfilePage() {
             {/* Account Stats */}
             <Card className="bg-gray-800/80 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white text-lg">Statistik Akun</CardTitle>
+                <CardTitle className="text-white text-lg">Account Statistics</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Total Pesanan</span>
+                  <span className="text-gray-300">Total Orders</span>
                   <Badge variant="secondary" className="bg-blue-600">
                     12
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Item di Wishlist</span>
+                  <span className="text-gray-300">Wishlist Items</span>
                   <Badge variant="secondary" className="bg-red-600">
                     5
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Points Reward</span>
+                  <span className="text-gray-300">Reward Points</span>
                   <Badge variant="secondary" className="bg-green-600">
                     2,450
                   </Badge>
