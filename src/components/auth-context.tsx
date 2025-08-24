@@ -235,7 +235,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           phoneNumber: userData.phoneNumber,
           address: userData.address,
           dateOfBirth: userData.dateOfBirth,
-          image: userData.avatar,
+          image: userData.avatar, // map avatar to image for database
         }),
       });
 

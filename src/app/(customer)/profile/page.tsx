@@ -26,7 +26,6 @@ const profileSchema = z.object({
   phoneNumber: z.string().optional(),
   address: z.string().optional(),
   dateOfBirth: z.string().optional(),
-  image: z.string().url({ message: "Invalid avatar URL" }).optional(),
 });
 
 const passwordSchema = z
@@ -52,6 +51,8 @@ export default function ProfilePage() {
     message: "",
     type: "success",
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [userStats, setUserStats] = useState<{ totalOrders: number; wishlistItems: number }>({
     totalOrders: 0,
     wishlistItems: 0,
@@ -65,7 +66,6 @@ export default function ProfilePage() {
       phoneNumber: "",
       address: "",
       dateOfBirth: "",
-      image: "",
     },
   });
 
@@ -107,8 +107,10 @@ export default function ProfilePage() {
         phoneNumber: user.phoneNumber || "",
         address: user.address || "",
         dateOfBirth: user.dateOfBirth || "",
-        image: user.avatar || "",
       });
+      
+      // Set image preview dari user avatar yang ada
+      setImagePreview(user.avatar || generateAvatarUrl(user.name));
 
       // Fetch user statistics
       fetchUserStats();
@@ -117,7 +119,41 @@ export default function ProfilePage() {
 
   async function onProfileSubmit(values: ProfileValues) {
     try {
-      const success = await updateProfile(values);
+      let avatarUrl = user?.avatar;
+
+      // If there's a selected image, upload it first
+      if (selectedImage) {
+        console.log("📤 Uploading image:", selectedImage.name);
+        const formData = new FormData();
+        formData.append('image', selectedImage);
+
+        const uploadResponse = await fetch('/api/upload-avatar', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        });
+
+        console.log("📤 Upload response status:", uploadResponse.status);
+
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          console.log("✅ Upload successful:", uploadData);
+          avatarUrl = uploadData.url;
+        } else {
+          const errorData = await uploadResponse.json();
+          console.error("❌ Upload failed:", errorData);
+          setToast({
+            show: true,
+            message: errorData.error || "Failed to upload image. Please try again.",
+            type: "error",
+          });
+          return;
+        }
+      }
+
+      // Update profile with new data (including avatar URL if uploaded)
+      const profileData = { ...values, avatar: avatarUrl };
+      const success = await updateProfile(profileData);
 
       if (success) {
         setToast({
@@ -125,6 +161,7 @@ export default function ProfilePage() {
           message: "Profile updated successfully!",
           type: "success",
         });
+        setSelectedImage(null); // Clear selected image after successful update
       } else {
         setToast({
           show: true,
@@ -188,10 +225,47 @@ export default function ProfilePage() {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=200`;
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validasi tipe file
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        setToast({
+          show: true,
+          message: "Please select a valid image file (JPEG, PNG, or WebP)",
+          type: "error",
+        });
+        return;
+      }
+
+      // Validasi ukuran file (max 5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setToast({
+          show: true,
+          message: "Image size must be less than 5MB",
+          type: "error",
+        });
+        return;
+      }
+
+      setSelectedImage(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const updateAvatar = () => {
     if (user?.name) {
       const newAvatarUrl = generateAvatarUrl(user.name);
-      profileForm.setValue("image", newAvatarUrl);
+      setImagePreview(newAvatarUrl);
+      setSelectedImage(null);
     }
   };
 
@@ -221,7 +295,7 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="relative">
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-600 shadow-xl">
-                  <Image src={profileForm.watch("image") || user.avatar || generateAvatarUrl(user.name)} alt="Avatar" className="w-full h-full object-cover" width={128} height={128} />
+                  <Image src={imagePreview || user.avatar || generateAvatarUrl(user.name)} alt="Avatar" className="w-full h-full object-cover" width={128} height={128} />
                 </div>
                 <Button size="sm" variant="secondary" className="absolute bottom-2 right-2 rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
                   <Camera className="h-4 w-4" />
@@ -368,19 +442,21 @@ export default function ProfilePage() {
                           )}
                         />
 
-                        <FormField
-                          control={profileForm.control}
-                          name="image"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">Avatar URL</FormLabel>
-                              <FormControl>
-                                <Input type="url" placeholder="https://example.com/avatar.jpg" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        <div className="space-y-2">
+                          <label className="text-gray-200 text-sm font-medium">Avatar Image</label>
+                          <div className="flex items-center gap-4">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              className="bg-gray-700/50 border border-gray-600 text-white rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                            />
+                            <Button type="button" variant="outline" size="sm" onClick={updateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                              Generate Avatar
+                            </Button>
+                          </div>
+                          <p className="text-gray-400 text-xs">Upload an image or generate an avatar based on your name</p>
+                        </div>
 
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
                           <Save className="h-4 w-4 mr-2" />
