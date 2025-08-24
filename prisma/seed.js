@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { seedSettings } from "./seed-settings.js";
+import { seedOrders } from "./seed-orders.js";
 
 const prisma = new PrismaClient();
 
@@ -472,6 +474,14 @@ async function main() {
       ],
     },
   });
+
+  // Seed system settings and security logs
+  console.log("Seeding system settings and security logs...");
+  await seedSettings();
+
+  // Seed sample orders
+  console.log("Seeding sample orders...");
+  await seedOrders();
 
   console.log("✅ Database seeding completed successfully!");
   console.log(`👤 Users created: Admin (${admin.email}), User (${user.email})`);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,16 +13,58 @@ import AdminHomePageEditor from "@/components/AdminHomePageEditor";
 import AdminAboutPageEditor from "@/components/AdminAboutPageEditor";
 import AdminProductPageEditor from "@/components/AdminProductPageEditor";
 
+interface SystemStats {
+  users: {
+    total: number;
+    admins: number;
+    customers: number;
+    newThisMonth: number;
+  };
+  orders: {
+    total: number;
+    revenue: number;
+    byStatus: Record<string, number>;
+  };
+  products: {
+    total: number;
+    lowStock: number;
+  };
+  security: {
+    recentLogs: Array<{
+      id: number;
+      action: string;
+      description: string;
+      user: string;
+      ipAddress: string | null;
+      status: string;
+      createdAt: string;
+    }>;
+  };
+  system: {
+    health: {
+      database: boolean;
+      apiServices: boolean;
+      fileStorage: boolean;
+      cacheSystem: boolean;
+    };
+    version: string;
+    database: string;
+    storage: string;
+  };
+}
+
 export default function AdminSettingsPage() {
   const [currentTab, setCurrentTab] = useState("general");
   const [pageTab, setPageTab] = useState("home");
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState<SystemStats | null>(null);
   const [generalSettings, setGeneralSettings] = useState({
     storeName: "E-Commerce Store",
     storeDescription: "Trusted online store",
     contactEmail: "contact@store.com",
-    currency: "IDR",
+    currency: "USD",
     timezone: "Asia/Jakarta",
-    language: "id",
+    language: "en",
   });
 
   const [themeSettings, setThemeSettings] = useState({
@@ -33,16 +75,107 @@ export default function AdminSettingsPage() {
     customCSS: "",
   });
 
+  // Load settings and stats on component mount
+  useEffect(() => {
+    loadSettings();
+    loadStats();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      const response = await fetch("/api/admin/settings");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setGeneralSettings(data.settings);
+          setThemeSettings({
+            primaryColor: data.settings.primaryColor || "#3b82f6",
+            secondaryColor: data.settings.secondaryColor || "#64748b",
+            accentColor: data.settings.accentColor || "#8b5cf6",
+            darkMode: data.settings.darkMode || false,
+            customCSS: data.settings.customCSS || "",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load settings:", error);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const response = await fetch("/api/admin/stats");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setStats(data.stats);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load stats:", error);
+    }
+  };
+
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
   };
 
   const handleSaveGeneral = async () => {
-    console.log("Saving general settings:", generalSettings);
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(generalSettings),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          alert("General settings updated successfully!");
+        } else {
+          alert("Failed to update settings: " + data.message);
+        }
+      } else {
+        alert("Failed to update settings");
+      }
+    } catch (error) {
+      console.error("Save settings error:", error);
+      alert("Failed to update settings");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSaveTheme = async () => {
-    console.log("Saving theme settings:", themeSettings);
+    setLoading(true);
+    try {
+      const response = await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(themeSettings),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          alert("Theme settings updated successfully!");
+        } else {
+          alert("Failed to update theme settings: " + data.message);
+        }
+      } else {
+        alert("Failed to update theme settings");
+      }
+    } catch (error) {
+      console.error("Save theme settings error:", error);
+      alert("Failed to update theme settings");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -94,36 +227,58 @@ export default function AdminSettingsPage() {
             <CardContent className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Store Name</label>
-                <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />
+                <Input 
+                  value={generalSettings.storeName} 
+                  onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} 
+                  placeholder="Enter store name" 
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Description</label>
-                <Textarea value={generalSettings.storeDescription} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} placeholder="Enter store description" rows={3} />
+                <Textarea 
+                  value={generalSettings.storeDescription} 
+                  onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} 
+                  placeholder="Enter store description" 
+                  rows={3} 
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Contact Email</label>
-                <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
+                <Input 
+                  type="email" 
+                  value={generalSettings.contactEmail} 
+                  onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} 
+                  placeholder="contact@store.com" 
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Currency</label>
-                  <select value={generalSettings.currency} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
-                    <option value="IDR">Indonesian Rupiah (IDR)</option>
+                  <select 
+                    value={generalSettings.currency} 
+                    onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} 
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
                     <option value="USD">US Dollar (USD)</option>
+                    <option value="IDR">Indonesian Rupiah (IDR)</option>
                     <option value="EUR">Euro (EUR)</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Language</label>
-                  <select value={generalSettings.language} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
-                    <option value="id">Bahasa Indonesia</option>
+                  <select 
+                    value={generalSettings.language} 
+                    onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} 
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
                     <option value="en">English</option>
+                    <option value="id">Bahasa Indonesia</option>
                   </select>
                 </div>
               </div>
-              <Button onClick={handleSaveGeneral} className="w-full">
+              <Button onClick={handleSaveGeneral} className="w-full" disabled={loading}>
                 <Save className="w-4 h-4 mr-2" />
-                Save Changes
+                {loading ? "Saving..." : "Save Changes"}
               </Button>
             </CardContent>
           </Card>
@@ -137,7 +292,7 @@ export default function AdminSettingsPage() {
           </div>
 
           <Tabs value={pageTab} onValueChange={setPageTab} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="home" className="flex items-center gap-2">
                 <Home className="w-4 h-4" />
                 Home
@@ -150,7 +305,6 @@ export default function AdminSettingsPage() {
                 <Package className="w-4 h-4" />
                 Products
               </TabsTrigger>
-
               <TabsTrigger value="contact" className="flex items-center gap-2">
                 <MessageCircle className="w-4 h-4" />
                 Contact
@@ -168,7 +322,6 @@ export default function AdminSettingsPage() {
             <TabsContent value="products">
               <AdminProductPageEditor />
             </TabsContent>
-
 
             <TabsContent value="contact">
               <AdminContactPageEditor />
@@ -191,7 +344,7 @@ export default function AdminSettingsPage() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Total Admins</h4>
-                      <p className="text-2xl font-bold">3</p>
+                      <p className="text-2xl font-bold">{stats?.users.admins ?? "Loading..."}</p>
                     </div>
                     <Badge variant="default">Active</Badge>
                   </div>
@@ -199,9 +352,17 @@ export default function AdminSettingsPage() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Total Customers</h4>
-                      <p className="text-2xl font-bold">1,234</p>
+                      <p className="text-2xl font-bold">{stats?.users.customers ?? "Loading..."}</p>
                     </div>
                     <Badge variant="secondary">Registered</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">New This Month</h4>
+                      <p className="text-2xl font-bold">{stats?.users.newThisMonth ?? "Loading..."}</p>
+                    </div>
+                    <Badge variant="outline">Recent</Badge>
                   </div>
                 </div>
 
@@ -266,29 +427,23 @@ export default function AdminSettingsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <div>
-                      <p className="text-sm font-medium">Login from Jakarta</p>
-                      <p className="text-xs text-muted-foreground">2 hours ago</p>
+                  {stats?.security.recentLogs.map((log) => (
+                    <div key={log.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
+                      <div>
+                        <p className="text-sm font-medium">{log.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(log.createdAt).toLocaleString()}
+                        </p>
+                      </div>
+                      <Badge variant={log.status === "SUCCESS" ? "default" : log.status === "FAILED" ? "destructive" : "secondary"}>
+                        {log.status}
+                      </Badge>
                     </div>
-                    <Badge variant="default">Success</Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <div>
-                      <p className="text-sm font-medium">Password change</p>
-                      <p className="text-xs text-muted-foreground">1 day ago</p>
+                  )) || (
+                    <div className="text-center text-muted-foreground py-4">
+                      Loading security logs...
                     </div>
-                    <Badge variant="secondary">Activity</Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                    <div>
-                      <p className="text-sm font-medium">Failed login attempt</p>
-                      <p className="text-xs text-muted-foreground">3 days ago</p>
-                    </div>
-                    <Badge variant="destructive">Failed</Badge>
-                  </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -321,15 +476,15 @@ export default function AdminSettingsPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Version:</span>
-                      <span>1.0.0</span>
+                      <span>{stats?.system.version || "1.0.0"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Database:</span>
-                      <span>MySQL</span>
+                      <span>{stats?.system.database || "MySQL"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Storage:</span>
-                      <span>Local</span>
+                      <span>{stats?.system.storage || "Local"}</span>
                     </div>
                   </div>
                 </div>
@@ -344,22 +499,30 @@ export default function AdminSettingsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Database Connection</span>
-                    <Badge variant="default">Online</Badge>
+                    <Badge variant={stats?.system.health.database ? "default" : "destructive"}>
+                      {stats?.system.health.database ? "Online" : "Offline"}
+                    </Badge>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm">API Services</span>
-                    <Badge variant="default">Running</Badge>
+                    <Badge variant={stats?.system.health.apiServices ? "default" : "destructive"}>
+                      {stats?.system.health.apiServices ? "Running" : "Down"}
+                    </Badge>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm">File Storage</span>
-                    <Badge variant="default">Available</Badge>
+                    <Badge variant={stats?.system.health.fileStorage ? "default" : "destructive"}>
+                      {stats?.system.health.fileStorage ? "Available" : "Unavailable"}
+                    </Badge>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Cache System</span>
-                    <Badge variant="secondary">Disabled</Badge>
+                    <Badge variant={stats?.system.health.cacheSystem ? "default" : "secondary"}>
+                      {stats?.system.health.cacheSystem ? "Enabled" : "Disabled"}
+                    </Badge>
                   </div>
                 </div>
               </CardContent>
@@ -381,38 +544,75 @@ export default function AdminSettingsPage() {
                 <div>
                   <label className="block text-sm font-medium mb-2">Primary Color</label>
                   <div className="flex items-center gap-2">
-                    <input type="color" value={themeSettings.primaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, primaryColor: e.target.value }))} className="w-12 h-10 border rounded" />
-                    <Input value={themeSettings.primaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, primaryColor: e.target.value }))} placeholder="#3b82f6" />
+                    <input
+                      type="color"
+                      value={themeSettings.primaryColor}
+                      onChange={(e) => setThemeSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
+                      className="w-12 h-10 border rounded"
+                    />
+                    <Input
+                      value={themeSettings.primaryColor}
+                      onChange={(e) => setThemeSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
+                      placeholder="#3b82f6"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Secondary Color</label>
                   <div className="flex items-center gap-2">
-                    <input type="color" value={themeSettings.secondaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, secondaryColor: e.target.value }))} className="w-12 h-10 border rounded" />
-                    <Input value={themeSettings.secondaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, secondaryColor: e.target.value }))} placeholder="#64748b" />
+                    <input
+                      type="color"
+                      value={themeSettings.secondaryColor}
+                      onChange={(e) => setThemeSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                      className="w-12 h-10 border rounded"
+                    />
+                    <Input
+                      value={themeSettings.secondaryColor}
+                      onChange={(e) => setThemeSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
+                      placeholder="#64748b"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Accent Color</label>
                   <div className="flex items-center gap-2">
-                    <input type="color" value={themeSettings.accentColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, accentColor: e.target.value }))} className="w-12 h-10 border rounded" />
-                    <Input value={themeSettings.accentColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, accentColor: e.target.value }))} placeholder="#8b5cf6" />
+                    <input
+                      type="color"
+                      value={themeSettings.accentColor}
+                      onChange={(e) => setThemeSettings(prev => ({ ...prev, accentColor: e.target.value }))}
+                      className="w-12 h-10 border rounded"
+                    />
+                    <Input
+                      value={themeSettings.accentColor}
+                      onChange={(e) => setThemeSettings(prev => ({ ...prev, accentColor: e.target.value }))}
+                      placeholder="#8b5cf6"
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" checked={themeSettings.darkMode} onChange={(e) => setThemeSettings((prev) => ({ ...prev, darkMode: e.target.checked }))} />
+                    <input
+                      type="checkbox"
+                      checked={themeSettings.darkMode}
+                      onChange={(e) => setThemeSettings(prev => ({ ...prev, darkMode: e.target.checked }))}
+                    />
                     <span className="text-sm font-medium">Enable Dark Mode by Default</span>
                   </label>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Custom CSS</label>
-                  <Textarea value={themeSettings.customCSS} onChange={(e) => setThemeSettings((prev) => ({ ...prev, customCSS: e.target.value }))} placeholder="/* Add custom CSS here */" rows={4} className="font-mono text-sm" />
+                  <Textarea
+                    value={themeSettings.customCSS}
+                    onChange={(e) => setThemeSettings(prev => ({ ...prev, customCSS: e.target.value }))}
+                    placeholder="/* Add custom CSS here */"
+                    rows={4}
+                    className="font-mono text-sm"
+                  />
                 </div>
               </div>
-              <Button onClick={handleSaveTheme} className="w-full">
+              <Button onClick={handleSaveTheme} className="w-full" disabled={loading}>
                 <Save className="w-4 h-4 mr-2" />
-                Save Theme
+                {loading ? "Saving..." : "Save Theme"}
               </Button>
             </CardContent>
           </Card>

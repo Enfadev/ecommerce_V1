@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -248,4 +248,9 @@ async function seedOrders() {
   }
 }
 
-seedOrders();
+// Run if called directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  seedOrders();
+}
+
+export { seedOrders };

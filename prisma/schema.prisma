@@ -104,11 +104,11 @@ enum Role {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   name          String?
-  email         String    @unique
+  email         String        @unique
   password      String?
-  role          Role      @default(USER)
+  role          Role          @default(USER)
   emailVerified DateTime?
   image         String?
   phoneNumber   String?
@@ -116,10 +116,11 @@ model User {
   dateOfBirth   String?
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   cart          Cart?
   orders        Order[]
+  securityLogs  SecurityLog[]
 }
 
 model Account {
@@ -251,4 +252,53 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
+}
+
+model SystemSettings {
+  id                Int      @id @default(autoincrement())
+  storeName         String   @default("E-Commerce Store")
+  storeDescription  String   @default("Trusted online store")
+  contactEmail      String   @default("contact@store.com")
+  currency          String   @default("USD")
+  timezone          String   @default("Asia/Jakarta")
+  language          String   @default("en")
+  
+  // Theme Settings
+  primaryColor      String   @default("#3b82f6")
+  secondaryColor    String   @default("#64748b")
+  accentColor       String   @default("#8b5cf6")
+  darkMode          Boolean  @default(false)
+  customCSS         String?  @db.Text
+  
+  // Security Settings
+  enableTwoFactor   Boolean  @default(false)
+  sessionTimeout    Int      @default(24) // hours
+  
+  // System Information
+  version           String   @default("1.0.0")
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("system_settings")
+}
+
+model SecurityLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String   // LOGIN, LOGOUT, PASSWORD_CHANGE, FAILED_LOGIN, etc.
+  description String
+  ipAddress   String?
+  userAgent   String?  @db.Text
+  status      LogStatus @default(SUCCESS)
+  createdAt   DateTime @default(now())
+  
+  @@map("security_logs")
+}
+
+enum LogStatus {
+  SUCCESS
+  FAILED
+  WARNING
 }
