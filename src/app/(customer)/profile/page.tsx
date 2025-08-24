@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown } from "lucide-react";
+import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
 import { useWishlist } from "@/components/wishlist-context";
 import { Toast } from "@/components/ui/toast";
@@ -44,7 +44,7 @@ type PasswordValues = z.infer<typeof passwordSchema>;
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, updateProfile, signOut, isLoading, isAuthenticated } = useAuth();
+  const { user, updateProfile, signOut, isLoading, isAuthenticated, refreshUser } = useAuth();
   const { getWishlistCount } = useWishlist();
   const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
     show: false,
@@ -269,6 +269,53 @@ export default function ProfilePage() {
     }
   };
 
+  const deleteAvatar = async () => {
+    if (!user) return;
+    
+    try {
+      console.log("🗑️ Deleting avatar...");
+      
+      const response = await fetch('/api/delete-avatar', {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ Avatar deleted successfully:", data);
+        
+        // Reset to default avatar
+        const defaultAvatarUrl = generateAvatarUrl(user.name);
+        setImagePreview(defaultAvatarUrl);
+        setSelectedImage(null);
+        
+        // Refresh user data to sync with database
+        await refreshUser();
+        
+        setToast({
+          show: true,
+          message: "Avatar deleted successfully!",
+          type: "success",
+        });
+      } else {
+        const errorData = await response.json();
+        console.error("❌ Failed to delete avatar:", errorData);
+        setToast({
+          show: true,
+          message: errorData.error || "Failed to delete avatar. Please try again.",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.error("❌ Delete avatar error:", error);
+      setToast({
+        show: true,
+        message: "An error occurred while deleting avatar",
+        type: "error",
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -297,9 +344,16 @@ export default function ProfilePage() {
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-600 shadow-xl">
                   <Image src={imagePreview || user.avatar || generateAvatarUrl(user.name)} alt="Avatar" className="w-full h-full object-cover" width={128} height={128} />
                 </div>
-                <Button size="sm" variant="secondary" className="absolute bottom-2 right-2 rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
-                  <Camera className="h-4 w-4" />
-                </Button>
+                <div className="absolute bottom-2 right-2 flex gap-1">
+                  <Button size="sm" variant="secondary" className="rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
+                    <Camera className="h-4 w-4" />
+                  </Button>
+                  {user.avatar && user.avatar.startsWith('/uploads/') && (
+                    <Button size="sm" variant="destructive" className="rounded-full p-2" onClick={deleteAvatar}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <div className="flex-1 text-center md:text-left">
@@ -454,8 +508,14 @@ export default function ProfilePage() {
                             <Button type="button" variant="outline" size="sm" onClick={updateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
                               Generate Avatar
                             </Button>
+                            {user.avatar && user.avatar.startsWith('/uploads/') && (
+                              <Button type="button" variant="destructive" size="sm" onClick={deleteAvatar}>
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete Avatar
+                              </Button>
+                            )}
                           </div>
-                          <p className="text-gray-400 text-xs">Upload an image or generate an avatar based on your name</p>
+                          <p className="text-gray-400 text-xs">Upload an image, generate an avatar based on your name, or delete current uploaded image</p>
                         </div>
 
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>

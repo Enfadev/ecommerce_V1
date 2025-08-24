@@ -3,6 +3,7 @@ import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
 import { verifyJWT } from "@/lib/jwt";
+import sharp from "sharp";
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,21 +60,47 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadDir, { recursive: true });
     }
 
-    // Generate unique filename
+    // Generate unique filename with .webp extension
     const timestamp = Date.now();
-    const filename = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const originalName = file.name.replace(/\.[^/.]+$/, ""); // Remove original extension
+    const filename = `${timestamp}-${originalName.replace(/[^a-zA-Z0-9.-]/g, '_')}.webp`;
     const filepath = join(uploadDir, filename);
     
-    console.log("📝 Generated filename:", filename);
+    console.log("📝 Original filename:", file.name);
+    console.log("📝 Generated WebP filename:", filename);
     console.log("📝 Full filepath:", filepath);
 
-    // Convert file to buffer and save
-    console.log("💾 Converting file to buffer...");
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    console.log("💾 Writing file to disk...");
-    await writeFile(filepath, buffer);
+    // Convert image to WebP format using Sharp
+    console.log("� Converting image to WebP format...");
+    try {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      
+      // Process image with Sharp - convert to WebP with optimization
+      const processedBuffer = await sharp(buffer)
+        .resize(400, 400, { 
+          fit: 'cover', 
+          position: 'center',
+          withoutEnlargement: false 
+        })
+        .webp({ 
+          quality: 85, 
+          effort: 6 
+        })
+        .toBuffer();
+      
+      console.log("📊 Original size:", buffer.length, "bytes");
+      console.log("📊 Processed size:", processedBuffer.length, "bytes");
+      console.log("📊 Size reduction:", Math.round((1 - processedBuffer.length / buffer.length) * 100) + "%");
+      
+      // Save processed image
+      console.log("💾 Writing processed WebP file to disk...");
+      await writeFile(filepath, processedBuffer);
+      
+    } catch (sharpError) {
+      console.error("❌ Sharp processing error:", sharpError);
+      return NextResponse.json({ error: "Failed to process image" }, { status: 500 });
+    }
     
     console.log("✅ File saved successfully");
 
