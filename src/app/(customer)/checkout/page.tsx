@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/components/cart-context";
+import { useAuth } from "@/components/auth-context";
 import { useOrders, CreateOrderData, Order } from "@/hooks/use-orders";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +23,7 @@ import PayPalButton from "@/components/PayPalButton";
 export default function CheckoutPage() {
   const { items, clearCart, getTotalPrice, getTotalItems } = useCart();
   const { createOrder, creating } = useOrders();
+  const { user, isAuthenticated } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
   const [formData, setFormData] = useState({
@@ -37,10 +39,26 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      // First, try to use user data from auth context
+      if (user && isAuthenticated) {
+        console.log("Using user data from auth context:", user);
+        setFormData((prev) => ({
+          ...prev,
+          nama: user.name || "",
+          email: user.email || "",
+          phone: user.phoneNumber || "",
+          alamat: user.address || "",
+        }));
+        return;
+      }
+
+      // Fallback to API call if user data not available in context
       try {
+        console.log("Fetching user profile from API...");
         const response = await fetch("/api/profile");
         if (response.ok) {
           const profile = await response.json();
+          console.log("Profile data from API:", profile);
           if (profile) {
             setFormData((prev) => ({
               ...prev,
@@ -50,6 +68,8 @@ export default function CheckoutPage() {
               alamat: profile.address || "",
             }));
           }
+        } else {
+          console.log("Failed to fetch profile, status:", response.status);
         }
       } catch (error) {
         console.error("Failed to fetch user profile:", error);
@@ -57,7 +77,7 @@ export default function CheckoutPage() {
     };
 
     fetchUserProfile();
-  }, []);
+  }, [user, isAuthenticated]);
 
   const subtotal = getTotalPrice();
   const ongkir = subtotal >= 250 ? 0 : 15;

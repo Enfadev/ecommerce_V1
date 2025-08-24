@@ -261,21 +261,6 @@ export default function ProfilePage() {
                   )}
                 </div>
               </div>
-
-              <div className="flex gap-3">
-                <Link href="/order-history">
-                  <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                    <Package className="h-4 w-4 mr-2" />
-                    Orders
-                  </Button>
-                </Link>
-                <Link href="/wishlist">
-                  <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                    <Heart className="h-4 w-4 mr-2" />
-                    Wishlist
-                  </Button>
-                </Link>
-              </div>
             </div>
           </CardContent>
         </Card>
