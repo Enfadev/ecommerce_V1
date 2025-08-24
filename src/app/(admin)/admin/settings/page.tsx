@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Palette, Home, Info, Package, MessageCircle } from "lucide-react";
+import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Home, Info, Package, MessageCircle } from "lucide-react";
 import AdminContactPageEditor from "@/components/AdminContactPageEditor";
 import AdminHomePageEditor from "@/components/AdminHomePageEditor";
 import AdminAboutPageEditor from "@/components/AdminAboutPageEditor";
@@ -67,14 +67,6 @@ export default function AdminSettingsPage() {
     language: "en",
   });
 
-  const [themeSettings, setThemeSettings] = useState({
-    primaryColor: "#3b82f6",
-    secondaryColor: "#64748b",
-    accentColor: "#8b5cf6",
-    darkMode: false,
-    customCSS: "",
-  });
-
   // Load settings and stats on component mount
   useEffect(() => {
     loadSettings();
@@ -88,13 +80,6 @@ export default function AdminSettingsPage() {
         const data = await response.json();
         if (data.success) {
           setGeneralSettings(data.settings);
-          setThemeSettings({
-            primaryColor: data.settings.primaryColor || "#3b82f6",
-            secondaryColor: data.settings.secondaryColor || "#64748b",
-            accentColor: data.settings.accentColor || "#8b5cf6",
-            darkMode: data.settings.darkMode || false,
-            customCSS: data.settings.customCSS || "",
-          });
         }
       }
     } catch (error) {
@@ -149,35 +134,6 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleSaveTheme = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/admin/settings", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(themeSettings),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          alert("Theme settings updated successfully!");
-        } else {
-          alert("Failed to update theme settings: " + data.message);
-        }
-      } else {
-        alert("Failed to update theme settings");
-      }
-    } catch (error) {
-      console.error("Save theme settings error:", error);
-      alert("Failed to update theme settings");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -188,7 +144,7 @@ export default function AdminSettingsPage() {
       </div>
 
       <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
             General
@@ -208,10 +164,6 @@ export default function AdminSettingsPage() {
           <TabsTrigger value="system" className="flex items-center gap-2">
             <Database className="w-4 h-4" />
             System
-          </TabsTrigger>
-          <TabsTrigger value="theme" className="flex items-center gap-2">
-            <Palette className="w-4 h-4" />
-            Theme
           </TabsTrigger>
         </TabsList>
 
@@ -528,94 +480,6 @@ export default function AdminSettingsPage() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        {/* Theme Settings */}
-        <TabsContent value="theme" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="w-5 h-5" />
-                Theme Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Primary Color</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={themeSettings.primaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
-                      className="w-12 h-10 border rounded"
-                    />
-                    <Input
-                      value={themeSettings.primaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
-                      placeholder="#3b82f6"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Secondary Color</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={themeSettings.secondaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                      className="w-12 h-10 border rounded"
-                    />
-                    <Input
-                      value={themeSettings.secondaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                      placeholder="#64748b"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Accent Color</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={themeSettings.accentColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, accentColor: e.target.value }))}
-                      className="w-12 h-10 border rounded"
-                    />
-                    <Input
-                      value={themeSettings.accentColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, accentColor: e.target.value }))}
-                      placeholder="#8b5cf6"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={themeSettings.darkMode}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, darkMode: e.target.checked }))}
-                    />
-                    <span className="text-sm font-medium">Enable Dark Mode by Default</span>
-                  </label>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Custom CSS</label>
-                  <Textarea
-                    value={themeSettings.customCSS}
-                    onChange={(e) => setThemeSettings(prev => ({ ...prev, customCSS: e.target.value }))}
-                    placeholder="/* Add custom CSS here */"
-                    rows={4}
-                    className="font-mono text-sm"
-                  />
-                </div>
-              </div>
-              <Button onClick={handleSaveTheme} className="w-full" disabled={loading}>
-                <Save className="w-4 h-4 mr-2" />
-                {loading ? "Saving..." : "Save Theme"}
-              </Button>
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>

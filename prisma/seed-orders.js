@@ -6,6 +6,11 @@ async function seedOrders() {
   try {
     console.log('Starting order seed...');
 
+    // Clear existing orders first to avoid duplicate orderNumber
+    await prisma.orderItem.deleteMany();
+    await prisma.order.deleteMany();
+    console.log('Cleared existing orders...');
+
     // First, let's ensure we have users and products
     let user = await prisma.user.findFirst();
     if (!user) {
@@ -40,10 +45,17 @@ async function seedOrders() {
       });
     }
 
+    // Generate unique order numbers with timestamp
+    const generateOrderNumber = () => {
+      const timestamp = Date.now();
+      const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      return `ORD-${timestamp}-${random}`;
+    };
+
     // Create sample orders
     const sampleOrders = [
       {
-        orderNumber: 'ORD-001',
+        orderNumber: generateOrderNumber(),
         userId: user.id,
         customerName: 'John Smith',
         customerEmail: 'john.smith@email.com',
@@ -63,7 +75,7 @@ async function seedOrders() {
         updatedAt: new Date('2024-01-18'),
       },
       {
-        orderNumber: 'ORD-002',
+        orderNumber: generateOrderNumber(),
         userId: user.id,
         customerName: 'Sarah Lee',
         customerEmail: 'sarah.lee@email.com',
@@ -83,7 +95,7 @@ async function seedOrders() {
         updatedAt: new Date('2024-01-22'),
       },
       {
-        orderNumber: 'ORD-003',
+        orderNumber: generateOrderNumber(),
         userId: user.id,
         customerName: 'Michael Brown',
         customerEmail: 'michael.brown@email.com',
@@ -102,7 +114,7 @@ async function seedOrders() {
         updatedAt: new Date('2024-01-22'),
       },
       {
-        orderNumber: 'ORD-004',
+        orderNumber: generateOrderNumber(),
         userId: user.id,
         customerName: 'Emily Davis',
         customerEmail: 'emily.davis@email.com',
@@ -121,7 +133,7 @@ async function seedOrders() {
         updatedAt: new Date('2024-01-25'),
       },
       {
-        orderNumber: 'ORD-005',
+        orderNumber: generateOrderNumber(),
         userId: user.id,
         customerName: 'David Wilson',
         customerEmail: 'david.wilson@email.com',

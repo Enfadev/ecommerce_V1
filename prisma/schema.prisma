@@ -263,13 +263,6 @@ model SystemSettings {
   timezone          String   @default("Asia/Jakarta")
   language          String   @default("en")
   
-  // Theme Settings
-  primaryColor      String   @default("#3b82f6")
-  secondaryColor    String   @default("#64748b")
-  accentColor       String   @default("#8b5cf6")
-  darkMode          Boolean  @default(false)
-  customCSS         String?  @db.Text
-  
   // Security Settings
   enableTwoFactor   Boolean  @default(false)
   sessionTimeout    Int      @default(24) // hours

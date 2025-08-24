@@ -6,9 +6,11 @@ async function seedSettings() {
   console.log('🌱 Seeding system settings and security logs...');
 
   try {
-    // Clear existing data
+    // Clear existing data first
+    console.log('Clearing existing settings and security logs...');
     await prisma.securityLog.deleteMany();
     await prisma.systemSettings.deleteMany();
+    console.log('✅ Cleared existing data');
 
     // Create default system settings
     const defaultSettings = await prisma.systemSettings.create({
@@ -19,11 +21,6 @@ async function seedSettings() {
         currency: 'USD',
         timezone: 'Asia/Jakarta',
         language: 'en',
-        primaryColor: '#3b82f6',
-        secondaryColor: '#64748b',
-        accentColor: '#8b5cf6',
-        darkMode: false,
-        customCSS: '/* Custom styles for Modern E-Commerce */\n.hero-section {\n  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);\n}',
         enableTwoFactor: false,
         sessionTimeout: 24,
         version: '1.0.0'
