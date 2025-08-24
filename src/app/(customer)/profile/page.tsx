@@ -15,8 +15,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { User, Phone, MapPin, Calendar, Settings, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown } from "lucide-react";
+import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown } from "lucide-react";
 import { useAuth } from "@/components/auth-context";
+import { useWishlist } from "@/components/wishlist-context";
 import { Toast } from "@/components/ui/toast";
 
 const profileSchema = z.object({
@@ -45,10 +46,15 @@ type PasswordValues = z.infer<typeof passwordSchema>;
 export default function ProfilePage() {
   const router = useRouter();
   const { user, updateProfile, signOut, isLoading, isAuthenticated } = useAuth();
+  const { getWishlistCount } = useWishlist();
   const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
     show: false,
     message: "",
     type: "success",
+  });
+  const [userStats, setUserStats] = useState<{ totalOrders: number; wishlistItems: number }>({
+    totalOrders: 0,
+    wishlistItems: 0,
   });
 
   const profileForm = useForm<ProfileValues>({
@@ -79,6 +85,21 @@ export default function ProfilePage() {
   }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
+    const fetchUserStats = async () => {
+      try {
+        const response = await fetch('/api/user/stats');
+        if (response.ok) {
+          const stats = await response.json();
+          setUserStats({
+            totalOrders: stats.totalOrders,
+            wishlistItems: getWishlistCount(), // Get from context since wishlist is stored in localStorage
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user stats:', error);
+      }
+    };
+
     if (user) {
       profileForm.reset({
         name: user.name || "",
@@ -88,8 +109,11 @@ export default function ProfilePage() {
         dateOfBirth: user.dateOfBirth || "",
         image: user.avatar || "",
       });
+
+      // Fetch user statistics
+      fetchUserStats();
     }
-  }, [user, profileForm]);
+  }, [user, profileForm, getWishlistCount]);
 
   async function onProfileSubmit(values: ProfileValues) {
     try {
@@ -270,10 +294,6 @@ export default function ProfilePage() {
                   <Shield className="h-4 w-4 mr-2" />
                   Security
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="data-[state=active]:bg-gray-700">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </TabsTrigger>
               </TabsList>
 
               {/* Profile Tab */}
@@ -446,53 +466,15 @@ export default function ProfilePage() {
                           <Shield className="h-4 w-4 mr-2" />
                           Change Password
                         </Button>
+
+                        <Separator className="bg-gray-600" />
+
+                        <Button variant="destructive" className="w-full" onClick={handleSignOut}>
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Sign Out
+                        </Button>
                       </form>
                     </Form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Settings Tab */}
-              <TabsContent value="settings">
-                <Card className="bg-gray-800/80 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Settings className="h-5 w-5" />
-                      Account Settings
-                    </CardTitle>
-                    <CardDescription className="text-gray-400">Manage your preferences and account settings</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                        <div>
-                          <h4 className="text-white font-medium">Email Notifications</h4>
-                          <p className="text-gray-400 text-sm">Receive updates about orders and promotions</p>
-                        </div>
-                        <Button variant="outline" size="sm" className="border-gray-600">
-                          Active
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                        <div>
-                          <h4 className="text-white font-medium">Push Notifications</h4>
-                          <p className="text-gray-400 text-sm">Receive notifications directly in browser</p>
-                        </div>
-                        <Button variant="outline" size="sm" className="border-gray-600">
-                          Inactive
-                        </Button>
-                      </div>
-                    </div>
-
-                    <Separator className="bg-gray-600" />
-
-                    <div className="space-y-4">
-                      <Button variant="destructive" className="w-full" onClick={handleSignOut}>
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Sign Out
-                      </Button>
-                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -519,10 +501,6 @@ export default function ProfilePage() {
                     Wishlist
                   </Button>
                 </Link>
-                <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Button>
               </CardContent>
             </Card>
 
@@ -535,19 +513,13 @@ export default function ProfilePage() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Total Orders</span>
                   <Badge variant="secondary" className="bg-blue-600">
-                    12
+                    {userStats.totalOrders}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Wishlist Items</span>
                   <Badge variant="secondary" className="bg-red-600">
-                    5
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Reward Points</span>
-                  <Badge variant="secondary" className="bg-green-600">
-                    2,450
+                    {userStats.wishlistItems}
                   </Badge>
                 </div>
               </CardContent>
