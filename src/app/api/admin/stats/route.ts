@@ -55,36 +55,27 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Mock recent security logs for now (will be replaced with real data once schema is updated)
-    const recentSecurityLogs: SecurityLog[] = [
-      {
-        id: 1,
-        action: "LOGIN",
-        description: "Login from Jakarta",
-        user: { name: "Admin User", email: "admin@demo.com" },
-        ipAddress: "192.168.1.1",
-        status: "SUCCESS",
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-      },
-      {
-        id: 2,
-        action: "PASSWORD_CHANGE",
-        description: "Password change",
-        user: { name: "Admin User", email: "admin@demo.com" },
-        ipAddress: "192.168.1.1",
-        status: "SUCCESS",
-        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
-      },
-      {
-        id: 3,
-        action: "FAILED_LOGIN",
-        description: "Failed login attempt",
-        user: null,
-        ipAddress: "192.168.1.100",
-        status: "FAILED",
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
+    // Get real security logs from database
+    const securityLogsData = await prisma.securityLog.findMany({
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: { name: true, email: true }
+        }
       }
-    ];
+    });
+
+    // Format security logs for frontend
+    const recentSecurityLogs: SecurityLog[] = securityLogsData.map(log => ({
+      id: log.id,
+      action: log.action,
+      description: log.description,
+      user: log.user ? { name: log.user.name || 'Unknown', email: log.user.email } : null,
+      ipAddress: log.ipAddress || 'Unknown',
+      status: log.status,
+      createdAt: log.createdAt
+    }));
 
     // Get product statistics
     const totalProducts = await prisma.product.count();
