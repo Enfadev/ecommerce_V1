@@ -32,9 +32,34 @@ async function getHomePageData() {
   }
 }
 
+async function getPopularCategories() {
+  try {
+    const categories = await prisma.category.findMany({
+      include: {
+        _count: {
+          select: {
+            products: true
+          }
+        }
+      },
+      orderBy: {
+        products: {
+          _count: 'desc'
+        }
+      },
+      take: 4 // Mengambil 4 kategori teratas berdasarkan jumlah produk
+    });
+    return categories;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+}
+
 export default async function Home() {
   let dbProducts = [];
   let homePageData = null;
+  let categories = [];
 
   try {
     dbProducts = await prisma.product.findMany({
@@ -42,6 +67,7 @@ export default async function Home() {
       take: 8,
     });
     homePageData = await getHomePageData();
+    categories = await getPopularCategories();
   } catch (error) {
     console.error("Database connection error, using mock data:", error);
     dbProducts = [
@@ -232,34 +258,79 @@ export default async function Home() {
           </Button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">👕</div>
-              <h3 className="font-semibold">Fashion</h3>
-              <p className="text-sm text-muted-foreground mt-1">1,234 products</p>
-            </CardContent>
-          </Card>
-          <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📱</div>
-              <h3 className="font-semibold">Electronics</h3>
-              <p className="text-sm text-muted-foreground mt-1">856 products</p>
-            </CardContent>
-          </Card>
-          <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-yellow-500/20 text-yellow-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏠</div>
-              <h3 className="font-semibold">Home & Living</h3>
-              <p className="text-sm text-muted-foreground mt-1">672 products</p>
-            </CardContent>
-          </Card>
-          <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 bg-pink-500/20 text-pink-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🎮</div>
-              <h3 className="font-semibold">Hobbies & Games</h3>
-              <p className="text-sm text-muted-foreground mt-1">543 products</p>
-            </CardContent>
-          </Card>
+          {categories.length > 0 ? (
+            categories.map((category, index) => {
+              // Mapping emoji berdasarkan nama kategori
+              const getCategoryEmoji = (categoryName: string) => {
+                const name = categoryName.toLowerCase();
+                if (name.includes('fashion') || name.includes('clothes') || name.includes('apparel')) return '👕';
+                if (name.includes('electronics') || name.includes('tech') || name.includes('gadget')) return '📱';
+                if (name.includes('home') || name.includes('living') || name.includes('furniture')) return '🏠';
+                if (name.includes('book') || name.includes('literature')) return '📚';
+                if (name.includes('game') || name.includes('hobby') || name.includes('toy')) return '🎮';
+                if (name.includes('health') || name.includes('beauty') || name.includes('cosmetic')) return '💄';
+                if (name.includes('sport') || name.includes('fitness')) return '⚽';
+                if (name.includes('food') || name.includes('kitchen')) return '🍔';
+                return '📦'; // Default emoji
+              };
+
+              const getCategoryColor = (index: number) => {
+                const colors = [
+                  'bg-blue-500/20 text-blue-400',
+                  'bg-green-500/20 text-green-400', 
+                  'bg-yellow-500/20 text-yellow-400',
+                  'bg-pink-500/20 text-pink-400'
+                ];
+                return colors[index % colors.length];
+              };
+
+              return (
+                <Card key={category.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <CardContent className="p-6 text-center">
+                    <div className={`w-16 h-16 mx-auto mb-4 ${getCategoryColor(index)} rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform`}>
+                      {getCategoryEmoji(category.name)}
+                    </div>
+                    <h3 className="font-semibold">{category.name}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {category._count.products} product{category._count.products !== 1 ? 's' : ''}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            // Fallback data jika tidak ada kategori di database
+            <>
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">👕</div>
+                  <h3 className="font-semibold">Fashion</h3>
+                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                </CardContent>
+              </Card>
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📱</div>
+                  <h3 className="font-semibold">Electronics</h3>
+                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                </CardContent>
+              </Card>
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-yellow-500/20 text-yellow-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏠</div>
+                  <h3 className="font-semibold">Home & Living</h3>
+                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                </CardContent>
+              </Card>
+              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-pink-500/20 text-pink-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🎮</div>
+                  <h3 className="font-semibold">Hobbies & Games</h3>
+                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
       </section>{" "}
       {/* This Week's Promo */}
