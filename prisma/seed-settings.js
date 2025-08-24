@@ -6,12 +6,6 @@ async function seedSettings() {
   console.log('🌱 Seeding system settings and security logs...');
 
   try {
-    // Clear existing data first
-    console.log('Clearing existing settings and security logs...');
-    await prisma.securityLog.deleteMany();
-    await prisma.systemSettings.deleteMany();
-    console.log('✅ Cleared existing data');
-
     // Create default system settings
     const defaultSettings = await prisma.systemSettings.create({
       data: {

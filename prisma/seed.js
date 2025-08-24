@@ -2,11 +2,15 @@ import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { seedSettings } from "./seed-settings.js";
 import { seedOrders } from "./seed-orders.js";
+import { clearDatabase } from "./clear-database.js";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Starting database seeding...");
+
+  // Clear all existing data first
+  await clearDatabase();
 
   // Seed Users
   console.log("Seeding users...");

@@ -6,11 +6,6 @@ async function seedOrders() {
   try {
     console.log('Starting order seed...');
 
-    // Clear existing orders first to avoid duplicate orderNumber
-    await prisma.orderItem.deleteMany();
-    await prisma.order.deleteMany();
-    console.log('Cleared existing orders...');
-
     // First, let's ensure we have users and products
     let user = await prisma.user.findFirst();
     if (!user) {
