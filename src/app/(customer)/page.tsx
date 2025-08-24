@@ -285,50 +285,60 @@ export default async function Home() {
               };
 
               return (
-                <Card key={category.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-16 h-16 mx-auto mb-4 ${getCategoryColor(index)} rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform`}>
-                      {getCategoryEmoji(category.name)}
-                    </div>
-                    <h3 className="font-semibold">{category.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {category._count.products} product{category._count.products !== 1 ? 's' : ''}
-                    </p>
-                  </CardContent>
-                </Card>
+                <NextLink key={category.id} href={`/product?category=${encodeURIComponent(category.name)}`}>
+                  <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <CardContent className="p-6 text-center">
+                      <div className={`w-16 h-16 mx-auto mb-4 ${getCategoryColor(index)} rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform`}>
+                        {getCategoryEmoji(category.name)}
+                      </div>
+                      <h3 className="font-semibold">{category.name}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {category._count.products} product{category._count.products !== 1 ? 's' : ''}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </NextLink>
               );
             })
           ) : (
             // Fallback data jika tidak ada kategori di database
             <>
-              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">👕</div>
-                  <h3 className="font-semibold">Fashion</h3>
-                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
-                </CardContent>
-              </Card>
-              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📱</div>
-                  <h3 className="font-semibold">Electronics</h3>
-                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
-                </CardContent>
-              </Card>
-              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-yellow-500/20 text-yellow-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏠</div>
-                  <h3 className="font-semibold">Home & Living</h3>
-                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
-                </CardContent>
-              </Card>
-              <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-pink-500/20 text-pink-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🎮</div>
-                  <h3 className="font-semibold">Hobbies & Games</h3>
-                  <p className="text-sm text-muted-foreground mt-1">0 products</p>
-                </CardContent>
-              </Card>
+              <NextLink href="/product?category=Fashion">
+                <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">👕</div>
+                    <h3 className="font-semibold">Fashion</h3>
+                    <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                  </CardContent>
+                </Card>
+              </NextLink>
+              <NextLink href="/product?category=Electronics">
+                <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">📱</div>
+                    <h3 className="font-semibold">Electronics</h3>
+                    <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                  </CardContent>
+                </Card>
+              </NextLink>
+              <NextLink href="/product?category=Home">
+                <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-yellow-500/20 text-yellow-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🏠</div>
+                    <h3 className="font-semibold">Home & Living</h3>
+                    <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                  </CardContent>
+                </Card>
+              </NextLink>
+              <NextLink href="/product?category=Games">
+                <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-pink-500/20 text-pink-400 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">🎮</div>
+                    <h3 className="font-semibold">Hobbies & Games</h3>
+                    <p className="text-sm text-muted-foreground mt-1">0 products</p>
+                  </CardContent>
+                </Card>
+              </NextLink>
             </>
           )}
         </div>
