@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useWishlist } from "@/components/wishlist-context";
 import { useCart } from "@/components/cart-context";
-import { WishlistProductCard } from "@/components/WishlistProductCard";
+import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -77,44 +77,59 @@ export default function WishlistPage() {
   };
 
   const WishlistStats = () => (
-    <Card className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border-pink-200/20">
-      <CardContent className="p-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-pink-500">{getWishlistCount()}</div>
-            <div className="text-sm text-muted-foreground">Total Items</div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <Card className="rounded-3xl border-0 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-sm">
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">{getWishlistCount()}</div>
+            <div className="text-base text-muted-foreground font-medium">Total Items</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-500">{categories.length}</div>
-            <div className="text-sm text-muted-foreground">Categories</div>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-3xl border-0 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-sm">
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">{categories.length}</div>
+            <div className="text-base text-muted-foreground font-medium">Categories</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-500">${filteredProducts.reduce((sum, product) => sum + product.price, 0).toLocaleString("en-US")}</div>
-            <div className="text-sm text-muted-foreground">Total Value</div>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-3xl border-0 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-sm">
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">${filteredProducts.reduce((sum, product) => sum + product.price, 0).toLocaleString("en-US")}</div>
+            <div className="text-base text-muted-foreground font-medium">Total Value</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-500">{filteredProducts.filter((p) => p.stock > 0).length}</div>
-            <div className="text-sm text-muted-foreground">Available</div>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-3xl border-0 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-sm">
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <div className="text-4xl font-bold text-orange-600 dark:text-orange-400">{filteredProducts.filter((p) => p.stock > 0).length}</div>
+            <div className="text-base text-muted-foreground font-medium">Available</div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 
   if (wishlist.length === 0) {
     return (
-      <div className="bg-background">
-        <div className="py-10">
-          <div className="text-center py-20">
-            <div className="mx-auto mb-6 w-24 h-24 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-              <Heart className="w-12 h-12 text-pink-500" />
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-16">
+          <div className="text-center py-24">
+            <div className="mx-auto mb-8 w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-3xl flex items-center justify-center">
+              <Heart className="w-16 h-16 text-gray-400" />
             </div>
-            <h1 className="text-3xl font-bold mb-4">Empty Wishlist</h1>
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">No favorite products added yet. Start exploring products and add the ones you like!</p>
+            <h1 className="text-4xl font-bold mb-4 text-foreground">Your Wishlist is Empty</h1>
+            <p className="text-muted-foreground mb-12 max-w-md mx-auto text-lg leading-relaxed">Discover amazing products and save your favorites for later.</p>
             <Link href="/product">
-              <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600">
+              <Button size="lg" className="rounded-2xl px-8 py-6 text-base font-medium bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300">
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Explore Products
+                Start Shopping
               </Button>
             </Link>
           </div>
@@ -124,24 +139,24 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="bg-background">
-      <div className="py-10">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-12">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">My Wishlist</h1>
-            <p className="text-muted-foreground mt-2">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold text-foreground">My Wishlist</h1>
+            <p className="text-muted-foreground text-lg">
               {getWishlistCount()} favorite products • {filteredProducts.filter((p) => p.stock > 0).length} available
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={shareWishlist}>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="outline" size="default" onClick={shareWishlist} className="rounded-2xl px-6">
               <Share2 className="w-4 h-4 mr-2" />
               Share
             </Button>
             {filteredProducts.length > 0 && (
-              <Button size="sm" onClick={addAllToCart} className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
+              <Button size="default" onClick={addAllToCart} className="rounded-2xl px-6 bg-primary hover:bg-primary/90">
                 <ShoppingCart className="w-4 h-4 mr-2" />
                 Add All to Cart
               </Button>
@@ -149,12 +164,13 @@ export default function WishlistPage() {
             {wishlist.length > 0 && (
               <Button
                 variant="destructive"
-                size="sm"
+                size="default"
                 onClick={() => {
                   if (confirm("Are you sure you want to clear your wishlist?")) {
                     clearWishlist();
                   }
                 }}
+                className="rounded-2xl px-6"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Clear All
@@ -164,81 +180,133 @@ export default function WishlistPage() {
         </div>
 
         {/* Stats Card */}
-        <WishlistStats />
+        <div className="mb-12">
+          <WishlistStats />
+        </div>
 
         {/* Filters and Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between my-8">
-          <div className="flex flex-wrap gap-2">
-            {/* Category Filter */}
-            <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="px-3 py-2 rounded-lg border bg-background text-sm">
-              <option value="all">All Categories</option>
+        <div className="space-y-6 mb-8">
+          {/* Category Filter */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-muted-foreground">Filter by Category</h3>
+            <div className="flex flex-wrap gap-2">
+              <Button variant={filterCategory === "all" ? "default" : "outline"} size="sm" onClick={() => setFilterCategory("all")} className="rounded-2xl px-4 py-2 text-sm font-medium">
+                All Categories
+                {filterCategory === "all" && (
+                  <Badge variant="secondary" className="ml-2 px-2 py-0 text-xs rounded-full">
+                    {wishlist.length}
+                  </Badge>
+                )}
+              </Button>
               {categories.map((category) => (
-                <option key={category} value={category}>
+                <Button key={category} variant={filterCategory === category ? "default" : "outline"} size="sm" onClick={() => setFilterCategory(category)} className="rounded-2xl px-4 py-2 text-sm font-medium capitalize">
                   {category}
-                </option>
+                  {filterCategory === category && (
+                    <Badge variant="secondary" className="ml-2 px-2 py-0 text-xs rounded-full">
+                      {wishlist.filter((p) => p.category === category).length}
+                    </Badge>
+                  )}
+                </Button>
               ))}
-            </select>
-
-            {/* Sort Options */}
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortOption)} className="px-3 py-2 rounded-lg border bg-background text-sm">
-              <option value="name">Name A-Z</option>
-              <option value="price-low">Lowest Price</option>
-              <option value="price-high">Highest Price</option>
-              <option value="category">Category</option>
-            </select>
+            </div>
           </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex gap-1 p-1 rounded-lg border bg-muted">
-            <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")}>
-              <Grid3X3 className="w-4 h-4" />
-            </Button>
-            <Button variant={viewMode === "list" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("list")}>
-              <List className="w-4 h-4" />
-            </Button>
+          {/* Sort Options and View Mode */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-muted-foreground">Sort by</h3>
+              <div className="flex flex-wrap gap-2">
+                <Button variant={sortBy === "name" ? "default" : "outline"} size="sm" onClick={() => setSortBy("name")} className="rounded-2xl px-4 py-2 text-sm font-medium">
+                  Name A-Z
+                </Button>
+                <Button variant={sortBy === "price-low" ? "default" : "outline"} size="sm" onClick={() => setSortBy("price-low")} className="rounded-2xl px-4 py-2 text-sm font-medium">
+                  Lowest Price
+                </Button>
+                <Button variant={sortBy === "price-high" ? "default" : "outline"} size="sm" onClick={() => setSortBy("price-high")} className="rounded-2xl px-4 py-2 text-sm font-medium">
+                  Highest Price
+                </Button>
+                <Button variant={sortBy === "category" ? "default" : "outline"} size="sm" onClick={() => setSortBy("category")} className="rounded-2xl px-4 py-2 text-sm font-medium">
+                  Category
+                </Button>
+              </div>
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-muted-foreground">View</h3>
+              <div className="flex gap-1 p-1 rounded-2xl border border-border bg-muted/50">
+                <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("grid")} className="rounded-xl">
+                  <Grid3X3 className="w-4 h-4" />
+                </Button>
+                <Button variant={viewMode === "list" ? "default" : "ghost"} size="sm" onClick={() => setViewMode("list")} className="rounded-xl">
+                  <List className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Filter Results Info */}
-        {filterCategory !== "all" && (
-          <div className="mb-6">
-            <Badge variant="secondary" className="text-sm">
-              <Filter className="w-3 h-3 mr-1" />
-              {filteredProducts.length} products in category &quot;{filterCategory}&quot;
-            </Badge>
+        {(filterCategory !== "all" || sortBy !== "name") && (
+          <div className="mb-8">
+            <div className="flex flex-wrap gap-2 items-center">
+              {filterCategory !== "all" && (
+                <Badge variant="secondary" className="text-sm py-2 px-4 rounded-2xl font-medium">
+                  <Filter className="w-3 h-3 mr-2" />
+                  Category: {filterCategory}
+                  <button onClick={() => setFilterCategory("all")} className="ml-2 hover:text-destructive transition-colors" aria-label="Clear category filter">
+                    ×
+                  </button>
+                </Badge>
+              )}
+              {sortBy !== "name" && (
+                <Badge variant="outline" className="text-sm py-2 px-4 rounded-2xl font-medium">
+                  Sorted by: {sortBy === "price-low" ? "Lowest Price" : sortBy === "price-high" ? "Highest Price" : sortBy === "category" ? "Category" : "Name A-Z"}
+                </Badge>
+              )}
+              <span className="text-sm text-muted-foreground">
+                {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""} found
+              </span>
+            </div>
           </div>
         )}
 
         {/* Products Grid/List */}
         {filteredProducts.length === 0 ? (
-          <Card className="p-12 text-center">
-            <div className="text-muted-foreground">
-              <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No products match the selected filter</p>
-            </div>
+          <Card className="rounded-3xl border-0 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-sm">
+            <CardContent className="p-16 text-center">
+              <div className="text-muted-foreground space-y-4">
+                <div className="w-20 h-20 mx-auto rounded-2xl bg-muted/50 flex items-center justify-center">
+                  <Filter className="w-10 h-10 opacity-50" />
+                </div>
+                <p className="text-lg font-medium">No products match the selected filter</p>
+              </div>
+            </CardContent>
           </Card>
         ) : (
-          <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-4"}>
+          <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" : "space-y-6"}>
             {sortedProducts.map((product) => (
-              <WishlistProductCard key={product.id} product={product} viewMode={viewMode} />
+              <ProductCard key={product.id} product={product} viewMode={viewMode} />
             ))}
           </div>
         )}
 
         {/* Quick Actions for filled wishlist */}
         {wishlist.length > 0 && (
-          <Card className="mt-12 bg-gradient-to-r from-pink-500/5 to-purple-500/5 border-pink-200/20">
-            <CardContent className="p-6">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Ready to shop?</h3>
-                <p className="text-muted-foreground mb-4">Add all your favorite products to the cart with one click</p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button size="lg" onClick={addAllToCart} className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
+          <Card className="mt-16 rounded-3xl border-0 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 shadow-sm">
+            <CardContent className="p-12">
+              <div className="text-center space-y-6">
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold">Ready to Shop?</h3>
+                  <p className="text-muted-foreground text-lg max-w-md mx-auto">Add all your favorite products to the cart with one click</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button size="lg" onClick={addAllToCart} className="rounded-2xl px-8 py-6 text-base font-medium bg-primary hover:bg-primary/90">
                     <ShoppingCart className="w-5 h-5 mr-2" />
                     Add All to Cart
                   </Button>
                   <Link href="/product">
-                    <Button variant="outline" size="lg">
+                    <Button variant="outline" size="lg" className="rounded-2xl px-8 py-6 text-base font-medium">
                       Continue Shopping
                     </Button>
                   </Link>
