@@ -59,7 +59,7 @@ async function getPopularCategories() {
 export default async function Home() {
   let dbProducts = [];
   let homePageData = null;
-  let categories = [];
+  let categories: Array<{ id: number; name: string; _count: { products: number } }> = [];
 
   try {
     dbProducts = await prisma.product.findMany({
