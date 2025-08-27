@@ -13,16 +13,29 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    // Check if product has order items - products that have been ordered cannot be deleted
+    const orderItemsCount = await prisma.orderItem.count({
+      where: { productId: Number(id) },
+    });
+
+    if (orderItemsCount > 0) {
+      return NextResponse.json({ error: "Cannot delete product that has been ordered. Consider changing the status to inactive instead." }, { status: 400 });
+    }
+
+    // Delete the product (CartItems will be cascade deleted automatically)
     await prisma.product.delete({ where: { id: Number(id) } });
 
+    // Clean up image file if exists
     if (product.imageUrl && product.imageUrl.startsWith("/uploads/")) {
       const filePath = path.join(process.cwd(), "public", product.imageUrl);
       try {
         await unlink(filePath);
       } catch {}
     }
+
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    console.error("Delete product error:", error);
     return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
   }
 }
@@ -213,5 +226,34 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Create product error:", error);
     return NextResponse.json({ error: "Failed to add product" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const { id, status } = await req.json();
+
+    if (!id) {
+      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
+    }
+
+    if (!status || !["active", "inactive"].includes(status)) {
+      return NextResponse.json({ error: "Valid status is required (active/inactive)" }, { status: 400 });
+    }
+
+    const product = await prisma.product.findUnique({ where: { id: Number(id) } });
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    const updatedProduct = await prisma.product.update({
+      where: { id: Number(id) },
+      data: { status },
+    });
+
+    return NextResponse.json({ success: true, product: updatedProduct });
+  } catch (error) {
+    console.error("Update product status error:", error);
+    return NextResponse.json({ error: "Failed to update product status" }, { status: 500 });
   }
 }

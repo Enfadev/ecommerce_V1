@@ -223,7 +223,7 @@ model OrderItem {
   orderId   Int
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   // Product snapshot at time of purchase
   productName  String
@@ -255,38 +255,38 @@ enum PaymentStatus {
 }
 
 model SystemSettings {
-  id                Int      @id @default(autoincrement())
-  storeName         String   @default("E-Commerce Store")
-  storeDescription  String   @default("Trusted online store")
-  contactEmail      String   @default("contact@store.com")
-  currency          String   @default("USD")
-  timezone          String   @default("Asia/Jakarta")
-  language          String   @default("en")
-  
+  id               Int    @id @default(autoincrement())
+  storeName        String @default("E-Commerce Store")
+  storeDescription String @default("Trusted online store")
+  contactEmail     String @default("contact@store.com")
+  currency         String @default("USD")
+  timezone         String @default("Asia/Jakarta")
+  language         String @default("en")
+
   // Security Settings
-  enableTwoFactor   Boolean  @default(false)
-  sessionTimeout    Int      @default(24) // hours
-  
+  enableTwoFactor Boolean @default(false)
+  sessionTimeout  Int     @default(24) // hours
+
   // System Information
-  version           String   @default("1.0.0")
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  
+  version String @default("1.0.0")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("system_settings")
 }
 
 model SecurityLog {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   userId      Int?
-  user        User?    @relation(fields: [userId], references: [id])
-  action      String   // LOGIN, LOGOUT, PASSWORD_CHANGE, FAILED_LOGIN, etc.
+  user        User?     @relation(fields: [userId], references: [id])
+  action      String // LOGIN, LOGOUT, PASSWORD_CHANGE, FAILED_LOGIN, etc.
   description String
   ipAddress   String?
-  userAgent   String?  @db.Text
+  userAgent   String?   @db.Text
   status      LogStatus @default(SUCCESS)
-  createdAt   DateTime @default(now())
-  
+  createdAt   DateTime  @default(now())
+
   @@map("security_logs")
 }
 

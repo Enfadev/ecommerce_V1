@@ -144,10 +144,48 @@ export default function AdminProductManagement() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      if (!res.ok) throw new Error("Failed to delete product");
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Show specific error message from API
+        alert(data.error || "Failed to delete product");
+        return;
+      }
+
       setProducts(products.filter((p) => p.id !== id));
-    } catch {
+      alert("Product deleted successfully");
+    } catch (error) {
+      console.error("Delete error:", error);
       alert("Failed to delete product");
+    }
+  };
+
+  const handleToggleStatus = async (id: number, currentStatus: string) => {
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
+    const action = newStatus === "active" ? "activate" : "deactivate";
+
+    if (!window.confirm(`Are you sure you want to ${action} this product?`)) return;
+
+    try {
+      const res = await fetch("/api/product", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Failed to update product status");
+        return;
+      }
+
+      setProducts(products.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
+      alert(`Product ${action}d successfully`);
+    } catch (error) {
+      console.error("Status update error:", error);
+      alert("Failed to update product status");
     }
   };
 
@@ -570,6 +608,10 @@ export default function AdminProductManagement() {
                             Details
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleToggleStatus(product.id, product.status || "active")} className={product.status === "active" ? "text-yellow-600" : "text-green-600"}>
+                            <Package className="w-4 h-4 mr-2" />
+                            {product.status === "active" ? "Deactivate" : "Activate"}
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDelete(product.id)} className="text-destructive">
                             <Trash2 className="w-4 h-4 mr-2" />
                             Delete
