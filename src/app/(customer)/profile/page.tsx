@@ -16,8 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown, Trash2 } from "lucide-react";
-import { useAuth } from "@/components/auth-context";
-import { useWishlist } from "@/components/wishlist-context";
+import { useAuth } from "@/components/contexts/auth-context";
+import { useWishlist } from "@/components/contexts/wishlist-context";
 import { Toast } from "@/components/ui/toast";
 
 const profileSchema = z.object({
@@ -87,7 +87,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const response = await fetch('/api/user/stats');
+        const response = await fetch("/api/user/stats");
         if (response.ok) {
           const stats = await response.json();
           setUserStats({
@@ -96,7 +96,7 @@ export default function ProfilePage() {
           });
         }
       } catch (error) {
-        console.error('Error fetching user stats:', error);
+        console.error("Error fetching user stats:", error);
       }
     };
 
@@ -108,7 +108,7 @@ export default function ProfilePage() {
         address: user.address || "",
         dateOfBirth: user.dateOfBirth || "",
       });
-      
+
       // Set image preview dari user avatar yang ada
       setImagePreview(user.avatar || generateAvatarUrl(user.name));
 
@@ -125,12 +125,12 @@ export default function ProfilePage() {
       if (selectedImage) {
         console.log("📤 Uploading image:", selectedImage.name);
         const formData = new FormData();
-        formData.append('image', selectedImage);
+        formData.append("image", selectedImage);
 
-        const uploadResponse = await fetch('/api/upload-avatar', {
-          method: 'POST',
+        const uploadResponse = await fetch("/api/upload-avatar", {
+          method: "POST",
           body: formData,
-          credentials: 'include',
+          credentials: "include",
         });
 
         console.log("📤 Upload response status:", uploadResponse.status);
@@ -229,7 +229,7 @@ export default function ProfilePage() {
     const file = event.target.files?.[0];
     if (file) {
       // Validasi tipe file
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
       if (!allowedTypes.includes(file.type)) {
         setToast({
           show: true,
@@ -251,7 +251,7 @@ export default function ProfilePage() {
       }
 
       setSelectedImage(file);
-      
+
       // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -271,27 +271,27 @@ export default function ProfilePage() {
 
   const deleteAvatar = async () => {
     if (!user) return;
-    
+
     try {
       console.log("🗑️ Deleting avatar...");
-      
-      const response = await fetch('/api/delete-avatar', {
-        method: 'DELETE',
-        credentials: 'include',
+
+      const response = await fetch("/api/delete-avatar", {
+        method: "DELETE",
+        credentials: "include",
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log("✅ Avatar deleted successfully:", data);
-        
+
         // Reset to default avatar
         const defaultAvatarUrl = generateAvatarUrl(user.name);
         setImagePreview(defaultAvatarUrl);
         setSelectedImage(null);
-        
+
         // Refresh user data to sync with database
         await refreshUser();
-        
+
         setToast({
           show: true,
           message: "Avatar deleted successfully!",
@@ -348,7 +348,7 @@ export default function ProfilePage() {
                   <Button size="sm" variant="secondary" className="rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
                     <Camera className="h-4 w-4" />
                   </Button>
-                  {user.avatar && user.avatar.startsWith('/uploads/') && (
+                  {user.avatar && user.avatar.startsWith("/uploads/") && (
                     <Button size="sm" variant="destructive" className="rounded-full p-2" onClick={deleteAvatar}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -508,7 +508,7 @@ export default function ProfilePage() {
                             <Button type="button" variant="outline" size="sm" onClick={updateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
                               Generate Avatar
                             </Button>
-                            {user.avatar && user.avatar.startsWith('/uploads/') && (
+                            {user.avatar && user.avatar.startsWith("/uploads/") && (
                               <Button type="button" variant="destructive" size="sm" onClick={deleteAvatar}>
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Delete Avatar

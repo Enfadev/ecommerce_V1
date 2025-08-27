@@ -1,4 +1,4 @@
-import { ProductCard } from "../../components/ProductCard";
+import { ProductCard } from "@/components/product/ProductCard";
 import { prisma } from "../../lib/prisma";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../components/ui/carousel";
 import { Card, CardContent } from "../../components/ui/card";
@@ -38,16 +38,16 @@ async function getPopularCategories() {
       include: {
         _count: {
           select: {
-            products: true
-          }
-        }
+            products: true,
+          },
+        },
       },
       orderBy: {
         products: {
-          _count: 'desc'
-        }
+          _count: "desc",
+        },
       },
-      take: 4 // Mengambil 4 kategori teratas berdasarkan jumlah produk
+      take: 4, // Mengambil 4 kategori teratas berdasarkan jumlah produk
     });
     return categories;
   } catch (error) {
@@ -263,24 +263,19 @@ export default async function Home() {
               // Mapping emoji berdasarkan nama kategori
               const getCategoryEmoji = (categoryName: string) => {
                 const name = categoryName.toLowerCase();
-                if (name.includes('fashion') || name.includes('clothes') || name.includes('apparel')) return '👕';
-                if (name.includes('electronics') || name.includes('tech') || name.includes('gadget')) return '📱';
-                if (name.includes('home') || name.includes('living') || name.includes('furniture')) return '🏠';
-                if (name.includes('book') || name.includes('literature')) return '📚';
-                if (name.includes('game') || name.includes('hobby') || name.includes('toy')) return '🎮';
-                if (name.includes('health') || name.includes('beauty') || name.includes('cosmetic')) return '💄';
-                if (name.includes('sport') || name.includes('fitness')) return '⚽';
-                if (name.includes('food') || name.includes('kitchen')) return '🍔';
-                return '📦'; // Default emoji
+                if (name.includes("fashion") || name.includes("clothes") || name.includes("apparel")) return "👕";
+                if (name.includes("electronics") || name.includes("tech") || name.includes("gadget")) return "📱";
+                if (name.includes("home") || name.includes("living") || name.includes("furniture")) return "🏠";
+                if (name.includes("book") || name.includes("literature")) return "📚";
+                if (name.includes("game") || name.includes("hobby") || name.includes("toy")) return "🎮";
+                if (name.includes("health") || name.includes("beauty") || name.includes("cosmetic")) return "💄";
+                if (name.includes("sport") || name.includes("fitness")) return "⚽";
+                if (name.includes("food") || name.includes("kitchen")) return "🍔";
+                return "📦"; // Default emoji
               };
 
               const getCategoryColor = (index: number) => {
-                const colors = [
-                  'bg-blue-500/20 text-blue-400',
-                  'bg-green-500/20 text-green-400', 
-                  'bg-yellow-500/20 text-yellow-400',
-                  'bg-pink-500/20 text-pink-400'
-                ];
+                const colors = ["bg-blue-500/20 text-blue-400", "bg-green-500/20 text-green-400", "bg-yellow-500/20 text-yellow-400", "bg-pink-500/20 text-pink-400"];
                 return colors[index % colors.length];
               };
 
@@ -288,12 +283,10 @@ export default async function Home() {
                 <NextLink key={category.id} href={`/product?category=${encodeURIComponent(category.name)}`}>
                   <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <CardContent className="p-6 text-center">
-                      <div className={`w-16 h-16 mx-auto mb-4 ${getCategoryColor(index)} rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform`}>
-                        {getCategoryEmoji(category.name)}
-                      </div>
+                      <div className={`w-16 h-16 mx-auto mb-4 ${getCategoryColor(index)} rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform`}>{getCategoryEmoji(category.name)}</div>
                       <h3 className="font-semibold">{category.name}</h3>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {category._count.products} product{category._count.products !== 1 ? 's' : ''}
+                        {category._count.products} product{category._count.products !== 1 ? "s" : ""}
                       </p>
                     </CardContent>
                   </Card>

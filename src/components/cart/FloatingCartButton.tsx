@@ -1,11 +1,11 @@
 "use client";
 
-import { useCart } from "./cart-context";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerFooter, DrawerClose } from "./ui/drawer";
-import { Card, CardContent } from "./ui/card";
-import { Separator } from "./ui/separator";
+import { useCart } from "../contexts/cart-context";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, Plus, Minus, Trash2, X, Tag, ShoppingBag } from "lucide-react";

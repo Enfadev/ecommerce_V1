@@ -9,7 +9,7 @@ import { Search, Filter, Eye, Edit, Trash2, Users, Mail, Phone, Calendar, MoreHo
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { AdminExportButton } from "@/components/AdminExportButton";
+import { AdminExportButton } from "@/components/admin/AdminExportButton";
 
 interface Customer {
   id: string;
@@ -214,12 +214,7 @@ export default function AdminCustomerManagement() {
           <p className="text-muted-foreground mt-1">Manage customer data and analyze purchase behavior</p>
         </div>
         <div className="flex gap-3">
-          <AdminExportButton 
-            data={filteredCustomers as unknown as Record<string, unknown>[]} 
-            filename={`customers-${new Date().toISOString().split('T')[0]}`}
-            type="customers"
-            className=""
-          />
+          <AdminExportButton data={filteredCustomers as unknown as Record<string, unknown>[]} filename={`customers-${new Date().toISOString().split("T")[0]}`} type="customers" className="" />
           <Button className="gap-2">
             <UserPlus className="w-4 h-4" />
             Add Customer

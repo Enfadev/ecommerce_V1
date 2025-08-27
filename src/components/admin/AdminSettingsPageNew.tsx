@@ -1,28 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { Badge } from "./ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { 
-  Settings, 
-  Globe, 
-  Shield, 
-  Users, 
-  Database,
-  Bell,
-  Eye,
-  Save,
-  Key,
-  Palette,
-  Home,
-  Info,
-  Package,
-  MessageCircle
-} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Palette, Home, Info, Package, MessageCircle } from "lucide-react";
 import AdminContactPageEditor from "./AdminContactPageEditor";
 import AdminHomePageEditor from "./AdminHomePageEditor";
 import AdminAboutPageEditor from "./AdminAboutPageEditor";
@@ -35,7 +20,7 @@ export default function AdminSettingsPage() {
     contactEmail: "contact@store.com",
     currency: "IDR",
     timezone: "Asia/Jakarta",
-    language: "id"
+    language: "id",
   });
 
   const [themeSettings, setThemeSettings] = useState({
@@ -43,7 +28,7 @@ export default function AdminSettingsPage() {
     secondaryColor: "#64748b",
     accentColor: "#8b5cf6",
     darkMode: false,
-    customCSS: ""
+    customCSS: "",
   });
 
   const handleSaveGeneral = async () => {
@@ -103,38 +88,20 @@ export default function AdminSettingsPage() {
             <CardContent className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Store Name</label>
-                <Input
-                  value={generalSettings.storeName}
-                  onChange={(e) => setGeneralSettings(prev => ({ ...prev, storeName: e.target.value }))}
-                  placeholder="Enter store name"
-                />
+                <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Description</label>
-                <Textarea
-                  value={generalSettings.storeDescription}
-                  onChange={(e) => setGeneralSettings(prev => ({ ...prev, storeDescription: e.target.value }))}
-                  placeholder="Enter store description"
-                  rows={3}
-                />
+                <Textarea value={generalSettings.storeDescription} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} placeholder="Enter store description" rows={3} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Contact Email</label>
-                <Input
-                  type="email"
-                  value={generalSettings.contactEmail}
-                  onChange={(e) => setGeneralSettings(prev => ({ ...prev, contactEmail: e.target.value }))}
-                  placeholder="contact@store.com"
-                />
+                <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Currency</label>
-                  <select
-                    value={generalSettings.currency}
-                    onChange={(e) => setGeneralSettings(prev => ({ ...prev, currency: e.target.value }))}
-                    className="w-full px-3 py-2 border rounded-md"
-                  >
+                  <select value={generalSettings.currency} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
                     <option value="IDR">Indonesian Rupiah (IDR)</option>
                     <option value="USD">US Dollar (USD)</option>
                     <option value="EUR">Euro (EUR)</option>
@@ -142,11 +109,7 @@ export default function AdminSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Language</label>
-                  <select
-                    value={generalSettings.language}
-                    onChange={(e) => setGeneralSettings(prev => ({ ...prev, language: e.target.value }))}
-                    className="w-full px-3 py-2 border rounded-md"
-                  >
+                  <select value={generalSettings.language} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
                     <option value="id">Bahasa Indonesia</option>
                     <option value="en">English</option>
                   </select>
@@ -200,7 +163,6 @@ export default function AdminSettingsPage() {
               <AdminProductPageEditor />
             </TabsContent>
 
-
             <TabsContent value="contact">
               <AdminContactPageEditor />
             </TabsContent>
@@ -226,7 +188,7 @@ export default function AdminSettingsPage() {
                     </div>
                     <Badge variant="default">Active</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div>
                       <h4 className="font-medium">Total Customers</h4>
@@ -241,12 +203,12 @@ export default function AdminSettingsPage() {
                     <Users className="w-4 h-4 mr-2" />
                     Manage Users
                   </Button>
-                  
+
                   <Button variant="outline" className="w-full">
                     <Key className="w-4 h-4 mr-2" />
                     Reset User Passwords
                   </Button>
-                  
+
                   <Button variant="outline" className="w-full">
                     <Eye className="w-4 h-4 mr-2" />
                     View User Activity
@@ -272,17 +234,15 @@ export default function AdminSettingsPage() {
                   <Key className="w-4 h-4 mr-2" />
                   Change Password
                 </Button>
-                
+
                 <Button variant="outline" className="w-full justify-start">
                   <Bell className="w-4 h-4 mr-2" />
                   Notification Settings
                 </Button>
-                
+
                 <div className="pt-4 border-t">
                   <h4 className="font-medium mb-2">Two-Factor Authentication</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Enhance your account security with 2FA
-                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">Enhance your account security with 2FA</p>
                   <Button variant="default" size="sm">
                     Enable 2FA
                   </Button>
@@ -306,7 +266,7 @@ export default function AdminSettingsPage() {
                     </div>
                     <Badge variant="default">Success</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div>
                       <p className="text-sm font-medium">Password change</p>
@@ -314,7 +274,7 @@ export default function AdminSettingsPage() {
                     </div>
                     <Badge variant="secondary">Activity</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between p-3 bg-muted/30 rounded">
                     <div>
                       <p className="text-sm font-medium">Failed login attempt</p>
@@ -343,12 +303,12 @@ export default function AdminSettingsPage() {
                   <Database className="w-4 h-4 mr-2" />
                   Backup Data
                 </Button>
-                
+
                 <Button variant="outline" className="w-full justify-start">
                   <Settings className="w-4 h-4 mr-2" />
                   API Settings
                 </Button>
-                
+
                 <div className="pt-4 border-t">
                   <h4 className="font-medium mb-2">System Information</h4>
                   <div className="space-y-2 text-sm">
@@ -379,17 +339,17 @@ export default function AdminSettingsPage() {
                     <span className="text-sm">Database Connection</span>
                     <Badge variant="default">Online</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">API Services</span>
                     <Badge variant="default">Running</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">File Storage</span>
                     <Badge variant="default">Available</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Cache System</span>
                     <Badge variant="secondary">Disabled</Badge>
@@ -414,70 +374,33 @@ export default function AdminSettingsPage() {
                 <div>
                   <label className="block text-sm font-medium mb-2">Primary Color</label>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={themeSettings.primaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
-                      className="w-12 h-10 border rounded"
-                    />
-                    <Input
-                      value={themeSettings.primaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, primaryColor: e.target.value }))}
-                      placeholder="#3b82f6"
-                    />
+                    <input type="color" value={themeSettings.primaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, primaryColor: e.target.value }))} className="w-12 h-10 border rounded" />
+                    <Input value={themeSettings.primaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, primaryColor: e.target.value }))} placeholder="#3b82f6" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Secondary Color</label>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={themeSettings.secondaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                      className="w-12 h-10 border rounded"
-                    />
-                    <Input
-                      value={themeSettings.secondaryColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, secondaryColor: e.target.value }))}
-                      placeholder="#64748b"
-                    />
+                    <input type="color" value={themeSettings.secondaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, secondaryColor: e.target.value }))} className="w-12 h-10 border rounded" />
+                    <Input value={themeSettings.secondaryColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, secondaryColor: e.target.value }))} placeholder="#64748b" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Accent Color</label>
                   <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={themeSettings.accentColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, accentColor: e.target.value }))}
-                      className="w-12 h-10 border rounded"
-                    />
-                    <Input
-                      value={themeSettings.accentColor}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, accentColor: e.target.value }))}
-                      placeholder="#8b5cf6"
-                    />
+                    <input type="color" value={themeSettings.accentColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, accentColor: e.target.value }))} className="w-12 h-10 border rounded" />
+                    <Input value={themeSettings.accentColor} onChange={(e) => setThemeSettings((prev) => ({ ...prev, accentColor: e.target.value }))} placeholder="#8b5cf6" />
                   </div>
                 </div>
                 <div>
                   <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={themeSettings.darkMode}
-                      onChange={(e) => setThemeSettings(prev => ({ ...prev, darkMode: e.target.checked }))}
-                    />
+                    <input type="checkbox" checked={themeSettings.darkMode} onChange={(e) => setThemeSettings((prev) => ({ ...prev, darkMode: e.target.checked }))} />
                     <span className="text-sm font-medium">Enable Dark Mode by Default</span>
                   </label>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Custom CSS</label>
-                  <Textarea
-                    value={themeSettings.customCSS}
-                    onChange={(e) => setThemeSettings(prev => ({ ...prev, customCSS: e.target.value }))}
-                    placeholder="/* Add custom CSS here */"
-                    rows={4}
-                    className="font-mono text-sm"
-                  />
+                  <Textarea value={themeSettings.customCSS} onChange={(e) => setThemeSettings((prev) => ({ ...prev, customCSS: e.target.value }))} placeholder="/* Add custom CSS here */" rows={4} className="font-mono text-sm" />
                 </div>
               </div>
               <Button onClick={handleSaveTheme} className="w-full">

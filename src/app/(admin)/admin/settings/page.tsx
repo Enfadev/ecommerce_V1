@@ -8,10 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Home, Info, Package, MessageCircle } from "lucide-react";
-import AdminContactPageEditor from "@/components/AdminContactPageEditor";
-import AdminHomePageEditor from "@/components/AdminHomePageEditor";
-import AdminAboutPageEditor from "@/components/AdminAboutPageEditor";
-import AdminProductPageEditor from "@/components/AdminProductPageEditor";
+import AdminContactPageEditor from "@/components/admin/AdminContactPageEditor";
+import AdminHomePageEditor from "@/components/admin/AdminHomePageEditor";
+import AdminAboutPageEditor from "@/components/admin/AdminAboutPageEditor";
+import AdminProductPageEditor from "@/components/admin/AdminProductPageEditor";
 
 interface SystemStats {
   users: {
@@ -179,38 +179,20 @@ export default function AdminSettingsPage() {
             <CardContent className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Store Name</label>
-                <Input 
-                  value={generalSettings.storeName} 
-                  onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} 
-                  placeholder="Enter store name" 
-                />
+                <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Description</label>
-                <Textarea 
-                  value={generalSettings.storeDescription} 
-                  onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} 
-                  placeholder="Enter store description" 
-                  rows={3} 
-                />
+                <Textarea value={generalSettings.storeDescription} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} placeholder="Enter store description" rows={3} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Contact Email</label>
-                <Input 
-                  type="email" 
-                  value={generalSettings.contactEmail} 
-                  onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} 
-                  placeholder="contact@store.com" 
-                />
+                <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Currency</label>
-                  <select 
-                    value={generalSettings.currency} 
-                    onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} 
-                    className="w-full px-3 py-2 border rounded-md"
-                  >
+                  <select value={generalSettings.currency} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
                     <option value="USD">US Dollar (USD)</option>
                     <option value="IDR">Indonesian Rupiah (IDR)</option>
                     <option value="EUR">Euro (EUR)</option>
@@ -218,11 +200,7 @@ export default function AdminSettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Language</label>
-                  <select 
-                    value={generalSettings.language} 
-                    onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} 
-                    className="w-full px-3 py-2 border rounded-md"
-                  >
+                  <select value={generalSettings.language} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
                     <option value="en">English</option>
                     <option value="id">Bahasa Indonesia</option>
                   </select>
@@ -383,19 +361,11 @@ export default function AdminSettingsPage() {
                     <div key={log.id} className="flex items-center justify-between p-3 bg-muted/30 rounded">
                       <div>
                         <p className="text-sm font-medium">{log.description}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(log.createdAt).toLocaleString()}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{new Date(log.createdAt).toLocaleString()}</p>
                       </div>
-                      <Badge variant={log.status === "SUCCESS" ? "default" : log.status === "FAILED" ? "destructive" : "secondary"}>
-                        {log.status}
-                      </Badge>
+                      <Badge variant={log.status === "SUCCESS" ? "default" : log.status === "FAILED" ? "destructive" : "secondary"}>{log.status}</Badge>
                     </div>
-                  )) || (
-                    <div className="text-center text-muted-foreground py-4">
-                      Loading security logs...
-                    </div>
-                  )}
+                  )) || <div className="text-center text-muted-foreground py-4">Loading security logs...</div>}
                 </div>
               </CardContent>
             </Card>
@@ -451,30 +421,22 @@ export default function AdminSettingsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Database Connection</span>
-                    <Badge variant={stats?.system.health.database ? "default" : "destructive"}>
-                      {stats?.system.health.database ? "Online" : "Offline"}
-                    </Badge>
+                    <Badge variant={stats?.system.health.database ? "default" : "destructive"}>{stats?.system.health.database ? "Online" : "Offline"}</Badge>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm">API Services</span>
-                    <Badge variant={stats?.system.health.apiServices ? "default" : "destructive"}>
-                      {stats?.system.health.apiServices ? "Running" : "Down"}
-                    </Badge>
+                    <Badge variant={stats?.system.health.apiServices ? "default" : "destructive"}>{stats?.system.health.apiServices ? "Running" : "Down"}</Badge>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm">File Storage</span>
-                    <Badge variant={stats?.system.health.fileStorage ? "default" : "destructive"}>
-                      {stats?.system.health.fileStorage ? "Available" : "Unavailable"}
-                    </Badge>
+                    <Badge variant={stats?.system.health.fileStorage ? "default" : "destructive"}>{stats?.system.health.fileStorage ? "Available" : "Unavailable"}</Badge>
                   </div>
 
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Cache System</span>
-                    <Badge variant={stats?.system.health.cacheSystem ? "default" : "secondary"}>
-                      {stats?.system.health.cacheSystem ? "Enabled" : "Disabled"}
-                    </Badge>
+                    <Badge variant={stats?.system.health.cacheSystem ? "default" : "secondary"}>{stats?.system.health.cacheSystem ? "Enabled" : "Disabled"}</Badge>
                   </div>
                 </div>
               </CardContent>

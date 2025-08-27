@@ -2,9 +2,9 @@
 
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import ProductReviewSection from "@/components/ProductReviewSection";
-import ProductRecommendation from "@/components/ProductRecommendation";
-import { useCart } from "@/components/cart-context";
+import ProductReviewSection from "@/components/product/ProductReviewSection";
+import ProductRecommendation from "@/components/product/ProductRecommendation";
+import { useCart } from "@/components/contexts/cart-context";
 import * as React from "react";
 
 interface ProductDetail {

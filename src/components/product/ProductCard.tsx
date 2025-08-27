@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "../components/ui/button";
-import { useCart } from "./cart-context";
-import type { Product } from "../data/products";
+import { Button } from "@/components/ui/button";
+import { useCart } from "../contexts/cart-context";
+import type { Product } from "../../data/products";
 import Link from "next/link";
-import { useWishlist } from "./wishlist-context";
+import { useWishlist } from "../contexts/wishlist-context";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 
 export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid" }: { product: Product; admin?: boolean; onEdit?: () => void; onDelete?: () => void; viewMode?: "grid" | "list" }) {

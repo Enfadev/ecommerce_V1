@@ -1,7 +1,7 @@
 "use client";
 
-import { useCart } from "./cart-context";
-import { Badge } from "./ui/badge";
+import { useCart } from "../contexts/cart-context";
+import { Badge } from "@/components/ui/badge";
 
 export function CartStats() {
   const { getTotalItems, getTotalPrice } = useCart();

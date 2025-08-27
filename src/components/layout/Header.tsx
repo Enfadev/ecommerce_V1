@@ -1,17 +1,17 @@
 "use client";
 
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CartDrawer } from "./CartDrawer";
-import { WishlistBadge } from "./WishlistBadge";
+import { CartDrawer } from "../cart/CartDrawer";
+import { WishlistBadge } from "../wishlist/WishlistBadge";
 import { Search, Menu, Heart, User, ShoppingBag, LogOut, Settings, Crown } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "./ui/sheet";
-import { useAuth } from "./auth-context";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { useAuth } from "../contexts/auth-context";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Header() {
   const router = useRouter();
@@ -72,7 +72,13 @@ export function Header() {
         <div className="flex-1 max-w-sm mx-8 hidden md:block">
           <form onSubmit={handleSearch} role="search" className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input type="text" placeholder="Search your favorite products..." className="pl-10 rounded-full bg-muted/40 border-none focus-visible:ring-2 focus-visible:ring-primary/50" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input
+              type="text"
+              placeholder="Search your favorite products..."
+              className="pl-10 rounded-full bg-muted/40 border-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </form>
         </div>
 
@@ -176,7 +182,7 @@ export function Header() {
                 <div className="p-4 border-b bg-muted/20">
                   <h2 className="font-semibold text-lg">Menu</h2>
                 </div>
-                
+
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto p-4">
                   <div className="flex flex-col space-y-1">
@@ -242,7 +248,7 @@ export function Header() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Footer - Sign Out Button */}
                 {isAuthenticated && (
                   <div className="p-4 border-t bg-muted/10">

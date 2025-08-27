@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useOrders } from "@/hooks/useOrders";
-import { AdminExportButton } from "@/components/AdminExportButton";
+import { AdminExportButton } from "@/components/admin/AdminExportButton";
 
 interface Order {
   id: string;
@@ -208,12 +208,7 @@ export default function AdminOrderManagement() {
           <p className="text-muted-foreground mt-1">Manage all customer orders</p>
         </div>
         <div className="flex gap-3">
-          <AdminExportButton 
-            data={orders as unknown as Record<string, unknown>[]} 
-            filename={`orders-${new Date().toISOString().split('T')[0]}`}
-            type="orders"
-            className=""
-          />
+          <AdminExportButton data={orders as unknown as Record<string, unknown>[]} filename={`orders-${new Date().toISOString().split("T")[0]}`} type="orders" className="" />
           <Button variant="outline" className="gap-2">
             <Calendar className="w-4 h-4" />
             Date Filter

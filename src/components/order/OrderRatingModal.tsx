@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
-import { Card, CardContent } from "./ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { Card, CardContent } from "../ui/card";
 import { Star } from "lucide-react";
 import { OrderItem } from "./OrderHistoryPage";
 import { toast } from "sonner";

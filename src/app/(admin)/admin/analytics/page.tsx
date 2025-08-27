@@ -12,7 +12,7 @@ import { format, subDays } from "date-fns";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
 import { TrendingUp, TrendingDown, Calendar as CalendarIcon, BarChart3, Activity, Users, ShoppingCart, DollarSign, Package, Star, Clock, ArrowUpRight, ArrowDownRight, RefreshCw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AdminExportButton } from "@/components/AdminExportButton";
+import { AdminExportButton } from "@/components/admin/AdminExportButton";
 
 interface AnalyticsData {
   overview: {
@@ -251,12 +251,7 @@ export default function AdminAnalytics() {
             </Popover>
           )}
 
-          <AdminExportButton 
-            data={data?.timeSeriesData as unknown as Record<string, unknown>[] || []} 
-            filename={`analytics-detailed-${new Date().toISOString().split('T')[0]}`}
-            type="analytics"
-            className=""
-          />
+          <AdminExportButton data={(data?.timeSeriesData as unknown as Record<string, unknown>[]) || []} filename={`analytics-detailed-${new Date().toISOString().split("T")[0]}`} type="analytics" className="" />
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useCart } from "@/components/cart-context";
-import { useAuth } from "@/components/auth-context";
+import { useCart } from "@/components/contexts/cart-context";
+import { useAuth } from "@/components/contexts/auth-context";
 import { useOrders, CreateOrderData, Order } from "@/hooks/use-orders";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,14 +11,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
-import StripeElementsWrapper from "@/components/StripeElementsWrapper";
+import StripeElementsWrapper from "@/components/cart/StripeElementsWrapper";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CheckCircle, ArrowLeft, Package, CreditCard, Truck, Tag } from "lucide-react";
 import { toast } from "sonner";
 
-import PayPalButton from "@/components/PayPalButton";
+import PayPalButton from "@/components/cart/PayPalButton";
 
 export default function CheckoutPage() {
   const { items, clearCart, getTotalPrice, getTotalItems } = useCart();

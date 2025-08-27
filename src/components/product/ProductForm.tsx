@@ -2,10 +2,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 import Image from "next/image";
 
 const productSchema = z.object({

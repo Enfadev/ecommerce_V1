@@ -1,9 +1,9 @@
 "use client";
 
-import { ProductCard } from "@/components/ProductCard";
+import { ProductCard } from "@/components/product/ProductCard";
 import type { Product } from "@/data/products";
 import { useSearchParams } from "next/navigation";
-import { ProductFilter } from "@/components/ProductFilter";
+import { ProductFilter } from "@/components/product/ProductFilter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

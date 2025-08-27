@@ -4,14 +4,13 @@ import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import PaymentForm from "./PaymentForm";
 
-
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
-import { CreateOrderData, Order } from "../hooks/use-orders";
+import { CreateOrderData, Order } from "../../hooks/use-orders";
 
 interface StripeElementsWrapperProps {
-  amount: number; 
+  amount: number;
   email: string;
   orderData: CreateOrderData;
   onPaymentSuccess?: (order: Order) => void;
@@ -33,42 +32,42 @@ export default function StripeElementsWrapper({ amount, email, orderData, onPaym
   const options: StripeElementsOptions = {
     clientSecret: clientSecret!,
     appearance: {
-      theme: 'flat',
+      theme: "flat",
       variables: {
-        colorPrimary: 'var(--color-primary, #635bff)',
-        colorBackground: 'var(--color-card, #fff)',
-        colorText: 'var(--color-foreground, #222)',
-        colorDanger: '#df1b41',
-        colorTextPlaceholder: 'var(--color-muted-foreground, #888)',
-        borderRadius: '8px',
-        fontFamily: 'var(--font-sans, sans-serif)',
-        fontSizeBase: '16px',
+        colorPrimary: "var(--color-primary, #635bff)",
+        colorBackground: "var(--color-card, #fff)",
+        colorText: "var(--color-foreground, #222)",
+        colorDanger: "#df1b41",
+        colorTextPlaceholder: "var(--color-muted-foreground, #888)",
+        borderRadius: "8px",
+        fontFamily: "var(--font-sans, sans-serif)",
+        fontSizeBase: "16px",
       },
       rules: {
-        '.Input': {
-          backgroundColor: 'var(--color-card, #fff)',
-          color: 'var(--color-foreground, #222)',
-          borderColor: 'var(--color-border, #e0e0e0)',
+        ".Input": {
+          backgroundColor: "var(--color-card, #fff)",
+          color: "var(--color-foreground, #222)",
+          borderColor: "var(--color-border, #e0e0e0)",
         },
-        '.Input:focus': {
-          borderColor: 'var(--color-primary, #635bff)',
+        ".Input:focus": {
+          borderColor: "var(--color-primary, #635bff)",
         },
-        '.Input--invalid': {
-          color: '#df1b41',
+        ".Input--invalid": {
+          color: "#df1b41",
         },
-        '.Tab, .Block, .Label': {
-          color: 'var(--color-foreground, #222)',
+        ".Tab, .Block, .Label": {
+          color: "var(--color-foreground, #222)",
         },
       },
     },
   };
 
   if (!publishableKey) {
-    return <div style={{ color: 'red' }}>Stripe publishable key is missing. Please check your environment variables.</div>;
+    return <div style={{ color: "red" }}>Stripe publishable key is missing. Please check your environment variables.</div>;
   }
   if (!clientSecret) return <div>Loading payment form...</div>;
   if (!stripePromise) {
-    return <div style={{ color: 'red' }}>Failed to initialize Stripe. Please check your publishable key.</div>;
+    return <div style={{ color: "red" }}>Failed to initialize Stripe. Please check your publishable key.</div>;
   }
   return (
     <Elements stripe={stripePromise} options={options}>

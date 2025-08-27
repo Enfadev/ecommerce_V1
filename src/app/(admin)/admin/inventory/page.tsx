@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { products as productsData, Product } from "@/data/products";
 import { Package, AlertTriangle, CheckCircle, Search, RefreshCw } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AdminExportButton } from "@/components/AdminExportButton";
+import { AdminExportButton } from "@/components/admin/AdminExportButton";
 
 export default function InventoryManager() {
   const [products, setProducts] = useState<Product[]>(
@@ -69,12 +69,7 @@ export default function InventoryManager() {
             <RefreshCw className="w-4 h-4" />
             Refresh
           </Button>
-          <AdminExportButton 
-            data={filteredProducts as unknown as Record<string, unknown>[]} 
-            filename={`inventory-${new Date().toISOString().split('T')[0]}`}
-            type="inventory"
-            className=""
-          />
+          <AdminExportButton data={filteredProducts as unknown as Record<string, unknown>[]} filename={`inventory-${new Date().toISOString().split("T")[0]}`} type="inventory" className="" />
         </div>
       </div>
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { useCart } from "./cart-context";
-import { useWishlist } from "./wishlist-context";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useCart } from "../contexts/cart-context";
+import { useWishlist } from "../contexts/wishlist-context";
 import { toast } from "sonner";
-import type { Product } from "../data/products";
+import type { Product } from "../../data/products";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, ShoppingCart, Star, Share2, Eye, Package } from "lucide-react";

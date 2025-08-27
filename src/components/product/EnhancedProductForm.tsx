@@ -3,19 +3,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState, useEffect } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Badge } from "./ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Switch } from "./ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Separator } from "./ui/separator";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Switch } from "../ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Separator } from "../ui/separator";
 import Image from "next/image";
 import { Upload, X, Plus, AlertCircle, Package, Tag, Globe, BarChart, DollarSign } from "lucide-react";
-import { Alert, AlertDescription } from "./ui/alert";
 
 const productSchema = z.object({
   id: z.number().optional(),
@@ -24,7 +23,7 @@ const productSchema = z.object({
   description: z.string().optional(),
   category: z.string().min(1, "Category is required"),
   stock: z.number().min(0, "Stock must be 0 or more"),
-  status: z.enum(["active", "inactive", "draft"], { required_error: "Status is required" }),
+  status: z.enum(["active", "inactive", "draft"]),
   sku: z.string().min(2, "SKU is required"),
   brand: z.string().optional(),
   slug: z.string().min(2, "Slug is required"),
@@ -60,18 +59,7 @@ type ProductFormProps = {
   onCancel: () => void;
 };
 
-const defaultCategories = [
-  "Electronics",
-  "Clothing",
-  "Home & Garden",
-  "Books",
-  "Sports",
-  "Beauty",
-  "Toys",
-  "Food & Beverages",
-  "Automotive",
-  "Health",
-];
+const defaultCategories = ["Electronics", "Clothing", "Home & Garden", "Books", "Sports", "Beauty", "Toys", "Food & Beverages", "Automotive", "Health"];
 
 const statusOptions = [
   { value: "active", label: "Active", color: "bg-green-100 text-green-800" },
@@ -91,7 +79,6 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
     formState: { errors },
     setValue,
     watch,
-    reset,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -107,7 +94,6 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
 
   const watchedPrice = watch("price");
   const watchedDiscountPrice = watch("discountPrice");
-  const watchedCompareAtPrice = watch("compareAtPrice");
 
   useEffect(() => {
     if (product?.gallery) {
@@ -115,9 +101,24 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
     }
   }, [product]);
 
+  // Cleanup URL objects on unmount
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((url) => {
+        if (url.startsWith("blob:")) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [imagePreviews]);
+
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    setValue("name", name);
     setValue("slug", slug);
   };
 
@@ -126,14 +127,20 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
     if (files) {
       const filesArray = Array.from(files);
       setValue("imageFiles", filesArray);
-      
-      const previews = filesArray.map(file => URL.createObjectURL(file));
-      setImagePreviews(prev => [...prev, ...previews]);
+
+      const previews = filesArray.map((file) => URL.createObjectURL(file));
+      setImagePreviews((prev) => [...prev, ...previews]);
     }
   };
 
   const removeImage = (index: number) => {
-    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => {
+      const urlToRemove = prev[index];
+      if (urlToRemove?.startsWith("blob:")) {
+        URL.revokeObjectURL(urlToRemove);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const addTag = () => {
@@ -146,7 +153,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
   };
 
   const removeTag = (tagToRemove: string) => {
-    const newTags = tags.filter(tag => tag !== tagToRemove);
+    const newTags = tags.filter((tag) => tag !== tagToRemove);
     setTags(newTags);
     setValue("tags", newTags);
   };
@@ -178,20 +185,14 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold">
-              {product ? "Edit Product" : "Add New Product"}
-            </h2>
-            <p className="text-muted-foreground">
-              {product ? "Update product information" : "Create a new product for your store"}
-            </p>
+            <h2 className="text-2xl font-bold">{product ? "Edit Product" : "Add New Product"}</h2>
+            <p className="text-muted-foreground">{product ? "Update product information" : "Create a new product for your store"}</p>
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit">
-              {product ? "Update Product" : "Create Product"}
-            </Button>
+            <Button type="submit">{product ? "Update Product" : "Create Product"}</Button>
           </div>
         </div>
 
@@ -234,12 +235,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Product Name *</Label>
-                    <Input
-                      id="name"
-                      {...register("name")}
-                      onChange={handleNameChange}
-                      placeholder="Enter product name"
-                    />
+                    <Input id="name" onChange={handleNameChange} placeholder="Enter product name" defaultValue={product?.name} />
                     {errors.name && (
                       <p className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
@@ -250,11 +246,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
 
                   <div className="space-y-2">
                     <Label htmlFor="slug">URL Slug *</Label>
-                    <Input
-                      id="slug"
-                      {...register("slug")}
-                      placeholder="product-url-slug"
-                    />
+                    <Input id="slug" {...register("slug")} placeholder="product-url-slug" />
                     {errors.slug && (
                       <p className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
@@ -266,18 +258,13 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    {...register("description")}
-                    placeholder="Describe your product..."
-                    rows={4}
-                  />
+                  <Textarea id="description" {...register("description")} placeholder="Describe your product..." rows={4} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category *</Label>
-                    <Select onValueChange={(value) => setValue("category", value)}>
+                    <Select onValueChange={(value: string) => setValue("category", value)} defaultValue={product?.category}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
@@ -299,17 +286,13 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
 
                   <div className="space-y-2">
                     <Label htmlFor="brand">Brand</Label>
-                    <Input
-                      id="brand"
-                      {...register("brand")}
-                      placeholder="Enter brand name"
-                    />
+                    <Input id="brand" {...register("brand")} placeholder="Enter brand name" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="status">Status *</Label>
-                  <Select onValueChange={(value) => setValue("status", value as "active" | "inactive" | "draft")}>
+                  <Select onValueChange={(value: string) => setValue("status", value as "active" | "inactive" | "draft")} defaultValue={product?.status}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
@@ -337,9 +320,9 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                   <div className="flex gap-2 mb-2">
                     <Input
                       value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTagInput(e.target.value)}
                       placeholder="Add a tag"
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && (e.preventDefault(), addTag())}
                     />
                     <Button type="button" onClick={addTag} size="sm">
                       <Plus className="w-4 h-4" />
@@ -349,11 +332,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                     {tags.map((tag, index) => (
                       <Badge key={index} variant="secondary" className="flex items-center gap-1">
                         {tag}
-                        <button
-                          type="button"
-                          onClick={() => removeTag(tag)}
-                          className="ml-1 hover:text-red-500"
-                        >
+                        <button type="button" onClick={() => removeTag(tag)} className="ml-1 hover:text-red-500">
                           <X className="w-3 h-3" />
                         </button>
                       </Badge>
@@ -377,13 +356,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price">Price *</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      step="0.01"
-                      {...register("price", { valueAsNumber: true })}
-                      placeholder="0.00"
-                    />
+                    <Input id="price" type="number" step="0.01" {...register("price", { valueAsNumber: true })} placeholder="0.00" />
                     {errors.price && (
                       <p className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
@@ -394,68 +367,32 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
 
                   <div className="space-y-2">
                     <Label htmlFor="compareAtPrice">Compare at Price</Label>
-                    <Input
-                      id="compareAtPrice"
-                      type="number"
-                      step="0.01"
-                      {...register("compareAtPrice", { valueAsNumber: true })}
-                      placeholder="0.00"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Show a higher price that you&apos;re comparing against
-                    </p>
+                    <Input id="compareAtPrice" type="number" step="0.01" {...register("compareAtPrice", { valueAsNumber: true })} placeholder="0.00" />
+                    <p className="text-xs text-muted-foreground">Show a higher price that you&apos;re comparing against</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="discountPrice">Sale Price</Label>
-                    <Input
-                      id="discountPrice"
-                      type="number"
-                      step="0.01"
-                      {...register("discountPrice", { valueAsNumber: true })}
-                      placeholder="0.00"
-                    />
-                    {watchedDiscountPrice && watchedPrice && (
-                      <p className="text-xs text-green-600">
-                        {getDiscountPercentage()}% discount
-                      </p>
-                    )}
+                    <Input id="discountPrice" type="number" step="0.01" {...register("discountPrice", { valueAsNumber: true })} placeholder="0.00" />
+                    {watchedDiscountPrice && watchedPrice && <p className="text-xs text-green-600">{getDiscountPercentage()}% discount</p>}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="costPerItem">Cost per Item</Label>
-                    <Input
-                      id="costPerItem"
-                      type="number"
-                      step="0.01"
-                      {...register("costPerItem", { valueAsNumber: true })}
-                      placeholder="0.00"
-                    />
-                    {watch("costPerItem") && watchedPrice && (
-                      <p className="text-xs text-blue-600">
-                        Profit margin: {calculateProfitMargin()}%
-                      </p>
-                    )}
+                    <Input id="costPerItem" type="number" step="0.01" {...register("costPerItem", { valueAsNumber: true })} placeholder="0.00" />
+                    {watch("costPerItem") && watchedPrice && <p className="text-xs text-blue-600">Profit margin: {calculateProfitMargin()}%</p>}
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="promoExpired">Sale End Date</Label>
-                  <Input
-                    id="promoExpired"
-                    type="datetime-local"
-                    {...register("promoExpired")}
-                  />
+                  <Input id="promoExpired" type="datetime-local" {...register("promoExpired")} />
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Switch
-                    id="taxable"
-                    {...register("taxable")}
-                    onCheckedChange={(checked) => setValue("taxable", checked)}
-                  />
+                  <Switch id="taxable" defaultChecked={watch("taxable")} onCheckedChange={(checked: boolean) => setValue("taxable", checked)} />
                   <Label htmlFor="taxable">Charge tax on this product</Label>
                 </div>
               </CardContent>
@@ -475,11 +412,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="sku">SKU *</Label>
-                    <Input
-                      id="sku"
-                      {...register("sku")}
-                      placeholder="Product SKU"
-                    />
+                    <Input id="sku" {...register("sku")} placeholder="Product SKU" />
                     {errors.sku && (
                       <p className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
@@ -490,20 +423,12 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
 
                   <div className="space-y-2">
                     <Label htmlFor="barcode">Barcode</Label>
-                    <Input
-                      id="barcode"
-                      {...register("barcode")}
-                      placeholder="Product barcode"
-                    />
+                    <Input id="barcode" {...register("barcode")} placeholder="Product barcode" />
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Switch
-                    id="trackQuantity"
-                    {...register("trackQuantity")}
-                    onCheckedChange={(checked) => setValue("trackQuantity", checked)}
-                  />
+                  <Switch id="trackQuantity" defaultChecked={watch("trackQuantity")} onCheckedChange={(checked: boolean) => setValue("trackQuantity", checked)} />
                   <Label htmlFor="trackQuantity">Track quantity</Label>
                 </div>
 
@@ -511,12 +436,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="stock">Stock Quantity *</Label>
-                      <Input
-                        id="stock"
-                        type="number"
-                        {...register("stock", { valueAsNumber: true })}
-                        placeholder="0"
-                      />
+                      <Input id="stock" type="number" {...register("stock", { valueAsNumber: true })} placeholder="0" />
                       {errors.stock && (
                         <p className="text-red-500 text-xs flex items-center gap-1">
                           <AlertCircle className="w-3 h-3" />
@@ -526,11 +446,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                     </div>
 
                     <div className="flex items-center space-x-2 mt-6">
-                      <Switch
-                        id="allowBackorder"
-                        {...register("allowBackorder")}
-                        onCheckedChange={(checked) => setValue("allowBackorder", checked)}
-                      />
+                      <Switch id="allowBackorder" defaultChecked={watch("allowBackorder")} onCheckedChange={(checked: boolean) => setValue("allowBackorder", checked)} />
                       <Label htmlFor="allowBackorder">Continue selling when out of stock</Label>
                     </div>
                   </div>
@@ -539,24 +455,12 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="minimumOrderQuantity">Minimum Order Quantity</Label>
-                    <Input
-                      id="minimumOrderQuantity"
-                      type="number"
-                      {...register("minimumOrderQuantity", { valueAsNumber: true })}
-                      placeholder="1"
-                      min="1"
-                    />
+                    <Input id="minimumOrderQuantity" type="number" {...register("minimumOrderQuantity", { valueAsNumber: true })} placeholder="1" min="1" />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="maximumOrderQuantity">Maximum Order Quantity</Label>
-                    <Input
-                      id="maximumOrderQuantity"
-                      type="number"
-                      {...register("maximumOrderQuantity", { valueAsNumber: true })}
-                      placeholder="No limit"
-                      min="1"
-                    />
+                    <Input id="maximumOrderQuantity" type="number" {...register("maximumOrderQuantity", { valueAsNumber: true })} placeholder="No limit" min="1" />
                   </div>
                 </div>
               </CardContent>
@@ -582,27 +486,15 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                     onChange={onImagesChange}
                     className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Upload multiple images. First image will be the main product image.
-                  </p>
+                  <p className="text-xs text-muted-foreground">Upload multiple images. First image will be the main product image.</p>
                 </div>
 
                 {imagePreviews.length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {imagePreviews.map((src, index) => (
                       <div key={index} className="relative group">
-                        <Image
-                          src={src}
-                          alt={`Preview ${index + 1}`}
-                          width={200}
-                          height={200}
-                          className="w-full h-32 object-cover rounded-lg border"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
+                        <Image src={src} alt={`Preview ${index + 1}`} width={200} height={200} className="w-full h-32 object-cover rounded-lg border" />
+                        <button type="button" onClick={() => removeImage(index)} className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                           <X className="w-3 h-3" />
                         </button>
                         {index === 0 && (
@@ -627,29 +519,14 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="metaTitle">Meta Title</Label>
-                  <Input
-                    id="metaTitle"
-                    {...register("metaTitle")}
-                    placeholder="SEO title for search engines"
-                    maxLength={60}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {watch("metaTitle")?.length || 0}/60 characters
-                  </p>
+                  <Input id="metaTitle" {...register("metaTitle")} placeholder="SEO title for search engines" maxLength={60} />
+                  <p className="text-xs text-muted-foreground">{watch("metaTitle")?.length || 0}/60 characters</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="metaDescription">Meta Description</Label>
-                  <Textarea
-                    id="metaDescription"
-                    {...register("metaDescription")}
-                    placeholder="SEO description for search engines"
-                    rows={3}
-                    maxLength={160}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {watch("metaDescription")?.length || 0}/160 characters
-                  </p>
+                  <Textarea id="metaDescription" {...register("metaDescription")} placeholder="SEO description for search engines" rows={3} maxLength={160} />
+                  <p className="text-xs text-muted-foreground">{watch("metaDescription")?.length || 0}/160 characters</p>
                 </div>
               </CardContent>
             </Card>
@@ -668,54 +545,32 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="weight">Weight (kg)</Label>
-                    <Input
-                      id="weight"
-                      type="number"
-                      step="0.01"
-                      {...register("weight", { valueAsNumber: true })}
-                      placeholder="0.0"
-                    />
+                    <Input id="weight" type="number" step="0.01" {...register("weight", { valueAsNumber: true })} placeholder="0.0" />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="dimensions">Dimensions (L×W×H cm)</Label>
-                    <Input
-                      id="dimensions"
-                      {...register("dimensions")}
-                      placeholder="e.g., 10×20×5"
-                    />
+                    <Input id="dimensions" {...register("dimensions")} placeholder="e.g., 10×20×5" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="warranty">Warranty Information</Label>
-                  <Input
-                    id="warranty"
-                    {...register("warranty")}
-                    placeholder="e.g., 1 year manufacturer warranty"
-                  />
+                  <Input id="warranty" {...register("warranty")} placeholder="e.g., 1 year manufacturer warranty" />
                 </div>
 
                 <Separator />
 
                 <div className="space-y-4">
                   <h4 className="font-medium">Product Options</h4>
-                  
+
                   <div className="flex items-center space-x-2">
-                    <Switch
-                      id="featured"
-                      {...register("featured")}
-                      onCheckedChange={(checked) => setValue("featured", checked)}
-                    />
+                    <Switch id="featured" defaultChecked={watch("featured")} onCheckedChange={(checked: boolean) => setValue("featured", checked)} />
                     <Label htmlFor="featured">Featured product</Label>
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <Switch
-                      id="requiresShipping"
-                      {...register("requiresShipping")}
-                      onCheckedChange={(checked) => setValue("requiresShipping", checked)}
-                    />
+                    <Switch id="requiresShipping" defaultChecked={watch("requiresShipping")} onCheckedChange={(checked: boolean) => setValue("requiresShipping", checked)} />
                     <Label htmlFor="requiresShipping">This is a physical product</Label>
                   </div>
                 </div>

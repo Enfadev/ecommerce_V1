@@ -1,5 +1,5 @@
 import React from "react";
-import type { CartItem } from "@/components/cart-context";
+import type { CartItem } from "@/components/contexts/cart-context";
 
 interface OrderSummaryProps {
   items: CartItem[];

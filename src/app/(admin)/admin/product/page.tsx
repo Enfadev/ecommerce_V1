@@ -11,8 +11,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-import { EnhancedProductForm } from "@/components/EnhancedProductForm";
-import { AdminExportButton } from "@/components/AdminExportButton";
+import { EnhancedProductForm } from "@/components/product/EnhancedProductForm";
+import { AdminExportButton } from "@/components/admin/AdminExportButton";
 
 interface Product {
   id: number;
@@ -344,12 +344,7 @@ export default function AdminProductManagement() {
           <p className="text-muted-foreground mt-1">Manage all products in your store</p>
         </div>
         <div className="flex gap-3">
-          <AdminExportButton 
-            data={filteredProducts as unknown as Record<string, unknown>[]} 
-            filename={`products-${new Date().toISOString().split('T')[0]}`}
-            type="products"
-            className=""
-          />
+          <AdminExportButton data={filteredProducts as unknown as Record<string, unknown>[]} filename={`products-${new Date().toISOString().split("T")[0]}`} type="products" className="" />
           <Button onClick={handleAdd} className="gap-2">
             <Plus className="w-4 h-4" />
             Add Product
@@ -600,43 +595,41 @@ export default function AdminProductManagement() {
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="max-w-6xl w-[95vw] h-[85vh] overflow-hidden p-0 grid grid-rows-[auto_1fr]">
           <DialogHeader className="px-6 py-4 border-b shrink-0">
-            <DialogTitle className="text-xl">
-              {editingProduct ? 'Edit Product' : 'Add New Product'}
-            </DialogTitle>
+            <DialogTitle className="text-xl">{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto min-h-0">
             <div className="p-6">
               <EnhancedProductForm
-              product={
-                editingProduct
-                  ? {
-                      id: editingProduct.id,
-                      name: editingProduct.name,
-                      price: editingProduct.price,
-                      description: editingProduct.description || "",
-                      category: editingProduct.category || "",
-                      stock: editingProduct.stock || 0,
-                      status: (editingProduct.status as "active" | "inactive" | "draft") || "active",
-                      sku: editingProduct.sku || "",
-                      brand: editingProduct.brand || "",
-                      slug: editingProduct.slug || "",
-                      metaTitle: editingProduct.metaTitle || "",
-                      metaDescription: editingProduct.metaDescription || "",
-                      discountPrice: editingProduct.hargaDiskon || null,
-                      promoExpired: editingProduct.promoExpired || "",
-                      gallery: editingProduct.gallery || [],
-                      featured: false,
-                      allowBackorder: false,
-                      trackQuantity: true,
-                      requiresShipping: true,
-                      taxable: true,
-                      tags: [],
-                    }
-                  : undefined
-              }
-              onSave={handleSave}
-              onCancel={() => setShowForm(false)}
-            />
+                product={
+                  editingProduct
+                    ? {
+                        id: editingProduct.id,
+                        name: editingProduct.name,
+                        price: editingProduct.price,
+                        description: editingProduct.description || "",
+                        category: editingProduct.category || "",
+                        stock: editingProduct.stock || 0,
+                        status: (editingProduct.status as "active" | "inactive" | "draft") || "active",
+                        sku: editingProduct.sku || "",
+                        brand: editingProduct.brand || "",
+                        slug: editingProduct.slug || "",
+                        metaTitle: editingProduct.metaTitle || "",
+                        metaDescription: editingProduct.metaDescription || "",
+                        discountPrice: editingProduct.hargaDiskon || null,
+                        promoExpired: editingProduct.promoExpired || "",
+                        gallery: editingProduct.gallery || [],
+                        featured: false,
+                        allowBackorder: false,
+                        trackQuantity: true,
+                        requiresShipping: true,
+                        taxable: true,
+                        tags: [],
+                      }
+                    : undefined
+                }
+                onSave={handleSave}
+                onCancel={() => setShowForm(false)}
+              />
             </div>
           </div>
         </DialogContent>

@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
-import { useAuth } from "./auth-context";
+import { useAuth } from "../contexts/auth-context";
 
 export function NextAuthSync({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();

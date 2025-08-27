@@ -1,11 +1,11 @@
 "use client";
 
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 import { ReactNode } from "react";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/layout/Header";
 import { Toaster } from "@/components/ui/sonner";
-import { CartProvider } from "@/components/cart-context";
-import { WishlistProvider } from "@/components/wishlist-context";
+import { CartProvider } from "@/components/contexts/cart-context";
+import { WishlistProvider } from "@/components/contexts/wishlist-context";
 
 interface CustomerLayoutProps {
   children: ReactNode;

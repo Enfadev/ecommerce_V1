@@ -1,9 +1,9 @@
 import React from "react";
-import { products } from "../data/products";
-import { Card } from "./ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { products } from "../../data/products";
+import { Card } from "../ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
 

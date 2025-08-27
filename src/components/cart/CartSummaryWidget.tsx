@@ -1,9 +1,9 @@
 "use client";
 
-import { useCart } from "./cart-context";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Separator } from "./ui/separator";
+import { useCart } from "../contexts/cart-context";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { ShoppingCart, Package, Clock } from "lucide-react";
 
 export function CartSummaryWidget() {

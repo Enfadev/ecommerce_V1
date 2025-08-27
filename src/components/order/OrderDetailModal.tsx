@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Badge } from "./ui/badge";
-import { Separator } from "./ui/separator";
-import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import OrderRatingModal from "./OrderRatingModal";
 import { Package, Truck, CheckCircle, XCircle, Clock, Calendar, MapPin, CreditCard, RefreshCw, Download, ExternalLink, Copy, Star } from "lucide-react";
 import { Order } from "./OrderHistoryPage";

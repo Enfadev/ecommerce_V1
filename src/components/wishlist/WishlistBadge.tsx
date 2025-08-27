@@ -1,9 +1,9 @@
 "use client";
 
 import { Heart } from "lucide-react";
-import { useWishlist } from "./wishlist-context";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { useWishlist } from "../contexts/wishlist-context";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export function WishlistBadge() {

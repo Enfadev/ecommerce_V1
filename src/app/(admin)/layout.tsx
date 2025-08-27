@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import AdminSidebar from "@/components/AdminSidebar";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 interface AdminLayoutProps {
