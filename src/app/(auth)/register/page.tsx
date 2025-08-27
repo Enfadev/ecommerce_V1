@@ -16,13 +16,21 @@ import { Toast } from "@/components/ui/toast";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-    email: z.string().email({ message: "Invalid email address" }),
+    name: z
+      .string()
+      .min(2, { message: "Name must be at least 2 characters" })
+      .max(50, { message: "Name must not exceed 50 characters" })
+      .regex(/^[a-zA-Z\s]+$/, { message: "Name can only contain letters and spaces" }),
+    email: z.string().email({ message: "Invalid email address" }).max(255, { message: "Email must not exceed 255 characters" }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters" })
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
-        message: "Password must contain uppercase, lowercase, and a number",
+      .max(128, { message: "Password must not exceed 128 characters" })
+      .regex(/^(?=.*[a-z])/, { message: "Password must contain at least one lowercase letter" })
+      .regex(/^(?=.*[A-Z])/, { message: "Password must contain at least one uppercase letter" })
+      .regex(/^(?=.*\d)/, { message: "Password must contain at least one number" })
+      .regex(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?])/, {
+        message: "Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)",
       }),
     confirmPassword: z.string(),
     agreeToTerms: z.boolean().refine((val) => val === true, {
@@ -66,9 +74,9 @@ export default function RegisterPage() {
 
   async function onSubmit(values: RegisterValues) {
     try {
-      const success = await signUp(values.name, values.email, values.password);
+      const result = await signUp(values.name, values.email, values.password);
 
-      if (success) {
+      if (result.success) {
         setToast({
           show: true,
           message: "Account created successfully! Redirecting...",
@@ -81,14 +89,14 @@ export default function RegisterPage() {
       } else {
         setToast({
           show: true,
-          message: "Failed to create account. Please try again.",
+          message: result.error || "Failed to create account. Please try again.",
           type: "error",
         });
       }
     } catch {
       setToast({
         show: true,
-        message: "An error occurred during registration.",
+        message: "An unexpected error occurred during registration.",
         type: "error",
       });
     }
@@ -96,12 +104,39 @@ export default function RegisterPage() {
 
   const passwordStrength = (password: string) => {
     let score = 0;
-    if (password.length >= 8) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/\d/.test(password)) score++;
-    if (/[^a-zA-Z0-9]/.test(password)) score++;
-    return score;
+    let requirements = [];
+
+    if (password.length >= 8) {
+      score++;
+    } else {
+      requirements.push("at least 8 characters");
+    }
+
+    if (/[a-z]/.test(password)) {
+      score++;
+    } else {
+      requirements.push("lowercase letter");
+    }
+
+    if (/[A-Z]/.test(password)) {
+      score++;
+    } else {
+      requirements.push("uppercase letter");
+    }
+
+    if (/\d/.test(password)) {
+      score++;
+    } else {
+      requirements.push("number");
+    }
+
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?]/.test(password)) {
+      score++;
+    } else {
+      requirements.push("special character");
+    }
+
+    return { score, requirements };
   };
 
   const getStrengthColor = (score: number) => {
@@ -119,7 +154,8 @@ export default function RegisterPage() {
   };
 
   const currentPassword = form.watch("password");
-  const strength = passwordStrength(currentPassword);
+  const strengthResult = passwordStrength(currentPassword);
+  const { score: strength, requirements } = strengthResult;
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -207,6 +243,7 @@ export default function RegisterPage() {
                           <div className="w-full bg-gray-700 rounded-full h-1.5">
                             <div className={`h-1.5 rounded-full transition-all duration-300 ${getStrengthColor(strength)}`} style={{ width: `${(strength / 5) * 100}%` }} />
                           </div>
+                          {requirements.length > 0 && <div className="text-xs text-red-400">Missing: {requirements.join(", ")}</div>}
                         </div>
                       )}
                       <FormMessage />

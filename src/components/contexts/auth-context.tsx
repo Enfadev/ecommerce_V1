@@ -17,8 +17,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (name: string, email: string, password: string) => Promise<boolean>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<boolean>;
   isAuthenticated: boolean;
@@ -129,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadUser();
   }, []);
 
-  const signIn = async (email: string, password: string): Promise<boolean> => {
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
       const res = await fetch("/api/signin", {
@@ -154,19 +154,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
         });
         setIsLoading(false);
-        return true;
+        return { success: true };
       } else {
+        const errorData = await res.json();
         setIsLoading(false);
-        return false;
+        return {
+          success: false,
+          error: errorData.error || `Sign in failed with status ${res.status}`,
+        };
       }
     } catch (error) {
       console.error("Sign in error:", error);
       setIsLoading(false);
-      return false;
+      return {
+        success: false,
+        error: "Network error occurred during sign in",
+      };
     }
   };
 
-  const signUp = async (name: string, email: string, password: string): Promise<boolean> => {
+  const signUp = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setIsLoading(true);
     try {
       const res = await fetch("/api/register", {
@@ -191,15 +198,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
         });
         setIsLoading(false);
-        return true;
+        return { success: true };
       } else {
+        const errorData = await res.json();
         setIsLoading(false);
-        return false;
+        return {
+          success: false,
+          error: errorData.error || `Registration failed with status ${res.status}`,
+        };
       }
     } catch (error) {
       console.error("Sign up error:", error);
       setIsLoading(false);
-      return false;
+      return {
+        success: false,
+        error: "Network error occurred during registration",
+      };
     }
   };
 
