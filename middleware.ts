@@ -9,12 +9,25 @@ const PROTECTED_PATHS = [
   '/checkout',
 ];
 
+const ADMIN_RESTRICTED_PATHS = [
+  '/checkout',
+  '/wishlist', 
+  '/order-history',
+];
+
 const PROTECTED_API_ROUTES = [
   '/api/admin',
   '/api/profile',
   '/api/orders',
   '/api/wishlist',
   '/api/checkout',
+];
+
+const ADMIN_RESTRICTED_API_ROUTES = [
+  '/api/cart',
+  '/api/wishlist',
+  '/api/checkout',
+  '/api/orders',
 ];
 
 export async function middleware(request: NextRequest) {
@@ -95,6 +108,20 @@ export async function middleware(request: NextRequest) {
         } else {
           return NextResponse.redirect(new URL('/', request.url));
         }
+      }
+    }
+
+    // Check if admin is trying to access customer-only features
+    const isAdminRestrictedPath = ADMIN_RESTRICTED_PATHS.some(path => pathname.startsWith(path));
+    const isAdminRestrictedAPI = ADMIN_RESTRICTED_API_ROUTES.some(path => pathname.startsWith(path));
+    
+    if ((isAdminRestrictedPath || isAdminRestrictedAPI) && payload.role === 'ADMIN') {
+      console.log('❌ Admin trying to access customer-only route:', pathname);
+      
+      if (isProtectedAPI || isAdminRestrictedAPI) {
+        return NextResponse.json({ error: 'Customer access only - Admin cannot access this feature' }, { status: 403 });
+      } else {
+        return NextResponse.redirect(new URL('/admin', request.url));
       }
     }
 

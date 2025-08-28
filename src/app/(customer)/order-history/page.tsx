@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useOrders, Order } from "@/hooks/use-orders";
+import { useAuth } from "@/components/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { AdminBlocker } from "@/components/ui/AdminBlocker";
 import { Package, Search, Filter, Calendar, MapPin, CreditCard, Eye, ArrowLeft, Loader2, ShoppingBag, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,6 +36,7 @@ const statusLabels = {
 };
 
 export default function OrderHistoryPage() {
+  const { user } = useAuth();
   const { orders, loading, fetchOrders } = useOrders();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -211,6 +214,16 @@ export default function OrderHistoryPage() {
           </div>
         </div>
       </div>
+    );
+  }
+
+  // Block admin access
+  if (user?.role === "ADMIN") {
+    return (
+      <AdminBlocker 
+        title="Order History Access Restricted"
+        message="Order history is for customers to track their purchases. As an admin, you can view and manage all orders through the admin panel's order management section."
+      />
     );
   }
 

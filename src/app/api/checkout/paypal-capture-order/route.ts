@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdminRequest } from '@/lib/jwt';
 
 const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID!;
 const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET!;
@@ -37,6 +38,11 @@ async function getAccessToken() {
 
 export async function POST(req: NextRequest) {
   try {
+    // Block admin access
+    if (await isAdminRequest(req)) {
+      return NextResponse.json({ error: 'Admin cannot access checkout features' }, { status: 403 });
+    }
+
     if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
       console.error('PayPal credentials missing:', {
         clientId: !!PAYPAL_CLIENT_ID,

@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest } from "@/lib/auth-utils";
+import { isAdminRequest } from "@/lib/jwt";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Block admin access
+    if (await isAdminRequest(request)) {
+      return NextResponse.json({ error: "Admin access to cart is not allowed" }, { status: 403 });
+    }
+
     const { id } = await params;
     const userId = await getUserIdFromRequest(request);
 
@@ -67,6 +73,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    // Block admin access
+    if (await isAdminRequest(request)) {
+      return NextResponse.json({ error: "Admin access to cart is not allowed" }, { status: 403 });
+    }
+
     const { id } = await params;
     const userId = await getUserIdFromRequest(request);
 

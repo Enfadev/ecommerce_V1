@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { useWishlist } from "@/components/contexts/wishlist-context";
 import { useCart } from "@/components/contexts/cart-context";
+import { useAuth } from "@/components/contexts/auth-context";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AdminBlocker } from "@/components/ui/AdminBlocker";
 import { Heart, ShoppingCart, Trash2, Filter, Grid3X3, List, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -14,6 +16,7 @@ type SortOption = "name" | "price-low" | "price-high" | "category";
 type ViewMode = "grid" | "list";
 
 export default function WishlistPage() {
+  const { user } = useAuth();
   const { wishlist, clearWishlist, getWishlistCount } = useWishlist();
   const { addToCart } = useCart();
   const [sortBy, setSortBy] = useState<SortOption>("name");
@@ -115,6 +118,16 @@ export default function WishlistPage() {
       </Card>
     </div>
   );
+
+  // Block admin access
+  if (user?.role === "ADMIN") {
+    return (
+      <AdminBlocker 
+        title="Wishlist Access Restricted"
+        message="The wishlist feature is designed for customers to save their favorite products. As an admin, you can focus on managing products, orders, and settings through the admin panel."
+      />
+    );
+  }
 
   if (wishlist.length === 0) {
     return (

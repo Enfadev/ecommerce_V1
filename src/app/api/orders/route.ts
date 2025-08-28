@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest } from "@/lib/auth-utils";
+import { isAdminRequest } from "@/lib/jwt";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURNED";
 
 export async function GET(request: NextRequest) {
   try {
+    // Block admin access
+    if (await isAdminRequest(request)) {
+      return NextResponse.json({ error: "Admin access to customer orders is not allowed. Use admin panel instead." }, { status: 403 });
+    }
+
     const userId = await getUserIdFromRequest(request);
     
     if (!userId) {
@@ -66,6 +72,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Block admin access
+    if (await isAdminRequest(request)) {
+      return NextResponse.json({ error: "Admin cannot create customer orders. This is for customer checkout only." }, { status: 403 });
+    }
+
     const userId = await getUserIdFromRequest(request);
     
     if (!userId) {

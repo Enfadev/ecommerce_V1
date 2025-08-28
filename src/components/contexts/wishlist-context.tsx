@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { toast } from "sonner";
+import { useAuth } from "./auth-context";
 import type { Product } from "@/data/products";
 
 interface WishlistContextType {
@@ -21,11 +22,18 @@ export function useWishlist() {
 }
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   
   useEffect(() => {
+    // Clear wishlist for admin users
+    if (user?.role === "ADMIN") {
+      setWishlist([]);
+      return;
+    }
+    
     const savedWishlist = localStorage.getItem("wishlist");
     if (savedWishlist) {
       try {
@@ -36,16 +44,23 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       }
     }
     setIsLoaded(true);
-  }, []);
+  }, [user?.role]);
 
   
   useEffect(() => {
-    if (isLoaded) {
+    // Don't save wishlist for admin users
+    if (isLoaded && user?.role !== "ADMIN") {
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
     }
-  }, [wishlist, isLoaded]);
+  }, [wishlist, isLoaded, user?.role]);
 
   function addToWishlist(product: Product) {
+    // Block admin from using wishlist
+    if (user?.role === "ADMIN") {
+      toast.error("Wishlist feature is not available for admin users");
+      return;
+    }
+
     setWishlist((prev) => {
       if (prev.find((p) => p.id === product.id)) {
         toast.info(`${product.name} sudah ada di wishlist!`);
@@ -58,6 +73,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   }
 
   function removeFromWishlist(id: number) {
+    // Block admin from using wishlist
+    if (user?.role === "ADMIN") {
+      toast.error("Wishlist feature is not available for admin users");
+      return;
+    }
+
     setWishlist((prev) => {
       const product = prev.find((p) => p.id === id);
       if (product) {
@@ -72,6 +93,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   }
 
   function clearWishlist() {
+    // Block admin from using wishlist
+    if (user?.role === "ADMIN") {
+      toast.error("Wishlist feature is not available for admin users");
+      return;
+    }
+    
     setWishlist([]);
     toast.success("Wishlist dikosongkan!");
   }

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { AdminBlocker } from "@/components/ui/AdminBlocker";
 import { useState, useEffect } from "react";
 import StripeElementsWrapper from "@/components/cart/StripeElementsWrapper";
 import Link from "next/link";
@@ -183,6 +184,16 @@ export default function CheckoutPage() {
       toast.error("Failed to place order. Please try again.");
     }
   };
+
+  // Block admin access
+  if (user?.role === "ADMIN") {
+    return (
+      <AdminBlocker 
+        title="Checkout Access Restricted"
+        message="The checkout process is designed for customers to complete their purchases. As an admin, you focus on managing orders, products, and customer service through the admin panel."
+      />
+    );
+  }
 
   if (submitted) {
     return (

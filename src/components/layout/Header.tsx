@@ -88,13 +88,15 @@ export function Header() {
             <Search className="h-4 w-4" />
           </Button>
 
-          {/* Wishlist */}
-          <div className="hidden sm:block">
-            <WishlistBadge />
-          </div>
+          {/* Wishlist - Hidden for Admin */}
+          {user?.role !== "ADMIN" && (
+            <div className="hidden sm:block">
+              <WishlistBadge />
+            </div>
+          )}
 
-          {/* Cart */}
-          <CartDrawer />
+          {/* Cart - Hidden for Admin */}
+          {user?.role !== "ADMIN" && <CartDrawer />}
 
           {/* User Menu */}
           {isAuthenticated && user ? (
@@ -126,18 +128,22 @@ export function Header() {
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/order-history" className="flex items-center">
-                    <ShoppingBag className="mr-2 h-4 w-4" />
-                    <span>Order History</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/wishlist" className="flex items-center">
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Wishlist</span>
-                  </Link>
-                </DropdownMenuItem>
+                {user.role !== "ADMIN" && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/order-history" className="flex items-center">
+                        <ShoppingBag className="mr-2 h-4 w-4" />
+                        <span>Order History</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/wishlist" className="flex items-center">
+                        <Heart className="mr-2 h-4 w-4" />
+                        <span>Wishlist</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
                 {user.role === "ADMIN" && (
                   <>
                     <DropdownMenuSeparator />
@@ -226,14 +232,18 @@ export function Header() {
                           <User className="h-4 w-4" />
                           Profile
                         </Link>
-                        <Link href="/wishlist" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
-                          <Heart className="h-4 w-4" />
-                          Wishlist
-                        </Link>
-                        <Link href="/order-history" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
-                          <ShoppingBag className="h-4 w-4" />
-                          Order History
-                        </Link>
+                        {user?.role !== "ADMIN" && (
+                          <>
+                            <Link href="/wishlist" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                              <Heart className="h-4 w-4" />
+                              Wishlist
+                            </Link>
+                            <Link href="/order-history" className="flex items-center gap-2 px-3 py-3 text-sm font-medium hover:bg-muted/50 rounded-lg transition-colors">
+                              <ShoppingBag className="h-4 w-4" />
+                              Order History
+                            </Link>
+                          </>
+                        )}
                       </>
                     ) : (
                       <div className="space-y-2 mt-4">

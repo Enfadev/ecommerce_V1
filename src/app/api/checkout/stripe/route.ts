@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { isAdminRequest } from "@/lib/jwt";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-07-30.basil",
@@ -7,8 +8,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(req: NextRequest) {
   try {
+    // Block admin access
+    if (await isAdminRequest(req)) {
+      return NextResponse.json({ error: "Admin cannot access checkout features" }, { status: 403 });
+    }
+
     const { items, email } = await req.json();
-    const line_items = items.map((item: any) => ({
+    const line_items = items.map((item: { name: string; price: number; quantity: number }) => ({
       price_data: {
         currency: "usd",
         product_data: {

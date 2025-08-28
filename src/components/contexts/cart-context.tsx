@@ -57,6 +57,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Don't fetch cart for admin users
+    if (user?.role === "ADMIN") {
+      setItems([]);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await fetch("/api/cart", {
@@ -100,7 +106,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.role]);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -113,6 +119,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   async function addToCart(item: { id: number; name: string; price: number; image?: string }) {
     if (!isAuthenticated) {
       toast.error("Please sign in to add items to cart");
+      return;
+    }
+
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
       return;
     }
 
@@ -148,6 +160,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   async function removeFromCart(id: number) {
     if (!isAuthenticated) return;
+    
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -175,6 +193,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   async function clearCart() {
     if (!isAuthenticated) return;
 
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await fetch("/api/cart", {
@@ -200,6 +224,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   async function updateQty(id: number, qty: number) {
     if (!isAuthenticated || qty < 1) return;
+
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -237,6 +267,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   async function toggleItemSelection(id: number) {
     if (!isAuthenticated) return;
 
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
+      return;
+    }
+
     try {
       const currentItem = items.find(item => item.id === id);
       if (!currentItem) return;
@@ -268,6 +304,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   async function selectAllItems() {
     if (!isAuthenticated) return;
 
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await fetch("/api/cart/bulk", {
@@ -296,6 +338,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   async function deselectAllItems() {
     if (!isAuthenticated) return;
 
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await fetch("/api/cart/bulk", {
@@ -323,6 +371,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   async function removeSelectedItems() {
     if (!isAuthenticated) return;
+
+    // Block admin from using cart
+    if (user?.role === "ADMIN") {
+      toast.error("Cart feature is not available for admin users");
+      return;
+    }
 
     const selectedCount = items.filter((item) => item.selected).length;
     if (selectedCount === 0) {
