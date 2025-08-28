@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,12 +15,12 @@ import AdminProductPageEditor from "./AdminProductPageEditor";
 
 export default function AdminSettingsPage() {
   const [generalSettings, setGeneralSettings] = useState({
-    storeName: "E-Commerce Store",
-    storeDescription: "Trusted online store",
-    contactEmail: "contact@store.com",
-    currency: "IDR",
+    storeName: "ShopZone",
+    storeDescription: "A trusted online shopping platform",
+    contactEmail: "contact@shopzone.com",
+    currency: "USD",
     timezone: "Asia/Jakarta",
-    language: "id",
+    language: "en",
   });
 
   const [themeSettings, setThemeSettings] = useState({
@@ -31,12 +31,70 @@ export default function AdminSettingsPage() {
     customCSS: "",
   });
 
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  // Load settings on component mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/settings');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.settings) {
+            setGeneralSettings({
+              storeName: data.settings.storeName || "ShopZone",
+              storeDescription: data.settings.storeDescription || "A trusted online shopping platform",
+              contactEmail: data.settings.contactEmail || "contact@shopzone.com",
+              currency: data.settings.currency || "USD",
+              timezone: data.settings.timezone || "Asia/Jakarta",
+              language: data.settings.language || "en",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
   const handleSaveGeneral = async () => {
-    console.log("Saving general settings:", generalSettings);
+    setSaving(true);
+    try {
+      const response = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(generalSettings),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          alert('Pengaturan berhasil disimpan!');
+        } else {
+          alert('Gagal menyimpan pengaturan: ' + data.message);
+        }
+      } else {
+        alert('Gagal menyimpan pengaturan');
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      alert('Gagal menyimpan pengaturan');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSaveTheme = async () => {
     console.log("Saving theme settings:", themeSettings);
+    // Theme settings implementation coming soon
+    alert('Fitur tema akan segera tersedia!');
   };
 
   return (
@@ -86,39 +144,84 @@ export default function AdminSettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Store Name</label>
-                <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Description</label>
-                <Textarea value={generalSettings.storeDescription} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} placeholder="Enter store description" rows={3} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Contact Email</label>
-                <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Currency</label>
-                  <select value={generalSettings.currency} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
-                    <option value="IDR">Indonesian Rupiah (IDR)</option>
-                    <option value="USD">US Dollar (USD)</option>
-                    <option value="EUR">Euro (EUR)</option>
-                  </select>
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  <span className="ml-2">Loading settings...</span>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Language</label>
-                  <select value={generalSettings.language} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
-                    <option value="id">Bahasa Indonesia</option>
-                    <option value="en">English</option>
-                  </select>
-                </div>
-              </div>
-              <Button onClick={handleSaveGeneral} className="w-full">
-                <Save className="w-4 h-4 mr-2" />
-                Save Changes
-              </Button>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Store Name</label>
+                    <Input 
+                      value={generalSettings.storeName} 
+                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} 
+                      placeholder="Enter store name"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Description</label>
+                    <Textarea 
+                      value={generalSettings.storeDescription} 
+                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} 
+                      placeholder="Enter store description" 
+                      rows={3}
+                      disabled={saving}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Contact Email</label>
+                    <Input 
+                      type="email" 
+                      value={generalSettings.contactEmail} 
+                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} 
+                      placeholder="contact@store.com"
+                      disabled={saving}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Currency</label>
+                      <select 
+                        value={generalSettings.currency} 
+                        onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} 
+                        className="w-full px-3 py-2 border rounded-md disabled:opacity-50"
+                        disabled={saving}
+                      >
+                        <option value="USD">US Dollar (USD)</option>
+                        <option value="IDR">Indonesian Rupiah (IDR)</option>
+                        <option value="EUR">Euro (EUR)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Language</label>
+                      <select 
+                        value={generalSettings.language} 
+                        onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} 
+                        className="w-full px-3 py-2 border rounded-md disabled:opacity-50"
+                        disabled={saving}
+                      >
+                        <option value="en">English</option>
+                        <option value="id">Bahasa Indonesia</option>
+                      </select>
+                    </div>
+                  </div>
+                  <Button onClick={handleSaveGeneral} className="w-full" disabled={saving}>
+                    {saving ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
+                  </Button>
+                </>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -8,13 +11,10 @@ interface BrandProps {
   size?: "sm" | "md" | "lg" | "xl";
 }
 
-// Brand configuration - easy to change for different businesses
-const BRAND_CONFIG = {
-  name: "ShopZone",
-  tagline: "A trusted online shopping platform",
-  website: "https://shopzone.com",
-  email: "hello@shopzone.com"
-};
+interface BrandSettings {
+  storeName: string;
+  storeDescription: string;
+}
 
 const sizeClasses = {
   sm: "text-lg",
@@ -24,6 +24,35 @@ const sizeClasses = {
 };
 
 export function Brand({ className, as = "div", linkable = false, size = "lg" }: BrandProps) {
+  const [brandSettings, setBrandSettings] = useState<BrandSettings>({
+    storeName: "ShopZone",
+    storeDescription: "A trusted online shopping platform"
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBrandSettings = async () => {
+      try {
+        const response = await fetch('/api/settings/public');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.settings) {
+            setBrandSettings({
+              storeName: data.settings.storeName || "ShopZone",
+              storeDescription: data.settings.storeDescription || "A trusted online shopping platform"
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch brand settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBrandSettings();
+  }, []);
+
   const Component = as;
   const brandClasses = cn(
     "font-bold tracking-tight text-primary hover:text-primary/80 transition-colors",
@@ -33,7 +62,7 @@ export function Brand({ className, as = "div", linkable = false, size = "lg" }: 
 
   const content = (
     <Component className={brandClasses}>
-      {BRAND_CONFIG.name}
+      {loading ? "ShopZone" : brandSettings.storeName}
     </Component>
   );
 
@@ -48,5 +77,10 @@ export function Brand({ className, as = "div", linkable = false, size = "lg" }: 
   return content;
 }
 
-// Export brand config for use in other places
-export const brandConfig = BRAND_CONFIG;
+// Export brand config for backward compatibility
+export const brandConfig = {
+  name: "ShopZone",
+  tagline: "A trusted online shopping platform",
+  website: "https://shopzone.com",
+  email: "hello@shopzone.com"
+};
