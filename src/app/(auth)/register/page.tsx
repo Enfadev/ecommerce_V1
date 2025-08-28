@@ -104,39 +104,30 @@ export default function RegisterPage() {
 
   const passwordStrength = (password: string) => {
     let score = 0;
-    let requirements = [];
-
-    if (password.length >= 8) {
-      score++;
-    } else {
-      requirements.push("at least 8 characters");
-    }
-
-    if (/[a-z]/.test(password)) {
-      score++;
-    } else {
-      requirements.push("lowercase letter");
-    }
-
-    if (/[A-Z]/.test(password)) {
-      score++;
-    } else {
-      requirements.push("uppercase letter");
-    }
-
-    if (/\d/.test(password)) {
-      score++;
-    } else {
-      requirements.push("number");
-    }
-
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?]/.test(password)) {
-      score++;
-    } else {
-      requirements.push("special character");
-    }
-
-    return { score, requirements };
+    const checks = [
+      {
+        label: "At least 8 characters",
+        valid: password.length >= 8,
+      },
+      {
+        label: "At least one lowercase letter",
+        valid: /[a-z]/.test(password),
+      },
+      {
+        label: "At least one uppercase letter",
+        valid: /[A-Z]/.test(password),
+      },
+      {
+        label: "At least one number",
+        valid: /\d/.test(password),
+      },
+      {
+        label: "At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)",
+        valid: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?]/.test(password),
+      },
+    ];
+    score = checks.filter((c) => c.valid).length;
+    return { score, checks };
   };
 
   const getStrengthColor = (score: number) => {
@@ -155,7 +146,7 @@ export default function RegisterPage() {
 
   const currentPassword = form.watch("password");
   const strengthResult = passwordStrength(currentPassword);
-  const { score: strength, requirements } = strengthResult;
+  const { score: strength, checks } = strengthResult;
 
   return (
     <div className="flex items-center justify-center p-4">
@@ -238,12 +229,23 @@ export default function RegisterPage() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-gray-400">Password Strength:</span>
-                            <span className={`font-medium ${strength >= 3 ? "text-green-400" : strength >= 2 ? "text-yellow-400" : "text-red-400"}`}>{getStrengthText(strength)}</span>
+                            <span className={`font-medium ${strength >= 4 ? "text-green-400" : strength >= 2 ? "text-yellow-400" : "text-red-400"}`}>{getStrengthText(strength)}</span>
                           </div>
                           <div className="w-full bg-gray-700 rounded-full h-1.5">
                             <div className={`h-1.5 rounded-full transition-all duration-300 ${getStrengthColor(strength)}`} style={{ width: `${(strength / 5) * 100}%` }} />
                           </div>
-                          {requirements.length > 0 && <div className="text-xs text-red-400">Missing: {requirements.join(", ")}</div>}
+                          <ul className="mt-2 space-y-1 text-xs">
+                            {checks.map((c, i) => (
+                              <li key={i} className={c.valid ? "text-green-400 flex items-center" : "text-red-400 flex items-center"}>
+                                {c.valid ? (
+                                  <span className="inline-block w-4 h-4 mr-1">✔️</span>
+                                ) : (
+                                  <span className="inline-block w-4 h-4 mr-1">❌</span>
+                                )}
+                                {c.label}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       )}
                       <FormMessage />

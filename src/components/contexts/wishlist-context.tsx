@@ -63,10 +63,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
     setWishlist((prev) => {
       if (prev.find((p) => p.id === product.id)) {
-        toast.info(`${product.name} sudah ada di wishlist!`);
+        toast.info(`${product.name} is already in your wishlist!`);
         return prev;
       } else {
-        toast.success(`${product.name} ditambahkan ke wishlist! ❤️`);
+        toast.success(`${product.name} added to wishlist! ❤️`);
         return [...prev, product];
       }
     });
@@ -82,7 +82,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     setWishlist((prev) => {
       const product = prev.find((p) => p.id === id);
       if (product) {
-        toast.success(`${product.name} dihapus dari wishlist!`);
+        toast.success(`${product.name} removed from wishlist!`);
       }
       return prev.filter((p) => p.id !== id);
     });
@@ -100,7 +100,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
     
     setWishlist([]);
-    toast.success("Wishlist dikosongkan!");
+  toast.success("Wishlist cleared!");
   }
 
   function getWishlistCount() {
