@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
+import { getUserIdFromRequest } from "@/lib/auth-utils";
 
 type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURNED";
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    const token = authHeader?.replace("Bearer ", "") || request.cookies.get("auth-token")?.value;
-
-    if (!token) {
+    const userId = await getUserIdFromRequest(request);
+    
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const decoded = await verifyJWT(token);
-    if (!decoded) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -26,7 +20,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     const where = {
-      userId: parseInt(decoded.id),
+      userId: userId,
       ...(status && { status }),
     };
 
@@ -72,30 +66,35 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    const token = authHeader?.replace("Bearer ", "") || request.cookies.get("auth-token")?.value;
-
-    if (!token) {
+    const userId = await getUserIdFromRequest(request);
+    
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const decoded = await verifyJWT(token);
-    if (!decoded) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const body = await request.json();
     console.log('Order creation request body:', JSON.stringify(body, null, 2));
+    console.log('Body keys:', Object.keys(body));
+    console.log('Items array:', body.items);
     
     const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
 
+    console.log('Extracted values:', {
+      customerName,
+      customerEmail, 
+      customerPhone,
+      shippingAddress,
+      items: items ? items.length : 'undefined',
+      hasItems: !!items && items.length > 0
+    });
+
     if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !items || items.length === 0) {
-      console.error('Missing required fields:', {
-        customerName: !!customerName,
-        customerEmail: !!customerEmail,
-        customerPhone: !!customerPhone,
-        shippingAddress: !!shippingAddress,
-        items: !!items && items.length > 0
+      console.error('Missing required fields detailed check:', {
+        customerName: { value: customerName, valid: !!customerName },
+        customerEmail: { value: customerEmail, valid: !!customerEmail },
+        customerPhone: { value: customerPhone, valid: !!customerPhone },
+        shippingAddress: { value: shippingAddress, valid: !!shippingAddress },
+        items: { value: items, valid: !!items && items.length > 0, length: items ? items.length : 0 }
       });
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
@@ -121,7 +120,7 @@ export async function POST(request: NextRequest) {
       const newOrder = await tx.order.create({
         data: {
           orderNumber,
-          userId: parseInt(decoded.id),
+          userId: userId,
           customerName,
           customerEmail,
           customerPhone,
@@ -167,7 +166,7 @@ export async function POST(request: NextRequest) {
       }
 
       const userCart = await tx.cart.findUnique({
-        where: { userId: parseInt(decoded.id) },
+        where: { userId: userId },
       });
 
       if (userCart) {

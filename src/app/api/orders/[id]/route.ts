@@ -1,20 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
+import { getUserIdFromRequest, getUserFromRequest } from "@/lib/auth-utils";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const authHeader = request.headers.get("authorization");
-    const token = authHeader?.replace("Bearer ", "") || request.cookies.get("auth-token")?.value;
+    const userId = await getUserIdFromRequest(request);
 
-    if (!token) {
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const decoded = await verifyJWT(token);
-    if (!decoded) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const orderId = parseInt(id);
@@ -25,7 +19,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
-        userId: parseInt(decoded.id),
+        userId: userId,
       },
       include: {
         items: {
@@ -64,16 +58,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const authHeader = request.headers.get("authorization");
-    const token = authHeader?.replace("Bearer ", "") || request.cookies.get("auth-token")?.value;
+    const user = await getUserFromRequest(request);
 
-    if (!token) {
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const decoded = await verifyJWT(token);
-    if (!decoded) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const orderId = parseInt(id);
@@ -88,8 +76,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       where: {
         id: orderId,
         OR: [
-          { userId: parseInt(decoded.id) },
-          ...(decoded.role === "ADMIN" ? [{}] : []),
+          { userId: user.id },
+          ...(user.role === "ADMIN" ? [{}] : []),
         ],
       },
     });
