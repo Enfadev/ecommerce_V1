@@ -15,7 +15,8 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<number
   try {
     const session = await getServerSession(authOptions);
     if (session?.user?.id) {
-      return Number(session.user.id);
+      const userId = Number(session.user.id);
+      return userId;
     }
   } catch (error) {
     console.log("NextAuth session check failed:", error);
@@ -26,7 +27,8 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<number
     if (token) {
       const payload = await verifyJWT(token);
       if (payload?.id) {
-        return Number(payload.id);
+        const userId = Number(payload.id);
+        return userId;
       }
     }
   } catch (error) {

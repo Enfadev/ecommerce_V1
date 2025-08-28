@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/api/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   async headers() {
@@ -45,7 +51,7 @@ const nextConfig: NextConfig = {
                 "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline' 'unsafe-eval'",
                 "frame-src https://js.stripe.com https://www.paypal.com https://sandbox.paypal.com https://www.sandbox.paypal.com",
                 "style-src 'self' 'unsafe-inline'",
-                "img-src 'self' data: blob: https://*.stripe.com https://www.paypal.com https://www.paypalobjects.com https://ui-avatars.com",
+                "img-src 'self' data: blob: https://*.stripe.com https://www.paypal.com https://www.paypalobjects.com https://ui-avatars.com https://lh3.googleusercontent.com",
                 "font-src 'self'",
                 "connect-src 'self' https://api.stripe.com https://js.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://www.paypal.com https://www.sandbox.paypal.com",
                 "frame-ancestors 'none'",

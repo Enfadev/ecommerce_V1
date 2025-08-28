@@ -73,28 +73,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('Order creation request body:', JSON.stringify(body, null, 2));
-    console.log('Body keys:', Object.keys(body));
-    console.log('Items array:', body.items);
     
     const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
 
-    console.log('Extracted values:', {
-      customerName,
-      customerEmail, 
-      customerPhone,
-      shippingAddress,
-      items: items ? items.length : 'undefined',
-      hasItems: !!items && items.length > 0
-    });
-
     if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !items || items.length === 0) {
-      console.error('Missing required fields detailed check:', {
-        customerName: { value: customerName, valid: !!customerName },
-        customerEmail: { value: customerEmail, valid: !!customerEmail },
-        customerPhone: { value: customerPhone, valid: !!customerPhone },
-        shippingAddress: { value: shippingAddress, valid: !!shippingAddress },
-        items: { value: items, valid: !!items && items.length > 0, length: items ? items.length : 0 }
+      console.error('Missing required fields:', {
+        customerName: !!customerName,
+        customerEmail: !!customerEmail,
+        customerPhone: !!customerPhone,
+        shippingAddress: !!shippingAddress,
+        items: !!items && items.length > 0
       });
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
