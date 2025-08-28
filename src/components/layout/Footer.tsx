@@ -1,5 +1,6 @@
 import NextLink from "next/link";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Brand, brandConfig } from "@/components/ui/Brand";
 
 export default function Footer() {
   return (
@@ -8,8 +9,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand & Description */}
           <div className="space-y-4">
-            <h3 className="font-bold text-2xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">ShopZone</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">A trusted online shopping platform with a wide selection of quality products, attractive promos, and the best customer service for your satisfaction.</p>
+            <Brand as="h3" size="lg" />
+            <p className="text-sm text-muted-foreground leading-relaxed">{brandConfig.tagline} with a wide selection of quality products, attractive promos, and the best customer service for your satisfaction.</p>
             <div className="flex space-x-4">
               <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors">
                 <Facebook className="h-4 w-4 text-primary" />
@@ -90,7 +91,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="text-muted-foreground">hello@shopzone.com</span>
+                <span className="text-muted-foreground">{brandConfig.email}</span>
               </div>
             </div>
           </div>
@@ -99,7 +100,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} ShopZone. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} {brandConfig.name}. All rights reserved.</p>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
                 Privacy Policy

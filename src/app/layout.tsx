@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NextAuthProvider } from "../components/auth/NextAuthProvider";
 import { AuthProvider } from "@/components/contexts/auth-context";
+import { brandConfig } from "@/components/ui/Brand";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ShopZone - Platform Belanja Online Terpercaya",
-  description: "Temukan produk berkualitas dengan harga terbaik di ShopZone. Gratis ongkir, pembayaran aman, dan customer service 24/7.",
+  title: `${brandConfig.name} - Platform Belanja Online Terpercaya`,
+  description: `Temukan produk berkualitas dengan harga terbaik di ${brandConfig.name}. Gratis ongkir, pembayaran aman, dan customer service 24/7.`,
 };
 
 export default function RootLayout({
