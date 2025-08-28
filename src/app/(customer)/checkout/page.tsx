@@ -185,7 +185,6 @@ export default function CheckoutPage() {
     }
   };
 
-  // Block admin access
   if (user?.role === "ADMIN") {
     return (
       <AdminBlocker 

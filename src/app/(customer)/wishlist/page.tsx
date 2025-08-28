@@ -50,7 +50,7 @@ export default function WishlistPage() {
           id: product.id,
           name: product.name,
           price: product.price,
-          image: product.image,
+          image: product.image && product.image.trim() !== "" ? product.image : "/placeholder-image.svg",
         });
         addedCount++;
       }
@@ -119,7 +119,6 @@ export default function WishlistPage() {
     </div>
   );
 
-  // Block admin access
   if (user?.role === "ADMIN") {
     return (
       <AdminBlocker 

@@ -64,7 +64,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           <div className="group">
             <div className="relative w-full aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 shadow-lg border border-border/50 hover:shadow-xl transition-all duration-300">
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-white/50 backdrop-blur-sm">
-                <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                {product.image && product.image.trim() !== "" ? (
+                  <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="text-gray-400 text-lg text-center">
+                      No Image Available
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

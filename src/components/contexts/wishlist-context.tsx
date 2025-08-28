@@ -11,6 +11,7 @@ interface WishlistContextType {
   isInWishlist: (id: number) => boolean;
   clearWishlist: () => void;
   getWishlistCount: () => number;
+  isLoading: boolean;
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
@@ -22,85 +23,174 @@ export function useWishlist() {
 }
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [wishlist, setWishlist] = useState<Product[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  
   useEffect(() => {
-    // Clear wishlist for admin users
-    if (user?.role === "ADMIN") {
-      setWishlist([]);
-      return;
-    }
-    
-    const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) {
-      try {
-        const parsedWishlist = JSON.parse(savedWishlist);
-        setWishlist(parsedWishlist);
-      } catch (error) {
-        console.error("Error parsing wishlist from localStorage:", error);
+    const fetchWishlist = async () => {
+      if (!isAuthenticated || user?.role === "ADMIN") {
+        setWishlist([]);
+        return;
       }
-    }
-    setIsLoaded(true);
-  }, [user?.role]);
 
-  
-  useEffect(() => {
-    // Don't save wishlist for admin users
-    if (isLoaded && user?.role !== "ADMIN") {
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    }
-  }, [wishlist, isLoaded, user?.role]);
+      setIsLoading(true);
+      try {
+        const savedWishlist = localStorage.getItem("wishlist");
+        if (savedWishlist) {
+          try {
+            const parsedWishlist = JSON.parse(savedWishlist);
+            if (parsedWishlist.length > 0) {
+              for (const product of parsedWishlist) {
+                await fetch("/api/wishlist", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  credentials: "include",
+                  body: JSON.stringify({ productId: product.id }),
+                });
+              }
+              localStorage.removeItem("wishlist");
+            }
+          } catch (error) {
+            console.error("Error migrating wishlist from localStorage:", error);
+          }
+        }
 
-  function addToWishlist(product: Product) {
-    // Block admin from using wishlist
+        const response = await fetch("/api/wishlist", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setWishlist(data.data || []);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching wishlist:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchWishlist();
+  }, [isAuthenticated, user?.role]);
+
+  async function addToWishlist(product: Product) {
     if (user?.role === "ADMIN") {
       toast.error("Wishlist feature is not available for admin users");
       return;
     }
 
-    setWishlist((prev) => {
-      if (prev.find((p) => p.id === product.id)) {
-        toast.info(`${product.name} is already in your wishlist!`);
-        return prev;
-      } else {
+    if (!isAuthenticated) {
+      toast.error("Please sign in to add items to wishlist");
+      return;
+    }
+
+    if (isInWishlist(product.id)) {
+      toast.info(`${product.name} is already in your wishlist!`);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/wishlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ productId: product.id }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setWishlist((prev) => [...prev, product]);
         toast.success(`${product.name} added to wishlist! ❤️`);
-        return [...prev, product];
+      } else {
+        toast.error(data.message || "Failed to add item to wishlist");
       }
-    });
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      toast.error("Failed to add item to wishlist");
+    }
   }
 
-  function removeFromWishlist(id: number) {
-    // Block admin from using wishlist
+  async function removeFromWishlist(id: number) {
     if (user?.role === "ADMIN") {
       toast.error("Wishlist feature is not available for admin users");
       return;
     }
 
-    setWishlist((prev) => {
-      const product = prev.find((p) => p.id === id);
-      if (product) {
-        toast.success(`${product.name} removed from wishlist!`);
+    if (!isAuthenticated) {
+      toast.error("Please sign in to manage wishlist");
+      return;
+    }
+
+    const product = wishlist.find((p) => p.id === id);
+    
+    try {
+      const response = await fetch("/api/wishlist", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ productId: id }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setWishlist((prev) => prev.filter((p) => p.id !== id));
+        if (product) {
+          toast.success(`${product.name} removed from wishlist!`);
+        }
+      } else {
+        toast.error(data.message || "Failed to remove item from wishlist");
       }
-      return prev.filter((p) => p.id !== id);
-    });
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      toast.error("Failed to remove item from wishlist");
+    }
   }
 
   function isInWishlist(id: number) {
     return wishlist.some((p) => p.id === id);
   }
 
-  function clearWishlist() {
-    // Block admin from using wishlist
+  async function clearWishlist() {
     if (user?.role === "ADMIN") {
       toast.error("Wishlist feature is not available for admin users");
       return;
     }
-    
-    setWishlist([]);
-  toast.success("Wishlist cleared!");
+
+    if (!isAuthenticated) {
+      toast.error("Please sign in to manage wishlist");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/wishlist/clear", {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setWishlist([]);
+        toast.success("Wishlist cleared!");
+      } else {
+        toast.error(data.message || "Failed to clear wishlist");
+      }
+    } catch (error) {
+      console.error("Error clearing wishlist:", error);
+      toast.error("Failed to clear wishlist");
+    }
   }
 
   function getWishlistCount() {
@@ -116,6 +206,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         isInWishlist,
         clearWishlist,
         getWishlistCount,
+        isLoading,
       }}
     >
       {children}

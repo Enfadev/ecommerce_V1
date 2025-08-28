@@ -8,7 +8,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 
 export async function POST(req: NextRequest) {
   try {
-    // Block admin access
     if (await isAdminRequest(req)) {
       return NextResponse.json({ error: "Admin cannot access checkout features" }, { status: 403 });
     }

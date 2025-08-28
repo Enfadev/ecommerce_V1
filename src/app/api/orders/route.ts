@@ -7,7 +7,6 @@ type OrderStatus = "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVER
 
 export async function GET(request: NextRequest) {
   try {
-    // Block admin access
     if (await isAdminRequest(request)) {
       return NextResponse.json({ error: "Admin access to customer orders is not allowed. Use admin panel instead." }, { status: 403 });
     }
@@ -72,7 +71,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Block admin access
     if (await isAdminRequest(request)) {
       return NextResponse.json({ error: "Admin cannot create customer orders. This is for customer checkout only." }, { status: 403 });
     }

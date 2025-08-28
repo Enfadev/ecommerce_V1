@@ -63,7 +63,15 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist,
             <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
               <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white dark:bg-gray-900 shadow-sm hover:shadow-xl transition-all duration-300 ease-out transform hover:-translate-y-1">
                 <div className="aspect-square relative overflow-hidden rounded-t-2xl bg-gray-50 dark:bg-gray-800">
-                  <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                  {product.image && product.image.trim() !== "" ? (
+                    <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-gray-400 text-sm text-center">
+                        No Image
+                      </div>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 

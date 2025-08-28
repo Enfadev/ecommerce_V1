@@ -217,7 +217,6 @@ export default function OrderHistoryPage() {
     );
   }
 
-  // Block admin access
   if (user?.role === "ADMIN") {
     return (
       <AdminBlocker 

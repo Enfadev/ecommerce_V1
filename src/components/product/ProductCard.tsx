@@ -20,7 +20,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
           <div className="flex gap-6">
             <Link href={`/product/${product.id}`} className="flex-shrink-0">
               <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center overflow-hidden relative">
-                {product.image ? (
+                {product.image && product.image.trim() !== "" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="80px" />
                 ) : (
                   <div className="text-gray-400 text-xs text-center">
@@ -89,7 +89,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                         id: product.id,
                         name: product.name,
                         price: product.price,
-                        image: product.image,
+                        image: product.image && product.image.trim() !== "" ? product.image : "/placeholder-image.svg",
                       });
                     }}
                     disabled={product.stock === 0}
@@ -130,7 +130,15 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
 
         <Link href={`/product/${product.id}`} className="block">
           <div className="relative overflow-hidden h-48">
-            <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+            {product.image && product.image.trim() !== "" ? (
+              <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+            ) : (
+              <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                <div className="text-gray-400 text-sm text-center">
+                  No Image
+                </div>
+              </div>
+            )}
           </div>
         </Link>
       </div>
@@ -174,7 +182,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: product.image,
+                image: product.image && product.image.trim() !== "" ? product.image : "/placeholder-image.svg",
               });
             }}
             disabled={product.stock === 0}

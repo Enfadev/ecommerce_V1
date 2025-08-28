@@ -81,6 +81,7 @@ model Product {
   category        Category?      @relation(fields: [categoryId], references: [id])
   cartItems       CartItem[]
   orderItems      OrderItem[]
+  wishlistItems   WishlistItem[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }
@@ -121,6 +122,7 @@ model User {
   cart          Cart?
   orders        Order[]
   securityLogs  SecurityLog[]
+  wishlist      Wishlist?
 }
 
 model Account {
@@ -179,6 +181,27 @@ model CartItem {
   updatedAt DateTime @updatedAt
 
   @@unique([cartId, productId])
+}
+
+model Wishlist {
+  id        Int            @id @default(autoincrement())
+  userId    Int            @unique
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     WishlistItem[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model WishlistItem {
+  id         Int      @id @default(autoincrement())
+  wishlistId Int
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([wishlistId, productId])
 }
 
 model Order {

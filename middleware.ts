@@ -111,7 +111,6 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Check if admin is trying to access customer-only features
     const isAdminRestrictedPath = ADMIN_RESTRICTED_PATHS.some(path => pathname.startsWith(path));
     const isAdminRestrictedAPI = ADMIN_RESTRICTED_API_ROUTES.some(path => pathname.startsWith(path));
     

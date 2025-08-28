@@ -5,7 +5,6 @@ import { isAdminRequest } from "@/lib/jwt";
 
 export async function GET(request: NextRequest) {
   try {
-    // Block admin access
     if (await isAdminRequest(request)) {
       return NextResponse.json({ error: "Admin access to cart is not allowed" }, { status: 403 });
     }
@@ -58,7 +57,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Block admin access
     if (await isAdminRequest(request)) {
       return NextResponse.json({ error: "Admin access to cart is not allowed" }, { status: 403 });
     }
@@ -159,7 +157,6 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Block admin access
     if (await isAdminRequest(request)) {
       return NextResponse.json({ error: "Admin access to cart is not allowed" }, { status: 403 });
     }
