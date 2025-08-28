@@ -262,6 +262,14 @@ export default function ProfilePage() {
   };
 
   const updateAvatar = () => {
+    // Trigger file input click
+    const fileInput = document.getElementById('avatar-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
+  const generateAvatar = () => {
     if (user?.name) {
       const newAvatarUrl = generateAvatarUrl(user.name);
       setImagePreview(newAvatarUrl);
@@ -344,6 +352,14 @@ export default function ProfilePage() {
                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-600 shadow-xl">
                   <Image src={imagePreview || user.avatar || generateAvatarUrl(user.name)} alt="Avatar" className="w-full h-full object-cover" width={128} height={128} />
                 </div>
+                {/* Hidden file input for avatar upload */}
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
                 <div className="absolute bottom-2 right-2 flex gap-1">
                   <Button size="sm" variant="secondary" className="rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
                     <Camera className="h-4 w-4" />
@@ -505,7 +521,7 @@ export default function ProfilePage() {
                               onChange={handleImageUpload}
                               className="bg-gray-700/50 border border-gray-600 text-white rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
                             />
-                            <Button type="button" variant="outline" size="sm" onClick={updateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                            <Button type="button" variant="outline" size="sm" onClick={generateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
                               Generate Avatar
                             </Button>
                             {user.avatar && user.avatar.startsWith("/uploads/") && (
