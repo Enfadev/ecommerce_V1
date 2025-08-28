@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user statistics
     const totalUsers = await prisma.user.count();
     const totalAdmins = await prisma.user.count({
       where: { role: "ADMIN" }
@@ -40,14 +39,12 @@ export async function GET(request: NextRequest) {
       where: { role: "USER" }
     });
 
-    // Get order statistics
     const totalOrders = await prisma.order.count();
     const totalRevenue = await prisma.order.aggregate({
       where: { paymentStatus: "PAID" },
       _sum: { totalAmount: true }
     });
 
-    // Get order status distribution
     const ordersByStatus = await prisma.order.groupBy({
       by: ["status"],
       _count: {
@@ -55,7 +52,6 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Get real security logs from database
     const securityLogsData = await prisma.securityLog.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
@@ -66,7 +62,6 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Format security logs for frontend
     const recentSecurityLogs: SecurityLog[] = securityLogsData.map(log => ({
       id: log.id,
       action: log.action,
@@ -77,21 +72,18 @@ export async function GET(request: NextRequest) {
       createdAt: log.createdAt
     }));
 
-    // Get product statistics
     const totalProducts = await prisma.product.count();
     const lowStockProducts = await prisma.product.count({
       where: { stock: { lt: 10 } }
     });
 
-    // System health checks
     const systemHealth = {
-      database: true, // If we reach here, database is working
-      apiServices: true, // API is running
-      fileStorage: true, // Basic storage available
-      cacheSystem: false // Not implemented yet
+      database: true,
+      apiServices: true,
+      fileStorage: true,
+      cacheSystem: false
     };
 
-    // Get recent user registrations (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     

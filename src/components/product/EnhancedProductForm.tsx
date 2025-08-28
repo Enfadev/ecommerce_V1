@@ -101,7 +101,6 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
     }
   }, [product]);
 
-  // Cleanup URL objects on unmount
   useEffect(() => {
     return () => {
       imagePreviews.forEach((url) => {

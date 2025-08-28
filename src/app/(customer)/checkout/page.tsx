@@ -39,7 +39,6 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // First, try to use user data from auth context
       if (user && isAuthenticated) {
         console.log("Using user data from auth context:", user);
         setFormData((prev) => ({
@@ -52,7 +51,6 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Fallback to API call if user data not available in context
       try {
         console.log("Fetching user profile from API...");
         const response = await fetch("/api/profile");

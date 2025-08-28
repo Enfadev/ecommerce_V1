@@ -13,7 +13,6 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    // Check if product has order items - products that have been ordered cannot be deleted
     const orderItemsCount = await prisma.orderItem.count({
       where: { productId: Number(id) },
     });
@@ -22,10 +21,8 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Cannot delete product that has been ordered. Consider changing the status to inactive instead." }, { status: 400 });
     }
 
-    // Delete the product (CartItems will be cascade deleted automatically)
     await prisma.product.delete({ where: { id: Number(id) } });
 
-    // Clean up image file if exists
     if (product.imageUrl && product.imageUrl.startsWith("/uploads/")) {
       const filePath = path.join(process.cwd(), "public", product.imageUrl);
       try {

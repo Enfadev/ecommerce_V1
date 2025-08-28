@@ -13,16 +13,13 @@ export async function GET() {
 
     const userId = parseInt(session.user.id);
 
-    // Get total orders count
     const totalOrders = await prisma.order.count({
       where: {
         userId: userId
       }
     });
 
-    // For wishlist, since it's using context (localStorage), we'll return 0 for now
-    // In a real app, you might want to create a SavedItem model or use the current wishlist context
-    const wishlistItems = 0; // Will be updated from frontend context
+    const wishlistItems = 0;
 
     return NextResponse.json({
       totalOrders,

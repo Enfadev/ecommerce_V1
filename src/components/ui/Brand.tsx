@@ -77,7 +77,6 @@ export function Brand({ className, as = "div", linkable = false, size = "lg" }: 
   return content;
 }
 
-// Export brand config for backward compatibility
 export const brandConfig = {
   name: "ShopZone",
   tagline: "A trusted online shopping platform",

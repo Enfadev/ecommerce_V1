@@ -148,7 +148,6 @@ export default function AdminProductManagement() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Show specific error message from API
         alert(data.error || "Failed to delete product");
         return;
       }

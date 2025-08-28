@@ -34,7 +34,6 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Load settings on component mount
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -93,7 +92,6 @@ export default function AdminSettingsPage() {
 
   const handleSaveTheme = async () => {
     console.log("Saving theme settings:", themeSettings);
-    // Theme settings implementation coming soon
     alert('Fitur tema akan segera tersedia!');
   };
 

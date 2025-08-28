@@ -7,7 +7,6 @@ import sharp from "sharp";
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication - check auth-token cookie specifically
     const token = request.cookies.get("auth-token")?.value;
     
     console.log("🍪 Available cookies:", Array.from(request.cookies.getAll()).map(c => c.name));
@@ -37,21 +36,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
       console.log("❌ Invalid file type:", file.type);
       return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
     }
 
-    // Validate file size (5MB max)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       console.log("❌ File too large:", file.size, "bytes");
       return NextResponse.json({ error: "File size too large" }, { status: 400 });
     }
 
-    // Create uploads directory if it doesn't exist
     const uploadDir = join(process.cwd(), "public", "uploads");
     console.log("📂 Upload directory:", uploadDir);
     
@@ -60,9 +56,8 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadDir, { recursive: true });
     }
 
-    // Generate unique filename with .webp extension
     const timestamp = Date.now();
-    const originalName = file.name.replace(/\.[^/.]+$/, ""); // Remove original extension
+    const originalName = file.name.replace(/\.[^/.]+$/, "");
     const filename = `${timestamp}-${originalName.replace(/[^a-zA-Z0-9.-]/g, '_')}.webp`;
     const filepath = join(uploadDir, filename);
     
@@ -70,13 +65,11 @@ export async function POST(request: NextRequest) {
     console.log("📝 Generated WebP filename:", filename);
     console.log("📝 Full filepath:", filepath);
 
-    // Convert image to WebP format using Sharp
     console.log("� Converting image to WebP format...");
     try {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
-      // Process image with Sharp - convert to WebP with optimization
       const processedBuffer = await sharp(buffer)
         .resize(400, 400, { 
           fit: 'cover', 
@@ -93,7 +86,6 @@ export async function POST(request: NextRequest) {
       console.log("📊 Processed size:", processedBuffer.length, "bytes");
       console.log("📊 Size reduction:", Math.round((1 - processedBuffer.length / buffer.length) * 100) + "%");
       
-      // Save processed image
       console.log("💾 Writing processed WebP file to disk...");
       await writeFile(filepath, processedBuffer);
       
@@ -104,7 +96,6 @@ export async function POST(request: NextRequest) {
     
     console.log("✅ File saved successfully");
 
-    // Return the URL path
     const url = `/uploads/${filename}`;
     console.log("🔗 Generated URL:", url);
     

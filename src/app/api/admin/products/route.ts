@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Helper function to validate numeric inputs
 function parseNumericId(id: string | null, fieldName: string) {
   if (!id) return null;
   const numericId = parseInt(id);
@@ -13,7 +12,6 @@ function parseNumericId(id: string | null, fieldName: string) {
   return numericId;
 }
 
-// Helper function to validate and parse float
 function parseFloat_safe(value: string | number | null | undefined): number | null {
   if (value === null || value === undefined || value === "") return null;
   const parsed = parseFloat(String(value));
@@ -181,7 +179,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Create associated images if provided
     if (images && Array.isArray(images) && images.length > 0) {
       await prisma.productImage.createMany({
         data: images.map((url: string) => ({
@@ -259,14 +256,11 @@ export async function PUT(request: NextRequest) {
       data: updateData,
     });
 
-    // Handle images update if provided
     if (images && Array.isArray(images)) {
-      // Delete existing images
       await prisma.productImage.deleteMany({
         where: { productId: productId },
       });
 
-      // Create new images
       if (images.length > 0) {
         await prisma.productImage.createMany({
           data: images.map((url: string) => ({
@@ -316,12 +310,10 @@ export async function DELETE(request: NextRequest) {
       });
     }
 
-    // Delete associated images first
     await prisma.productImage.deleteMany({
       where: { productId: productId },
     });
 
-    // Then delete the product
     await prisma.product.delete({
       where: { id: productId },
     });

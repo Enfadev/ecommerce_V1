@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyJWT } from "@/lib/jwt";
 import { prisma } from "@/lib/prisma";
 
-// GET method to retrieve system settings
 export async function GET(request: NextRequest) {
   try {
-    // Verify admin authentication
     const token = request.cookies.get("auth-token")?.value;
     
     if (!token) {
@@ -23,12 +21,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get settings from database - trying different model name
     let settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
     
-    // If no settings exist, create default settings
     if (!settings || (Array.isArray(settings) && settings.length === 0)) {
-      // Create default settings using raw SQL
       await prisma.$executeRaw`
         INSERT INTO system_settings (storeName, storeDescription, contactEmail, currency, timezone, language, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
         VALUES ('E-Commerce Store', 'Trusted online store', 'contact@store.com', 'USD', 'Asia/Jakarta', 'en', false, 24, '1.0.0', NOW(), NOW())
@@ -63,10 +58,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT method to update system settings
 export async function PUT(request: NextRequest) {
   try {
-    // Verify admin authentication
     const token = request.cookies.get("auth-token")?.value;
     
     if (!token) {
@@ -86,12 +79,10 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
 
-    // Check if settings exist
     let settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
     const settingsData = Array.isArray(settings) ? settings[0] : settings;
 
     if (settingsData && settingsData.id) {
-      // Update existing settings
       await prisma.$executeRaw`
         UPDATE system_settings 
         SET storeName = ${body.storeName || settingsData.storeName},
@@ -104,14 +95,12 @@ export async function PUT(request: NextRequest) {
         WHERE id = ${settingsData.id}
       `;
     } else {
-      // Create new settings if none exist
       await prisma.$executeRaw`
         INSERT INTO system_settings (storeName, storeDescription, contactEmail, currency, timezone, language, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
         VALUES (${body.storeName || 'E-Commerce Store'}, ${body.storeDescription || 'Trusted online store'}, ${body.contactEmail || 'contact@store.com'}, ${body.currency || 'USD'}, ${body.timezone || 'Asia/Jakarta'}, ${body.language || 'en'}, false, 24, '1.0.0', NOW(), NOW())
       `;
     }
 
-    // Get updated settings
     settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
     const updatedSettings = Array.isArray(settings) ? settings[0] : settings;
 

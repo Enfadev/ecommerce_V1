@@ -92,7 +92,7 @@ export default function ProfilePage() {
           const stats = await response.json();
           setUserStats({
             totalOrders: stats.totalOrders,
-            wishlistItems: getWishlistCount(), // Get from context since wishlist is stored in localStorage
+            wishlistItems: getWishlistCount(),
           });
         }
       } catch (error) {
@@ -109,10 +109,8 @@ export default function ProfilePage() {
         dateOfBirth: user.dateOfBirth || "",
       });
 
-      // Set image preview dari user avatar yang ada
       setImagePreview(user.avatar || generateAvatarUrl(user.name));
 
-      // Fetch user statistics
       fetchUserStats();
     }
   }, [user, profileForm, getWishlistCount]);
@@ -121,7 +119,6 @@ export default function ProfilePage() {
     try {
       let avatarUrl = user?.avatar;
 
-      // If there's a selected image, upload it first
       if (selectedImage) {
         console.log("📤 Uploading image:", selectedImage.name);
         const formData = new FormData();
@@ -151,7 +148,6 @@ export default function ProfilePage() {
         }
       }
 
-      // Update profile with new data (including avatar URL if uploaded)
       const profileData = { ...values, avatar: avatarUrl };
       const success = await updateProfile(profileData);
 
@@ -161,7 +157,7 @@ export default function ProfilePage() {
           message: "Profile updated successfully!",
           type: "success",
         });
-        setSelectedImage(null); // Clear selected image after successful update
+        setSelectedImage(null);
       } else {
         setToast({
           show: true,
@@ -228,7 +224,6 @@ export default function ProfilePage() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validasi tipe file
       const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
       if (!allowedTypes.includes(file.type)) {
         setToast({
@@ -239,7 +234,6 @@ export default function ProfilePage() {
         return;
       }
 
-      // Validasi ukuran file (max 5MB)
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
         setToast({
@@ -252,7 +246,6 @@ export default function ProfilePage() {
 
       setSelectedImage(file);
 
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -262,7 +255,6 @@ export default function ProfilePage() {
   };
 
   const updateAvatar = () => {
-    // Trigger file input click
     const fileInput = document.getElementById('avatar-upload') as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
@@ -292,12 +284,10 @@ export default function ProfilePage() {
         const data = await response.json();
         console.log("✅ Avatar deleted successfully:", data);
 
-        // Reset to default avatar
         const defaultAvatarUrl = generateAvatarUrl(user.name);
         setImagePreview(defaultAvatarUrl);
         setSelectedImage(null);
 
-        // Refresh user data to sync with database
         await refreshUser();
 
         setToast({

@@ -67,7 +67,6 @@ export default function AdminSettingsPage() {
     language: "en",
   });
 
-  // Load settings and stats on component mount
   useEffect(() => {
     loadSettings();
     loadStats();

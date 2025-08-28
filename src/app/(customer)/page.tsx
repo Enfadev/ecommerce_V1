@@ -47,7 +47,7 @@ async function getPopularCategories() {
           _count: "desc",
         },
       },
-      take: 4, // Mengambil 4 kategori teratas berdasarkan jumlah produk
+      take: 4,
     });
     return categories;
   } catch (error) {
@@ -260,7 +260,6 @@ export default async function Home() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.length > 0 ? (
             categories.map((category, index) => {
-              // Mapping emoji berdasarkan nama kategori
               const getCategoryEmoji = (categoryName: string) => {
                 const name = categoryName.toLowerCase();
                 if (name.includes("fashion") || name.includes("clothes") || name.includes("apparel")) return "👕";
@@ -271,7 +270,7 @@ export default async function Home() {
                 if (name.includes("health") || name.includes("beauty") || name.includes("cosmetic")) return "💄";
                 if (name.includes("sport") || name.includes("fitness")) return "⚽";
                 if (name.includes("food") || name.includes("kitchen")) return "🍔";
-                return "📦"; // Default emoji
+                return "📦";
               };
 
               const getCategoryColor = (index: number) => {
@@ -294,7 +293,6 @@ export default async function Home() {
               );
             })
           ) : (
-            // Fallback data jika tidak ada kategori di database
             <>
               <NextLink href="/product?category=Fashion">
                 <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
