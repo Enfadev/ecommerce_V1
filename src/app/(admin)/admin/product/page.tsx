@@ -27,7 +27,7 @@ interface Product {
   slug?: string;
   metaTitle?: string;
   metaDescription?: string;
-  hargaDiskon?: number;
+  discountPrice?: number | null;
   promoExpired?: string;
   category?: string;
   createdAt?: string;
@@ -83,7 +83,7 @@ export default function AdminProductManagement() {
     { key: "slug", label: "Slug" },
     { key: "metaTitle", label: "Meta Title" },
     { key: "metaDescription", label: "Meta Description" },
-    { key: "hargaDiskon", label: "Discount Price" },
+    { key: "discountPrice", label: "Discount Price" },
     { key: "promoExpired", label: "Promo Expired" },
     { key: "gallery", label: "Gallery" },
     { key: "createdAt", label: "Created At" },
@@ -189,6 +189,8 @@ export default function AdminProductManagement() {
   };
 
   const handleSave = async (productData: ProductFormData) => {
+    console.log("Form data received:", productData); // Debug log
+
     if (editingProduct) {
       try {
         let imageUrl = editingProduct.imageUrl;
@@ -277,6 +279,8 @@ export default function AdminProductManagement() {
                   category: updatedProduct.category || "General",
                   stock: updatedProduct.stock || 0,
                   status: updatedProduct.status || "active",
+                  discountPrice: updatedProduct.discountPrice,
+                  promoExpired: updatedProduct.promoExpired,
                   createdAt: updatedProduct.createdAt ? new Date(updatedProduct.createdAt).toLocaleDateString("en-US") : "",
                   updatedAt: updatedProduct.updatedAt ? new Date(updatedProduct.updatedAt).toLocaleDateString("en-US") : "",
                 }
@@ -563,7 +567,7 @@ export default function AdminProductManagement() {
                               ) : (
                                 <span className="text-muted-foreground">-</span>
                               )
-                            ) : col.key === "price" || col.key === "hargaDiskon" ? (
+                            ) : col.key === "price" || col.key === "discountPrice" ? (
                               product[col.key as keyof Product] ? (
                                 <span className="font-semibold text-base">${product[col.key as keyof Product]}</span>
                               ) : (
@@ -661,7 +665,7 @@ export default function AdminProductManagement() {
                         slug: editingProduct.slug || "",
                         metaTitle: editingProduct.metaTitle || "",
                         metaDescription: editingProduct.metaDescription || "",
-                        discountPrice: editingProduct.hargaDiskon || null,
+                        discountPrice: editingProduct.discountPrice || null,
                         promoExpired: editingProduct.promoExpired || "",
                         gallery: editingProduct.gallery || [],
                       }

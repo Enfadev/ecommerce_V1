@@ -63,11 +63,37 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
     formState: { errors },
     setValue,
     watch,
+    reset,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       ...product,
       status: product?.status || "active",
+      discountPrice: product?.discountPrice ?? undefined,
+      promoExpired: product?.promoExpired
+        ? (() => {
+            try {
+              // If it's already in local datetime format, use it directly
+              if (product.promoExpired.includes("T") && product.promoExpired.length === 16) {
+                return product.promoExpired;
+              } else {
+                // Convert ISO string to local datetime-local format
+                const date = new Date(product.promoExpired);
+                if (!isNaN(date.getTime())) {
+                  const year = date.getFullYear();
+                  const month = String(date.getMonth() + 1).padStart(2, "0");
+                  const day = String(date.getDate()).padStart(2, "0");
+                  const hours = String(date.getHours()).padStart(2, "0");
+                  const minutes = String(date.getMinutes()).padStart(2, "0");
+                  return `${year}-${month}-${day}T${hours}:${minutes}`;
+                }
+              }
+              return "";
+            } catch {
+              return "";
+            }
+          })()
+        : "",
     },
   });
 
@@ -79,6 +105,43 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
       setImagePreviews(product.gallery);
     }
   }, [product]);
+
+  useEffect(() => {
+    if (product) {
+      // Format promoExpired for datetime-local input (preserve original input)
+      let formattedPromoExpired = "";
+      if (product.promoExpired) {
+        try {
+          // If it's already in local datetime format, use it directly
+          if (product.promoExpired.includes("T") && product.promoExpired.length === 16) {
+            formattedPromoExpired = product.promoExpired;
+          } else {
+            // Convert ISO string to local datetime-local format
+            const date = new Date(product.promoExpired);
+            if (!isNaN(date.getTime())) {
+              // Create local datetime string manually to avoid timezone conversion
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, "0");
+              const day = String(date.getDate()).padStart(2, "0");
+              const hours = String(date.getHours()).padStart(2, "0");
+              const minutes = String(date.getMinutes()).padStart(2, "0");
+              formattedPromoExpired = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+          }
+        } catch (error) {
+          console.error("Error formatting promoExpired date:", error);
+        }
+      }
+
+      reset({
+        ...product,
+        status: product?.status || "active",
+        discountPrice: product?.discountPrice ?? undefined,
+        promoExpired: formattedPromoExpired,
+      });
+      setTags(product?.tags || []);
+    }
+  }, [product, reset]);
 
   useEffect(() => {
     return () => {
@@ -122,7 +185,15 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
   };
 
   const onSubmit = (data: ProductFormData) => {
-    onSave({ ...data, gallery: imagePreviews, tags });
+    // Ensure proper handling of empty values for discountPrice and promoExpired
+    const cleanedData = {
+      ...data,
+      discountPrice: data.discountPrice || undefined,
+      promoExpired: data.promoExpired || undefined,
+      gallery: imagePreviews,
+      tags,
+    };
+    onSave(cleanedData);
   };
 
   const addTag = () => {
@@ -340,7 +411,17 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
 
                   <div className="space-y-2">
                     <Label htmlFor="discountPrice">Sale Price</Label>
-                    <Input id="discountPrice" type="number" step="0.01" {...register("discountPrice", { valueAsNumber: true })} placeholder="0.00" className="h-12" />
+                    <Input
+                      id="discountPrice"
+                      type="number"
+                      step="0.01"
+                      {...register("discountPrice", {
+                        valueAsNumber: true,
+                        setValueAs: (value) => (value === "" ? undefined : Number(value)),
+                      })}
+                      placeholder="0.00"
+                      className="h-12"
+                    />
                     {watchedDiscountPrice && watchedPrice && <p className="text-xs text-green-600">{getDiscountPercentage()}% discount</p>}
                   </div>
 
