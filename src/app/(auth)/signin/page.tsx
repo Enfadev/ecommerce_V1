@@ -51,9 +51,9 @@ export default function SignInPage() {
 
   async function onSubmit(values: SignInValues) {
     try {
-      const success = await signIn(values.email, values.password);
+      const result = await signIn(values.email, values.password);
 
-      if (success) {
+      if (result.success) {
         setToast({
           show: true,
           message: "Sign in successful! Redirecting...",
@@ -66,7 +66,7 @@ export default function SignInPage() {
       } else {
         setToast({
           show: true,
-          message: "Incorrect email or password.",
+          message: result.error || "Incorrect email or password.",
           type: "error",
         });
       }
