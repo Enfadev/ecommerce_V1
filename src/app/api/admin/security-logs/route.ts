@@ -1,0 +1,52 @@
+import { NextRequest, NextResponse } from "next/server";
+import { verifyJWT } from "@/lib/jwt";
+import adminLogger from "@/lib/admin-security-logger";
+
+export async function GET(request: NextRequest) {
+  try {
+    // Get auth token from cookie
+    const token = request.cookies.get("auth-token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
+    // Verify token
+    const payload = await verifyJWT(token);
+    if (!payload) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    // Check admin role
+    if (payload.role !== "ADMIN") {
+      return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+    }
+
+    // Get query parameters
+    const url = new URL(request.url);
+    const limit = parseInt(url.searchParams.get("limit") || "50");
+    const failedOnly = url.searchParams.get("failed") === "true";
+    const timeRange = parseInt(url.searchParams.get("timeRange") || "60"); // minutes
+
+    let logs;
+    if (failedOnly) {
+      logs = adminLogger.getFailedAttempts(timeRange);
+    } else {
+      logs = adminLogger.getRecentLogs(limit);
+    }
+
+    return NextResponse.json({
+      success: true,
+      logs,
+      total: logs.length,
+      filters: {
+        limit,
+        failedOnly,
+        timeRange: failedOnly ? timeRange : null,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching security logs:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
