@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/contexts/auth-context";
 import { useWishlist } from "@/components/contexts/wishlist-context";
@@ -46,6 +46,30 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, updateProfile, signOut, isLoading, isAuthenticated, refreshUser } = useAuth();
   const { getWishlistCount } = useWishlist();
+
+  const generateAvatarUrl = useCallback((name: string) => {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=200`;
+  }, []);
+
+  const getValidImageSrc = useCallback((avatar?: string | null, name?: string) => {
+    if (!avatar || avatar === 'null' || avatar === 'undefined' || avatar.trim() === '') {
+      return generateAvatarUrl(name || 'User');
+    }
+    
+    // Check if it's a valid URL or relative path
+    if (avatar.startsWith('http') || avatar.startsWith('/uploads/')) {
+      return avatar;
+    }
+    
+    // If it looks like a generated avatar URL, use it
+    if (avatar.includes('ui-avatars.com')) {
+      return avatar;
+    }
+    
+    // Fallback to generated avatar
+    return generateAvatarUrl(name || 'User');
+  }, [generateAvatarUrl]);
+
   const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
     show: false,
     message: "",
@@ -109,11 +133,11 @@ export default function ProfilePage() {
         dateOfBirth: user.dateOfBirth || "",
       });
 
-      setImagePreview(user.avatar || generateAvatarUrl(user.name));
+      setImagePreview(getValidImageSrc(user.avatar, user.name));
 
       fetchUserStats();
     }
-  }, [user, profileForm, getWishlistCount]);
+  }, [user, profileForm, getWishlistCount, getValidImageSrc]);
 
   async function onProfileSubmit(values: ProfileValues) {
     try {
@@ -215,10 +239,6 @@ export default function ProfilePage() {
   const handleSignOut = () => {
     signOut();
     router.push("/");
-  };
-
-  const generateAvatarUrl = (name: string) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=200`;
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -339,9 +359,16 @@ export default function ProfilePage() {
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-600 shadow-xl">
-                  <Image src={imagePreview || user.avatar || generateAvatarUrl(user.name)} alt="Avatar" className="w-full h-full object-cover" width={128} height={128} />
-                </div>
+                <ProfileAvatar 
+                  src={imagePreview || user.avatar}
+                  alt="Avatar"
+                  name={user.name}
+                  size={128}
+                  className="w-32 h-32 rounded-full border-4 border-gray-600 shadow-xl"
+                  onError={() => {
+                    console.log("Avatar load error, using fallback");
+                  }}
+                />
                 {/* Hidden file input for avatar upload */}
                 <input
                   id="avatar-upload"
