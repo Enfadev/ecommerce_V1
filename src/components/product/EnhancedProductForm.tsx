@@ -15,13 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Separator } from "../ui/separator";
 import Image from "next/image";
 import { Upload, X, Plus, AlertCircle, Package, Tag, Globe, BarChart, DollarSign } from "lucide-react";
+import CategoryInput from "./CategoryInput";
 
 const productSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(2, "Product name is required"),
   price: z.number().min(0.01, "Price must be greater than 0"),
   description: z.string().optional(),
-  category: z.string().min(1, "Category is required"),
+  categoryId: z.number().min(1, "Category is required"),
   stock: z.number().min(0, "Stock must be 0 or more"),
   status: z.enum(["active", "inactive", "draft"]),
   sku: z.string().min(2, "SKU is required"),
@@ -58,8 +59,6 @@ type ProductFormProps = {
   onSave: (product: ProductFormData) => void;
   onCancel: () => void;
 };
-
-const defaultCategories = ["Electronics", "Clothing", "Home & Garden", "Books", "Sports", "Beauty", "Toys", "Food & Beverages", "Automotive", "Health"];
 
 const statusOptions = [
   { value: "active", label: "Active", color: "bg-green-100 text-green-800" },
@@ -262,23 +261,16 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category *</Label>
-                    <Select onValueChange={(value: string) => setValue("category", value)} defaultValue={product?.category}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {defaultCategories.map((cat) => (
-                          <SelectItem key={cat} value={cat}>
-                            {cat}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.category && (
+                    <Label htmlFor="categoryId">Category *</Label>
+                    <CategoryInput 
+                      value={watch("categoryId") || undefined}
+                      onValueChange={(categoryId: number) => setValue("categoryId", categoryId)}
+                      placeholder="Select or create category"
+                    />
+                    {errors.categoryId && (
                       <p className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />
-                        {errors.category.message}
+                        {errors.categoryId.message}
                       </p>
                     )}
                   </div>
