@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-import { EnhancedProductForm } from "@/components/product/EnhancedProductForm";
+import { SimpleProductForm } from "@/components/product/SimpleProductForm";
 import { AdminExportButton } from "@/components/admin/AdminExportButton";
 
 interface Product {
@@ -274,6 +274,11 @@ export default function AdminProductManagement() {
               ? {
                   ...updatedProduct,
                   imageUrl: updatedProduct.imageUrl || "/placeholder-image.svg",
+                  category: updatedProduct.category || "General",
+                  stock: updatedProduct.stock || 0,
+                  status: updatedProduct.status || "active",
+                  createdAt: updatedProduct.createdAt ? new Date(updatedProduct.createdAt).toLocaleDateString("en-US") : "",
+                  updatedAt: updatedProduct.updatedAt ? new Date(updatedProduct.updatedAt).toLocaleDateString("en-US") : "",
                 }
               : p
           )
@@ -634,13 +639,13 @@ export default function AdminProductManagement() {
       {/* Product Form Dialog */}
       {/* Enhanced Product Form Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-6xl w-[95vw] h-[85vh] overflow-hidden p-0 grid grid-rows-[auto_1fr]">
+        <DialogContent className="max-w-none w-[75vw] h-[80vh] overflow-hidden p-0 grid grid-rows-[auto_1fr]" style={{ maxWidth: "calc(75vw - 1rem)", width: "calc(75vw - 1rem)" }}>
           <DialogHeader className="px-6 py-4 border-b shrink-0">
             <DialogTitle className="text-xl">{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto min-h-0">
             <div className="p-6">
-              <EnhancedProductForm
+              <SimpleProductForm
                 product={
                   editingProduct
                     ? {
@@ -659,12 +664,6 @@ export default function AdminProductManagement() {
                         discountPrice: editingProduct.hargaDiskon || null,
                         promoExpired: editingProduct.promoExpired || "",
                         gallery: editingProduct.gallery || [],
-                        featured: false,
-                        allowBackorder: false,
-                        trackQuantity: true,
-                        requiresShipping: true,
-                        taxable: true,
-                        tags: [],
                       }
                     : undefined
                 }

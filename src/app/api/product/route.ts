@@ -173,9 +173,32 @@ export async function PUT(req: Request) {
         discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
         promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
+      include: { category: true },
     });
 
-    return NextResponse.json(product);
+    // Format response to match frontend expectations
+    const result = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      brand: product.brand,
+      category: product.category?.name || null,
+      categoryId: product.categoryId,
+      discountPrice: product.discountPrice,
+      metaDescription: product.metaDescription,
+      metaTitle: product.metaTitle,
+      promoExpired: product.promoExpired,
+      sku: product.sku,
+      slug: product.slug,
+      stock: product.stock,
+      status: product.status,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    };
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Update product error:", error);
     return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
@@ -217,9 +240,32 @@ export async function POST(req: Request) {
         metaDescription,
         promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
+      include: { category: true },
     });
 
-    return NextResponse.json(product);
+    // Format response to match frontend expectations
+    const result = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      brand: product.brand,
+      category: product.category?.name || null,
+      categoryId: product.categoryId,
+      discountPrice: product.discountPrice,
+      metaDescription: product.metaDescription,
+      metaTitle: product.metaTitle,
+      promoExpired: product.promoExpired,
+      sku: product.sku,
+      slug: product.slug,
+      stock: product.stock,
+      status: product.status,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    };
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Create product error:", error);
     return NextResponse.json({ error: "Failed to add product" }, { status: 500 });

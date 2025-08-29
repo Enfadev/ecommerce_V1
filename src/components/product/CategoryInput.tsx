@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command";
 import { Badge } from "../ui/badge";
 import { cn } from "../../lib/utils";
+import { useScrollFix } from "../../hooks/use-scroll-fix";
 
 interface Category {
   id: number;
@@ -38,14 +39,12 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
   const [isCreating, setIsCreating] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
+  const scrollRef = useScrollFix();
 
   // Fetch categories from API
   const fetchCategories = useCallback(async () => {
     // Default categories for fallback
-    const defaultCategories = [
-      "Electronics", "Clothing", "Home & Garden", "Books", 
-      "Sports", "Beauty", "Toys", "Food & Beverages", "Automotive", "Health"
-    ];
+    const defaultCategories = ["Electronics", "Clothing", "Home & Garden", "Books", "Sports", "Beauty", "Toys", "Food & Beverages", "Automotive", "Health"];
 
     try {
       setLoading(true);
@@ -54,22 +53,22 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
         throw new Error("Failed to fetch categories");
       }
       const data = await response.json();
-      
+
       // Check if response has the expected structure
       if (data.success && Array.isArray(data.categories)) {
-        console.log('CategoryInput: API response successful', data.categories);
+        console.log("CategoryInput: API response successful", data.categories);
         // Map the response to match our interface
         const mappedCategories: Category[] = data.categories.map((cat: ApiCategoryResponse) => ({
           id: cat.id,
           name: cat.name,
           _count: {
-            products: cat.productCount || 0
-          }
+            products: cat.productCount || 0,
+          },
         }));
-        console.log('CategoryInput: Mapped categories', mappedCategories);
+        console.log("CategoryInput: Mapped categories", mappedCategories);
         setCategories(mappedCategories);
       } else {
-        console.warn('CategoryInput: Invalid response structure', data);
+        console.warn("CategoryInput: Invalid response structure", data);
         // If API doesn't return expected structure, use fallback
         throw new Error("Invalid response structure");
       }
@@ -79,7 +78,7 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
       const fallbackCategories: Category[] = defaultCategories.map((name, index) => ({
         id: index + 1,
         name,
-        _count: { products: 0 }
+        _count: { products: 0 },
       }));
       setCategories(fallbackCategories);
     } finally {
@@ -106,7 +105,7 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
       }
 
       const newCategory = await response.json();
-      setCategories(prev => [...prev, newCategory]);
+      setCategories((prev) => [...prev, newCategory]);
       onValueChange(newCategory.id);
       setNewCategoryName("");
       setIsCreating(false);
@@ -124,34 +123,17 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
     }
   }, [open, fetchCategories]);
 
-  const selectedCategory = Array.isArray(categories) && categories.length > 0 
-    ? categories.find(cat => cat?.id === value) 
-    : undefined;
+  const selectedCategory = Array.isArray(categories) && categories.length > 0 ? categories.find((cat) => cat?.id === value) : undefined;
 
   // Filter categories based on search
-  const filteredCategories = Array.isArray(categories) 
-    ? categories.filter(category =>
-        category?.name && (
-          !searchValue || 
-          category.name.toLowerCase().includes(searchValue.toLowerCase())
-        )
-      )
-    : [];
+  const filteredCategories = Array.isArray(categories) ? categories.filter((category) => category?.name && (!searchValue || category.name.toLowerCase().includes(searchValue.toLowerCase()))) : [];
 
-  const showCreateOption = searchValue && 
-    !filteredCategories.some(cat => 
-      cat?.name && cat.name.toLowerCase() === searchValue.toLowerCase()
-    );
+  const showCreateOption = searchValue && !filteredCategories.some((cat) => cat?.name && cat.name.toLowerCase() === searchValue.toLowerCase());
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between"
-        >
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between">
           {selectedCategory?.name ? (
             <div className="flex items-center gap-2">
               <span>{selectedCategory.name}</span>
@@ -169,12 +151,15 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <Command>
-          <CommandInput 
-            placeholder="Search categories..." 
-            value={searchValue}
-            onValueChange={setSearchValue}
-          />
-          <CommandList>
+          <CommandInput placeholder="Search categories..." value={searchValue} onValueChange={setSearchValue} />
+          <CommandList
+            ref={scrollRef}
+            className="max-h-[200px] overflow-y-auto scrollbar-thin category-dropdown-list"
+            onWheel={(e) => {
+              // Ensure wheel events are properly handled
+              e.stopPropagation();
+            }}
+          >
             {loading ? (
               <CommandEmpty>Loading categories...</CommandEmpty>
             ) : (
@@ -186,20 +171,15 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
                     {filteredCategories.map((category) => (
                       <CommandItem
                         key={category.id}
-                        value={category.name || ''}
+                        value={category.name || ""}
                         onSelect={() => {
                           onValueChange(category.id);
                           setOpen(false);
                         }}
                       >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            value === category.id ? "opacity-100" : "opacity-0"
-                          )}
-                        />
+                        <Check className={cn("mr-2 h-4 w-4", value === category.id ? "opacity-100" : "opacity-0")} />
                         <div className="flex items-center justify-between w-full">
-                          <span>{category.name || 'Unnamed Category'}</span>
+                          <span>{category.name || "Unnamed Category"}</span>
                           {category._count && (
                             <Badge variant="outline" className="text-xs">
                               {category._count.products}
@@ -251,11 +231,7 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
               }}
             />
             <div className="flex gap-2">
-              <Button
-                size="sm"
-                onClick={createCategory}
-                disabled={createLoading || !newCategoryName.trim()}
-              >
+              <Button size="sm" onClick={createCategory} disabled={createLoading || !newCategoryName.trim()}>
                 {createLoading ? "Creating..." : "Create"}
               </Button>
               <Button

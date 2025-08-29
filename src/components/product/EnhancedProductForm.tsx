@@ -32,20 +32,6 @@ const productSchema = z.object({
   metaDescription: z.string().optional(),
   discountPrice: z.number().min(0).optional().nullable(),
   promoExpired: z.string().optional(),
-  weight: z.number().min(0, "Weight must be positive").optional(),
-  dimensions: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  featured: z.boolean().optional(),
-  allowBackorder: z.boolean().optional(),
-  trackQuantity: z.boolean().optional(),
-  requiresShipping: z.boolean().optional(),
-  taxable: z.boolean().optional(),
-  compareAtPrice: z.number().min(0).optional().nullable(),
-  costPerItem: z.number().min(0).optional().nullable(),
-  barcode: z.string().optional(),
-  warranty: z.string().optional(),
-  minimumOrderQuantity: z.number().min(1).optional(),
-  maximumOrderQuantity: z.number().min(1).optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema> & {
@@ -68,8 +54,6 @@ const statusOptions = [
 
 export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormProps) {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [tags, setTags] = useState<string[]>(product?.tags || []);
-  const [tagInput, setTagInput] = useState("");
   const [activeTab, setActiveTab] = useState("basic");
 
   const {
@@ -82,11 +66,6 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
     resolver: zodResolver(productSchema),
     defaultValues: {
       ...product,
-      featured: product?.featured || false,
-      allowBackorder: product?.allowBackorder || false,
-      trackQuantity: product?.trackQuantity || true,
-      requiresShipping: product?.requiresShipping || true,
-      taxable: product?.taxable || true,
       status: product?.status || "active",
     },
   });
