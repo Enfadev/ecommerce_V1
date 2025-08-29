@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import Image from "next/image";
-import { Upload, X, AlertCircle, Package, Globe, DollarSign, Plus } from "lucide-react";
+import { Upload, X, AlertCircle, Package, Globe, DollarSign } from "lucide-react";
 import { CategoryInput } from "../ui/category-input";
 
 const productSchema = z.object({
@@ -55,7 +55,6 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("basic");
   const [tags, setTags] = useState<string[]>(product?.tags || []);
-  const [tagInput, setTagInput] = useState("");
 
   const {
     register,
@@ -194,17 +193,6 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
       tags,
     };
     onSave(cleanedData);
-  };
-
-  const addTag = () => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const getDiscountPercentage = () => {
@@ -351,37 +339,6 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
                       </p>
                     )}
                   </div>
-                </div>
-
-                {/* Tags Section */}
-                <div className="space-y-2">
-                  <Label>Product Tags</Label>
-                  <div className="flex gap-2 mb-2">
-                    <Input
-                      value={tagInput}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTagInput(e.target.value)}
-                      placeholder="Add a tag"
-                      className="h-11"
-                      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && (e.preventDefault(), addTag())}
-                    />
-                    <Button type="button" onClick={addTag} size="sm" className="h-11 px-4">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  {tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="flex items-center gap-1" asChild>
-                          <div>
-                            {tag}
-                            <span onClick={() => removeTag(tag)} className="ml-1 hover:text-red-500 cursor-pointer inline-flex items-center" role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && removeTag(tag)}>
-                              <X className="w-3 h-3" />
-                            </span>
-                          </div>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
