@@ -45,26 +45,26 @@ export function Header() {
   return (
     <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <nav className="max-w-7xl mx-auto flex items-center justify-between py-3 px-3 sm:px-4 lg:px-8" aria-label="Main Navigation">
-        {/* Logo */}
-        <Brand linkable size="lg" />
-
-        {/* Desktop Navigation */}
-        <div className="hidden lg:flex items-center space-x-8">
-          <Link href="/product" className="text-sm font-medium hover:text-primary transition-colors">
-            Products
-          </Link>
-          <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
-            About
-          </Link>
-          <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors">
-            Contact
-          </Link>
-          {user?.role === "ADMIN" && (
-            <Link href="/admin" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
-              <Crown className="h-3 w-3" />
-              Admin
+        {/* Left: Logo + Menu */}
+        <div className="flex items-center gap-10">
+          <Brand linkable size="lg" />
+          <div className="hidden lg:flex items-center space-x-8">
+            <Link href="/product" className="text-sm font-medium hover:text-primary transition-colors">
+              Products
             </Link>
-          )}
+            <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
+              About
+            </Link>
+            <Link href="/contact" className="text-sm font-medium hover:text-primary transition-colors">
+              Contact
+            </Link>
+            {user?.role === "ADMIN" && (
+              <Link href="/admin" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+                <Crown className="h-3 w-3" />
+                Admin
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Search Bar */}
