@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/components/contexts/auth-context";
 import { useOrders } from "@/hooks/useOrders";
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, Home } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Package2, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, Home, Shield } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LucideIcon } from "lucide-react";
 
@@ -27,11 +28,13 @@ const menuItems: MenuItem[] = [
   { id: "customers", label: "Customers", icon: Users, href: "/admin/customers", badge: null },
   { id: "inventory", label: "Inventory", icon: Package2, href: "/admin/inventory", badge: null },
   { id: "analytics", label: "Analytics", icon: BarChart3, href: "/admin/analytics", badge: null },
+  { id: "security", label: "Security", icon: Shield, href: "/admin/security", badge: null },
   { id: "settings", label: "Settings", icon: Settings, href: "/admin/settings", badge: null },
 ];
 
 export default function AdminSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { user, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const { stats } = useOrders();
@@ -41,6 +44,18 @@ export default function AdminSidebar() {
       return pathname === "/admin";
     }
     return pathname?.startsWith(href);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push("/signin");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Force redirect even if signOut fails
+      // Force redirect even if signOut fails
+      router.push("/signin");
+    }
   };
 
   return (
@@ -117,11 +132,11 @@ export default function AdminSidebar() {
           <Card className="p-3 bg-muted/50">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-xs font-medium text-primary-foreground">A</span>
+                <span className="text-xs font-medium text-primary-foreground">{user?.name?.charAt(0).toUpperCase() || "A"}</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">Admin User</p>
-                <p className="text-xs text-muted-foreground truncate">admin@example.com</p>
+                <p className="text-sm font-medium truncate">{user?.name || "Admin User"}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email || "admin@example.com"}</p>
               </div>
             </div>
           </Card>
@@ -131,7 +146,7 @@ export default function AdminSidebar() {
           <Button variant="ghost" size="icon" className="flex-1" title="Notifications">
             <Bell className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="flex-1" title="Logout" onClick={() => router.push("/")}>
+          <Button variant="ghost" size="icon" className="flex-1" title="Logout" onClick={handleLogout}>
             <LogOut className="w-4 h-4" />
           </Button>
         </div>
