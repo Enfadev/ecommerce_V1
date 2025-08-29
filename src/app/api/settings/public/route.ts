@@ -8,7 +8,7 @@ export async function GET() {
     if (!settings || (Array.isArray(settings) && settings.length === 0)) {
       await prisma.$executeRaw`
         INSERT INTO system_settings (storeName, storeDescription, contactEmail, currency, timezone, language, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES ('ShopZone', 'A trusted online shopping platform', 'contact@shopzone.com', 'USD', 'Asia/Jakarta', 'en', false, 24, '1.0.0', NOW(), NOW())
+        VALUES ('Brandify', 'A trusted online shopping platform', 'contact@brandify.com', 'USD', 'Asia/Jakarta', 'en', false, 24, '1.0.0', NOW(), NOW())
       `;
       
       settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
@@ -19,9 +19,9 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       settings: {
-        storeName: settingsData?.storeName || "ShopZone",
+        storeName: settingsData?.storeName || "Brandify",
         storeDescription: settingsData?.storeDescription || "A trusted online shopping platform",
-        contactEmail: settingsData?.contactEmail || "contact@shopzone.com",
+        contactEmail: settingsData?.contactEmail || "contact@brandify.com",
         currency: settingsData?.currency || "USD",
         language: settingsData?.language || "en"
       }
@@ -33,9 +33,9 @@ export async function GET() {
       { 
         success: true,
         settings: {
-          storeName: "ShopZone",
+          storeName: "Brandify",
           storeDescription: "A trusted online shopping platform",
-          contactEmail: "contact@shopzone.com",
+          contactEmail: "contact@brandify.com",
           currency: "USD",
           language: "en"
         }

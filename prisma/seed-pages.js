@@ -111,10 +111,10 @@ async function seedPageData() {
 
   // About Page Data
   const aboutPageData = {
-    heroTitle: "About ShopZone",
+    heroTitle: "About Brandify",
     heroSubtitle: "Your Trusted E-Commerce Partner",
-    heroDescription: "Learn more about our journey, mission, and the dedicated team behind ShopZone",
-    companyStory: "ShopZone was founded in 2020 with a simple mission: to make quality products accessible to everyone across Indonesia. What started as a small online store has grown into one of the most trusted e-commerce platforms in the country.",
+    heroDescription: "Learn more about our journey, mission, and the dedicated team behind Brandify",
+    companyStory: "Brandify was founded in 2020 with a simple mission: to make quality products accessible to everyone across Indonesia. What started as a small online store has grown into one of the most trusted e-commerce platforms in the country.",
     mission: "To provide the best shopping experience by offering quality products, competitive prices, and excellent customer service to customers throughout Indonesia.",
     vision: "To become the leading e-commerce platform in Southeast Asia, connecting millions of customers with their favorite brands and products.",
     values: [
@@ -188,7 +188,7 @@ async function seedPageData() {
         name: "Ahmad Rizki",
         role: "CEO & Founder",
         image: "/team1.jpg",
-        description: "Visioner behind ShopZone with 10+ years experience in e-commerce"
+        description: "Visioner behind Brandify with 10+ years experience in e-commerce"
       },
       {
         name: "Sari Indah",
@@ -207,7 +207,7 @@ async function seedPageData() {
       {
         year: "2020",
         title: "Company Founded",
-        description: "ShopZone was established with a small team of 5 people"
+        description: "Brandify was established with a small team of 5 people"
       },
       {
         year: "2021",

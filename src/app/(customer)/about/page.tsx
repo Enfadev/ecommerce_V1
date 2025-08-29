@@ -170,7 +170,7 @@ export default async function About() {
       <section className="py-16">
         <div>
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Choose ShopZone?</h2>
+            <h2 className="text-3xl font-bold mb-4">Why Choose Brandify?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">We are committed to providing the best service with various advantages that make your shopping experience even more special.</p>
           </div>
 
@@ -193,7 +193,7 @@ export default async function About() {
         <div>
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Our Best Team</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Meet the experienced professionals dedicated to making ShopZone the leading platform in Indonesia.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Meet the talented team committed to building Brandify as your trusted global platform.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">

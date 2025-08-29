@@ -124,8 +124,8 @@ export default function Contact() {
         icon: "Mail",
         title: "Email",
         subtitle: "Response within 24 hours",
-        value: "support@shopzone.com",
-        link: "mailto:support@shopzone.com",
+        value: "support@brandify.com",
+        link: "mailto:support@brandify.com",
         bgColor: "bg-purple-500",
       },
       {

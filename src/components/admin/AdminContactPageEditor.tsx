@@ -557,7 +557,7 @@ export default function AdminContactPageEditor() {
                     <Input
                       value={social.link}
                       onChange={(e) => updateSocialMedia(index, "link", e.target.value)}
-                      placeholder="e.g., https://facebook.com/shopzone"
+                      placeholder="e.g., https://facebook.com/brandify"
                     />
                   </div>
                   <div>

@@ -25,7 +25,7 @@ const sizeClasses = {
 
 export function Brand({ className, as = "div", linkable = false, size = "lg" }: BrandProps) {
   const [brandSettings, setBrandSettings] = useState<BrandSettings>({
-    storeName: "ShopZone",
+    storeName: "Brandify",
     storeDescription: "A trusted online shopping platform"
   });
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ export function Brand({ className, as = "div", linkable = false, size = "lg" }: 
           const data = await response.json();
           if (data.success && data.settings) {
             setBrandSettings({
-              storeName: data.settings.storeName || "ShopZone",
+              storeName: data.settings.storeName || "Brandify",
               storeDescription: data.settings.storeDescription || "A trusted online shopping platform"
             });
           }
@@ -62,7 +62,7 @@ export function Brand({ className, as = "div", linkable = false, size = "lg" }: 
 
   const content = (
     <Component className={brandClasses}>
-      {loading ? "ShopZone" : brandSettings.storeName}
+      {loading ? "Brandify" : brandSettings.storeName}
     </Component>
   );
 
@@ -78,8 +78,8 @@ export function Brand({ className, as = "div", linkable = false, size = "lg" }: 
 }
 
 export const brandConfig = {
-  name: "ShopZone",
+  name: "Brandify",
   tagline: "A trusted online shopping platform",
-  website: "https://shopzone.com",
-  email: "hello@shopzone.com"
+  website: "https://brandify.com",
+  email: "hello@brandify.com"
 };

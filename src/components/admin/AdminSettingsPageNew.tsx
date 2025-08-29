@@ -15,9 +15,9 @@ import AdminProductPageEditor from "./AdminProductPageEditor";
 
 export default function AdminSettingsPage() {
   const [generalSettings, setGeneralSettings] = useState({
-    storeName: "ShopZone",
+    storeName: "Brandify",
     storeDescription: "A trusted online shopping platform",
-    contactEmail: "contact@shopzone.com",
+    contactEmail: "contact@brandify.com",
     currency: "USD",
     timezone: "Asia/Jakarta",
     language: "en",
@@ -42,9 +42,9 @@ export default function AdminSettingsPage() {
           const data = await response.json();
           if (data.success && data.settings) {
             setGeneralSettings({
-              storeName: data.settings.storeName || "ShopZone",
+              storeName: data.settings.storeName || "Brandify",
               storeDescription: data.settings.storeDescription || "A trusted online shopping platform",
-              contactEmail: data.settings.contactEmail || "contact@shopzone.com",
+              contactEmail: data.settings.contactEmail || "contact@brandify.com",
               currency: data.settings.currency || "USD",
               timezone: data.settings.timezone || "Asia/Jakarta",
               language: data.settings.language || "en",
