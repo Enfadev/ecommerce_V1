@@ -46,7 +46,7 @@ export async function GET(req: Request) {
     if (id) {
       const p = await prisma.product.findUnique({
         where: { id: Number(id) },
-        include: { category: true },
+        include: { category: true, images: true },
       });
       if (!p) return NextResponse.json({ error: "Product not found" }, { status: 404 });
       const result = {
@@ -66,6 +66,7 @@ export async function GET(req: Request) {
         slug: p.slug,
         stock: p.stock,
         status: p.status,
+        gallery: p.images.map((img) => img.url),
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
       };
@@ -109,7 +110,7 @@ export async function GET(req: Request) {
       const products = await prisma.product.findMany({
         where,
         orderBy: { id: "desc" },
-        include: { category: true },
+        include: { category: true, images: true },
       });
       const result = products.map((p) => ({
         id: p.id,
@@ -128,6 +129,7 @@ export async function GET(req: Request) {
         slug: p.slug,
         stock: p.stock,
         status: p.status,
+        gallery: p.images.map((img) => img.url),
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
       }));
@@ -139,7 +141,7 @@ export async function GET(req: Request) {
 }
 export async function PUT(req: Request) {
   try {
-    const { id, name, description, price, imageUrl, category, stock, status, sku, brand, slug, metaTitle, metaDescription, discountPrice, promoExpired } = await req.json();
+    const { id, name, description, price, imageUrl, category, stock, status, sku, brand, slug, metaTitle, metaDescription, discountPrice, promoExpired, gallery } = await req.json();
 
     if (!id || !name || !price) {
       return NextResponse.json({ error: "ID, name, and price are required" }, { status: 400 });
@@ -155,7 +157,7 @@ export async function PUT(req: Request) {
       categoryData = { categoryId: categoryRecord.id };
     }
 
-    const product = await prisma.product.update({
+    await prisma.product.update({
       where: { id: Number(id) },
       data: {
         name,
@@ -173,29 +175,54 @@ export async function PUT(req: Request) {
         discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
         promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
-      include: { category: true },
+      include: { category: true, images: true },
+    });
+
+    // Handle gallery images
+    if (gallery && Array.isArray(gallery)) {
+      // Delete existing gallery images
+      await prisma.productImage.deleteMany({
+        where: { productId: Number(id) },
+      });
+
+      // Create new gallery images
+      if (gallery.length > 0) {
+        await prisma.productImage.createMany({
+          data: gallery.map((url: string) => ({
+            url,
+            productId: Number(id),
+          })),
+        });
+      }
+    }
+
+    // Fetch updated product with images
+    const updatedProduct = await prisma.product.findUnique({
+      where: { id: Number(id) },
+      include: { category: true, images: true },
     });
 
     // Format response to match frontend expectations
     const result = {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      brand: product.brand,
-      category: product.category?.name || null,
-      categoryId: product.categoryId,
-      discountPrice: product.discountPrice,
-      metaDescription: product.metaDescription,
-      metaTitle: product.metaTitle,
-      promoExpired: product.promoExpired,
-      sku: product.sku,
-      slug: product.slug,
-      stock: product.stock,
-      status: product.status,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
+      id: updatedProduct!.id,
+      name: updatedProduct!.name,
+      description: updatedProduct!.description,
+      price: updatedProduct!.price,
+      imageUrl: updatedProduct!.imageUrl,
+      brand: updatedProduct!.brand,
+      category: updatedProduct!.category?.name || null,
+      categoryId: updatedProduct!.categoryId,
+      discountPrice: updatedProduct!.discountPrice,
+      metaDescription: updatedProduct!.metaDescription,
+      metaTitle: updatedProduct!.metaTitle,
+      promoExpired: updatedProduct!.promoExpired,
+      sku: updatedProduct!.sku,
+      slug: updatedProduct!.slug,
+      stock: updatedProduct!.stock,
+      status: updatedProduct!.status,
+      gallery: updatedProduct!.images.map((img) => img.url),
+      createdAt: updatedProduct!.createdAt,
+      updatedAt: updatedProduct!.updatedAt,
     };
 
     return NextResponse.json(result);
@@ -207,7 +234,7 @@ export async function PUT(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { name, description, price, imageUrl, discountPrice, category, stock, status, sku, brand, slug, metaTitle, metaDescription, promoExpired } = await req.json();
+    const { name, description, price, imageUrl, discountPrice, category, stock, status, sku, brand, slug, metaTitle, metaDescription, promoExpired, gallery } = await req.json();
 
     if (!name || !price) {
       return NextResponse.json({ error: "Name and price are required" }, { status: 400 });
@@ -240,29 +267,46 @@ export async function POST(req: Request) {
         metaDescription,
         promoExpired: promoExpired ? new Date(promoExpired) : null,
       },
-      include: { category: true },
+      include: { category: true, images: true },
+    });
+
+    // Handle gallery images
+    if (gallery && Array.isArray(gallery) && gallery.length > 0) {
+      await prisma.productImage.createMany({
+        data: gallery.map((url: string) => ({
+          url,
+          productId: product.id,
+        })),
+      });
+    }
+
+    // Fetch product with images for response
+    const productWithImages = await prisma.product.findUnique({
+      where: { id: product.id },
+      include: { category: true, images: true },
     });
 
     // Format response to match frontend expectations
     const result = {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      brand: product.brand,
-      category: product.category?.name || null,
-      categoryId: product.categoryId,
-      discountPrice: product.discountPrice,
-      metaDescription: product.metaDescription,
-      metaTitle: product.metaTitle,
-      promoExpired: product.promoExpired,
-      sku: product.sku,
-      slug: product.slug,
-      stock: product.stock,
-      status: product.status,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
+      id: productWithImages!.id,
+      name: productWithImages!.name,
+      description: productWithImages!.description,
+      price: productWithImages!.price,
+      imageUrl: productWithImages!.imageUrl,
+      brand: productWithImages!.brand,
+      category: productWithImages!.category?.name || null,
+      categoryId: productWithImages!.categoryId,
+      discountPrice: productWithImages!.discountPrice,
+      metaDescription: productWithImages!.metaDescription,
+      metaTitle: productWithImages!.metaTitle,
+      promoExpired: productWithImages!.promoExpired,
+      sku: productWithImages!.sku,
+      slug: productWithImages!.slug,
+      stock: productWithImages!.stock,
+      status: productWithImages!.status,
+      gallery: productWithImages!.images.map((img) => img.url),
+      createdAt: productWithImages!.createdAt,
+      updatedAt: productWithImages!.updatedAt,
     };
 
     return NextResponse.json(result);

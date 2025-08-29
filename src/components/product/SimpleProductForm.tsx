@@ -31,13 +31,12 @@ const productSchema = z.object({
   discountPrice: z.number().min(0).optional().nullable(),
   promoExpired: z.string().optional(),
   tags: z.array(z.string()).optional(),
+  imageFiles: z.array(z.instanceof(File)).optional(),
+  imageUrl: z.string().optional(),
+  gallery: z.array(z.string()).optional(),
 });
 
-type ProductFormData = z.infer<typeof productSchema> & {
-  imageFiles?: File[];
-  imageUrl?: string;
-  gallery?: string[];
-};
+type ProductFormData = z.infer<typeof productSchema>;
 
 type ProductFormProps = {
   product?: ProductFormData;
@@ -53,6 +52,7 @@ const statusOptions = [
 
 export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProps) {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("basic");
   const [tags, setTags] = useState<string[]>(product?.tags || []);
 
@@ -69,6 +69,7 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
       ...product,
       status: product?.status || "active",
       discountPrice: product?.discountPrice ?? undefined,
+      imageFiles: [], // Initialize as empty array
       promoExpired: product?.promoExpired
         ? (() => {
             try {
@@ -101,7 +102,11 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
 
   useEffect(() => {
     if (product?.gallery) {
+      setExistingImages(product.gallery);
       setImagePreviews(product.gallery);
+    } else {
+      setExistingImages([]);
+      setImagePreviews([]);
     }
   }, [product]);
 
@@ -166,21 +171,47 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
     const files = e.target.files;
     if (files) {
       const filesArray = Array.from(files);
+
+      // Set new files (replace any existing new files)
       setValue("imageFiles", filesArray);
 
-      const previews = filesArray.map((file) => URL.createObjectURL(file));
-      setImagePreviews((prev) => [...prev, ...previews]);
+      // Create new previews for the new files
+      const newPreviews = filesArray.map((file) => URL.createObjectURL(file));
+
+      // Combine existing images with new file previews
+      setImagePreviews([...existingImages, ...newPreviews]);
+
+      // Reset the input to allow selecting the same files again if needed
+      e.target.value = "";
     }
   };
 
   const removeImage = (index: number) => {
-    setImagePreviews((prev) => {
-      const urlToRemove = prev[index];
+    const urlToRemove = imagePreviews[index];
+
+    // Check if this is an existing image or a new uploaded image
+    const isExistingImage = existingImages.includes(urlToRemove);
+
+    if (isExistingImage) {
+      // Remove from existing images
+      setExistingImages((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      // This is a new uploaded image, clean up blob URL and remove from files
       if (urlToRemove?.startsWith("blob:")) {
         URL.revokeObjectURL(urlToRemove);
       }
-      return prev.filter((_, i) => i !== index);
-    });
+
+      // Calculate the index in the new files array
+      const newImageIndex = index - existingImages.length;
+      const currentFiles = watch("imageFiles") || [];
+      if (newImageIndex >= 0 && currentFiles.length > newImageIndex) {
+        const updatedFiles = currentFiles.filter((_, i) => i !== newImageIndex);
+        setValue("imageFiles", updatedFiles);
+      }
+    }
+
+    // Remove from preview
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = (data: ProductFormData) => {
@@ -189,12 +220,17 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
       ...data,
       discountPrice: data.discountPrice || undefined,
       promoExpired: data.promoExpired || undefined,
-      gallery: imagePreviews,
+      gallery: existingImages, // Send the remaining existing images
       tags,
     };
+
+    // Ensure imageFiles are included in the data for new uploads
+    if (data.imageFiles && data.imageFiles.length > 0) {
+      cleanedData.imageFiles = data.imageFiles;
+    }
+
     onSave(cleanedData);
   };
-
   const getDiscountPercentage = () => {
     const price = watchedPrice || 0;
     const discount = watchedDiscountPrice || 0;

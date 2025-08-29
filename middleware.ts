@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
 
   console.log("🛡️ Middleware executing for:", pathname);
 
-  if (pathname.startsWith("/_next") || pathname.startsWith("/api/auth") || pathname.startsWith("/static") || pathname.includes(".") || pathname === "/api/test" || pathname === "/jwt-test") {
+  if (pathname.startsWith("/_next") || pathname.startsWith("/api/auth") || pathname.startsWith("/api/upload") || pathname.startsWith("/static") || pathname.includes(".") || pathname === "/api/test" || pathname === "/jwt-test") {
     console.log("⏭️ Skipping middleware for:", pathname);
     const response = NextResponse.next();
     response.headers.set(

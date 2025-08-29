@@ -189,15 +189,12 @@ export default function AdminProductManagement() {
   };
 
   const handleSave = async (productData: ProductFormData) => {
-    console.log("Form data received:", productData); // Debug log
-
     if (editingProduct) {
       try {
         let imageUrl = editingProduct.imageUrl;
         let galleryUrls = editingProduct.gallery || [];
 
         if (productData.imageFiles && productData.imageFiles.length > 0) {
-          console.log("Uploading main image...");
           const formData = new FormData();
           formData.append("file", productData.imageFiles[0]);
 
@@ -213,32 +210,34 @@ export default function AdminProductManagement() {
 
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
-          console.log("Main image uploaded successfully:", imageUrl);
-        }
 
-        if (productData.imageFiles && productData.imageFiles.length > 1) {
-          console.log("Uploading gallery images...");
-          const galleryForm = new FormData();
-          productData.imageFiles.slice(1).forEach((file: File) => {
-            galleryForm.append("files", file);
-          });
+          // Upload remaining files as gallery
+          if (productData.imageFiles.length > 1) {
+            const galleryForm = new FormData();
+            productData.imageFiles.slice(1).forEach((file: File) => {
+              galleryForm.append("files", file);
+            });
 
-          const galleryRes = await fetch("/api/upload?gallery=1", {
-            method: "POST",
-            body: galleryForm,
-          });
+            const galleryRes = await fetch("/api/upload?gallery=1", {
+              method: "POST",
+              body: galleryForm,
+            });
 
-          if (!galleryRes.ok) {
-            const errorData = await galleryRes.json();
-            throw new Error(`Failed to upload gallery images: ${errorData.error}`);
+            if (!galleryRes.ok) {
+              const errorData = await galleryRes.json();
+              throw new Error(`Failed to upload gallery images: ${errorData.error}`);
+            }
+
+            const newGalleryData = await galleryRes.json();
+            galleryUrls = [...(productData.gallery || []), ...newGalleryData.urls];
+          } else {
+            galleryUrls = productData.gallery || [];
           }
-
-          const galleryData = await galleryRes.json();
-          galleryUrls = galleryData.urls;
-          console.log("Gallery images uploaded successfully:", galleryUrls);
+        } else {
+          // No new images uploaded, just update gallery if changed
+          galleryUrls = productData.gallery || [];
         }
 
-        console.log("Updating product in database...");
         const res = await fetch(`/api/product`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -268,7 +267,6 @@ export default function AdminProductManagement() {
         }
 
         const updatedProduct = await res.json();
-        console.log("Product updated successfully:", updatedProduct);
 
         setProducts(
           products.map((p) =>
@@ -281,6 +279,7 @@ export default function AdminProductManagement() {
                   status: updatedProduct.status || "active",
                   discountPrice: updatedProduct.discountPrice,
                   promoExpired: updatedProduct.promoExpired,
+                  gallery: updatedProduct.gallery || [],
                   createdAt: updatedProduct.createdAt ? new Date(updatedProduct.createdAt).toLocaleDateString("en-US") : "",
                   updatedAt: updatedProduct.updatedAt ? new Date(updatedProduct.updatedAt).toLocaleDateString("en-US") : "",
                 }
@@ -296,9 +295,9 @@ export default function AdminProductManagement() {
     } else {
       try {
         let imageUrl = "";
+        let galleryUrls: string[] = [];
 
         if (productData.imageFiles && productData.imageFiles.length > 0) {
-          console.log("Uploading main image for new product...");
           const formData = new FormData();
           formData.append("file", productData.imageFiles[0]);
 
@@ -314,10 +313,30 @@ export default function AdminProductManagement() {
 
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
-          console.log("Main image uploaded successfully:", imageUrl);
+
+          // Upload gallery images if there are more than 1 image
+          if (productData.imageFiles.length > 1) {
+            console.log("Uploading gallery images for new product...");
+            const galleryForm = new FormData();
+            productData.imageFiles.slice(1).forEach((file: File) => {
+              galleryForm.append("files", file);
+            });
+
+            const galleryRes = await fetch("/api/upload?gallery=1", {
+              method: "POST",
+              body: galleryForm,
+            });
+
+            if (!galleryRes.ok) {
+              const errorData = await galleryRes.json();
+              throw new Error(`Failed to upload gallery images: ${errorData.error}`);
+            }
+
+            const galleryData = await galleryRes.json();
+            galleryUrls = galleryData.urls;
+          }
         }
 
-        console.log("Creating new product...");
         const res = await fetch("/api/product", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -336,6 +355,7 @@ export default function AdminProductManagement() {
             metaDescription: productData.metaDescription,
             discountPrice: productData.discountPrice,
             promoExpired: productData.promoExpired,
+            gallery: galleryUrls,
           }),
         });
 
@@ -345,7 +365,6 @@ export default function AdminProductManagement() {
         }
 
         const newProduct = await res.json();
-        console.log("Product created successfully:", newProduct);
 
         setProducts([
           {
@@ -354,6 +373,7 @@ export default function AdminProductManagement() {
             category: newProduct.category || "General",
             stock: newProduct.stock || 0,
             status: newProduct.status || "active",
+            gallery: newProduct.gallery || [],
             createdAt: new Date(newProduct.createdAt).toLocaleDateString("en-US"),
           },
           ...products,
