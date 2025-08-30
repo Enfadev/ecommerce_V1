@@ -5,6 +5,7 @@ import Image from "next/image";
 import ProductReviewSection from "@/components/product/ProductReviewSection";
 import ProductRecommendation from "@/components/product/ProductRecommendation";
 import { useCart } from "@/components/contexts/cart-context";
+import { ImageIcon } from "lucide-react";
 import * as React from "react";
 
 interface ProductDetail {
@@ -67,10 +68,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 {product.image && product.image.trim() !== "" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="text-gray-400 text-lg text-center">
-                      No Image Available
-                    </div>
+                  <div className="w-full h-full flex flex-col items-center justify-center">
+                    <ImageIcon className="w-16 h-16 text-gray-400 mb-4" />
+                    <span className="text-gray-400 text-lg font-medium">No Image Available</span>
+                    <span className="text-gray-400 text-sm mt-2">Product image will appear here</span>
                   </div>
                 )}
               </div>

@@ -1,20 +1,6 @@
-<svg width="200" height="240" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background square -->
-  <rect x="20" y="20" width="160" height="160" fill="none" stroke="#000" stroke-width="4"/>
-  
-  <!-- Mountain/landscape shape -->
-  <path d="M40 140 L60 120 L80 130 L100 110 L120 120 L140 100 L160 110" 
-        fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  
-  <!-- Sun/circle -->
-  <circle cx="130" cy="60" r="12" fill="#000"/>
-  <circle cx="130" cy="60" r="5" fill="#fff"/>
-  
-  <!-- Diagonal line crossing through -->
-  <line x1="10" y1="10" x2="190" y2="190" stroke="#000" stroke-width="6" stroke-linecap="round"/>
-  
-  <!-- Text -->
-  <text x="100" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#000">
-    no image
-  </text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="200" height="200">
+  <path 
+    fill="white" 
+    d="M20.66,0H3.34A3.34,3.34,0,0,0,0,3.34V20.66A3.34,3.34,0,0,0,3.34,24H20.66A3.34,3.34,0,0,0,24,20.66V3.34A3.34,3.34,0,0,0,20.66,0ZM22,20.66A1.34,1.34,0,0,1,20.66,22H3.34A1.34,1.34,0,0,1,2,20.66V3.34A1.34,1.34,0,0,1,3.34,2H20.66A1.34,1.34,0,0,1,22,3.34ZM6.5,8A1.5,1.5,0,1,1,5,9.5,1.5,1.5,0,0,1,6.5,8ZM19,18.5H5l3.5-4.5,2.5,3.01L14.5,12,19,18.5Z"
+  />
 </svg>

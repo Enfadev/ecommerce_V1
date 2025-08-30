@@ -6,6 +6,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { ImageIcon } from "lucide-react";
 
 interface ProductRecommendationProps {
   userId?: string;
@@ -66,10 +67,9 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist,
                   {product.image && product.image.trim() !== "" ? (
                     <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-gray-400 text-sm text-center">
-                        No Image
-                      </div>
+                    <div className="w-full h-full flex flex-col items-center justify-center">
+                      <ImageIcon className="w-8 h-8 text-gray-400 mb-1" />
+                      <span className="text-gray-400 text-xs text-center">No Image</span>
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

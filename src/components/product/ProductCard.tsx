@@ -6,7 +6,7 @@ import { useCart } from "../contexts/cart-context";
 import type { Product } from "../../data/products";
 import Link from "next/link";
 import { useWishlist } from "../contexts/wishlist-context";
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Heart, ShoppingCart, Star, ImageIcon } from "lucide-react";
 
 export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid" }: { product: Product; admin?: boolean; onEdit?: () => void; onDelete?: () => void; viewMode?: "grid" | "list" }) {
   const { addToCart } = useCart();
@@ -23,10 +23,9 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 {product.image && product.image.trim() !== "" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="80px" />
                 ) : (
-                  <div className="text-gray-400 text-xs text-center">
-                    No
-                    <br />
-                    Image
+                  <div className="flex flex-col items-center justify-center text-gray-400 p-2">
+                    <ImageIcon className="w-6 h-6 mb-1" />
+                    <span className="text-xs leading-none">No Image</span>
                   </div>
                 )}
               </div>
@@ -133,10 +132,10 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
             {product.image && product.image.trim() !== "" ? (
               <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             ) : (
-              <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                <div className="text-gray-400 text-sm text-center">
-                  No Image
-                </div>
+              <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
+                <ImageIcon className="w-12 h-12 text-gray-400 mb-2" />
+                <span className="text-gray-400 text-sm font-medium">No Image Available</span>
+                <span className="text-gray-400 text-xs mt-1">Preview will show here</span>
               </div>
             )}
           </div>
