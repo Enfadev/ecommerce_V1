@@ -54,7 +54,6 @@ function CommandInput({ className, ...props }: React.ComponentProps<typeof Comma
 
 function CommandList({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
   const handleWheel = (e: React.WheelEvent) => {
-    // Allow wheel scrolling and prevent event bubbling to parent components
     e.stopPropagation();
   };
 

@@ -69,15 +69,13 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
       ...product,
       status: product?.status || "active",
       discountPrice: product?.discountPrice ?? undefined,
-      imageFiles: [], // Initialize as empty array
+      imageFiles: [],
       promoExpired: product?.promoExpired
         ? (() => {
             try {
-              // If it's already in local datetime format, use it directly
               if (product.promoExpired.includes("T") && product.promoExpired.length === 16) {
                 return product.promoExpired;
               } else {
-                // Convert ISO string to local datetime-local format
                 const date = new Date(product.promoExpired);
                 if (!isNaN(date.getTime())) {
                   const year = date.getFullYear();
@@ -112,18 +110,14 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
 
   useEffect(() => {
     if (product) {
-      // Format promoExpired for datetime-local input (preserve original input)
       let formattedPromoExpired = "";
       if (product.promoExpired) {
         try {
-          // If it's already in local datetime format, use it directly
           if (product.promoExpired.includes("T") && product.promoExpired.length === 16) {
             formattedPromoExpired = product.promoExpired;
           } else {
-            // Convert ISO string to local datetime-local format
             const date = new Date(product.promoExpired);
             if (!isNaN(date.getTime())) {
-              // Create local datetime string manually to avoid timezone conversion
               const year = date.getFullYear();
               const month = String(date.getMonth() + 1).padStart(2, "0");
               const day = String(date.getDate()).padStart(2, "0");
@@ -172,16 +166,12 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
     if (files) {
       const filesArray = Array.from(files);
 
-      // Set new files (replace any existing new files)
       setValue("imageFiles", filesArray);
 
-      // Create new previews for the new files
       const newPreviews = filesArray.map((file) => URL.createObjectURL(file));
 
-      // Combine existing images with new file previews
       setImagePreviews([...existingImages, ...newPreviews]);
 
-      // Reset the input to allow selecting the same files again if needed
       e.target.value = "";
     }
   };
@@ -189,19 +179,15 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
   const removeImage = (index: number) => {
     const urlToRemove = imagePreviews[index];
 
-    // Check if this is an existing image or a new uploaded image
     const isExistingImage = existingImages.includes(urlToRemove);
 
     if (isExistingImage) {
-      // Remove from existing images
       setExistingImages((prev) => prev.filter((_, i) => i !== index));
     } else {
-      // This is a new uploaded image, clean up blob URL and remove from files
       if (urlToRemove?.startsWith("blob:")) {
         URL.revokeObjectURL(urlToRemove);
       }
 
-      // Calculate the index in the new files array
       const newImageIndex = index - existingImages.length;
       const currentFiles = watch("imageFiles") || [];
       if (newImageIndex >= 0 && currentFiles.length > newImageIndex) {
@@ -210,21 +196,18 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
       }
     }
 
-    // Remove from preview
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = (data: ProductFormData) => {
-    // Ensure proper handling of empty values for discountPrice and promoExpired
     const cleanedData = {
       ...data,
       discountPrice: data.discountPrice || undefined,
       promoExpired: data.promoExpired || undefined,
-      gallery: existingImages, // Send the remaining existing images
+      gallery: existingImages,
       tags,
     };
 
-    // Ensure imageFiles are included in the data for new uploads
     if (data.imageFiles && data.imageFiles.length > 0) {
       cleanedData.imageFiles = data.imageFiles;
     }

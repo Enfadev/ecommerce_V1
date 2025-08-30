@@ -211,7 +211,6 @@ export default function AdminProductManagement() {
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
 
-          // Upload remaining files as gallery
           if (productData.imageFiles.length > 1) {
             const galleryForm = new FormData();
             productData.imageFiles.slice(1).forEach((file: File) => {
@@ -234,7 +233,6 @@ export default function AdminProductManagement() {
             galleryUrls = productData.gallery || [];
           }
         } else {
-          // No new images uploaded, just update gallery if changed
           galleryUrls = productData.gallery || [];
         }
 
@@ -314,7 +312,6 @@ export default function AdminProductManagement() {
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
 
-          // Upload gallery images if there are more than 1 image
           if (productData.imageFiles.length > 1) {
             console.log("Uploading gallery images for new product...");
             const galleryForm = new FormData();

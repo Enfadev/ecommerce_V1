@@ -14,8 +14,6 @@ export function useScrollFix() {
     if (!scrollElement) return;
 
     const handleWheel = (e: WheelEvent) => {
-      // Allow the wheel event to bubble normally for scrolling
-      // But prevent it from being intercepted by parent components
       e.stopPropagation();
 
       const { scrollTop, scrollHeight, clientHeight } = scrollElement;
@@ -24,14 +22,12 @@ export function useScrollFix() {
       const isAtTop = scrollTop === 0;
       const isAtBottom = scrollTop + clientHeight >= scrollHeight;
 
-      // Only prevent default if we're trying to scroll beyond bounds
       if ((isScrollingUp && isAtTop) || (isScrollingDown && isAtBottom)) {
         e.preventDefault();
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      // Allow touch scrolling
       e.stopPropagation();
     };
 

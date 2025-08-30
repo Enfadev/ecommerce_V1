@@ -44,7 +44,7 @@ export default function AdminSecurityLogs() {
       const params = new URLSearchParams({
         limit: "100",
         failed: failedOnly.toString(),
-        ...(failedOnly && { timeRange: "1440" }), // 24 hours for failed attempts
+        ...(failedOnly && { timeRange: "1440" }),
       });
 
       const response = await fetch(`/api/admin/security-logs?${params}`);
@@ -68,8 +68,8 @@ export default function AdminSecurityLogs() {
   };
 
   useEffect(() => {
-    fetchLogs(false); // Fetch all logs
-    fetchLogs(true); // Fetch failed logs
+    fetchLogs(false);
+    fetchLogs(true);
   }, []);
 
   const formatTime = (timestamp: string) => {
@@ -77,7 +77,6 @@ export default function AdminSecurityLogs() {
   };
 
   const formatUserAgent = (userAgent: string) => {
-    // Simple extraction of browser info
     const match = userAgent.match(/(?:Chrome|Firefox|Safari|Edge)\/[\d.]+/);
     return match ? match[0] : "Unknown Browser";
   };

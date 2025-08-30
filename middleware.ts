@@ -72,12 +72,10 @@ export async function middleware(request: NextRequest) {
 
     console.log("✅ Token verified for user:", payload.email);
 
-    // Admin route protection with security logging
     if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
       if (payload.role !== "ADMIN") {
         console.log("❌ User not admin, denying access to admin route");
 
-        // Log failed admin access attempt
         adminLogger.log(createAdminAccessLog(payload.id, payload.email, payload.role, pathname, request, false, "Insufficient privileges - Admin role required"));
 
         if (isProtectedAPI) {
@@ -87,7 +85,6 @@ export async function middleware(request: NextRequest) {
         }
       }
 
-      // Log successful admin access
       adminLogger.log(createAdminAccessLog(payload.id, payload.email, payload.role, pathname, request, true));
     }
 

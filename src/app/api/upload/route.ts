@@ -26,7 +26,6 @@ function validateFileType(file: File): boolean {
   const isExtensionAllowed = ALLOWED_EXTENSIONS.includes(extension);
   const isTypeAllowed = ALLOWED_FILE_TYPES.includes(file.type);
 
-  // Allow if either MIME type is correct OR extension is allowed (for cases where MIME type is not detected correctly)
   return isTypeAllowed || isExtensionAllowed;
 }
 export async function POST(req: Request) {

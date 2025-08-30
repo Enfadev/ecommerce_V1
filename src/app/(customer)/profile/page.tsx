@@ -56,17 +56,14 @@ export default function ProfilePage() {
       return generateAvatarUrl(name || 'User');
     }
     
-    // Check if it's a valid URL or relative path
     if (avatar.startsWith('http') || avatar.startsWith('/uploads/')) {
       return avatar;
     }
     
-    // If it looks like a generated avatar URL, use it
     if (avatar.includes('ui-avatars.com')) {
       return avatar;
     }
     
-    // Fallback to generated avatar
     return generateAvatarUrl(name || 'User');
   }, [generateAvatarUrl]);
 

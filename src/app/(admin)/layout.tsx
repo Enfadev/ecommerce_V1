@@ -17,16 +17,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     if (!isLoading) {
       if (!user) {
-        // User not logged in, redirect to signin
         router.replace("/signin");
       } else if (user.role !== "ADMIN") {
-        // User logged in but not admin, redirect to main page
         router.replace("/");
       }
     }
   }, [user, isLoading, router]);
 
-  // Don't render anything while loading or if not admin
   if (isLoading || !user || user.role !== "ADMIN") {
     return null;
   }

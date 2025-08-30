@@ -35,17 +35,14 @@ export function ProfileAvatar({
       return generateAvatarUrl(name);
     }
     
-    // Check if it's a valid URL or relative path
     if (src.startsWith('http') || src.startsWith('/uploads/')) {
       return src;
     }
     
-    // If it looks like a generated avatar URL, use it
     if (src.includes('ui-avatars.com')) {
       return src;
     }
     
-    // Fallback to generated avatar
     return generateAvatarUrl(name);
   };
 

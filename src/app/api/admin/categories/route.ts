@@ -3,7 +3,6 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    // Get all categories from the Category table
     const categories = await prisma.category.findMany({
       select: {
         id: true,
@@ -59,7 +58,6 @@ export async function POST(request: NextRequest) {
 
     const cleanName = name.trim();
 
-    // Check if category already exists
     const existingCategory = await prisma.category.findUnique({
       where: {
         name: cleanName
@@ -74,7 +72,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create new category
     const newCategory = await prisma.category.create({
       data: {
         name: cleanName

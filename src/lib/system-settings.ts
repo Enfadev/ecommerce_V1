@@ -23,7 +23,6 @@ export async function getSystemSettings(): Promise<SystemSettings | null> {
   try {
     let settings = await prisma.systemSettings.findFirst();
     
-    // Create default settings if none exist
     if (!settings) {
       settings = await prisma.systemSettings.create({
         data: {

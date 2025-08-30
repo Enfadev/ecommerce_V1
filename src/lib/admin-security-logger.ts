@@ -1,4 +1,3 @@
-// Security logger utility for admin access
 export interface AdminAccessLog {
   timestamp: string;
   userId: string;
@@ -13,17 +12,15 @@ export interface AdminAccessLog {
 
 class AdminSecurityLogger {
   private logs: AdminAccessLog[] = [];
-  private maxLogs = 1000; // Keep last 1000 logs in memory
+  private maxLogs = 1000;
 
   log(logEntry: AdminAccessLog) {
     this.logs.unshift(logEntry);
 
-    // Keep only the most recent logs
     if (this.logs.length > this.maxLogs) {
       this.logs = this.logs.slice(0, this.maxLogs);
     }
 
-    // Log to console in development
     if (process.env.NODE_ENV === "development") {
       console.log("🔐 Admin Access Log:", {
         timestamp: logEntry.timestamp,
@@ -34,8 +31,6 @@ class AdminSecurityLogger {
       });
     }
 
-    // In production, you might want to send this to a logging service
-    // or store in a database for audit purposes
   }
 
   getRecentLogs(limit = 50): AdminAccessLog[] {
@@ -52,12 +47,10 @@ class AdminSecurityLogger {
   }
 }
 
-// Singleton instance
 const adminLogger = new AdminSecurityLogger();
 
 export default adminLogger;
 
-// Helper function to create log entries
 export function createAdminAccessLog(userId: string, userEmail: string, userRole: string, path: string, request: Request, success: boolean, reason?: string): AdminAccessLog {
   return {
     timestamp: new Date().toISOString(),

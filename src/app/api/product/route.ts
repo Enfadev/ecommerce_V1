@@ -178,14 +178,11 @@ export async function PUT(req: Request) {
       include: { category: true, images: true },
     });
 
-    // Handle gallery images
     if (gallery && Array.isArray(gallery)) {
-      // Delete existing gallery images
       await prisma.productImage.deleteMany({
         where: { productId: Number(id) },
       });
 
-      // Create new gallery images
       if (gallery.length > 0) {
         await prisma.productImage.createMany({
           data: gallery.map((url: string) => ({
@@ -196,13 +193,11 @@ export async function PUT(req: Request) {
       }
     }
 
-    // Fetch updated product with images
     const updatedProduct = await prisma.product.findUnique({
       where: { id: Number(id) },
       include: { category: true, images: true },
     });
 
-    // Format response to match frontend expectations
     const result = {
       id: updatedProduct!.id,
       name: updatedProduct!.name,
@@ -270,7 +265,6 @@ export async function POST(req: Request) {
       include: { category: true, images: true },
     });
 
-    // Handle gallery images
     if (gallery && Array.isArray(gallery) && gallery.length > 0) {
       await prisma.productImage.createMany({
         data: gallery.map((url: string) => ({
@@ -280,13 +274,11 @@ export async function POST(req: Request) {
       });
     }
 
-    // Fetch product with images for response
     const productWithImages = await prisma.product.findUnique({
       where: { id: product.id },
       include: { category: true, images: true },
     });
 
-    // Format response to match frontend expectations
     const result = {
       id: productWithImages!.id,
       name: productWithImages!.name,

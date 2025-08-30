@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// eslint-disable-next-line prefer-const
 let reviews: Record<string, Array<{ rating: number; comment: string; user?: string; date: string }>> = {};
 
 export async function GET(request: NextRequest) {

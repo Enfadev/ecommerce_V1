@@ -52,8 +52,6 @@ export default function AdminSidebar() {
       router.push("/signin");
     } catch (error) {
       console.error("Logout error:", error);
-      // Force redirect even if signOut fails
-      // Force redirect even if signOut fails
       router.push("/signin");
     }
   };

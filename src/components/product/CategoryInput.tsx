@@ -41,9 +41,7 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
   const [createLoading, setCreateLoading] = useState(false);
   const scrollRef = useScrollFix();
 
-  // Fetch categories from API
   const fetchCategories = useCallback(async () => {
-    // Default categories for fallback
     const defaultCategories = ["Electronics", "Clothing", "Home & Garden", "Books", "Sports", "Beauty", "Toys", "Food & Beverages", "Automotive", "Health"];
 
     try {
@@ -54,10 +52,8 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
       }
       const data = await response.json();
 
-      // Check if response has the expected structure
       if (data.success && Array.isArray(data.categories)) {
         console.log("CategoryInput: API response successful", data.categories);
-        // Map the response to match our interface
         const mappedCategories: Category[] = data.categories.map((cat: ApiCategoryResponse) => ({
           id: cat.id,
           name: cat.name,
@@ -69,12 +65,10 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
         setCategories(mappedCategories);
       } else {
         console.warn("CategoryInput: Invalid response structure", data);
-        // If API doesn't return expected structure, use fallback
         throw new Error("Invalid response structure");
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
-      // Create default categories from array
       const fallbackCategories: Category[] = defaultCategories.map((name, index) => ({
         id: index + 1,
         name,
@@ -86,7 +80,6 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
     }
   }, []);
 
-  // Create new category
   const createCategory = async () => {
     if (!newCategoryName.trim()) return;
 
@@ -125,7 +118,6 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
 
   const selectedCategory = Array.isArray(categories) && categories.length > 0 ? categories.find((cat) => cat?.id === value) : undefined;
 
-  // Filter categories based on search
   const filteredCategories = Array.isArray(categories) ? categories.filter((category) => category?.name && (!searchValue || category.name.toLowerCase().includes(searchValue.toLowerCase()))) : [];
 
   const showCreateOption = searchValue && !filteredCategories.some((cat) => cat?.name && cat.name.toLowerCase() === searchValue.toLowerCase());
@@ -156,7 +148,6 @@ export default function CategoryInput({ value, onValueChange, placeholder = "Sel
             ref={scrollRef}
             className="max-h-[200px] overflow-y-auto scrollbar-thin category-dropdown-list"
             onWheel={(e) => {
-              // Ensure wheel events are properly handled
               e.stopPropagation();
             }}
           >

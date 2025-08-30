@@ -54,7 +54,6 @@ export function CategoryInput({ value = "", onChange, placeholder = "Select or c
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useScrollFix();
 
-  // Load existing categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -76,7 +75,6 @@ export function CategoryInput({ value = "", onChange, placeholder = "Select or c
     fetchCategories();
   }, []);
 
-  // Combine default categories with existing ones from DB
   const allCategoryNames = Array.from(new Set([...defaultCategories, ...categories.map((cat) => cat.name)])).sort();
 
   const filteredCategories = allCategoryNames.filter((categoryName) => categoryName.toLowerCase().includes(inputValue.toLowerCase()));
@@ -105,7 +103,6 @@ export function CategoryInput({ value = "", onChange, placeholder = "Select or c
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          // Refresh categories list
           const refreshResponse = await fetch("/api/admin/categories");
           if (refreshResponse.ok) {
             const refreshData = await refreshResponse.json();
@@ -130,13 +127,11 @@ export function CategoryInput({ value = "", onChange, placeholder = "Select or c
   const handleInputChange = (newValue: string) => {
     setInputValue(newValue);
 
-    // If the input matches an existing category exactly, select it
     const exactMatch = allCategoryNames.find((cat) => cat.toLowerCase() === newValue.toLowerCase());
 
     if (exactMatch) {
       onChange(exactMatch);
     } else {
-      // Allow custom category input
       onChange(newValue);
     }
   };
@@ -189,7 +184,6 @@ export function CategoryInput({ value = "", onChange, placeholder = "Select or c
               ref={scrollRef}
               className="max-h-[200px] overflow-y-auto scrollbar-thin category-dropdown-list"
               onWheel={(e) => {
-                // Ensure wheel events are properly handled
                 e.stopPropagation();
               }}
             >

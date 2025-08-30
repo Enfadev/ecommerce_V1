@@ -1,6 +1,6 @@
 "use client";
 
-import Footer from "@/components/layout/Footer";
+import FooterClient from "@/components/layout/FooterClient";
 import { ReactNode, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Toaster } from "@/components/ui/sonner";
@@ -42,7 +42,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
             <div className="max-w-7xl mx-auto px-4 py-8">{children}</div>
           </main>
           <Toaster />
-          <Footer />
+          <FooterClient />
         </div>
       </CartProvider>
     </WishlistProvider>

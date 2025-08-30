@@ -21,12 +21,12 @@ export default function AdminSecurityTest() {
     },
     {
       name: "Middleware Protection",
-      status: "pass", // If we can see this component, middleware allowed us through
+      status: "pass",
       description: "Admin middleware protection active",
     },
     {
       name: "Layout Guard",
-      status: "pass", // If we can see this component, layout guard allowed us through
+      status: "pass",
       description: "Admin layout guard active",
     },
   ];
