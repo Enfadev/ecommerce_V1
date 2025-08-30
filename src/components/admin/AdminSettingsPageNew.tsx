@@ -15,12 +15,10 @@ import AdminProductPageEditor from "./AdminProductPageEditor";
 
 export default function AdminSettingsPage() {
   const [generalSettings, setGeneralSettings] = useState({
-    storeName: "Brandify",
-    storeDescription: "A trusted online shopping platform",
-    contactEmail: "contact@brandify.com",
-    currency: "USD",
+    storeName: "",
+    storeDescription: "",
+    contactEmail: "",
     timezone: "Asia/Jakarta",
-    language: "en",
   });
 
   const [themeSettings, setThemeSettings] = useState({
@@ -42,12 +40,10 @@ export default function AdminSettingsPage() {
           const data = await response.json();
           if (data.success && data.settings) {
             setGeneralSettings({
-              storeName: data.settings.storeName || "Brandify",
-              storeDescription: data.settings.storeDescription || "A trusted online shopping platform",
-              contactEmail: data.settings.contactEmail || "contact@brandify.com",
-              currency: data.settings.currency || "USD",
+              storeName: data.settings.storeName || "",
+              storeDescription: data.settings.storeDescription || "",
+              contactEmail: data.settings.contactEmail || "",
               timezone: data.settings.timezone || "Asia/Jakarta",
-              language: data.settings.language || "en",
             });
           }
         }
@@ -138,7 +134,7 @@ export default function AdminSettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                General Settings
+                General Settings - UPDATED
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -178,33 +174,7 @@ export default function AdminSettingsPage() {
                       disabled={saving}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Currency</label>
-                      <select 
-                        value={generalSettings.currency} 
-                        onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} 
-                        className="w-full px-3 py-2 border rounded-md disabled:opacity-50"
-                        disabled={saving}
-                      >
-                        <option value="USD">US Dollar (USD)</option>
-                        <option value="IDR">Indonesian Rupiah (IDR)</option>
-                        <option value="EUR">Euro (EUR)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Language</label>
-                      <select 
-                        value={generalSettings.language} 
-                        onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} 
-                        className="w-full px-3 py-2 border rounded-md disabled:opacity-50"
-                        disabled={saving}
-                      >
-                        <option value="en">English</option>
-                        <option value="id">Bahasa Indonesia</option>
-                      </select>
-                    </div>
-                  </div>
+                  {/* Currency and Language sections have been removed */}
                   <Button onClick={handleSaveGeneral} className="w-full" disabled={saving}>
                     {saving ? (
                       <>

@@ -59,12 +59,10 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [generalSettings, setGeneralSettings] = useState({
-    storeName: "E-Commerce Store",
-    storeDescription: "Trusted online store",
-    contactEmail: "contact@store.com",
-    currency: "USD",
+    storeName: "",
+    storeDescription: "",
+    contactEmail: "",
     timezone: "Asia/Jakarta",
-    language: "en",
   });
 
   useEffect(() => {
@@ -78,7 +76,12 @@ export default function AdminSettingsPage() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setGeneralSettings(data.settings);
+          setGeneralSettings({
+            storeName: data.settings.storeName || "",
+            storeDescription: data.settings.storeDescription || "",
+            contactEmail: data.settings.contactEmail || "",
+            timezone: data.settings.timezone || "Asia/Jakarta",
+          });
         }
       }
     } catch (error) {
@@ -172,7 +175,7 @@ export default function AdminSettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                General Settings
+                General Settings - FIXED
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -187,23 +190,6 @@ export default function AdminSettingsPage() {
               <div>
                 <label className="block text-sm font-medium mb-2">Contact Email</label>
                 <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Currency</label>
-                  <select value={generalSettings.currency} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, currency: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
-                    <option value="USD">US Dollar (USD)</option>
-                    <option value="IDR">Indonesian Rupiah (IDR)</option>
-                    <option value="EUR">Euro (EUR)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Language</label>
-                  <select value={generalSettings.language} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, language: e.target.value }))} className="w-full px-3 py-2 border rounded-md">
-                    <option value="en">English</option>
-                    <option value="id">Bahasa Indonesia</option>
-                  </select>
-                </div>
               </div>
               <Button onClick={handleSaveGeneral} className="w-full" disabled={loading}>
                 <Save className="w-4 h-4 mr-2" />

@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
     
     if (!settings || (Array.isArray(settings) && settings.length === 0)) {
       await prisma.$executeRaw`
-        INSERT INTO system_settings (storeName, storeDescription, contactEmail, currency, timezone, language, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES ('E-Commerce Store', 'Trusted online store', 'contact@store.com', 'USD', 'Asia/Jakarta', 'en', false, 24, '1.0.0', NOW(), NOW())
+        INSERT INTO system_settings (storeName, storeDescription, contactEmail, timezone, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
+        VALUES ('E-Commerce Store', 'Trusted online store', 'contact@store.com', 'Asia/Jakarta', false, 24, '1.0.0', NOW(), NOW())
       `;
       
       settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
@@ -40,9 +40,7 @@ export async function GET(request: NextRequest) {
         storeName: settingsData?.storeName || "E-Commerce Store",
         storeDescription: settingsData?.storeDescription || "Trusted online store", 
         contactEmail: settingsData?.contactEmail || "contact@store.com",
-        currency: settingsData?.currency || "USD",
         timezone: settingsData?.timezone || "Asia/Jakarta",
-        language: settingsData?.language || "en",
         enableTwoFactor: settingsData?.enableTwoFactor || false,
         sessionTimeout: settingsData?.sessionTimeout || 24,
         version: settingsData?.version || "1.0.0"
@@ -88,16 +86,14 @@ export async function PUT(request: NextRequest) {
         SET storeName = ${body.storeName || settingsData.storeName},
             storeDescription = ${body.storeDescription || settingsData.storeDescription},
             contactEmail = ${body.contactEmail || settingsData.contactEmail},
-            currency = ${body.currency || settingsData.currency},
             timezone = ${body.timezone || settingsData.timezone},
-            language = ${body.language || settingsData.language},
             updatedAt = NOW()
         WHERE id = ${settingsData.id}
       `;
     } else {
       await prisma.$executeRaw`
-        INSERT INTO system_settings (storeName, storeDescription, contactEmail, currency, timezone, language, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES (${body.storeName || 'E-Commerce Store'}, ${body.storeDescription || 'Trusted online store'}, ${body.contactEmail || 'contact@store.com'}, ${body.currency || 'USD'}, ${body.timezone || 'Asia/Jakarta'}, ${body.language || 'en'}, false, 24, '1.0.0', NOW(), NOW())
+        INSERT INTO system_settings (storeName, storeDescription, contactEmail, timezone, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
+        VALUES (${body.storeName || 'E-Commerce Store'}, ${body.storeDescription || 'Trusted online store'}, ${body.contactEmail || 'contact@store.com'}, ${body.timezone || 'Asia/Jakarta'}, false, 24, '1.0.0', NOW(), NOW())
       `;
     }
 
@@ -111,9 +107,7 @@ export async function PUT(request: NextRequest) {
         storeName: updatedSettings?.storeName || "E-Commerce Store",
         storeDescription: updatedSettings?.storeDescription || "Trusted online store",
         contactEmail: updatedSettings?.contactEmail || "contact@store.com", 
-        currency: updatedSettings?.currency || "USD",
         timezone: updatedSettings?.timezone || "Asia/Jakarta",
-        language: updatedSettings?.language || "en",
         enableTwoFactor: updatedSettings?.enableTwoFactor || false,
         sessionTimeout: updatedSettings?.sessionTimeout || 24,
         version: updatedSettings?.version || "1.0.0"
