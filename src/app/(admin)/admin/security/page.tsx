@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Shield, AlertTriangle, CheckCircle, Lock, Key, Eye, Settings } from "lucide-react";
-import AdminSecurityTest from "@/components/admin/AdminSecurityTest";
 import AdminSecurityLogs from "@/components/admin/AdminSecurityLogs";
 
 export default function AdminSecurityPage() {
@@ -99,11 +98,10 @@ export default function AdminSecurityPage() {
       </Alert>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="logs">Access Logs</TabsTrigger>
-          <TabsTrigger value="test">Security Test</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-6">
@@ -177,10 +175,6 @@ export default function AdminSecurityPage() {
 
         <TabsContent value="logs" className="mt-6">
           <AdminSecurityLogs />
-        </TabsContent>
-
-        <TabsContent value="test" className="mt-6">
-          <AdminSecurityTest />
         </TabsContent>
       </Tabs>
     </div>

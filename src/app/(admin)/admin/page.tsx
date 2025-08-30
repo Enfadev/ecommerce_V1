@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { TrendingUp, TrendingDown, Package, ShoppingCart, Users, DollarSign, Eye, ArrowUpRight, Loader2, Download, FileText, FileSpreadsheet, FileBarChart } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import AdminSecurityTest from "@/components/admin/AdminSecurityTest";
 
 interface DashboardData {
   statsCards: Array<{
@@ -286,9 +285,6 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Security Test Component - Development Only */}
-      {process.env.NODE_ENV === "development" && <AdminSecurityTest />}
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
