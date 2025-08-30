@@ -6,7 +6,6 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { ImageIcon } from "lucide-react";
 
 interface ProductRecommendationProps {
   userId?: string;
@@ -64,13 +63,15 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist,
             <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
               <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white dark:bg-gray-900 shadow-sm hover:shadow-xl transition-all duration-300 ease-out transform hover:-translate-y-1">
                 <div className="aspect-square relative overflow-hidden rounded-t-2xl bg-gray-50 dark:bg-gray-800">
-                  {product.image && product.image.trim() !== "" ? (
+                  {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
                     <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center">
-                      <ImageIcon className="w-8 h-8 text-gray-400 mb-1" />
-                      <span className="text-gray-400 text-xs text-center">No Image</span>
-                    </div>
+                    <Image 
+                      src="/placeholder-product.svg" 
+                      alt="No image available" 
+                      fill 
+                      className="object-contain p-4" 
+                    />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>

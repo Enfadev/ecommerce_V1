@@ -6,7 +6,7 @@ import { useCart } from "../contexts/cart-context";
 import type { Product } from "../../data/products";
 import Link from "next/link";
 import { useWishlist } from "../contexts/wishlist-context";
-import { Heart, ShoppingCart, Star, ImageIcon } from "lucide-react";
+import { Heart, ShoppingCart, Star } from "lucide-react";
 
 export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid" }: { product: Product; admin?: boolean; onEdit?: () => void; onDelete?: () => void; viewMode?: "grid" | "list" }) {
   const { addToCart } = useCart();
@@ -20,13 +20,16 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
           <div className="flex gap-6">
             <Link href={`/product/${product.id}`} className="flex-shrink-0">
               <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center overflow-hidden relative">
-                {product.image && product.image.trim() !== "" ? (
+                {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="80px" />
                 ) : (
-                  <div className="flex flex-col items-center justify-center text-gray-400 p-2">
-                    <ImageIcon className="w-6 h-6 mb-1" />
-                    <span className="text-xs leading-none">No Image</span>
-                  </div>
+                  <Image 
+                    src="/placeholder-product.svg" 
+                    alt="No image available" 
+                    fill 
+                    className="object-contain p-1" 
+                    sizes="80px" 
+                  />
                 )}
               </div>
             </Link>
@@ -129,13 +132,17 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
 
         <Link href={`/product/${product.id}`} className="block">
           <div className="relative overflow-hidden h-48">
-            {product.image && product.image.trim() !== "" ? (
+            {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
               <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             ) : (
-              <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center">
-                <ImageIcon className="w-12 h-12 text-gray-400 mb-2" />
-                <span className="text-gray-400 text-sm font-medium">No Image Available</span>
-                <span className="text-gray-400 text-xs mt-1">Preview will show here</span>
+              <div className="w-full h-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                <Image 
+                  src="/placeholder-product.svg" 
+                  alt="No image available" 
+                  fill 
+                  className="object-contain p-4" 
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
+                />
               </div>
             )}
           </div>

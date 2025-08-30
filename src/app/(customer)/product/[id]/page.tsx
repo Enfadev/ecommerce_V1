@@ -5,7 +5,6 @@ import Image from "next/image";
 import ProductReviewSection from "@/components/product/ProductReviewSection";
 import ProductRecommendation from "@/components/product/ProductRecommendation";
 import { useCart } from "@/components/contexts/cart-context";
-import { ImageIcon } from "lucide-react";
 import * as React from "react";
 
 interface ProductDetail {
@@ -65,13 +64,16 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           <div className="group">
             <div className="relative w-full aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 shadow-lg border border-border/50 hover:shadow-xl transition-all duration-300">
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-white/50 backdrop-blur-sm">
-                {product.image && product.image.trim() !== "" ? (
+                {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center">
-                    <ImageIcon className="w-16 h-16 text-gray-400 mb-4" />
-                    <span className="text-gray-400 text-lg font-medium">No Image Available</span>
-                    <span className="text-gray-400 text-sm mt-2">Product image will appear here</span>
+                  <div className="w-full h-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                    <Image 
+                      src="/placeholder-product.svg" 
+                      alt="No image available" 
+                      fill 
+                      className="object-contain p-8" 
+                    />
                   </div>
                 )}
               </div>
