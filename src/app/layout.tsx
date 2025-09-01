@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NextAuthProvider } from "../components/auth/NextAuthProvider";
 import { AuthProvider } from "@/components/contexts/auth-context";
+import { getSystemSettingsWithFallback } from "@/lib/system-settings";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,10 +15,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Brandify - Platform Belanja Online Terpercaya",
-  description: "Temukan produk berkualitas dengan harga terbaik di Brandify. A trusted online shopping platform. Gratis ongkir, pembayaran aman, dan customer service 24/7.",
-};
+// Generate metadata dynamically based on system settings
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSystemSettingsWithFallback();
+  
+  return {
+    title: `${settings.storeName} - Trusted Online Shopping Platform`,
+    description: `Find quality products at the best prices at ${settings.storeName}. ${settings.storeDescription}. Free shipping, secure payment, and 24/7 customer service.`,
+  };
+}
 
 export default function RootLayout({
   children,

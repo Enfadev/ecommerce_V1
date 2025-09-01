@@ -8,6 +8,7 @@ export interface SystemSettings {
   currency: string;
   timezone: string;
   language: string;
+  logoUrl?: string;
   enableTwoFactor: boolean;
   sessionTimeout: number;
   version: string;
@@ -61,6 +62,7 @@ export async function getSystemSettingsWithFallback(): Promise<SystemSettings> {
       currency: "USD",
       timezone: "Asia/Jakarta",
       language: "en",
+      logoUrl: undefined,
       enableTwoFactor: false,
       sessionTimeout: 24,
       version: "1.0.0",

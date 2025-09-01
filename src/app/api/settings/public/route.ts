@@ -12,7 +12,8 @@ export async function GET() {
         storeDescription: settings.storeDescription,
         contactEmail: settings.contactEmail,
         currency: settings.currency,
-        language: settings.language
+        language: settings.language,
+        logoUrl: settings.logoUrl
       }
     });
 
@@ -26,7 +27,8 @@ export async function GET() {
           storeDescription: "A trusted online shopping platform",
           contactEmail: "contact@brandify.com",
           currency: "USD",
-          language: "en"
+          language: "en",
+          logoUrl: undefined
         }
       },
       { status: 200 }

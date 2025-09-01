@@ -278,13 +278,14 @@ enum PaymentStatus {
 }
 
 model SystemSettings {
-  id               Int    @id @default(autoincrement())
-  storeName        String @default("E-Commerce Store")
-  storeDescription String @default("Trusted online store")
-  contactEmail     String @default("contact@store.com")
-  currency         String @default("USD")
-  timezone         String @default("Asia/Jakarta")
-  language         String @default("en")
+  id               Int     @id @default(autoincrement())
+  storeName        String  @default("E-Commerce Store")
+  storeDescription String  @default("Trusted online store")
+  contactEmail     String  @default("contact@store.com")
+  currency         String  @default("USD")
+  timezone         String  @default("Asia/Jakarta")
+  language         String  @default("en")
+  logoUrl          String? // Logo website
 
   // Security Settings
   enableTwoFactor Boolean @default(false)
