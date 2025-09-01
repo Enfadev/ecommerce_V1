@@ -54,6 +54,12 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
       if (data.success && data.url) {
         setPreview(data.url);
         onLogoChange(data.url);
+        
+        // Show optimization info
+        if (data.optimizedType) {
+          const savedPercent = Math.round((1 - data.size / data.originalSize) * 100);
+          console.log(`Logo optimized: ${data.originalType} → ${data.optimizedType}, saved ${savedPercent}%`);
+        }
       } else {
         throw new Error(data.message || 'Upload failed');
       }
@@ -171,7 +177,7 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
       />
 
       <p className="text-xs text-muted-foreground">
-        Recommended size: 200x200px or larger. The logo will be automatically resized to fit different sections.
+        Recommended size: 200x200px or larger. Images will be automatically optimized to WebP format for better performance. SVG files will be preserved as vector format.
       </p>
     </div>
   );

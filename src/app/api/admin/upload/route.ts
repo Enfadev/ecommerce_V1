@@ -3,6 +3,7 @@ import { verifyJWT } from "@/lib/jwt";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
+import { optimize } from "svgo";
 
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/svg+xml"];
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB for logos
@@ -89,35 +90,97 @@ export async function POST(request: NextRequest) {
     // Process image (except SVG)
     if (file.type !== "image/svg+xml") {
       try {
-        // Process with Sharp for optimization
+        // Convert all raster images to WebP for optimal compression
+        const webpFileName = `${type}-${timestamp}-${baseName}.webp`;
+        const webpFilePath = path.join(uploadDir, webpFileName);
+        
         const processedBuffer = await sharp(buffer)
-          .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
-          .jpeg({ quality: 90 })
-          .png({ quality: 90 })
-          .webp({ quality: 90 })
+          .resize(400, 400, { 
+            fit: 'inside', 
+            withoutEnlargement: true,
+            background: { r: 255, g: 255, b: 255, alpha: 0 } // Transparent background
+          })
+          .webp({ 
+            quality: 85, // Good balance between quality and size
+            effort: 6,   // High compression effort
+            lossless: false
+          })
           .toBuffer();
 
-        await writeFile(filePath, processedBuffer);
+        await writeFile(webpFilePath, processedBuffer);
+        
+        // Update filename and public URL to WebP
+        const publicUrl = `/uploads/admin/${webpFileName}`;
+        
+        return NextResponse.json({
+          success: true,
+          message: "File uploaded and optimized to WebP successfully",
+          url: publicUrl,
+          filename: webpFileName,
+          originalType: file.type,
+          optimizedType: "image/webp",
+          size: processedBuffer.length,
+          originalSize: file.size
+        });
+        
       } catch (sharpError) {
         console.warn("Sharp processing failed, saving original file:", sharpError);
         await writeFile(filePath, buffer);
+        
+        const publicUrl = `/uploads/admin/${fileName}`;
+        return NextResponse.json({
+          success: true,
+          message: "File uploaded (original format - optimization failed)",
+          url: publicUrl,
+          filename: fileName,
+          type: file.type,
+          size: file.size
+        });
       }
     } else {
-      // For SVG files, save as-is
-      await writeFile(filePath, buffer);
+      // For SVG files, optimize and minify
+      try {
+        const svgString = buffer.toString('utf-8');
+        const optimizedSvg = optimize(svgString, {
+          plugins: [
+            'preset-default',
+            'removeDimensions', // Remove width/height to make responsive
+            'removeViewBox', // Keep viewBox for scaling
+          ],
+        });
+        
+        const optimizedBuffer = Buffer.from(optimizedSvg.data, 'utf-8');
+        await writeFile(filePath, optimizedBuffer);
+        
+        const publicUrl = `/uploads/admin/${fileName}`;
+        const savedBytes = buffer.length - optimizedBuffer.length;
+        const savedPercent = Math.round((savedBytes / buffer.length) * 100);
+        
+        return NextResponse.json({
+          success: true,
+          message: `SVG optimized successfully (saved ${savedPercent}%)`,
+          url: publicUrl,
+          filename: fileName,
+          type: file.type,
+          size: optimizedBuffer.length,
+          originalSize: buffer.length
+        });
+        
+      } catch (svgError) {
+        console.warn("SVG optimization failed, saving original:", svgError);
+        await writeFile(filePath, buffer);
+        
+        const publicUrl = `/uploads/admin/${fileName}`;
+        return NextResponse.json({
+          success: true,
+          message: "SVG file uploaded (optimization failed)",
+          url: publicUrl,
+          filename: fileName,
+          type: file.type,
+          size: file.size
+        });
+      }
     }
-
-    // Return the public URL
-    const publicUrl = `/uploads/admin/${fileName}`;
-
-    return NextResponse.json({
-      success: true,
-      message: "File uploaded successfully",
-      url: publicUrl,
-      filename: fileName,
-      type: file.type,
-      size: file.size
-    });
 
   } catch (error) {
     console.error("Admin upload error:", error);
