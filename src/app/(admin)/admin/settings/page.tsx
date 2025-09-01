@@ -12,6 +12,7 @@ import AdminContactPageEditor from "@/components/admin/AdminContactPageEditor";
 import AdminHomePageEditor from "@/components/admin/AdminHomePageEditor";
 import AdminAboutPageEditor from "@/components/admin/AdminAboutPageEditor";
 import AdminProductPageEditor from "@/components/admin/AdminProductPageEditor";
+import { LogoUpload } from "@/components/admin/LogoUpload";
 
 interface SystemStats {
   users: {
@@ -63,6 +64,7 @@ export default function AdminSettingsPage() {
     storeDescription: "",
     contactEmail: "",
     timezone: "Asia/Jakarta",
+    logoUrl: null as string | null,
   });
 
   useEffect(() => {
@@ -81,6 +83,7 @@ export default function AdminSettingsPage() {
             storeDescription: data.settings.storeDescription || "",
             contactEmail: data.settings.contactEmail || "",
             timezone: data.settings.timezone || "Asia/Jakarta",
+            logoUrl: data.settings.logoUrl || null,
           });
         }
       }
@@ -179,6 +182,13 @@ export default function AdminSettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <LogoUpload
+                currentLogoUrl={generalSettings.logoUrl || undefined}
+                onLogoChange={(logoUrl) => 
+                  setGeneralSettings(prev => ({ ...prev, logoUrl }))
+                }
+                disabled={loading}
+              />
               <div>
                 <label className="block text-sm font-medium mb-2">Store Name</label>
                 <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />

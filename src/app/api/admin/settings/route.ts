@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
         storeDescription: settingsData?.storeDescription || "Trusted online store", 
         contactEmail: settingsData?.contactEmail || "contact@store.com",
         timezone: settingsData?.timezone || "Asia/Jakarta",
+        logoUrl: settingsData?.logoUrl || null,
         enableTwoFactor: settingsData?.enableTwoFactor || false,
         sessionTimeout: settingsData?.sessionTimeout || 24,
         version: settingsData?.version || "1.0.0"
@@ -87,13 +88,14 @@ export async function PUT(request: NextRequest) {
             storeDescription = ${body.storeDescription || settingsData.storeDescription},
             contactEmail = ${body.contactEmail || settingsData.contactEmail},
             timezone = ${body.timezone || settingsData.timezone},
+            logoUrl = ${body.logoUrl !== undefined ? body.logoUrl : settingsData.logoUrl},
             updatedAt = NOW()
         WHERE id = ${settingsData.id}
       `;
     } else {
       await prisma.$executeRaw`
-        INSERT INTO system_settings (storeName, storeDescription, contactEmail, timezone, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES (${body.storeName || 'E-Commerce Store'}, ${body.storeDescription || 'Trusted online store'}, ${body.contactEmail || 'contact@store.com'}, ${body.timezone || 'Asia/Jakarta'}, false, 24, '1.0.0', NOW(), NOW())
+        INSERT INTO system_settings (storeName, storeDescription, contactEmail, timezone, logoUrl, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
+        VALUES (${body.storeName || 'E-Commerce Store'}, ${body.storeDescription || 'Trusted online store'}, ${body.contactEmail || 'contact@store.com'}, ${body.timezone || 'Asia/Jakarta'}, ${body.logoUrl || null}, false, 24, '1.0.0', NOW(), NOW())
       `;
     }
 
@@ -108,6 +110,7 @@ export async function PUT(request: NextRequest) {
         storeDescription: updatedSettings?.storeDescription || "Trusted online store",
         contactEmail: updatedSettings?.contactEmail || "contact@store.com", 
         timezone: updatedSettings?.timezone || "Asia/Jakarta",
+        logoUrl: updatedSettings?.logoUrl || null,
         enableTwoFactor: updatedSettings?.enableTwoFactor || false,
         sessionTimeout: updatedSettings?.sessionTimeout || 24,
         version: updatedSettings?.version || "1.0.0"
