@@ -19,16 +19,16 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         <div className="p-6">
           <div className="flex gap-6">
             <Link href={`/product/${product.id}`} className="flex-shrink-0">
-              <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center overflow-hidden relative">
+              <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center overflow-hidden relative">
                 {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="80px" />
                 ) : (
-                  <Image 
-                    src="/placeholder-product.svg" 
-                    alt="No image available" 
-                    fill 
-                    className="object-contain p-1" 
-                    sizes="80px" 
+                  <Image
+                    src="/placeholder-product.svg"
+                    alt="No image available"
+                    fill
+                    className="object-contain p-0"
+                    sizes="96px"
                   />
                 )}
               </div>
@@ -131,19 +131,19 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         )}
 
         <Link href={`/product/${product.id}`} className="block">
-          <div className="relative overflow-hidden h-48">
+          <div className="relative overflow-hidden h-64">
             {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
               <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             ) : (
-              <div className="w-full h-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-                <Image 
-                  src="/placeholder-product.svg" 
-                  alt="No image available" 
-                  fill 
-                  className="object-contain p-4" 
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
-                />
-              </div>
+                <div className="w-full h-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                  <Image
+                    src="/placeholder-product.svg"
+                    alt="No image available"
+                    fill
+                    className="object-contain p-1"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
             )}
           </div>
         </Link>
