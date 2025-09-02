@@ -68,7 +68,6 @@ export async function POST(request: NextRequest) {
 
         if (resolvedOldPath.startsWith(resolvedUploadsDir)) {
           await unlink(resolvedOldPath);
-          console.log("Old logo file deleted:", oldLogoUrl);
         }
       } catch (deleteError) {
         console.warn("Failed to delete old logo file:", deleteError);
