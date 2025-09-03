@@ -86,7 +86,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
             stock: number;
           };
         }) => {
-          // Calculate the final price considering discount and expiration
           let finalPrice = item.product.price;
           if (item.product.discountPrice && 
               item.product.discountPrice > 0 && 
@@ -99,7 +98,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             id: item.id,
             productId: item.productId,
             name: item.product.name,
-            price: finalPrice, // Use discounted price if available and valid
+            price: finalPrice,
             image: item.product.imageUrl || item.product.images?.[0]?.url,
             quantity: item.quantity,
             selected: item.selected,

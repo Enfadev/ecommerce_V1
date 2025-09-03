@@ -125,7 +125,6 @@ export default function AdminProductManagement() {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
     
-    // Discount filter logic
     let matchesDiscount = true;
     if (discountFilter === "on-sale") {
       matchesDiscount = !!(product.discountPrice && 

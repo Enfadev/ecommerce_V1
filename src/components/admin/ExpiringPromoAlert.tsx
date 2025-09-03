@@ -21,7 +21,6 @@ interface ExpiringPromoAlertProps {
 export function ExpiringPromoAlert({ products }: ExpiringPromoAlertProps) {
   const [dismissed, setDismissed] = useState(false);
 
-  // Filter products with promos expiring in next 24 hours
   const expiringProducts = products.filter((product) => {
     if (!product.discountPrice || !product.promoExpired) return false;
     
@@ -37,7 +36,6 @@ export function ExpiringPromoAlert({ products }: ExpiringPromoAlertProps) {
     );
   });
 
-  // Reset dismissed state when products change
   useEffect(() => {
     if (expiringProducts.length > 0) {
       setDismissed(false);

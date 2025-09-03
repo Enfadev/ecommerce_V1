@@ -3,6 +3,7 @@
 import { ReactNode, useEffect } from "react";
 import { useAuth } from "@/components/contexts/auth-context";
 import { useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -17,9 +18,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     if (!isLoading) {
       if (!user) {
-        router.replace("/signin");
+        notFound();
       } else if (user.role !== "ADMIN") {
-        router.replace("/");
+        notFound();
       }
     }
   }, [user, isLoading, router]);

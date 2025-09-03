@@ -13,7 +13,6 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const fav = isInWishlist(product.id);
 
-  // Helper functions for discount calculations
   const hasValidDiscount = () => {
     return product.discountPrice && 
            product.discountPrice > 0 && 

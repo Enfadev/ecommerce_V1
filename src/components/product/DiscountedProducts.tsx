@@ -31,7 +31,6 @@ export function DiscountedProducts({ title = "🔥 Limited Time Offers", maxItem
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          // Filter only products with valid discounts
           const discountedProducts = data
             .filter((product: APIProduct) => 
               product.discountPrice && 

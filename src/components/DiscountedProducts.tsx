@@ -43,7 +43,6 @@ export function DiscountedProducts({ maxItems = 8, title = "🔥 Special Offers"
               promoExpired: product.promoExpired,
             }))
             .filter((product) => {
-              // Only show products with valid discounts
               return (
                 product.discountPrice &&
                 product.discountPrice > 0 &&
@@ -82,7 +81,7 @@ export function DiscountedProducts({ maxItems = 8, title = "🔥 Special Offers"
   }
 
   if (products.length === 0) {
-    return null; // Don't render anything if no discounted products
+    return null;
   }
 
   return (

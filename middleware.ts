@@ -47,6 +47,11 @@ export async function middleware(request: NextRequest) {
       if (isProtectedAPI) {
         return NextResponse.json({ error: "Authentication required" }, { status: 401 });
       } else {
+        if (pathname.startsWith("/admin")) {
+          console.log("🚫 Unauthorized admin access - returning 404");
+          return new NextResponse(null, { status: 404 });
+        }
+        
         const loginUrl = new URL("/signin", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);
@@ -64,6 +69,11 @@ export async function middleware(request: NextRequest) {
       if (isProtectedAPI) {
         return NextResponse.json({ error: "Invalid authentication token" }, { status: 401 });
       } else {
+        if (pathname.startsWith("/admin")) {
+          console.log("🚫 Invalid token for admin access - returning 404");
+          return new NextResponse(null, { status: 404 });
+        }
+        
         const loginUrl = new URL("/signin", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);
@@ -81,7 +91,8 @@ export async function middleware(request: NextRequest) {
         if (isProtectedAPI) {
           return NextResponse.json({ error: "Admin access required" }, { status: 403 });
         } else {
-          return NextResponse.redirect(new URL("/", request.url));
+          console.log("🚫 Non-admin user accessing admin route - returning 404");
+          return new NextResponse(null, { status: 404 });
         }
       }
 

@@ -19,7 +19,6 @@ export function DiscountDisplay({
   showExpiry = true,
   compact = false 
 }: DiscountDisplayProps) {
-  // Check if discount is valid and not expired
   const isValidDiscount = discountPrice && 
                          discountPrice > 0 && 
                          discountPrice < originalPrice &&
@@ -34,7 +33,7 @@ export function DiscountDisplay({
   }
 
   const discountPercentage = Math.round(((originalPrice - discountPrice) / originalPrice) * 100);
-  const isExpiringSoon = promoExpired && new Date(promoExpired) <= new Date(Date.now() + 24 * 60 * 60 * 1000); // expires in 24h
+  const isExpiringSoon = promoExpired && new Date(promoExpired) <= new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   if (compact) {
     return (
