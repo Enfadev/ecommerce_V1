@@ -15,7 +15,7 @@ import {
 interface ExportButtonProps {
   data: Record<string, unknown>[];
   filename: string;
-  type: 'products' | 'orders' | 'customers' | 'inventory' | 'analytics';
+  type: 'products' | 'orders' | 'customers' | 'analytics';
   className?: string;
 }
 
@@ -70,18 +70,6 @@ export function AdminExportButton({ data, filename, type, className = "" }: Expo
     }));
   };
 
-  const formatInventoryForExport = (inventory: Record<string, unknown>[]) => {
-    return inventory.map(item => ({
-      'Product ID': item.id,
-      'Product Name': item.name,
-      SKU: item.sku || '',
-      'Current Stock': item.stock || 0,
-      'Stock Status': (item.stock as number) > 10 ? 'In Stock' : (item.stock as number) > 0 ? 'Low Stock' : 'Out of Stock',
-      Price: item.price,
-      'Last Updated': item.updatedAt ? new Date(item.updatedAt as string).toLocaleDateString() : ''
-    }));
-  };
-
   const formatAnalyticsForExport = (analytics: Record<string, unknown>[]) => {
     return analytics.map(item => ({
       Date: item.date || new Date().toLocaleDateString(),
@@ -102,8 +90,6 @@ export function AdminExportButton({ data, filename, type, className = "" }: Expo
         return formatOrdersForExport(data);
       case 'customers':
         return formatCustomersForExport(data);
-      case 'inventory':
-        return formatInventoryForExport(data);
       case 'analytics':
         return formatAnalyticsForExport(data);
       default:
