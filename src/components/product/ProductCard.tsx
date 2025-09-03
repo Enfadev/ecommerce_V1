@@ -6,12 +6,79 @@ import { useCart } from "../contexts/cart-context";
 import type { Product } from "../../data/products";
 import Link from "next/link";
 import { useWishlist } from "../contexts/wishlist-context";
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Heart, ShoppingCart, Star, Clock } from "lucide-react";
 
 export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid" }: { product: Product; admin?: boolean; onEdit?: () => void; onDelete?: () => void; viewMode?: "grid" | "list" }) {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const fav = isInWishlist(product.id);
+
+  // Helper functions for discount calculations
+  const hasValidDiscount = () => {
+    return product.discountPrice && 
+           product.discountPrice > 0 && 
+           product.discountPrice < product.price &&
+           (!product.promoExpired || new Date(product.promoExpired) > new Date());
+  };
+
+  const getDiscountPercentage = () => {
+    if (!hasValidDiscount()) return 0;
+    return Math.round(((product.price - (product.discountPrice || 0)) / product.price) * 100);
+  };
+
+  const getFinalPrice = () => {
+    return hasValidDiscount() ? (product.discountPrice || product.price) : product.price;
+  };
+
+  const renderPriceSection = () => {
+    if (hasValidDiscount()) {
+      return (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500 line-through">
+              {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+            </span>
+            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
+              -{getDiscountPercentage()}%
+            </span>
+          </div>
+          <p className="text-xl font-semibold text-red-600 dark:text-red-400">
+            {(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+          </p>
+        </div>
+      );
+    }
+    return (
+      <p className="text-xl font-semibold text-gray-900 dark:text-white">
+        {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+      </p>
+    );
+  };
+
+  const renderPriceSectionList = () => {
+    if (hasValidDiscount()) {
+      return (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold text-red-600 dark:text-red-400">
+              {(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
+            </span>
+            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
+              -{getDiscountPercentage()}%
+            </span>
+          </div>
+          <span className="text-sm text-gray-500 line-through">
+            {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+          </span>
+        </div>
+      );
+    }
+    return (
+      <p className="text-lg font-semibold text-gray-900 dark:text-white">
+        {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+      </p>
+    );
+  };
 
   if (viewMode === "list") {
     return (
@@ -20,6 +87,14 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
           <div className="flex gap-6">
             <Link href={`/product/${product.id}`} className="flex-shrink-0">
               <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center overflow-hidden relative">
+                {/* Sale Badge for List View */}
+                {hasValidDiscount() && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      -{getDiscountPercentage()}%
+                    </div>
+                  </div>
+                )}
                 {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="80px" />
                 ) : (
@@ -68,7 +143,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
 
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-xl font-semibold text-gray-900 dark:text-white">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>
+                  {renderPriceSectionList()}
                   <p className="text-sm text-gray-500">Stock: {product.stock}</p>
                 </div>
 
@@ -90,7 +165,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                       await addToCart({
                         id: product.id,
                         name: product.name,
-                        price: product.price,
+                        price: getFinalPrice(),
                         image: product.image && product.image.trim() !== "" ? product.image : "/placeholder-image.svg",
                       });
                     }}
@@ -112,6 +187,15 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
   return (
     <div className="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800">
       <div className="relative">
+        {/* Sale Badge for Grid View */}
+        {hasValidDiscount() && (
+          <div className="absolute top-3 left-3 z-20">
+            <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+              -{getDiscountPercentage()}% OFF
+            </div>
+          </div>
+        )}
+
         {!admin && (
           <button
             aria-label={fav ? "Remove from Wishlist" : "Add to Wishlist"}
@@ -164,7 +248,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
 
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-lg font-semibold text-gray-900 dark:text-white">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>
+            {renderPriceSection()}
             <p className="text-xs text-gray-500">Stock: {product.stock}</p>
           </div>
         </div>
@@ -187,7 +271,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
               await addToCart({
                 id: product.id,
                 name: product.name,
-                price: product.price,
+                price: getFinalPrice(),
                 image: product.image && product.image.trim() !== "" ? product.image : "/placeholder-image.svg",
               });
             }}

@@ -22,6 +22,8 @@ interface APIProduct {
   description: string | null;
   category?: string;
   stock?: number;
+  discountPrice?: number;
+  promoExpired?: string | Date;
 }
 
 function ProductPageContent() {
@@ -51,6 +53,8 @@ function ProductPageContent() {
             image: product.imageUrl || "/placeholder-image.svg",
             category: product.category || "General",
             stock: product.stock ?? Math.floor(Math.random() * 50) + 1,
+            discountPrice: product.discountPrice,
+            promoExpired: product.promoExpired,
           }));
           setProducts(mappedProducts);
           setError("");

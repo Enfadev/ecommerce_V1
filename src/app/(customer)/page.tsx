@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/product/ProductCard";
+import { DiscountedProducts } from "@/components/product/DiscountedProducts";
 import { prisma } from "../../lib/prisma";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../components/ui/carousel";
 import { Card, CardContent } from "../../components/ui/card";
@@ -334,88 +335,9 @@ export default async function Home() {
           )}
         </div>
       </section>{" "}
-      {/* This Week's Promo */}
-      <section>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-3xl font-bold">This Week&apos;s Promo</h2>
-            <p className="text-muted-foreground">Special deals just for you</p>
-          </div>
-          <Button variant="outline" asChild>
-            <NextLink href="/product">
-              View All <ArrowRight className="ml-2 h-4 w-4" />
-            </NextLink>
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Flash Sale Card */}
-          <div className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-pink-200 dark:hover:border-pink-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-4xl">🎧</div>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400">Flash Sale</span>
-              </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Premium Wireless Headphone</h3>
-
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 line-through">$150.00</span>
-                  <span className="text-2xl font-bold text-pink-600">$89.99</span>
-                </div>
-                <p className="text-xs text-pink-600 font-medium">⏰ Ends in 6 hours</p>
-              </div>
-
-              <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white">Add to Cart</Button>
-            </div>
-          </div>
-
-          {/* Discount Card */}
-          <div className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-4xl">👕</div>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">30% Off</span>
-              </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Premium Cotton T-Shirt</h3>
-
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 line-through">$50.00</span>
-                  <span className="text-2xl font-bold text-blue-600">$35.00</span>
-                </div>
-                <p className="text-xs text-blue-600 font-medium">📦 Only 12 left in stock</p>
-              </div>
-
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Add to Cart</Button>
-            </div>
-          </div>
-
-          {/* Free Shipping Card */}
-          <div className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-green-200 dark:hover:border-green-800 transition-all duration-300 hover:shadow-lg overflow-hidden">
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="text-4xl">⌚</div>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">Free Ship</span>
-              </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Smart Watch Series 9</h3>
-
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 line-through">$399.99</span>
-                  <span className="text-2xl font-bold text-green-600">$299.99</span>
-                </div>
-                <p className="text-xs text-green-600 font-medium">🚚 Free shipping nationwide</p>
-              </div>
-
-              <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Add to Cart</Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Special Offers with Real Discounted Products */}
+      <DiscountedProducts maxItems={6} title="🔥 This Week's Special Offers" />
+      
       {/* Featured Products */}
       <section>
         <div className="flex items-center justify-between mb-8">

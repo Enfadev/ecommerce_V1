@@ -5,6 +5,8 @@ export interface Product {
   image: string;
   category: string;
   stock: number;
+  discountPrice?: number;
+  promoExpired?: Date | string;
 }
 
 export const products: Product[] = [

@@ -15,6 +15,8 @@ interface ProductDetail {
   imageUrl?: string;
   category?: string;
   description?: string;
+  discountPrice?: number;
+  promoExpired?: Date | string;
 }
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -83,15 +85,50 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           {/* Product Info */}
           <div className="flex flex-col justify-center space-y-8">
             <div className="space-y-6">
-              <div className="inline-flex items-center">
+              <div className="flex items-center gap-3">
                 <span className="px-4 py-2 bg-foreground/5 text-foreground text-sm font-medium rounded-full border border-border/30">{product.category}</span>
+                {/* Sale Badge */}
+                {product.discountPrice && 
+                 product.discountPrice > 0 && 
+                 product.discountPrice < product.price &&
+                 (!product.promoExpired || new Date(product.promoExpired) > new Date()) && (
+                  <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
+                    -{Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
+                  </span>
+                )}
               </div>
 
               <h1 className="text-4xl lg:text-5xl font-light text-foreground leading-tight">{product.name}</h1>
 
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-semibold text-foreground">${product.price.toLocaleString()}</span>
-                <span className="text-muted-foreground text-lg">USD</span>
+              {/* Price Display with Discount Logic */}
+              <div className="space-y-2">
+                {product.discountPrice && 
+                 product.discountPrice > 0 && 
+                 product.discountPrice < product.price &&
+                 (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? (
+                  <>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-4xl font-semibold text-red-600">${product.discountPrice.toLocaleString()}</span>
+                      <span className="text-muted-foreground text-lg">USD</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl text-muted-foreground line-through">${product.price.toLocaleString()}</span>
+                      <span className="text-sm text-red-600 font-medium">
+                        Save ${(product.price - product.discountPrice).toLocaleString()}
+                      </span>
+                    </div>
+                    {product.promoExpired && (
+                      <p className="text-sm text-orange-600 font-medium">
+                        🔥 Sale ends: {new Date(product.promoExpired).toLocaleDateString()}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-semibold text-foreground">${product.price.toLocaleString()}</span>
+                    <span className="text-muted-foreground text-lg">USD</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -102,7 +139,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   addToCart({
                     id: product.id,
                     name: product.name,
-                    price: product.price,
+                    price: product.discountPrice && 
+                           product.discountPrice > 0 && 
+                           product.discountPrice < product.price &&
+                           (!product.promoExpired || new Date(product.promoExpired) > new Date()) 
+                           ? product.discountPrice 
+                           : product.price,
                     image: product.image,
                   })
                 }

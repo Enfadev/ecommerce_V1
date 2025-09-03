@@ -79,20 +79,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
             id: number;
             name: string;
             price: number;
+            discountPrice?: number;
+            promoExpired?: string | Date;
             imageUrl?: string;
             images?: Array<{ url: string }>;
             stock: number;
           };
-        }) => ({
-          id: item.id,
-          productId: item.productId,
-          name: item.product.name,
-          price: item.product.price,
-          image: item.product.imageUrl || item.product.images?.[0]?.url,
-          quantity: item.quantity,
-          selected: item.selected,
-          product: item.product
-        })) || [];
+        }) => {
+          // Calculate the final price considering discount and expiration
+          let finalPrice = item.product.price;
+          if (item.product.discountPrice && 
+              item.product.discountPrice > 0 && 
+              item.product.discountPrice < item.product.price &&
+              (!item.product.promoExpired || new Date(item.product.promoExpired) > new Date())) {
+            finalPrice = item.product.discountPrice;
+          }
+
+          return {
+            id: item.id,
+            productId: item.productId,
+            name: item.product.name,
+            price: finalPrice, // Use discounted price if available and valid
+            image: item.product.imageUrl || item.product.images?.[0]?.url,
+            quantity: item.quantity,
+            selected: item.selected,
+            product: item.product
+          };
+        }) || [];
         
         setItems(cartItems);
       } else {
