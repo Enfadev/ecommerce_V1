@@ -30,14 +30,12 @@ export async function GET(request: NextRequest) {
 
     const settingsData = Array.isArray(settings) ? settings[0] : settings;
 
-    // Verify logo file exists if logoUrl is set
     let logoUrl = settingsData?.logoUrl;
     if (logoUrl) {
       const logoPath = logoUrl.startsWith("/") ? logoUrl.substring(1) : logoUrl;
       const fullPath = path.join(process.cwd(), "public", logoPath);
 
       if (!fs.existsSync(fullPath)) {
-        // Clear invalid logo URL from database
         await prisma.$executeRaw`
           UPDATE system_settings 
           SET logoUrl = NULL,

@@ -47,13 +47,18 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button"
 
+  const { ["aria-controls"]: ariaControls, ...restProps } = props as Record<string, unknown>;
+  const safeProps = (ariaControls === undefined || ariaControls === null)
+    ? restProps
+    : { ...restProps, ["aria-controls"]: ariaControls };
+
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
+      {...safeProps}
     />
-  )
+  );
 }
 
 export { Button, buttonVariants }

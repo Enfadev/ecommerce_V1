@@ -15,7 +15,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Generate metadata dynamically based on system settings
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSystemSettingsWithFallback();
   

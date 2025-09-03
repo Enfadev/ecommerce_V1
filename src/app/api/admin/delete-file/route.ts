@@ -6,7 +6,6 @@ import { prisma } from "@/lib/prisma";
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Verify admin authentication
     const token = request.cookies.get("auth-token")?.value;
 
     if (!token) {
@@ -25,11 +24,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, message: "File URL is required" }, { status: 400 });
     }
 
-    // Extract filename from URL (e.g., /uploads/admin/logo-123456.webp -> logo-123456.webp)
     const urlPath = fileUrl.startsWith("/") ? fileUrl.substring(1) : fileUrl;
     const filePath = path.join(process.cwd(), "public", urlPath);
 
-    // Security check: ensure file is in uploads/admin directory
     const uploadsDir = path.join(process.cwd(), "public", "uploads", "admin");
     const resolvedPath = path.resolve(filePath);
     const resolvedUploadsDir = path.resolve(uploadsDir);
@@ -41,7 +38,6 @@ export async function DELETE(request: NextRequest) {
     try {
       await unlink(resolvedPath);
 
-      // If this is a logo file, also clear it from database
       if (fileUrl.includes("/uploads/admin/")) {
         try {
           await prisma.$executeRaw`
@@ -52,7 +48,6 @@ export async function DELETE(request: NextRequest) {
           `;
         } catch (dbError) {
           console.warn("Failed to clear logo from database:", dbError);
-          // Continue even if database update fails
         }
       }
 
@@ -61,7 +56,6 @@ export async function DELETE(request: NextRequest) {
         message: "File deleted successfully",
       });
     } catch (error) {
-      // File might not exist, which is fine
       if (error instanceof Error && "code" in error && error.code === "ENOENT") {
         return NextResponse.json({
           success: true,

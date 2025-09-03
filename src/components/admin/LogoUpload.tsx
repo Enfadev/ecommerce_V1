@@ -21,15 +21,13 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
   const handleFileSelect = async (file: File) => {
     if (!file) return;
 
-    // Validate file type
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
     if (!allowedTypes.includes(file.type)) {
       alert("Please select a valid image file (JPEG, PNG, WebP, or SVG)");
       return;
     }
 
-    // Validate file size (2MB limit)
-    const maxSize = 2 * 1024 * 1024; // 2MB
+    const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
       alert("File size must be less than 2MB");
       return;
@@ -56,7 +54,6 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
         setPreview(data.url);
         onLogoChange(data.url);
 
-        // Show optimization info
         if (data.optimizedType) {
           const savedPercent = Math.round((1 - data.size / data.originalSize) * 100);
           console.log(`Logo optimized: ${data.originalType} → ${data.optimizedType}, saved ${savedPercent}%`);
@@ -84,7 +81,6 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
 
     if (logoToDelete && confirm("Are you sure you want to remove this logo?")) {
       try {
-        // Delete the file from server
         const response = await fetch(`/api/admin/delete-file?fileUrl=${encodeURIComponent(logoToDelete)}`, {
           method: "DELETE",
         });
@@ -96,7 +92,6 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
             fileInputRef.current.value = "";
           }
         } else {
-          // Even if server deletion fails, remove from UI
           setPreview(null);
           onLogoChange(null);
           if (fileInputRef.current) {
@@ -105,7 +100,6 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
         }
       } catch (error) {
         console.error("Failed to delete logo file:", error);
-        // Still remove from UI even if deletion fails
         setPreview(null);
         onLogoChange(null);
         if (fileInputRef.current) {
