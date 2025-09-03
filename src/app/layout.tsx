@@ -3,7 +3,21 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NextAuthProvider } from "../components/auth/NextAuthProvider";
 import { AuthProvider } from "@/components/contexts/auth-context";
+import { DynamicFavicon } from "@/components/ui/DynamicFavicon";
 import { getSystemSettingsWithFallback } from "@/lib/system-settings";
+
+// Generate SVG data URL for favicon fallback
+function generateSVGFavicon(initial: string): string {
+  const svg = `
+    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" fill="#334155" rx="6"/>
+      <text x="16" y="22" text-anchor="middle" fill="white" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="bold">
+        ${initial}
+      </text>
+    </svg>
+  `;
+  return `data:image/svg+xml;base64,${btoa(svg)}`;
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,9 +32,16 @@ const geistMono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSystemSettingsWithFallback();
   
+  // Use logo if available, otherwise generate SVG favicon with store initial
+  const faviconUrl = settings.logoUrl || generateSVGFavicon(settings.storeName.charAt(0).toUpperCase());
+  
   return {
     title: `${settings.storeName} - Trusted Online Shopping Platform`,
     description: `Find quality products at the best prices at ${settings.storeName}. ${settings.storeDescription}. Free shipping, secure payment, and 24/7 customer service.`,
+    icons: {
+      icon: faviconUrl,
+      apple: faviconUrl,
+    },
   };
 }
 
@@ -34,6 +55,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`} suppressHydrationWarning>
         <NextAuthProvider>
           <AuthProvider>
+            <DynamicFavicon />
             <div className="flex-1 flex flex-col">{children}</div>
           </AuthProvider>
         </NextAuthProvider>
