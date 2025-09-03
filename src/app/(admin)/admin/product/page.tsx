@@ -13,6 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import { SimpleProductForm } from "@/components/product/SimpleProductForm";
 import { AdminExportButton } from "@/components/admin/AdminExportButton";
+import { DiscountDisplay } from "@/components/admin/DiscountDisplay";
+import { ExpiringPromoAlert } from "@/components/admin/ExpiringPromoAlert";
 
 interface Product {
   id: number;
@@ -90,7 +92,7 @@ export default function AdminProductManagement() {
     { key: "updatedAt", label: "Updated At" },
   ];
 
-  const defaultImportantColumns = ["imageUrl", "name", "category", "price", "stock", "status", "sku", "brand"];
+  const defaultImportantColumns = ["imageUrl", "name", "category", "price", "discountPrice", "stock", "status", "sku", "brand"];
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultImportantColumns);
 
   const handleToggleColumn = (key: string) => {
@@ -115,13 +117,29 @@ export default function AdminProductManagement() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [discountFilter, setDiscountFilter] = useState<"all" | "on-sale" | "no-discount">("all");
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    
+    // Discount filter logic
+    let matchesDiscount = true;
+    if (discountFilter === "on-sale") {
+      matchesDiscount = !!(product.discountPrice && 
+                          product.discountPrice > 0 && 
+                          product.discountPrice < product.price &&
+                          (!product.promoExpired || new Date(product.promoExpired) > new Date()));
+    } else if (discountFilter === "no-discount") {
+      matchesDiscount = !product.discountPrice || 
+                       product.discountPrice <= 0 ||
+                       product.discountPrice >= product.price ||
+                       !!(product.promoExpired && new Date(product.promoExpired) <= new Date());
+    }
+    
+    return matchesSearch && matchesCategory && matchesDiscount;
   });
 
   const categories = ["all", ...new Set(products.map((p) => p.category).filter(Boolean))];
@@ -415,6 +433,9 @@ export default function AdminProductManagement() {
         </div>
       </div>
 
+      {/* Expiring Promo Alert */}
+      <ExpiringPromoAlert products={products} />
+
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
@@ -458,6 +479,24 @@ export default function AdminProductManagement() {
             <div>
               <p className="text-sm text-muted-foreground">Out of Stock</p>
               <p className="text-xl font-bold">{products.filter((p) => (p.stock ?? 0) === 0).length}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-500/10 rounded-lg flex items-center justify-center">
+              🏷️
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Products On Sale</p>
+              <p className="text-xl font-bold">
+                {products.filter((p) => 
+                  p.discountPrice && 
+                  p.discountPrice > 0 && 
+                  p.discountPrice < p.price &&
+                  (!p.promoExpired || new Date(p.promoExpired) > new Date())
+                ).length}
+              </p>
             </div>
           </div>
         </Card>
@@ -508,6 +547,30 @@ export default function AdminProductManagement() {
                     {category === "all" ? "All Categories" : category}
                   </DropdownMenuItem>
                 ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            {/* Tombol filter diskon */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  🏷️
+                  {discountFilter === "all" ? "All Products" : 
+                   discountFilter === "on-sale" ? "On Sale" : "No Discount"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Discount Filter</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setDiscountFilter("all")}>
+                  All Products
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDiscountFilter("on-sale")}>
+                  🔥 Products On Sale
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDiscountFilter("no-discount")}>
+                  Regular Priced
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -584,11 +647,34 @@ export default function AdminProductManagement() {
                               ) : (
                                 <span className="text-muted-foreground">-</span>
                               )
-                            ) : col.key === "price" || col.key === "discountPrice" ? (
-                              product[col.key as keyof Product] ? (
-                                <span className="font-semibold text-base">${product[col.key as keyof Product]}</span>
+                            ) : col.key === "price" ? (
+                              <DiscountDisplay 
+                                originalPrice={product.price}
+                                discountPrice={product.discountPrice}
+                                promoExpired={product.promoExpired}
+                                compact={true}
+                                showExpiry={false}
+                              />
+                            ) : col.key === "discountPrice" ? (
+                              product.discountPrice && 
+                              product.discountPrice > 0 && 
+                              product.discountPrice < product.price &&
+                              (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? (
+                                <div className="space-y-1">
+                                  <Badge variant="destructive" className="text-xs">
+                                    -{Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
+                                  </Badge>
+                                  <div className="text-xs text-muted-foreground">
+                                    ${(product.price - product.discountPrice).toFixed(2)} saved
+                                  </div>
+                                  {product.promoExpired && (
+                                    <div className="text-xs text-orange-600">
+                                      Expires: {new Date(product.promoExpired).toLocaleDateString()}
+                                    </div>
+                                  )}
+                                </div>
                               ) : (
-                                <span className="text-muted-foreground">-</span>
+                                <span className="text-muted-foreground">No discount</span>
                               )
                             ) : col.key === "createdAt" || col.key === "updatedAt" ? (
                               product[col.key as keyof Product] ? (
