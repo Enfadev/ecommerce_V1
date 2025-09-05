@@ -13,7 +13,7 @@ import AdminHomePageEditor from "@/components/admin/AdminHomePageEditor";
 import AdminAboutPageEditor from "@/components/admin/AdminAboutPageEditor";
 import AdminProductPageEditor from "@/components/admin/AdminProductPageEditor";
 import { LogoUpload } from "@/components/admin/LogoUpload";
-import { OptimizationStats } from "@/components/admin/OptimizationStats";
+
 
 interface SystemStats {
   users: {
@@ -174,48 +174,41 @@ export default function AdminSettingsPage() {
         </TabsList>
 
         {/* General Settings */}
+
         <TabsContent value="general" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    General Settings - FIXED
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <LogoUpload
-                    currentLogoUrl={generalSettings.logoUrl || undefined}
-                    onLogoChange={(logoUrl) => 
-                      setGeneralSettings(prev => ({ ...prev, logoUrl }))
-                    }
-                    disabled={loading}
-                  />
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Store Name</label>
-                    <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Description</label>
-                    <Textarea value={generalSettings.storeDescription} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} placeholder="Enter store description" rows={3} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Contact Email</label>
-                    <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
-                  </div>
-                  <Button onClick={handleSaveGeneral} className="w-full" disabled={loading}>
-                    <Save className="w-4 h-4 mr-2" />
-                    {loading ? "Saving..." : "Save Changes"}
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="space-y-6">
-              <OptimizationStats />
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
+                General Settings
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <LogoUpload
+                currentLogoUrl={generalSettings.logoUrl || undefined}
+                onLogoChange={(logoUrl) => 
+                  setGeneralSettings(prev => ({ ...prev, logoUrl }))
+                }
+                disabled={loading}
+              />
+              <div>
+                <label className="block text-sm font-medium mb-2">Store Name</label>
+                <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Description</label>
+                <Textarea value={generalSettings.storeDescription} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} placeholder="Enter store description" rows={3} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Contact Email</label>
+                <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
+              </div>
+              <Button onClick={handleSaveGeneral} className="w-full" disabled={loading}>
+                <Save className="w-4 h-4 mr-2" />
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Page Management */}
