@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useOrders, Order } from "@/hooks/use-orders";
 import { useAuth } from "@/components/contexts/auth-context";
+import { usePrintInvoice } from "@/hooks/use-print-invoice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,10 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { AdminBlocker } from "@/components/ui/AdminBlocker";
-import { Package, Search, Filter, Calendar, MapPin, CreditCard, Eye, ArrowLeft, Loader2, ShoppingBag, Clock } from "lucide-react";
+import { Package, Search, Filter, Calendar, MapPin, CreditCard, Eye, ArrowLeft, Loader2, ShoppingBag, Clock, FileText, Printer } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 const statusStyles = {
   PENDING: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
@@ -38,6 +40,7 @@ const statusLabels = {
 export default function OrderHistoryPage() {
   const { user } = useAuth();
   const { orders, loading, fetchOrders } = useOrders();
+  const { printInvoice, isLoading: isPrinting } = usePrintInvoice();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -45,6 +48,16 @@ export default function OrderHistoryPage() {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  const handlePrintInvoice = async (order: Order) => {
+    try {
+      await printInvoice(order);
+      toast.success("Invoice printed successfully!");
+    } catch (error) {
+      console.error('Error printing invoice:', error);
+      toast.error("Failed to print invoice. Please try again.");
+    }
+  };
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
@@ -90,6 +103,25 @@ export default function OrderHistoryPage() {
                   <div className="text-right">
                     <Badge className={statusStyles[selectedOrder.status]}>{statusLabels[selectedOrder.status]}</Badge>
                     <div className="text-2xl font-bold text-primary mt-2">{formatCurrency(selectedOrder.totalAmount)}</div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handlePrintInvoice(selectedOrder)}
+                      disabled={isPrinting}
+                      className="mt-2"
+                    >
+                      {isPrinting ? (
+                        <>
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                          Printing...
+                        </>
+                      ) : (
+                        <>
+                          <Printer className="w-3 h-3 mr-1" />
+                          Print Invoice
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -211,6 +243,38 @@ export default function OrderHistoryPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Action Buttons */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex gap-4 justify-center">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => handlePrintInvoice(selectedOrder)}
+                    disabled={isPrinting}
+                    className="flex-1 max-w-xs"
+                  >
+                    {isPrinting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Printing...
+                      </>
+                    ) : (
+                      <>
+                        <Printer className="w-4 h-4 mr-2" />
+                        Print Invoice
+                      </>
+                    )}
+                  </Button>
+                  <Button variant="outline" className="flex-1 max-w-xs" asChild>
+                    <Link href="/contact">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Contact Support
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -330,10 +394,30 @@ export default function OrderHistoryPage() {
                     <div className="text-sm text-muted-foreground">
                       {order.items.length} item{order.items.length > 1 ? "s" : ""} • {order.paymentMethod}
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handlePrintInvoice(order)}
+                        disabled={isPrinting}
+                      >
+                        {isPrinting ? (
+                          <>
+                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                            Printing...
+                          </>
+                        ) : (
+                          <>
+                            <Printer className="h-3 w-3 mr-1" />
+                            Print
+                          </>
+                        )}
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setSelectedOrder(order)}>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
