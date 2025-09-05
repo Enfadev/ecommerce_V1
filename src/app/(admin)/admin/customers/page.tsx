@@ -353,7 +353,7 @@ export default function AdminCustomerManagement() {
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Status</TableHead>
+
               <TableHead>
                 <Button variant="ghost" onClick={() => handleSort("joinDate")} className="gap-1 p-0 h-auto">
                   Joined
@@ -400,16 +400,14 @@ export default function AdminCustomerManagement() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="text-center">
-                    <p className="font-medium">{customer.totalOrders}</p>
-                    <p className="text-sm text-muted-foreground">orders</p>
-                  </div>
+                <TableCell className="text-center align-middle">
+                  <span className="font-medium block">{customer.totalOrders}</span>
+                  <span className="text-xs text-muted-foreground block">orders</span>
                 </TableCell>
-                <TableCell className="font-medium">{customer.totalSpent.toLocaleString("en-US", { style: "currency", currency: "USD" })}</TableCell>
-                <TableCell>
-                  <Badge className={getStatusColor(customer.status)}>{getStatusText(customer.status)}</Badge>
+                <TableCell className="text-center align-middle font-medium">
+                  {customer.totalSpent.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                 </TableCell>
+
                 <TableCell className="text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
