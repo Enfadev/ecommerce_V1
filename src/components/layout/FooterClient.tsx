@@ -165,17 +165,6 @@ export default function FooterClient() {
             <p className="text-sm text-muted-foreground">
               © 2024 {settings.storeName}. All rights reserved.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <NextLink href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Privacy Policy
-              </NextLink>
-              <NextLink href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Terms of Service
-              </NextLink>
-              <NextLink href="/cookies" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                Cookie Policy
-              </NextLink>
-            </div>
           </div>
         </div>
       </div>

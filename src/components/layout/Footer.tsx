@@ -101,21 +101,8 @@ export default async function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} {settings.storeName}. All rights reserved.</p>
-            <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Terms of Service
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                Cookie Policy
-              </a>
-            </div>
-          </div>
+        <div className="mt-8 pt-8 w-full flex justify-center items-center">
+          <p className="text-sm text-muted-foreground text-center w-full">&copy; {new Date().getFullYear()} {settings.storeName}. All rights reserved.</p>
         </div>
       </div>
     </footer>
