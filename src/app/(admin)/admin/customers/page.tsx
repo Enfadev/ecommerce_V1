@@ -453,39 +453,38 @@ export default function AdminCustomerManagement() {
           <Table>
             <TableHeader>
               <TableRow className="border-b-2 bg-muted/30">
-                <TableHead className="text-left font-semibold w-[100px]">
+                <TableHead className="text-left font-semibold w-[120px]">
                   <Button variant="ghost" onClick={() => handleSort("id")} className="gap-2 p-2 h-auto font-semibold hover:bg-primary/10">
                     ID
                     <ArrowUpDown className="w-3 h-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-left font-semibold min-w-[250px]">
+                <TableHead className="text-left font-semibold w-[280px]">
                   <Button variant="ghost" onClick={() => handleSort("name")} className="gap-2 p-2 h-auto font-semibold hover:bg-primary/10">
                     Customer
                     <ArrowUpDown className="w-3 h-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-left font-semibold min-w-[200px]">Contact Info</TableHead>
-                <TableHead className="text-center font-semibold w-[120px]">
+                <TableHead className="text-left font-semibold w-[240px]">Contact Info</TableHead>
+                <TableHead className="text-center font-semibold w-[140px]">
                   <Button variant="ghost" onClick={() => handleSort("totalOrders")} className="gap-2 p-2 h-auto font-semibold hover:bg-primary/10">
                     Orders
                     <ArrowUpDown className="w-3 h-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-right font-semibold w-[140px]">
+                <TableHead className="text-right font-semibold w-[160px]">
                   <Button variant="ghost" onClick={() => handleSort("totalSpent")} className="gap-2 p-2 h-auto font-semibold hover:bg-primary/10">
                     Revenue
                     <ArrowUpDown className="w-3 h-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-center font-semibold w-[100px]">Status</TableHead>
-                <TableHead className="text-center font-semibold w-[120px]">
+                <TableHead className="text-center font-semibold w-[140px]">
                   <Button variant="ghost" onClick={() => handleSort("joinDate")} className="gap-2 p-2 h-auto font-semibold hover:bg-primary/10">
                     Joined
                     <ArrowUpDown className="w-3 h-3" />
                   </Button>
                 </TableHead>
-                <TableHead className="text-center font-semibold w-[100px]">Actions</TableHead>
+                <TableHead className="text-center font-semibold w-[120px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -494,7 +493,7 @@ export default function AdminCustomerManagement() {
                   key={customer.id} 
                   className="group hover:bg-muted/50 transition-all duration-200 border-b border-border/50"
                 >
-                  <TableCell className="font-mono text-sm text-muted-foreground py-4">
+                  <TableCell className="font-mono text-sm text-muted-foreground py-6 w-[120px]">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center text-xs font-medium">
                         {startIndex + index + 1}
@@ -503,7 +502,7 @@ export default function AdminCustomerManagement() {
                     </div>
                   </TableCell>
                   
-                  <TableCell className="py-4">
+                  <TableCell className="py-6 w-[280px]">
                     <div className="flex items-center gap-4">
                       <div className="relative">
                         <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center ring-2 ring-primary/10">
@@ -521,8 +520,8 @@ export default function AdminCustomerManagement() {
                           customer.status === 'inactive' ? 'bg-yellow-500' : 'bg-red-500'
                         }`} />
                       </div>
-                      <div>
-                        <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                           {customer.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -535,13 +534,13 @@ export default function AdminCustomerManagement() {
                     </div>
                   </TableCell>
                   
-                  <TableCell className="py-4">
+                  <TableCell className="py-6 w-[240px]">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm">
                         <div className="w-5 h-5 bg-blue-100 dark:bg-blue-900/30 rounded-md flex items-center justify-center">
                           <Mail className="w-3 h-3 text-blue-600 dark:text-blue-400" />
                         </div>
-                        <span className="text-foreground font-medium truncate max-w-[180px]">{customer.email}</span>
+                        <span className="text-foreground font-medium truncate max-w-[200px]">{customer.email}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <div className="w-5 h-5 bg-green-100 dark:bg-green-900/30 rounded-md flex items-center justify-center">
@@ -552,7 +551,7 @@ export default function AdminCustomerManagement() {
                     </div>
                   </TableCell>
                   
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-6 w-[140px]">
                     <div className="space-y-1">
                       <div className="text-2xl font-bold text-foreground">{customer.totalOrders}</div>
                       <div className="text-xs text-muted-foreground">
@@ -565,7 +564,7 @@ export default function AdminCustomerManagement() {
                     </div>
                   </TableCell>
                   
-                  <TableCell className="text-right py-4">
+                  <TableCell className="text-right py-6 w-[160px]">
                     <div className="space-y-1">
                       <div className="text-lg font-bold text-green-600 dark:text-green-400">
                         {customer.totalSpent.toLocaleString("en-US", { 
@@ -590,16 +589,7 @@ export default function AdminCustomerManagement() {
                     </div>
                   </TableCell>
                   
-                  <TableCell className="text-center py-4">
-                    <Badge 
-                      className={`${getStatusColor(customer.status)} font-medium px-3 py-1 text-xs`}
-                      variant="outline"
-                    >
-                      {getStatusText(customer.status)}
-                    </Badge>
-                  </TableCell>
-                  
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-6 w-[140px]">
                     <div className="text-sm font-medium text-foreground">
                       {new Date(customer.joinDate).toLocaleDateString("en-US", { 
                         month: "short",
@@ -612,7 +602,7 @@ export default function AdminCustomerManagement() {
                     </div>
                   </TableCell>
                   
-                  <TableCell className="text-center py-4">
+                  <TableCell className="text-center py-6 w-[120px]">
                     <div className="flex items-center justify-center gap-1">
                       <Button
                         variant="ghost"
