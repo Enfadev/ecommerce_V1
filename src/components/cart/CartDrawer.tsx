@@ -41,7 +41,7 @@ export function CartDrawer() {
       <DrawerTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <ShoppingCart className="h-5 w-5" />
-          {totalItems > 0 && <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary hover:bg-primary/80">{totalItems > 99 ? "99+" : totalItems}</Badge>}
+          {totalItems > 0 && <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary hover:bg-primary/80 rounded-full font-medium">{totalItems > 99 ? "99+" : totalItems}</Badge>}
           <span className="sr-only">Shopping Cart</span>
         </Button>
       </DrawerTrigger>

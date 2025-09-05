@@ -15,7 +15,7 @@ export function WishlistBadge() {
       <Button variant="ghost" size="sm" className="relative p-2 hover:bg-accent">
         <Heart className="h-5 w-5" />
         {count > 0 && (
-          <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-pink-500 hover:bg-pink-600">
+          <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-pink-500 hover:bg-pink-600 font-medium">
             {count > 99 ? "99+" : count}
           </Badge>
         )}
