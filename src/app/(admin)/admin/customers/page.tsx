@@ -328,52 +328,52 @@ export default function AdminCustomerManagement() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>
+              <TableHead className="text-center">
                 <Button variant="ghost" onClick={() => handleSort("id")} className="gap-1 p-0 h-auto">
                   Customer ID
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>
+              <TableHead className="text-center">
                 <Button variant="ghost" onClick={() => handleSort("name")} className="gap-1 p-0 h-auto">
                   Name
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>
+              <TableHead className="text-center">Contact</TableHead>
+              <TableHead className="text-center">
                 <Button variant="ghost" onClick={() => handleSort("totalOrders")} className="gap-1 p-0 h-auto">
                   Total Orders
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>
+              <TableHead className="text-center">
                 <Button variant="ghost" onClick={() => handleSort("totalSpent")} className="gap-1 p-0 h-auto">
                   Total Spent
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
 
-              <TableHead>
+              <TableHead className="text-center">
                 <Button variant="ghost" onClick={() => handleSort("joinDate")} className="gap-1 p-0 h-auto">
                   Joined
                   <ArrowUpDown className="w-4 h-4" />
                 </Button>
               </TableHead>
-              <TableHead>Last Order</TableHead>
-              <TableHead className="w-12">Actions</TableHead>
+              <TableHead className="text-center">Last Order</TableHead>
+              <TableHead className="w-12 text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredCustomers.map((customer) => (
               <TableRow key={customer.id}>
-                <TableCell>
+                <TableCell className="text-center">
                   <div>
                     <p className="font-medium">{customer.id}</p>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-3">
+                <TableCell className="text-center">
+                  <div className="flex items-center gap-3 justify-center">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-medium text-primary">
                         {customer.name
@@ -388,13 +388,13 @@ export default function AdminCustomerManagement() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   <div>
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex items-center gap-2 text-sm justify-center">
                       <Mail className="w-4 h-4 text-muted-foreground" />
                       <span>{customer.email}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center">
                       <Phone className="w-4 h-4" />
                       <span>{customer.phone}</span>
                     </div>
@@ -408,14 +408,14 @@ export default function AdminCustomerManagement() {
                   {customer.totalSpent.toLocaleString("en-US", { style: "currency", currency: "USD" })}
                 </TableCell>
 
-                <TableCell className="text-sm">
-                  <div className="flex items-center gap-2">
+                <TableCell className="text-center text-sm">
+                  <div className="flex items-center gap-2 justify-center">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
                     {new Date(customer.joinDate).toLocaleDateString("id-ID")}
                   </div>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{customer.lastOrder ? new Date(customer.lastOrder).toLocaleDateString("id-ID") : "-"}</TableCell>
-                <TableCell>
+                <TableCell className="text-center text-sm text-muted-foreground">{customer.lastOrder ? new Date(customer.lastOrder).toLocaleDateString("id-ID") : "-"}</TableCell>
+                <TableCell className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
