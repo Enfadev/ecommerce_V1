@@ -32,25 +32,27 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
   const renderPriceSection = () => {
     if (hasValidDiscount()) {
       return (
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500 line-through">
-              {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+        <div className="h-14 flex flex-col justify-center">
+          <div className="text-sm text-gray-500 line-through mb-1">
+            {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl font-semibold text-red-600 dark:text-red-400">
+              {(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
             </span>
-            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
+            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full whitespace-nowrap">
               -{getDiscountPercentage()}%
             </span>
           </div>
-          <p className="text-xl font-semibold text-red-600 dark:text-red-400">
-            {(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
-          </p>
         </div>
       );
     }
     return (
-      <p className="text-xl font-semibold text-gray-900 dark:text-white">
-        {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-      </p>
+      <div className="h-14 flex items-center">
+        <p className="text-xl font-semibold text-gray-900 dark:text-white">
+          {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+        </p>
+      </div>
     );
   };
 
@@ -248,7 +250,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         <div className="flex items-center justify-between mb-4">
           <div>
             {renderPriceSection()}
-            <p className="text-xs text-gray-500">Stock: {product.stock}</p>
+            <p className="text-xs text-gray-500 mt-1">Stock: {product.stock}</p>
           </div>
         </div>
 
