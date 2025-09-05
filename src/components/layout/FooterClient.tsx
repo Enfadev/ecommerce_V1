@@ -161,9 +161,9 @@ export default function FooterClient() {
 
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-border">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              © 2024 {settings.storeName}. All rights reserved.
+              © {new Date().getFullYear()} {settings.storeName}. All rights reserved.
             </p>
           </div>
         </div>
