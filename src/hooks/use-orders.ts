@@ -115,13 +115,60 @@ export function useOrders() {
   const createOrder = async (orderData: CreateOrderData): Promise<Order | null> => {
     setCreating(true);
     try {
+      // Validate required fields before sending
+      if (!orderData.customerName?.trim()) {
+        throw new Error("Customer name is required");
+      }
+      if (!orderData.customerEmail?.trim()) {
+        throw new Error("Customer email is required");
+      }
+      if (!orderData.customerPhone?.trim()) {
+        throw new Error("Customer phone is required");
+      }
+      if (!orderData.shippingAddress?.trim()) {
+        throw new Error("Shipping address is required");
+      }
+      if (!orderData.paymentMethod?.trim()) {
+        throw new Error("Payment method is required");
+      }
+      if (!orderData.items || orderData.items.length === 0) {
+        throw new Error("Order items are required");
+      }
+      if (isNaN(orderData.subtotal) || orderData.subtotal < 0) {
+        throw new Error("Valid subtotal is required");
+      }
+      if (isNaN(orderData.totalAmount) || orderData.totalAmount < 0) {
+        throw new Error("Valid total amount is required");
+      }
+
+      console.log("Sending order data:", {
+        ...orderData,
+        customerName: orderData.customerName?.trim(),
+        customerEmail: orderData.customerEmail?.trim(),
+        customerPhone: orderData.customerPhone?.trim(),
+        shippingAddress: orderData.shippingAddress?.trim(),
+        paymentMethod: orderData.paymentMethod?.trim(),
+      });
+
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(orderData),
+        body: JSON.stringify({
+          ...orderData,
+          customerName: orderData.customerName.trim(),
+          customerEmail: orderData.customerEmail.trim(),
+          customerPhone: orderData.customerPhone.trim(),
+          shippingAddress: orderData.shippingAddress.trim(),
+          paymentMethod: orderData.paymentMethod.trim(),
+          postalCode: orderData.postalCode?.trim() || "",
+          notes: orderData.notes?.trim() || "",
+          shippingFee: orderData.shippingFee || 0,
+          tax: orderData.tax || 0,
+          discount: orderData.discount || 0,
+        }),
       });
 
       if (!response.ok) {

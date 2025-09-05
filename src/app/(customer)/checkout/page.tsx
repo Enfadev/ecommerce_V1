@@ -84,7 +84,14 @@ export default function CheckoutPage() {
   const total = subtotal + ongkir + tax;
 
   const isFormValid = () => {
-    return formData.nama.trim() !== "" && formData.email.trim() !== "" && formData.phone.trim() !== "" && formData.alamat.trim() !== "" && isValidEmail(formData.email);
+    return (
+      formData.nama.trim() !== "" && 
+      formData.email.trim() !== "" && 
+      formData.phone.trim() !== "" && 
+      formData.alamat.trim() !== "" && 
+      formData.paymentMethod.trim() !== "" &&
+      isValidEmail(formData.email)
+    );
   };
 
   useEffect(() => {
@@ -145,6 +152,10 @@ export default function CheckoutPage() {
       toast.error("Please enter a valid email address");
       return;
     }
+    if (!formData.paymentMethod) {
+      toast.error("Please select a payment method");
+      return;
+    }
     if (items.length === 0) {
       toast.error("Your cart is empty");
       return;
@@ -155,12 +166,12 @@ export default function CheckoutPage() {
     }
 
     const orderData: CreateOrderData = {
-      customerName: formData.nama,
-      customerEmail: formData.email,
-      customerPhone: formData.phone,
-      shippingAddress: formData.alamat,
-      postalCode: formData.kodePos,
-      notes: formData.catatan,
+      customerName: formData.nama.trim(),
+      customerEmail: formData.email.trim(),
+      customerPhone: formData.phone.trim(),
+      shippingAddress: formData.alamat.trim(),
+      postalCode: formData.kodePos?.trim() || "",
+      notes: formData.catatan?.trim() || "",
       paymentMethod: formData.paymentMethod,
       items: items.map((item) => ({
         productId: item.productId,
@@ -375,13 +386,13 @@ export default function CheckoutPage() {
                     amount={total}
                     email={formData.email}
                     orderData={{
-                      customerName: formData.nama,
-                      customerEmail: formData.email,
-                      customerPhone: formData.phone,
-                      shippingAddress: formData.alamat,
-                      postalCode: formData.kodePos,
-                      notes: formData.catatan,
-                      paymentMethod: formData.paymentMethod,
+                      customerName: formData.nama.trim(),
+                      customerEmail: formData.email.trim(),
+                      customerPhone: formData.phone.trim(),
+                      shippingAddress: formData.alamat.trim(),
+                      postalCode: formData.kodePos?.trim() || "",
+                      notes: formData.catatan?.trim() || "",
+                      paymentMethod: "Credit Card",
                       items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
                       subtotal,
                       shippingFee: ongkir,
@@ -409,12 +420,12 @@ export default function CheckoutPage() {
                       currency="USD"
                       onApprove={async () => {
                         const orderData = {
-                          customerName: formData.nama,
-                          customerEmail: formData.email,
-                          customerPhone: formData.phone,
-                          shippingAddress: formData.alamat,
-                          postalCode: formData.kodePos,
-                          notes: formData.catatan,
+                          customerName: formData.nama.trim(),
+                          customerEmail: formData.email.trim(),
+                          customerPhone: formData.phone.trim(),
+                          shippingAddress: formData.alamat.trim(),
+                          postalCode: formData.kodePos?.trim() || "",
+                          notes: formData.catatan?.trim() || "",
                           paymentMethod: "PayPal",
                           items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
                           subtotal,

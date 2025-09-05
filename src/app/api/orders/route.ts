@@ -85,15 +85,37 @@ export async function POST(request: NextRequest) {
     
     const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
 
-    if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !items || items.length === 0) {
-      console.error('Missing required fields:', {
-        customerName: !!customerName,
-        customerEmail: !!customerEmail,
-        customerPhone: !!customerPhone,
-        shippingAddress: !!shippingAddress,
-        items: !!items && items.length > 0
+    // Enhanced validation with detailed logging
+    const missingFields = [];
+    
+    if (!customerName || customerName.trim() === '') missingFields.push('customerName');
+    if (!customerEmail || customerEmail.trim() === '') missingFields.push('customerEmail');
+    if (!customerPhone || customerPhone.trim() === '') missingFields.push('customerPhone');
+    if (!shippingAddress || shippingAddress.trim() === '') missingFields.push('shippingAddress');
+    if (!paymentMethod || paymentMethod.trim() === '') missingFields.push('paymentMethod');
+    if (!items || !Array.isArray(items) || items.length === 0) missingFields.push('items');
+    if (subtotal === undefined || subtotal === null || isNaN(subtotal)) missingFields.push('subtotal');
+    if (totalAmount === undefined || totalAmount === null || isNaN(totalAmount)) missingFields.push('totalAmount');
+
+    if (missingFields.length > 0) {
+      console.error('Missing or invalid required fields:', {
+        missingFields,
+        receivedData: {
+          customerName: customerName ? '✓' : '✗',
+          customerEmail: customerEmail ? '✓' : '✗',
+          customerPhone: customerPhone ? '✓' : '✗',
+          shippingAddress: shippingAddress ? '✓' : '✗',
+          paymentMethod: paymentMethod ? '✓' : '✗',
+          items: items && Array.isArray(items) && items.length > 0 ? `✓ (${items.length} items)` : '✗',
+          subtotal: !isNaN(subtotal) ? `✓ ($${subtotal})` : '✗',
+          totalAmount: !isNaN(totalAmount) ? `✓ ($${totalAmount})` : '✗',
+        }
       });
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json({ 
+        error: "Missing required fields", 
+        missingFields,
+        details: "Please ensure all required fields are provided: customerName, customerEmail, customerPhone, shippingAddress, paymentMethod, items, subtotal, totalAmount"
+      }, { status: 400 });
     }
 
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
