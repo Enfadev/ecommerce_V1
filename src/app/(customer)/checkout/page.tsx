@@ -94,6 +94,18 @@ export default function CheckoutPage() {
     );
   };
 
+  const getFormCompletionPercentage = () => {
+    const requiredFields = [
+      formData.nama.trim() !== "",
+      formData.email.trim() !== "" && isValidEmail(formData.email),
+      formData.phone.trim() !== "",
+      formData.alamat.trim() !== "",
+      formData.paymentMethod.trim() !== ""
+    ];
+    const completedFields = requiredFields.filter(Boolean).length;
+    return Math.round((completedFields / requiredFields.length) * 100);
+  };
+
   useEffect(() => {
     if (items.length === 0 && !submitted) {
       toast.error("Your cart is empty");
@@ -145,7 +157,14 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
-      toast.error("Please complete all required fields");
+      // Enhanced validation with specific field details
+      const missingFields = [];
+      if (!formData.nama.trim()) missingFields.push("Full Name");
+      if (!formData.email.trim()) missingFields.push("Email");
+      if (!formData.phone.trim()) missingFields.push("Phone Number");
+      if (!formData.alamat.trim()) missingFields.push("Full Address");
+      
+      toast.error(`Please complete the following required fields: ${missingFields.join(", ")}`);
       return;
     }
     if (!isValidEmail(formData.email)) {
@@ -268,6 +287,27 @@ export default function CheckoutPage() {
           </Button>
           <h1 className="text-3xl font-bold">Checkout</h1>
           <p className="text-muted-foreground">Fill in your information to complete your order</p>
+          
+          {/* Form Progress */}
+          <div className="mt-4 p-4 bg-card border rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Form Completion</span>
+              <span className="text-sm text-muted-foreground">{getFormCompletionPercentage()}% complete</span>
+            </div>
+            <div className="w-full bg-muted rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  getFormCompletionPercentage() === 100 ? 'bg-green-500' : 'bg-primary'
+                }`}
+                style={{ width: `${getFormCompletionPercentage()}%` }}
+              ></div>
+            </div>
+            {getFormCompletionPercentage() === 100 && (
+              <p className="text-green-600 text-sm mt-2 flex items-center gap-1">
+                ✅ All required fields completed! You can now place your order.
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -284,21 +324,79 @@ export default function CheckoutPage() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="nama">Full Name *</Label>
-                      <Input id="nama" name="nama" value={formData.nama} onChange={handleInputChange} placeholder="Enter your full name" required />
+                      <Label htmlFor="nama" className={!formData.nama.trim() ? "text-red-600" : ""}>
+                        Full Name *
+                      </Label>
+                      <Input 
+                        id="nama" 
+                        name="nama" 
+                        value={formData.nama} 
+                        onChange={handleInputChange} 
+                        placeholder="Enter your full name" 
+                        required 
+                        className={!formData.nama.trim() ? "border-red-300 focus:border-red-500 focus:ring-red-200" : ""}
+                      />
+                      {!formData.nama.trim() && (
+                        <p className="text-red-600 text-xs mt-1">Full name is required</p>
+                      )}
                     </div>
                     <div>
-                      <Label htmlFor="phone">Phone Number *</Label>
-                      <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="08xxxxxxxxxx" required />
+                      <Label htmlFor="phone" className={!formData.phone.trim() ? "text-red-600" : ""}>
+                        Phone Number *
+                      </Label>
+                      <Input 
+                        id="phone" 
+                        name="phone" 
+                        type="tel" 
+                        value={formData.phone} 
+                        onChange={handleInputChange} 
+                        placeholder="08xxxxxxxxxx" 
+                        required 
+                        className={!formData.phone.trim() ? "border-red-300 focus:border-red-500 focus:ring-red-200" : ""}
+                      />
+                      {!formData.phone.trim() && (
+                        <p className="text-red-600 text-xs mt-1">Phone number is required</p>
+                      )}
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="email@example.com" required />
+                    <Label htmlFor="email" className={!formData.email.trim() || (formData.email.trim() && !isValidEmail(formData.email)) ? "text-red-600" : ""}>
+                      Email *
+                    </Label>
+                    <Input 
+                      id="email" 
+                      name="email" 
+                      type="email" 
+                      value={formData.email} 
+                      onChange={handleInputChange} 
+                      placeholder="email@example.com" 
+                      required 
+                      className={!formData.email.trim() || (formData.email.trim() && !isValidEmail(formData.email)) ? "border-red-300 focus:border-red-500 focus:ring-red-200" : ""}
+                    />
+                    {!formData.email.trim() && (
+                      <p className="text-red-600 text-xs mt-1">Email is required</p>
+                    )}
+                    {formData.email.trim() && !isValidEmail(formData.email) && (
+                      <p className="text-red-600 text-xs mt-1">Please enter a valid email address</p>
+                    )}
                   </div>
                   <div>
-                    <Label htmlFor="alamat">Full Address *</Label>
-                    <Textarea id="alamat" name="alamat" value={formData.alamat} onChange={handleInputChange} placeholder="Street, District, City, etc." required rows={3} />
+                    <Label htmlFor="alamat" className={!formData.alamat.trim() ? "text-red-600" : ""}>
+                      Full Address *
+                    </Label>
+                    <Textarea 
+                      id="alamat" 
+                      name="alamat" 
+                      value={formData.alamat} 
+                      onChange={handleInputChange} 
+                      placeholder="Street, District, City, etc." 
+                      required 
+                      rows={3} 
+                      className={!formData.alamat.trim() ? "border-red-300 focus:border-red-500 focus:ring-red-200" : ""}
+                    />
+                    {!formData.alamat.trim() && (
+                      <p className="text-red-600 text-xs mt-1">Full address is required</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="kodePos">Postal Code</Label>
@@ -382,12 +480,24 @@ export default function CheckoutPage() {
               {/* Area pembayaran */}
               {formData.paymentMethod === "Credit Card" ? (
                 <div className="pt-4">
-                  <StripeElementsWrapper
-                    amount={total}
-                    email={formData.email}
-                    orderData={{
-                      customerName: formData.nama.trim(),
-                      customerEmail: formData.email.trim(),
+                  {!isFormValid() ? (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                      <p className="text-amber-800 dark:text-amber-200 text-sm">⚠️ Please fill in all required fields above before proceeding with Credit Card payment.</p>
+                      <ul className="text-xs text-amber-700 dark:text-amber-300 mt-2 ml-4 space-y-1">
+                        {!formData.nama.trim() && <li>• Full Name is required</li>}
+                        {!formData.email.trim() && <li>• Email is required</li>}
+                        {formData.email.trim() && !isValidEmail(formData.email) && <li>• Valid email is required</li>}
+                        {!formData.phone.trim() && <li>• Phone Number is required</li>}
+                        {!formData.alamat.trim() && <li>• Full Address is required</li>}
+                      </ul>
+                    </div>
+                  ) : (
+                    <StripeElementsWrapper
+                      amount={total}
+                      email={formData.email}
+                      orderData={{
+                        customerName: formData.nama.trim(),
+                        customerEmail: formData.email.trim(),
                       customerPhone: formData.phone.trim(),
                       shippingAddress: formData.alamat.trim(),
                       postalCode: formData.kodePos?.trim() || "",
@@ -407,12 +517,20 @@ export default function CheckoutPage() {
                       toast.success("Order placed successfully!");
                     }}
                   />
+                  )}
                 </div>
               ) : formData.paymentMethod === "E-Wallet" ? (
                 <div className="pt-4 flex flex-col gap-4">
                   {!isFormValid() ? (
-                    <div className="bg-amber-50 border border-amber-200 rounded-md p-4">
-                      <p className="text-amber-800 text-sm">⚠️ Please fill in all required fields above before proceeding with PayPal payment.</p>
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                      <p className="text-amber-800 dark:text-amber-200 text-sm font-medium">⚠️ Please complete all required fields before proceeding with PayPal payment.</p>
+                      <ul className="text-xs text-amber-700 dark:text-amber-300 mt-2 ml-4 space-y-1">
+                        {!formData.nama.trim() && <li>• Full Name is required</li>}
+                        {!formData.email.trim() && <li>• Email is required</li>}
+                        {formData.email.trim() && !isValidEmail(formData.email) && <li>• Valid email is required</li>}
+                        {!formData.phone.trim() && <li>• Phone Number is required</li>}
+                        {!formData.alamat.trim() && <li>• Full Address is required</li>}
+                      </ul>
                     </div>
                   ) : (
                     <PayPalButton
@@ -451,9 +569,41 @@ export default function CheckoutPage() {
                   )}
                 </div>
               ) : (
-                <Button type="button" className="w-full" size="lg" disabled={creating} onClick={handleSubmit}>
-                  {creating ? "Processing..." : `Place Order - $${total.toFixed(2)}`}
-                </Button>
+                <div className="space-y-3">
+                  {!isFormValid() && (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                      <p className="text-amber-800 dark:text-amber-200 text-sm flex items-center gap-2">
+                        ⚠️ Please complete all required fields before placing your order
+                      </p>
+                      <ul className="text-xs text-amber-700 dark:text-amber-300 mt-2 ml-4 space-y-1">
+                        {!formData.nama.trim() && <li>• Full Name is required</li>}
+                        {!formData.email.trim() && <li>• Email is required</li>}
+                        {formData.email.trim() && !isValidEmail(formData.email) && <li>• Valid email is required</li>}
+                        {!formData.phone.trim() && <li>• Phone Number is required</li>}
+                        {!formData.alamat.trim() && <li>• Full Address is required</li>}
+                        {!formData.paymentMethod.trim() && <li>• Payment Method must be selected</li>}
+                      </ul>
+                    </div>
+                  )}
+                  <Button 
+                    type="button" 
+                    className="w-full" 
+                    size="lg" 
+                    disabled={creating || !isFormValid()} 
+                    onClick={handleSubmit}
+                  >
+                    {creating ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Processing...
+                      </div>
+                    ) : !isFormValid() ? (
+                      "Complete Required Fields"
+                    ) : (
+                      `Place Order - $${total.toFixed(2)}`
+                    )}
+                  </Button>
+                </div>
               )}
             </div>
           </div>
