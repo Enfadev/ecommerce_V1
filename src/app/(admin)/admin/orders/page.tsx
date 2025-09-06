@@ -5,12 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, MoreHorizontal, Calendar, ArrowUpDown, FileText, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, MoreHorizontal, Calendar, ArrowUpDown, FileText, Loader2, ChevronLeft, ChevronRight, Printer } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useOrders } from "@/hooks/useOrders";
+import { usePrintInvoice } from "@/hooks/use-print-invoice";
 import { AdminExportButton } from "@/components/admin/AdminExportButton";
+import { toast } from "sonner";
 
 interface Order {
   id: string;
@@ -43,6 +45,7 @@ interface Order {
 
 export default function AdminOrderManagement() {
   const { orders, stats, loading, error, pagination, fetchOrders, updateOrder } = useOrders();
+  const { printInvoice, isLoading: isPrinting } = usePrintInvoice();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -50,6 +53,48 @@ export default function AdminOrderManagement() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<keyof Order>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const handlePrintInvoice = async (order: Order) => {
+    try {
+      // Transform admin order format to customer order format for printing
+      const printOrder = {
+        id: parseInt(order.id) || 1,
+        orderNumber: order.id,
+        userId: 1, // dummy userId for admin prints
+        customerName: order.customer.name,
+        customerEmail: order.customer.email,
+        customerPhone: order.customer.phone,
+        shippingAddress: order.shippingAddress,
+        postalCode: "",
+        notes: order.notes || "",
+        paymentMethod: order.paymentMethod,
+        status: order.status.toUpperCase() as "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURNED",
+        paymentStatus: order.paymentStatus.toUpperCase() as "PENDING" | "PAID" | "FAILED" | "REFUNDED",
+        subtotal: order.subtotal,
+        shippingFee: order.shippingFee,
+        tax: order.tax,
+        discount: order.discount,
+        totalAmount: order.total,
+        trackingNumber: order.trackingNumber,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+        items: order.items.map((item, index) => ({
+          id: index + 1,
+          productId: index + 1, // dummy productId
+          productName: item.name,
+          productPrice: item.price,
+          productImage: item.image || undefined,
+          quantity: item.quantity
+        }))
+      };
+
+      await printInvoice(printOrder);
+      toast.success("Invoice printed successfully!");
+    } catch (error) {
+      console.error('Error printing invoice:', error);
+      toast.error("Failed to print invoice. Please try again.");
+    }
+  };
 
   const handlePageChange = (newPage: number) => {
     fetchOrders({
@@ -621,9 +666,22 @@ export default function AdminOrderManagement() {
                               <Eye className="w-4 h-4" />
                               View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2">
-                              <FileText className="w-4 h-4" />
-                              Print Invoice
+                            <DropdownMenuItem 
+                              onClick={() => handlePrintInvoice(order)} 
+                              className="gap-2"
+                              disabled={isPrinting}
+                            >
+                              {isPrinting ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  Printing...
+                                </>
+                              ) : (
+                                <>
+                                  <Printer className="w-4 h-4" />
+                                  Print Invoice
+                                </>
+                              )}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuLabel className="font-semibold text-xs">Change Order Status</DropdownMenuLabel>
@@ -748,9 +806,23 @@ export default function AdminOrderManagement() {
                   </Badge>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <FileText className="w-4 h-4 mr-2" />
-                    Print Invoice
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handlePrintInvoice(selectedOrder)}
+                    disabled={isPrinting}
+                  >
+                    {isPrinting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Printing...
+                      </>
+                    ) : (
+                      <>
+                        <Printer className="w-4 h-4 mr-2" />
+                        Print Invoice
+                      </>
+                    )}
                   </Button>
                   <Button variant="outline" size="sm">
                     Track Order
@@ -922,9 +994,23 @@ export default function AdminOrderManagement() {
 
               {/* Action Buttons */}
               <div className="flex gap-4 pt-4 border-t">
-                <Button variant="outline" className="flex-1">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Generate Invoice
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => selectedOrder && handlePrintInvoice(selectedOrder)}
+                  disabled={isPrinting}
+                >
+                  {isPrinting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Printing Invoice...
+                    </>
+                  ) : (
+                    <>
+                      <Printer className="w-4 h-4 mr-2" />
+                      Print Invoice
+                    </>
+                  )}
                 </Button>
                 <Button variant="outline" className="flex-1">
                   Send Email Update
