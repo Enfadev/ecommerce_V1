@@ -161,49 +161,76 @@ export function ChatWidget() {
     }
   }, [user, loadChatRoom]);
 
-  // Setup SSE for real-time messages
+  // Setup SSE for real-time messages - Always active when user has chatRoom
   useEffect(() => {
-    // Only setup SSE if we have a chat room and chat is open
-    if (chatRoom && user && isOpen) {
-      const eventSource = new EventSource(`/api/chat/sse?roomId=${chatRoom.id}&userId=${user.id}`);
+    // Setup SSE if we have a chat room and user, regardless of isOpen status
+    if (chatRoom && user) {
+      console.log(`🔗 User: Setting up SSE for room ${chatRoom.id} (isOpen: ${isOpen}, isMinimized: ${isMinimized})`);
+      const eventSource = new EventSource(`/api/chat/sse?roomId=${chatRoom.id}`);
+      
+      eventSource.onopen = () => {
+        console.log(`✅ User: SSE connection opened for room ${chatRoom.id}`);
+      };
       
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           console.log('📨 User: SSE message received:', data);
+          console.log(`📨 User: Current state - isOpen: ${isOpen}, isMinimized: ${isMinimized}`);
           
           if (data.type === 'new_message' && data.message) {
             setMessages(prev => {
               const messageExists = prev.some(msg => msg.id === data.message.id);
               if (!messageExists) {
+                console.log('📨 User: Adding new message to state');
                 const newMessages = [...prev, data.message];
-                // Auto scroll to bottom after new message
-                setTimeout(() => scrollToBottom(), 100);
+                
+                // Auto scroll to bottom after new message (only if chat is open)
+                if (isOpen && !isMinimized) {
+                  console.log('📨 User: Auto-scrolling to bottom');
+                  setTimeout(() => scrollToBottom(), 100);
+                } else {
+                  console.log('📨 User: Chat closed/minimized, incrementing unread count');
+                  // Update unread count if chat is closed or minimized
+                  setUnreadCount(prev => {
+                    const newCount = prev + 1;
+                    console.log(`📨 User: Unread count updated to: ${newCount}`);
+                    return newCount;
+                  });
+                }
+                
                 return newMessages;
+              } else {
+                console.log('📨 User: Message already exists, skipping');
               }
               return prev;
             });
             
-            // Mark message as read if chat is open
+            // Mark message as read only if chat is open and not minimized
             if (isOpen && !isMinimized) {
+              console.log('📨 User: Marking messages as read');
               markMessagesAsRead();
+            } else {
+              console.log('📨 User: Not marking as read - chat closed or minimized');
             }
           }
         } catch (error) {
-          console.error('Error parsing SSE message:', error);
+          console.error('❌ User: Error parsing SSE message:', error);
         }
       };
 
-      eventSource.onerror = () => {
-        console.warn('SSE connection failed, chat will work without real-time updates');
+      eventSource.onerror = (error) => {
+        console.warn('❌ User: SSE connection failed:', error);
+        console.warn('❌ User: SSE readyState:', eventSource.readyState);
         eventSource.close();
       };
 
       return () => {
+        console.log(`🔗 User: Cleaning up SSE connection for room ${chatRoom.id}`);
         eventSource.close();
       };
     }
-  }, [chatRoom, user, isOpen, isMinimized, markMessagesAsRead]);
+  }, [chatRoom, user, isOpen, isMinimized, markMessagesAsRead]); // Include all dependencies
 
   // Mark messages as read when chat opens
   useEffect(() => {
@@ -373,7 +400,13 @@ export function ChatWidget() {
         {!isOpen && (
           <div className="relative group">
             <Button
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                setIsOpen(true);
+                // Mark messages as read when opening chat
+                if (unreadCount > 0) {
+                  markMessagesAsRead();
+                }
+              }}
               className="h-12 w-12 rounded-full bg-card border border-border shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 text-foreground"
               variant="outline"
             >
