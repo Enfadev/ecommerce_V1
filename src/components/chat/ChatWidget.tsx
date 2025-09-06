@@ -164,22 +164,27 @@ export function ChatWidget() {
 
   // Setup SSE for real-time messages
   useEffect(() => {
-    if (chatRoom && user) {
+    // Only setup SSE if we have a chat room and chat is open
+    if (chatRoom && user && isOpen) {
       const eventSource = new EventSource(`/api/chat/sse?userId=${user.id}`);
       
       eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'NEW_MESSAGE' && data.roomId === chatRoom.id) {
-          setMessages(prev => [...prev, data.message]);
-          // Mark message as read if chat is open
-          if (isOpen && !isMinimized) {
-            markMessagesAsRead();
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'NEW_MESSAGE' && data.roomId === chatRoom.id) {
+            setMessages(prev => [...prev, data.message]);
+            // Mark message as read if chat is open
+            if (isOpen && !isMinimized) {
+              markMessagesAsRead();
+            }
           }
+        } catch (error) {
+          console.error('Error parsing SSE message:', error);
         }
       };
 
-      eventSource.onerror = (error) => {
-        console.error('SSE error:', error);
+      eventSource.onerror = () => {
+        console.warn('SSE connection failed, chat will work without real-time updates');
         eventSource.close();
       };
 
@@ -232,16 +237,21 @@ export function ChatWidget() {
           // Set messages from the chat room data
           if (data.chatRoom.messages && data.chatRoom.messages.length > 0) {
             setMessages(data.chatRoom.messages);
+            console.log("Messages set from chatRoom.messages:", data.chatRoom.messages);
           } else if (data.message) {
             // If there's a separate message object (for existing rooms)
             setMessages([data.message]);
+            console.log("Messages set from data.message:", data.message);
           } else {
             // Fallback: load messages separately
-            loadMessages(data.chatRoom.id);
+            console.log("Loading messages separately for room:", data.chatRoom.id);
+            await loadMessages(data.chatRoom.id);
           }
           
           setNewMessage("");
           setSubject("");
+        } else {
+          console.error("No chatRoom in response:", data);
         }
       } else {
         const errorData = await response.json();
