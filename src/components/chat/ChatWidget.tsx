@@ -109,7 +109,10 @@ export function ChatWidget() {
       const response = await fetch(`/api/chat/rooms/${roomId}`);
       if (response.ok) {
         const data = await response.json();
+        console.log("Load messages response:", data); // Debug log
         setMessages(data.messages || []);
+      } else {
+        console.error("Failed to load messages:", response.status);
       }
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -121,12 +124,18 @@ export function ChatWidget() {
       const response = await fetch('/api/chat/rooms');
       if (response.ok) {
         const data = await response.json();
-        if (data.rooms && data.rooms.length > 0) {
-          const room = data.rooms[0];
+        console.log("Load chat room response:", data); // Debug log
+        
+        if (data.chatRooms && data.chatRooms.length > 0) {
+          const room = data.chatRooms[0];
           setChatRoom(room);
           setUnreadCount(room.unreadCount || 0);
-          loadMessages(room.id);
+          await loadMessages(room.id);
+        } else {
+          console.log("No existing chat rooms found");
         }
+      } else {
+        console.error("Failed to load chat rooms:", response.status);
       }
     } catch (error) {
       console.error('Error loading chat room:', error);
@@ -214,10 +223,26 @@ export function ChatWidget() {
 
       if (response.ok) {
         const data = await response.json();
-        setChatRoom(data.room);
-        setMessages([data.message]);
-        setNewMessage("");
-        setSubject("");
+        console.log("API Response:", data); // Debug log
+        
+        // Handle both new chat room and existing room scenarios
+        if (data.chatRoom) {
+          setChatRoom(data.chatRoom);
+          
+          // Set messages from the chat room data
+          if (data.chatRoom.messages && data.chatRoom.messages.length > 0) {
+            setMessages(data.chatRoom.messages);
+          } else if (data.message) {
+            // If there's a separate message object (for existing rooms)
+            setMessages([data.message]);
+          } else {
+            // Fallback: load messages separately
+            loadMessages(data.chatRoom.id);
+          }
+          
+          setNewMessage("");
+          setSubject("");
+        }
       } else {
         const errorData = await response.json();
         console.error("Failed to create chat room:", errorData);
@@ -378,6 +403,13 @@ export function ChatWidget() {
 
             {!isMinimized && (
               <div className="flex flex-col h-[406px]">
+                {/* Debug info */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="p-2 bg-yellow-100 text-xs">
+                    ChatRoom: {chatRoom ? 'Yes' : 'No'} | Messages: {messages.length}
+                  </div>
+                )}
+                
                 {chatRoom ? (
                   <>
                     {/* Chat Info */}

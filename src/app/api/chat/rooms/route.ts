@@ -162,6 +162,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         chatRoom: existingRoom,
         message: newMessage,
+        success: true,
       });
     }
 
@@ -203,7 +204,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ chatRoom });
+    return NextResponse.json({ 
+      chatRoom,
+      success: true,
+    });
   } catch (error) {
     console.error("Error creating chat room:", error);
     return NextResponse.json(
