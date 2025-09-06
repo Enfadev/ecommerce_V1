@@ -14,8 +14,18 @@ import {
   Minimize2, 
   User, 
   Shield,
-  Clock
-  Paperclip
+  Clock,
+  Package,
+  Paperclip,
+  Smile,
+  Phone,
+  Video,
+  MoreHorizontal,
+  CheckCheck,
+  Check,
+  Zap,
+  Heart,
+  Star
 } from "lucide-react";
 import { useAuth } from "@/components/contexts/auth-context";
 import { ProductSearchDialog } from "./ProductSearchDialog";
