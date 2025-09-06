@@ -296,6 +296,11 @@ export function AdminChatDashboard() {
             ? { ...r, unreadCount: 0, isRead: true }
             : r
         ));
+        
+        // Notify sidebar to decrease total unread count
+        if (window.resetChatUnreadCount) {
+          window.resetChatUnreadCount(room.unreadCount);
+        }
       } catch (error) {
         console.error('Error marking room as read:', error);
       }

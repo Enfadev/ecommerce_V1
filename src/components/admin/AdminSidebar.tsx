@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/contexts/auth-context";
 import { useOrders } from "@/hooks/useOrders";
+import { useChatUnreadCount } from "@/hooks/use-chat-unread";
 import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, Home, Shield, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LucideIcon } from "lucide-react";
@@ -38,6 +39,7 @@ export default function AdminSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { stats } = useOrders();
+  const { totalUnreadCount } = useChatUnreadCount();
 
   const isActiveRoute = (href: string) => {
     if (href === "/admin") {
@@ -102,7 +104,14 @@ export default function AdminSidebar() {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = isActiveRoute(item.href);
-          const badgeValue = item.id === "orders" ? stats.total : item.badge;
+          let badgeValue = item.badge;
+          
+          // Dynamic badge values
+          if (item.id === "orders") {
+            badgeValue = stats.total?.toString() || null;
+          } else if (item.id === "chat") {
+            badgeValue = totalUnreadCount > 0 ? totalUnreadCount.toString() : null;
+          }
 
           return (
             <Link key={item.id} href={item.href}>
@@ -112,7 +121,13 @@ export default function AdminSidebar() {
                   <>
                     <span className="flex-1 text-left">{item.label}</span>
                     {badgeValue ? (
-                      <Badge variant={isActive ? "secondary" : "outline"} className="h-5 px-1.5 text-xs">
+                      <Badge 
+                        variant={isActive ? "secondary" : (item.id === "chat" ? "destructive" : "outline")} 
+                        className={cn(
+                          "h-5 px-1.5 text-xs",
+                          item.id === "chat" && "animate-pulse"
+                        )}
+                      >
                         {badgeValue}
                       </Badge>
                     ) : null}
