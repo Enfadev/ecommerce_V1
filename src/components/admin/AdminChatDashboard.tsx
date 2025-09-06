@@ -28,6 +28,7 @@ interface ChatRoom {
   lastMessage: string;
   lastActivity: string;
   isRead: boolean;
+  unreadCount?: number;
   user: {
     id: number;
     name: string;
@@ -93,6 +94,7 @@ export function AdminChatDashboard() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const eventSourceRef = useRef<EventSource | null>(null);
+  const globalEventSourceRef = useRef<EventSource | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -115,7 +117,51 @@ export function AdminChatDashboard() {
 
   useEffect(() => {
     fetchChatRooms();
-  }, []);
+    
+    // Setup global SSE connection for unread count updates
+    console.log(`🔗 Admin: Setting up global SSE for unread count monitoring`);
+    const globalEventSource = new EventSource('/api/chat/sse?global=true');
+    
+    globalEventSource.onopen = () => {
+      console.log(`✅ Admin: Global SSE connection opened`);
+    };
+    
+    globalEventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('📨 Admin: Global SSE message received:', data);
+        
+        if (data.type === 'new_message' && data.message && data.roomId) {
+          // Update unread count for the specific room
+          console.log(`📨 Admin: Updating unread count for room ${data.roomId}`);
+          setChatRooms(prev => prev.map(room => {
+            if (room.id === data.roomId) {
+              return {
+                ...room,
+                unreadCount: (room.unreadCount || 0) + 1,
+                lastMessage: data.message.message,
+                lastActivity: data.message.createdAt,
+                isRead: false
+              };
+            }
+            return room;
+          }));
+        }
+      } catch (error) {
+        console.error('❌ Admin: Error parsing global SSE message:', error);
+      }
+    };
+    
+    globalEventSource.onerror = (error) => {
+      console.error('❌ Admin: Global SSE Error:', error);
+    };
+    
+    globalEventSourceRef.current = globalEventSource;
+    
+    return () => {
+      globalEventSource.close();
+    };
+  }, []); // No dependencies needed for initial setup
 
   useEffect(() => {
     if (selectedRoom) {
@@ -229,6 +275,30 @@ export function AdminChatDashboard() {
       console.error("Error sending message:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRoomSelection = async (room: ChatRoom) => {
+    console.log(`📨 Admin: Selecting room ${room.id}`);
+    setSelectedRoom(room);
+    
+    // Reset unread count for this room
+    if (room.unreadCount && room.unreadCount > 0) {
+      console.log(`📨 Admin: Resetting unread count for room ${room.id}`);
+      try {
+        await fetch(`/api/chat/rooms/${room.id}/read`, {
+          method: 'POST'
+        });
+        
+        // Update the chat rooms list to reset unread count
+        setChatRooms(prev => prev.map(r => 
+          r.id === room.id 
+            ? { ...r, unreadCount: 0, isRead: true }
+            : r
+        ));
+      } catch (error) {
+        console.error('Error marking room as read:', error);
+      }
     }
   };
 
@@ -473,7 +543,7 @@ export function AdminChatDashboard() {
                 {filteredChatRooms.map((room) => (
                   <div
                     key={room.id}
-                    onClick={() => setSelectedRoom(room)}
+                    onClick={() => handleRoomSelection(room)}
                     className={`p-4 border-b border-border/50 cursor-pointer hover:bg-muted/30 transition-all duration-200 ${
                       selectedRoom?.id === room.id 
                         ? "bg-primary/5 border-l-4 border-l-primary" 
@@ -494,9 +564,16 @@ export function AdminChatDashboard() {
                             <p className="text-sm font-semibold text-foreground truncate">
                               {room.user.name}
                             </p>
-                            {!room.isRead && (
-                              <div className="flex items-center justify-center w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                            )}
+                            <div className="flex items-center space-x-2">
+                              {room.unreadCount && room.unreadCount > 0 && (
+                                <Badge variant="destructive" className="text-xs min-w-[20px] h-5 flex items-center justify-center px-1.5 animate-pulse">
+                                  {room.unreadCount > 99 ? '99+' : room.unreadCount}
+                                </Badge>
+                              )}
+                              {!room.isRead && (
+                                <div className="flex items-center justify-center w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                              )}
+                            </div>
                           </div>
                           
                           <p className="text-sm text-foreground/80 truncate font-medium mb-1">

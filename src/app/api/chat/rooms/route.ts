@@ -98,7 +98,14 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ chatRooms });
+    // Format the response to include unreadCount
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formattedChatRooms = chatRooms.map((room: any) => ({
+      ...room,
+      unreadCount: room._count.messages,
+    }));
+
+    return NextResponse.json({ chatRooms: formattedChatRooms });
   } catch (error) {
     console.error("Error fetching chat rooms:", error);
     return NextResponse.json(
@@ -124,6 +131,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const existingRoom = await (prisma as any).chatRoom.findFirst({
       where: {
         userId: user.id,
@@ -132,6 +140,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingRoom) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newMessage = await (prisma as any).chatMessage.create({
         data: {
           chatRoomId: existingRoom.id,
@@ -150,6 +159,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (prisma as any).chatRoom.update({
         where: { id: existingRoom.id },
         data: {
@@ -166,6 +176,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const chatRoom = await (prisma as any).chatRoom.create({
       data: {
         userId: user.id,

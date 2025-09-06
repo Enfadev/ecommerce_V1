@@ -87,6 +87,9 @@ export function ChatWidget() {
   // Keep track of current state for SSE handler
   const stateRef = useRef({ isOpen: false, isMinimized: false });
   stateRef.current = { isOpen, isMinimized };
+  
+  // Keep track of processed messages to prevent duplicates
+  const processedMessagesRef = useRef(new Set<number>());
 
   // Auto scroll to bottom
   const scrollToBottom = () => {
@@ -182,46 +185,57 @@ export function ChatWidget() {
           console.log('📨 User: SSE message received:', data);
           
           if (data.type === 'new_message' && data.message) {
+            const messageId = data.message.id;
+            
+            // Check if we've already processed this message
+            if (processedMessagesRef.current.has(messageId)) {
+              console.log(`📨 User: Message ${messageId} already processed, skipping`);
+              return;
+            }
+            
+            // Mark as processed immediately to prevent duplicates
+            processedMessagesRef.current.add(messageId);
+            console.log(`📨 User: Processing new message ${messageId}`);
+            
+            // Add message to state
             setMessages(prev => {
-              const messageExists = prev.some(msg => msg.id === data.message.id);
-              if (!messageExists) {
-                console.log('📨 User: Adding new message to state');
-                
-                // Check current state from ref
-                const { isOpen: currentIsOpen, isMinimized: currentIsMinimized } = stateRef.current;
-                console.log(`📨 User: Current state - isOpen: ${currentIsOpen}, isMinimized: ${currentIsMinimized}`);
-                
-                // Auto scroll to bottom if chat is open
-                if (currentIsOpen && !currentIsMinimized) {
-                  console.log('📨 User: Chat is open, auto-scrolling');
-                  setTimeout(() => scrollToBottom(), 100);
-                  
-                  // Mark as read if chat is open
-                  setTimeout(() => {
-                    fetch(`/api/chat/rooms/${chatRoom.id}/read`, {
-                      method: 'POST'
-                    }).then(() => {
-                      console.log('📨 User: Messages marked as read');
-                      setUnreadCount(0);
-                    }).catch(error => {
-                      console.error('Error marking messages as read:', error);
-                    });
-                  }, 200);
-                } else {
-                  console.log('📨 User: Chat closed/minimized, incrementing unread count');
-                  setUnreadCount(prev => {
-                    const newCount = prev + 1;
-                    console.log(`📨 User: Unread count updated to: ${newCount}`);
-                    return newCount;
-                  });
-                }
-                
-                return [...prev, data.message];
-              } else {
-                console.log('📨 User: Message already exists, skipping');
+              const messageExists = prev.some(msg => msg.id === messageId);
+              if (messageExists) {
+                console.log(`📨 User: Message ${messageId} already in state, skipping`);
                 return prev;
               }
+              
+              console.log(`📨 User: Adding message ${messageId} to state`);
+              return [...prev, data.message];
             });
+            
+            // Handle unread count and actions
+            const { isOpen: currentIsOpen, isMinimized: currentIsMinimized } = stateRef.current;
+            console.log(`📨 User: Chat state - isOpen: ${currentIsOpen}, isMinimized: ${currentIsMinimized}`);
+            
+            if (currentIsOpen && !currentIsMinimized) {
+              console.log(`📨 User: Chat is open, auto-scrolling and marking as read`);
+              setTimeout(() => scrollToBottom(), 100);
+              
+              // Mark as read if chat is open
+              setTimeout(() => {
+                fetch(`/api/chat/rooms/${chatRoom.id}/read`, {
+                  method: 'POST'
+                }).then(() => {
+                  console.log(`📨 User: Messages marked as read`);
+                  setUnreadCount(0);
+                }).catch(error => {
+                  console.error('Error marking messages as read:', error);
+                });
+              }, 200);
+            } else {
+              console.log(`📨 User: Chat closed/minimized, incrementing unread count`);
+              setUnreadCount(prev => {
+                const newCount = prev + 1;
+                console.log(`📨 User: Unread count updated from ${prev} to: ${newCount}`);
+                return newCount;
+              });
+            }
           }
         } catch (error) {
           console.error('❌ User: Error parsing SSE message:', error);

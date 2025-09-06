@@ -16,10 +16,15 @@ export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
   let broadcasted = 0;
   
   for (const [connectionId, controller] of connections.entries()) {
-    // Connection ID format is "userId-roomId"
-    if (connectionId.endsWith(`-${roomId}`)) {
+    // Connection ID format is "userId-roomId" or "userId-global"
+    if (connectionId.endsWith(`-${roomId}`) || connectionId.endsWith('-global')) {
       try {
-        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+        // Add roomId to the data for global connections
+        const broadcastData = connectionId.endsWith('-global') 
+          ? { ...data, roomId: parseInt(roomId) }
+          : data;
+        
+        controller.enqueue(`data: ${JSON.stringify(broadcastData)}\n\n`);
         broadcasted++;
         console.log(`📡 Sent to connection: ${connectionId}`);
       } catch (error) {
@@ -43,30 +48,36 @@ export async function GET(request: NextRequest) {
     }
 
     const roomId = request.nextUrl.searchParams.get("roomId");
-    if (!roomId) {
-      console.error("SSE: Missing roomId parameter");
-      return new Response("Room ID required", { status: 400 });
+    const isGlobal = request.nextUrl.searchParams.get("global") === "true";
+    
+    if (!roomId && !isGlobal) {
+      console.error("SSE: Missing roomId parameter or global flag");
+      return new Response("Room ID required or set global=true", { status: 400 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const chatRoom = await (prisma as any).chatRoom.findFirst({
-      where: {
-        id: parseInt(roomId),
-        OR: [
-          { userId: user.id },
-          { adminId: user.id },
-          { admin: null, ...(user.role === "ADMIN" && {}) },
-        ],
-      },
-    });
+    // Verify room access for specific room connections, skip for global
+    if (!isGlobal) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const chatRoom = await (prisma as any).chatRoom.findFirst({
+        where: {
+          id: parseInt(roomId!),
+          OR: [
+            { userId: user.id },
+            { adminId: user.id },
+            { admin: null, ...(user.role === "ADMIN" && {}) },
+          ],
+        },
+      });
 
-    if (!chatRoom) {
-      console.error(`SSE: Chat room ${roomId} not found for user ${user.id}`);
-      return new Response("Chat room not found", { status: 404 });
+      if (!chatRoom) {
+        console.error(`SSE: Chat room ${roomId} not found for user ${user.id}`);
+        return new Response("Chat room not found", { status: 404 });
+      }
     }
 
-    console.log(`SSE: Establishing connection for user ${user.id} in room ${roomId}`);
-    const connectionId = `${user.id}-${roomId}`;
+    const connectionType = isGlobal ? 'global' : roomId;
+    console.log(`SSE: Establishing ${isGlobal ? 'global' : 'room'} connection for user ${user.id} ${isGlobal ? '' : `in room ${roomId}`}`);
+    const connectionId = `${user.id}-${connectionType}`;
 
     const stream = new ReadableStream({
       start(controller) {
@@ -76,6 +87,8 @@ export async function GET(request: NextRequest) {
           `data: ${JSON.stringify({
             type: "connected",
             timestamp: new Date().toISOString(),
+            isGlobal,
+            roomId: isGlobal ? null : roomId
           })}\n\n`
         );
 
