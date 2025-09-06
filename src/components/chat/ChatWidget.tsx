@@ -238,10 +238,14 @@ export function ChatWidget() {
           if (data.chatRoom.messages && data.chatRoom.messages.length > 0) {
             setMessages(data.chatRoom.messages);
             console.log("Messages set from chatRoom.messages:", data.chatRoom.messages);
+            // Scroll to bottom after setting messages
+            setTimeout(() => scrollToBottom(), 100);
           } else if (data.message) {
             // If there's a separate message object (for existing rooms)
             setMessages([data.message]);
             console.log("Messages set from data.message:", data.message);
+            // Scroll to bottom after setting message
+            setTimeout(() => scrollToBottom(), 100);
           } else {
             // Fallback: load messages separately
             console.log("Loading messages separately for room:", data.chatRoom.id);
@@ -279,6 +283,17 @@ export function ChatWidget() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        console.log("Message sent successfully");
+        
+        // Add the new message to the messages state immediately
+        if (data.message) {
+          setMessages(prev => [...prev, data.message]);
+          // Scroll to bottom to show the new message
+          setTimeout(() => scrollToBottom(), 100);
+        }
+        
+        // Clear the input
         setNewMessage("");
       } else {
         console.error("Failed to send message");
