@@ -320,7 +320,18 @@ export function ChatWidget() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         console.log("Product shared successfully");
+        
+        // Add the new message to the messages state immediately
+        if (data.message) {
+          setMessages(prev => [...prev, data.message]);
+          // Scroll to bottom to show the new message
+          setTimeout(() => scrollToBottom(), 100);
+        }
+        
+        // Close the product dialog
+        setIsProductDialogOpen(false);
       } else {
         console.error("Failed to share product");
       }

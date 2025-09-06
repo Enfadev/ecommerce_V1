@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Search, 
   Package, 
-  ShoppingCart, 
-  Star,
-  Loader2
+  Loader2,
+  MessageCircle
 } from "lucide-react";
 
 interface Product {
@@ -48,10 +47,36 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
     if (searchQuery.trim()) {
       searchProducts(searchQuery, 1);
     } else {
-      setProducts([]);
-      setHasMore(false);
+      // Load featured/popular products when no search query
+      loadFeaturedProducts();
     }
   }, [searchQuery]);
+
+  useEffect(() => {
+    // Load featured products when dialog opens
+    if (isOpen && !searchQuery.trim() && products.length === 0) {
+      loadFeaturedProducts();
+    }
+  }, [isOpen, searchQuery, products.length]);
+
+  const loadFeaturedProducts = async () => {
+    setIsLoading(true);
+    try {
+      // Try to load featured products first, fallback to all products
+      const response = await fetch('/api/chat/products?page=1&limit=10');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data.products || []);
+        setHasMore(data.hasMore || false);
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      console.error("Error loading products:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const searchProducts = async (query: string, page: number = 1) => {
     if (!query.trim()) return;
@@ -221,17 +246,17 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
                         </div>
                       </div>
 
-                      {/* Select Button */}
+                      {/* Add to Chat Button */}
                       <Button
                         size="sm"
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelectProduct(product);
                         }}
                       >
-                        <ShoppingCart className="h-4 w-4 mr-1" />
-                        Select
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        Chat
                       </Button>
                     </div>
                   </CardContent>
@@ -273,15 +298,15 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
             </div>
           )}
 
-          {/* Empty State */}
-          {!searchQuery.trim() && (
+          {/* Empty State - only show when not loading and no search query */}
+          {!searchQuery.trim() && !isLoading && products.length === 0 && (
             <div className="text-center py-8">
-              <Search className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">
-                Search for products
+                Browse Products
               </h3>
               <p className="text-muted-foreground">
-                Start typing to find products to share in your conversation
+                Select a product to share in your conversation, or use the search above
               </p>
             </div>
           )}
