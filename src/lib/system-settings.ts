@@ -8,7 +8,9 @@ export interface SystemSettings {
   currency: string;
   timezone: string;
   language: string;
-  logoUrl?: string;
+  logoUrl?: string | null;
+  phoneNumber?: string | null;
+  officeAddress?: string | null;
   enableTwoFactor: boolean;
   sessionTimeout: number;
   version: string;
@@ -62,7 +64,9 @@ export async function getSystemSettingsWithFallback(): Promise<SystemSettings> {
       currency: "USD",
       timezone: "Asia/Jakarta",
       language: "en",
-      logoUrl: undefined,
+      logoUrl: null,
+      phoneNumber: "+1 (555) 000-0000",
+      officeAddress: "123 Business District, Suite 100, Jakarta, Indonesia",
       enableTwoFactor: false,
       sessionTimeout: 24,
       version: "1.0.0",

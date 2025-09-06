@@ -15,6 +15,8 @@ async function seedSettings() {
         currency: 'USD',
         timezone: 'Asia/Jakarta',
         language: 'en',
+        phoneNumber: '+1 (555) 123-4567',
+        officeAddress: '123 Business Street, Suite 100, New York, NY 10001, United States',
         enableTwoFactor: false,
         sessionTimeout: 24,
         version: '1.0.0'

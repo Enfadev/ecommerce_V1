@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
 
     if (!settings || (Array.isArray(settings) && settings.length === 0)) {
       await prisma.$executeRaw`
-        INSERT INTO system_settings (storeName, storeDescription, contactEmail, timezone, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES ('E-Commerce Store', 'Trusted online store', 'contact@store.com', 'Asia/Jakarta', false, 24, '1.0.0', NOW(), NOW())
+        INSERT INTO system_settings (storeName, storeDescription, contactEmail, phoneNumber, officeAddress, timezone, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
+        VALUES ('E-Commerce Store', 'Trusted online store', 'contact@store.com', '', '', 'Asia/Jakarta', false, 24, '1.0.0', NOW(), NOW())
       `;
 
       settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
@@ -52,6 +52,8 @@ export async function GET(request: NextRequest) {
         storeName: settingsData?.storeName || "E-Commerce Store",
         storeDescription: settingsData?.storeDescription || "Trusted online store",
         contactEmail: settingsData?.contactEmail || "contact@store.com",
+        phoneNumber: settingsData?.phoneNumber || "",
+        officeAddress: settingsData?.officeAddress || "",
         timezone: settingsData?.timezone || "Asia/Jakarta",
         logoUrl: logoUrl,
         enableTwoFactor: settingsData?.enableTwoFactor || false,
@@ -89,6 +91,8 @@ export async function PUT(request: NextRequest) {
         SET storeName = ${body.storeName || settingsData.storeName},
             storeDescription = ${body.storeDescription || settingsData.storeDescription},
             contactEmail = ${body.contactEmail || settingsData.contactEmail},
+            phoneNumber = ${body.phoneNumber || settingsData.phoneNumber},
+            officeAddress = ${body.officeAddress || settingsData.officeAddress},
             timezone = ${body.timezone || settingsData.timezone},
             logoUrl = ${body.logoUrl !== undefined ? body.logoUrl : settingsData.logoUrl},
             updatedAt = NOW()
@@ -96,8 +100,8 @@ export async function PUT(request: NextRequest) {
       `;
     } else {
       await prisma.$executeRaw`
-        INSERT INTO system_settings (storeName, storeDescription, contactEmail, timezone, logoUrl, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES (${body.storeName || "E-Commerce Store"}, ${body.storeDescription || "Trusted online store"}, ${body.contactEmail || "contact@store.com"}, ${body.timezone || "Asia/Jakarta"}, ${
+        INSERT INTO system_settings (storeName, storeDescription, contactEmail, phoneNumber, officeAddress, timezone, logoUrl, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
+        VALUES (${body.storeName || "E-Commerce Store"}, ${body.storeDescription || "Trusted online store"}, ${body.contactEmail || "contact@store.com"}, ${body.phoneNumber || ""}, ${body.officeAddress || ""}, ${body.timezone || "Asia/Jakarta"}, ${
         body.logoUrl || null
       }, false, 24, '1.0.0', NOW(), NOW())
       `;
@@ -113,6 +117,8 @@ export async function PUT(request: NextRequest) {
         storeName: updatedSettings?.storeName || "E-Commerce Store",
         storeDescription: updatedSettings?.storeDescription || "Trusted online store",
         contactEmail: updatedSettings?.contactEmail || "contact@store.com",
+        phoneNumber: updatedSettings?.phoneNumber || "",
+        officeAddress: updatedSettings?.officeAddress || "",
         timezone: updatedSettings?.timezone || "Asia/Jakarta",
         logoUrl: updatedSettings?.logoUrl || null,
         enableTwoFactor: updatedSettings?.enableTwoFactor || false,

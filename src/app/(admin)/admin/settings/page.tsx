@@ -64,6 +64,8 @@ export default function AdminSettingsPage() {
     storeName: "",
     storeDescription: "",
     contactEmail: "",
+    phoneNumber: "",
+    officeAddress: "",
     timezone: "Asia/Jakarta",
     logoUrl: null as string | null,
   });
@@ -83,6 +85,8 @@ export default function AdminSettingsPage() {
             storeName: data.settings.storeName || "",
             storeDescription: data.settings.storeDescription || "",
             contactEmail: data.settings.contactEmail || "",
+            phoneNumber: data.settings.phoneNumber || "",
+            officeAddress: data.settings.officeAddress || "",
             timezone: data.settings.timezone || "Asia/Jakarta",
             logoUrl: data.settings.logoUrl || null,
           });
@@ -202,6 +206,14 @@ export default function AdminSettingsPage() {
               <div>
                 <label className="block text-sm font-medium mb-2">Contact Email</label>
                 <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Phone Number</label>
+                <Input type="tel" value={generalSettings.phoneNumber} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, phoneNumber: e.target.value }))} placeholder="+1 (555) 123-4567" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Office Address</label>
+                <Textarea value={generalSettings.officeAddress} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, officeAddress: e.target.value }))} placeholder="123 Business Street, Suite 100, City, State, Country" rows={3} />
               </div>
               <Button onClick={handleSaveGeneral} className="w-full" disabled={loading}>
                 <Save className="w-4 h-4 mr-2" />

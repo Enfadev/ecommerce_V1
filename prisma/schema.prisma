@@ -287,6 +287,10 @@ model SystemSettings {
   language         String  @default("en")
   logoUrl          String? // Logo website
 
+  // Company Contact Information
+  phoneNumber      String? // Nomor telepon kantor
+  officeAddress    String? @db.Text // Alamat kantor
+
   // Security Settings
   enableTwoFactor Boolean @default(false)
   sessionTimeout  Int     @default(24) // hours
