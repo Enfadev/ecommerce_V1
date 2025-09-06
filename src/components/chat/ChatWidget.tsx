@@ -15,8 +15,11 @@ import {
   User, 
   Shield,
   Clock
+  Paperclip
 } from "lucide-react";
 import { useAuth } from "@/components/contexts/auth-context";
+import { ProductSearchDialog } from "./ProductSearchDialog";
+import { ProductMessage } from "./ProductMessage";
 
 interface Message {
   id: number;
@@ -24,6 +27,22 @@ interface Message {
   messageType: string;
   isRead: boolean;
   createdAt: string;
+  productId?: number;
+  product?: {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    discountPrice?: number;
+    imageUrl?: string;
+    stock: number;
+    brand?: string;
+    sku?: string;
+    category?: {
+      id: number;
+      name: string;
+    };
+  };
   sender: {
     id: number;
     name: string;
@@ -58,6 +77,7 @@ export function ChatWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -209,6 +229,88 @@ export function ChatWidget() {
     }
   };
 
+  const sendProductMessage = async (product: {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    discountPrice?: number;
+    imageUrl?: string;
+    stock: number;
+    brand?: string;
+    sku?: string;
+    category?: {
+      id: number;
+      name: string;
+    };
+  }) => {
+    if (!chatRoom) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/chat/rooms/${chatRoom.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: `Shared product: ${product.name}`,
+          messageType: "PRODUCT",
+          productId: product.id,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Product shared successfully");
+      } else {
+        console.error("Failed to share product");
+      }
+    } catch (error) {
+      console.error("Error sharing product:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const response = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId,
+          quantity: 1,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Product added to cart");
+        // Optionally show toast notification
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
+
+  const handleAddToWishlist = async (productId: number) => {
+    try {
+      const response = await fetch("/api/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId }),
+      });
+
+      if (response.ok) {
+        console.log("Product added to wishlist");
+        // Optionally show toast notification
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+    }
+  };
+
+  const handleViewProduct = (productId: number) => {
+    window.open(`/product/${productId}`, "_blank");
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -309,36 +411,66 @@ export function ChatWidget() {
                           key={message.id}
                           className={`flex ${Number(message.sender.id) === Number(user.id) ? "justify-end" : "justify-start"}`}
                         >
-                          <div
-                            className={`max-w-xs lg:max-w-md ${
-                              Number(message.sender.id) === Number(user.id)
-                                ? "bg-blue-600 text-white"
-                                : "bg-gray-200 text-gray-800"
-                            } rounded-lg px-3 py-2`}
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              <Avatar className="h-5 w-5">
-                                <AvatarImage src={message.sender.image} />
-                                <AvatarFallback className="text-xs">
-                                  {message.sender.role === "ADMIN" ? (
-                                    <Shield className="h-3 w-3" />
-                                  ) : (
-                                    <User className="h-3 w-3" />
-                                  )}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span className="text-xs opacity-75">
-                                {message.sender.name}
-                              </span>
+                          {message.messageType === "PRODUCT" && message.product ? (
+                            <div className="max-w-xs">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Avatar className="h-5 w-5">
+                                  <AvatarImage src={message.sender.image} />
+                                  <AvatarFallback className="text-xs">
+                                    {message.sender.role === "ADMIN" ? (
+                                      <Shield className="h-3 w-3" />
+                                    ) : (
+                                      <User className="h-3 w-3" />
+                                    )}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-xs text-gray-600">
+                                  {message.sender.name} shared a product
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {formatTime(message.createdAt)}
+                                </span>
+                              </div>
+                              <ProductMessage 
+                                product={message.product}
+                                onAddToCart={handleAddToCart}
+                                onAddToWishlist={handleAddToWishlist}
+                                onViewProduct={handleViewProduct}
+                                showActions={Number(message.sender.id) !== Number(user.id)}
+                              />
                             </div>
-                            <p className="text-sm">{message.message}</p>
-                            <div className="flex items-center justify-end gap-1 mt-1">
-                              <Clock className="h-3 w-3 opacity-50" />
-                              <span className="text-xs opacity-75">
-                                {formatTime(message.createdAt)}
-                              </span>
+                          ) : (
+                            <div
+                              className={`max-w-xs lg:max-w-md ${
+                                Number(message.sender.id) === Number(user.id)
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-gray-200 text-gray-800"
+                              } rounded-lg px-3 py-2`}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                <Avatar className="h-5 w-5">
+                                  <AvatarImage src={message.sender.image} />
+                                  <AvatarFallback className="text-xs">
+                                    {message.sender.role === "ADMIN" ? (
+                                      <Shield className="h-3 w-3" />
+                                    ) : (
+                                      <User className="h-3 w-3" />
+                                    )}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <span className="text-xs opacity-75">
+                                  {message.sender.name}
+                                </span>
+                              </div>
+                              <p className="text-sm">{message.message}</p>
+                              <div className="flex items-center justify-end gap-1 mt-1">
+                                <Clock className="h-3 w-3 opacity-50" />
+                                <span className="text-xs opacity-75">
+                                  {formatTime(message.createdAt)}
+                                </span>
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       ))}
 
@@ -363,6 +495,15 @@ export function ChatWidget() {
                     {/* Message Input */}
                     <div className="p-3 border-t">
                       <div className="flex gap-2">
+                        <Button
+                          onClick={() => setIsProductDialogOpen(true)}
+                          size="icon"
+                          variant="outline"
+                          className="shrink-0"
+                          title="Share product"
+                        >
+                          <Package className="h-4 w-4" />
+                        </Button>
                         <Input
                           value={newMessage}
                           onChange={(e) => setNewMessage(e.target.value)}
@@ -424,6 +565,13 @@ export function ChatWidget() {
             )}
           </Card>
         )}
+
+        {/* Product Search Dialog */}
+        <ProductSearchDialog
+          isOpen={isProductDialogOpen}
+          onClose={() => setIsProductDialogOpen(false)}
+          onSelectProduct={sendProductMessage}
+        />
       </div>
     </>
   );

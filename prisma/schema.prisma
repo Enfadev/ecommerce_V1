@@ -82,6 +82,7 @@ model Product {
   cartItems       CartItem[]
   orderItems      OrderItem[]
   wishlistItems   WishlistItem[]
+  chatMessages    ChatMessage[]  @relation("ChatProductMessages")
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }
@@ -355,6 +356,8 @@ model ChatMessage {
   message    String   @db.Text
   messageType MessageType @default(TEXT)
   isRead     Boolean  @default(false)
+  productId  Int?     // Tambahan untuk produk yang ditanyakan
+  product    Product? @relation("ChatProductMessages", fields: [productId], references: [id])
   createdAt  DateTime @default(now())
 
   @@map("chat_messages")
@@ -377,4 +380,5 @@ enum MessageType {
   TEXT
   IMAGE
   FILE
+  PRODUCT
 }

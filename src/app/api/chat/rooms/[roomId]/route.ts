@@ -18,7 +18,8 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const roomId = parseInt(params.roomId);
+    const resolvedParams = await params;
+    const roomId = parseInt(resolvedParams.roomId);
 
     const chatRoom = await prisma.chatRoom.findFirst({
       where: {
@@ -59,7 +60,7 @@ export async function GET(
     const limit = 50;
     const skip = (page - 1) * limit;
 
-    const messages = await prisma.chatMessage.findMany({
+    const messages = await (prisma as any).chatMessage.findMany({
       where: { chatRoomId: roomId },
       include: {
         sender: {
@@ -68,6 +69,25 @@ export async function GET(
             name: true,
             role: true,
             image: true,
+          },
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            price: true,
+            discountPrice: true,
+            imageUrl: true,
+            stock: true,
+            brand: true,
+            sku: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -124,8 +144,9 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const roomId = parseInt(params.roomId);
-    const { message, messageType = "TEXT" } = await request.json();
+    const resolvedParams = await params;
+    const roomId = parseInt(resolvedParams.roomId);
+    const { message, messageType = "TEXT", productId } = await request.json();
 
     if (!message) {
       return NextResponse.json(
@@ -152,13 +173,17 @@ export async function POST(
       );
     }
 
-    const newMessage = await prisma.chatMessage.create({
-      data: {
-        chatRoomId: roomId,
-        senderId: user.id,
-        message,
-        messageType,
-      },
+    // Create message data
+    const messageData = {
+      chatRoomId: roomId,
+      senderId: user.id,
+      message,
+      messageType,
+      ...(productId && { productId: parseInt(productId) }),
+    };
+
+    const newMessage = await (prisma as any).chatMessage.create({
+      data: messageData,
       include: {
         sender: {
           select: {
@@ -168,6 +193,25 @@ export async function POST(
             image: true,
           },
         },
+        product: productId ? {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            price: true,
+            discountPrice: true,
+            imageUrl: true,
+            stock: true,
+            brand: true,
+            sku: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        } : false,
       },
     });
 
