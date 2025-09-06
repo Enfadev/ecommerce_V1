@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server';
+import { getSystemSettingsWithFallback } from '@/lib/system-settings';
 
 export async function GET() {
   try {
-    // You can modify this to fetch from database or environment variables
+    // Fetch company info from system settings database
+    const settings = await getSystemSettingsWithFallback();
+    
     const companyInfo = {
-      name: process.env.COMPANY_NAME || "E-Commerce Store",
-      address: process.env.COMPANY_ADDRESS || "123 Business Street, New York, NY 10001",
-      phone: process.env.COMPANY_PHONE || "+1 (555) 123-4567",
-      email: process.env.COMPANY_EMAIL || "info@ecommerce.com",
-      website: process.env.COMPANY_WEBSITE || "www.ecommerce.com"
+      name: settings.storeName,
+      address: settings.officeAddress || "123 Business Street, City, State 12345",
+      phone: settings.phoneNumber || "+1 (555) 123-4567", 
+      email: settings.contactEmail,
+      website: `www.${settings.storeName.toLowerCase().replace(/\s+/g, '')}.com`
     };
 
     return NextResponse.json(companyInfo);
