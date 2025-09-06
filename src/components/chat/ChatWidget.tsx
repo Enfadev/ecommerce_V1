@@ -83,6 +83,10 @@ export function ChatWidget() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Keep track of current state for SSE handler
+  const stateRef = useRef({ isOpen: false, isMinimized: false });
+  stateRef.current = { isOpen, isMinimized };
 
   // Auto scroll to bottom
   const scrollToBottom = () => {
@@ -165,7 +169,7 @@ export function ChatWidget() {
   useEffect(() => {
     // Setup SSE if we have a chat room and user, regardless of isOpen status
     if (chatRoom && user) {
-      console.log(`🔗 User: Setting up SSE for room ${chatRoom.id} (isOpen: ${isOpen}, isMinimized: ${isMinimized})`);
+      console.log(`🔗 User: Setting up SSE for room ${chatRoom.id}`);
       const eventSource = new EventSource(`/api/chat/sse?roomId=${chatRoom.id}`);
       
       eventSource.onopen = () => {
@@ -176,22 +180,35 @@ export function ChatWidget() {
         try {
           const data = JSON.parse(event.data);
           console.log('📨 User: SSE message received:', data);
-          console.log(`📨 User: Current state - isOpen: ${isOpen}, isMinimized: ${isMinimized}`);
           
           if (data.type === 'new_message' && data.message) {
             setMessages(prev => {
               const messageExists = prev.some(msg => msg.id === data.message.id);
               if (!messageExists) {
                 console.log('📨 User: Adding new message to state');
-                const newMessages = [...prev, data.message];
                 
-                // Auto scroll to bottom after new message (only if chat is open)
-                if (isOpen && !isMinimized) {
-                  console.log('📨 User: Auto-scrolling to bottom');
+                // Check current state from ref
+                const { isOpen: currentIsOpen, isMinimized: currentIsMinimized } = stateRef.current;
+                console.log(`📨 User: Current state - isOpen: ${currentIsOpen}, isMinimized: ${currentIsMinimized}`);
+                
+                // Auto scroll to bottom if chat is open
+                if (currentIsOpen && !currentIsMinimized) {
+                  console.log('📨 User: Chat is open, auto-scrolling');
                   setTimeout(() => scrollToBottom(), 100);
+                  
+                  // Mark as read if chat is open
+                  setTimeout(() => {
+                    fetch(`/api/chat/rooms/${chatRoom.id}/read`, {
+                      method: 'POST'
+                    }).then(() => {
+                      console.log('📨 User: Messages marked as read');
+                      setUnreadCount(0);
+                    }).catch(error => {
+                      console.error('Error marking messages as read:', error);
+                    });
+                  }, 200);
                 } else {
                   console.log('📨 User: Chat closed/minimized, incrementing unread count');
-                  // Update unread count if chat is closed or minimized
                   setUnreadCount(prev => {
                     const newCount = prev + 1;
                     console.log(`📨 User: Unread count updated to: ${newCount}`);
@@ -199,20 +216,12 @@ export function ChatWidget() {
                   });
                 }
                 
-                return newMessages;
+                return [...prev, data.message];
               } else {
                 console.log('📨 User: Message already exists, skipping');
+                return prev;
               }
-              return prev;
             });
-            
-            // Mark message as read only if chat is open and not minimized
-            if (isOpen && !isMinimized) {
-              console.log('📨 User: Marking messages as read');
-              markMessagesAsRead();
-            } else {
-              console.log('📨 User: Not marking as read - chat closed or minimized');
-            }
           }
         } catch (error) {
           console.error('❌ User: Error parsing SSE message:', error);
@@ -230,7 +239,7 @@ export function ChatWidget() {
         eventSource.close();
       };
     }
-  }, [chatRoom, user, isOpen, isMinimized, markMessagesAsRead]); // Include all dependencies
+  }, [chatRoom, user]); // Only depend on chatRoom and user to prevent multiple connections
 
   // Mark messages as read when chat opens
   useEffect(() => {
