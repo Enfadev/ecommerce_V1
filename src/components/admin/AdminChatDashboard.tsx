@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,6 +93,25 @@ export function AdminChatDashboard() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const eventSourceRef = useRef<EventSource | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const fetchMessages = useCallback(async (roomId: number) => {
+    try {
+      const response = await fetch(`/api/chat/rooms/${roomId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(data.messages || []);
+        // Scroll to bottom after loading messages
+        setTimeout(() => scrollToBottom(), 100);
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  }, []);
 
   useEffect(() => {
     fetchChatRooms();
@@ -102,41 +121,56 @@ export function AdminChatDashboard() {
     if (selectedRoom) {
       fetchMessages(selectedRoom.id);
     }
-  }, [selectedRoom]);
+  }, [selectedRoom, fetchMessages]);
 
   // Real-time SSE connection
   useEffect(() => {
     if (selectedRoom) {
+      console.log(`🔗 Admin: Setting up SSE for room ${selectedRoom.id}`);
+      
       // Close existing connection
       if (eventSourceRef.current) {
+        console.log(`🔗 Admin: Closing existing SSE connection`);
         eventSourceRef.current.close();
       }
 
       // Create new SSE connection
       const newEventSource = new EventSource(`/api/chat/sse?roomId=${selectedRoom.id}`);
       
+      newEventSource.onopen = () => {
+        console.log(`✅ Admin: SSE connection opened for room ${selectedRoom.id}`);
+      };
+      
       newEventSource.onmessage = (event) => {
+        console.log(`📨 Admin: SSE raw message:`, event.data);
         try {
           const data = JSON.parse(event.data);
-          console.log("SSE message received (admin):", data);
+          console.log("📨 Admin: SSE parsed data:", data);
           
           if (data.type === "new_message" && data.message) {
+            console.log("📨 Admin: Adding new message:", data.message);
             // Add new message to the list if it's not already there
             setMessages(prevMessages => {
               const messageExists = prevMessages.some(msg => msg.id === data.message.id);
               if (!messageExists) {
-                return [...prevMessages, data.message];
+                console.log("📨 Admin: Message added to state");
+                const newMessages = [...prevMessages, data.message];
+                // Auto scroll to bottom after new message
+                setTimeout(() => scrollToBottom(), 100);
+                return newMessages;
               }
+              console.log("📨 Admin: Message already exists, skipping");
               return prevMessages;
             });
           }
         } catch (error) {
-          console.error("Error parsing SSE message:", error);
+          console.error("❌ Admin: Error parsing SSE message:", error);
         }
       };
 
       newEventSource.onerror = (error) => {
-        console.error("SSE Error (admin):", error);
+        console.error("❌ Admin: SSE Error:", error);
+        console.error("❌ Admin: SSE readyState:", newEventSource.readyState);
       };
 
       eventSourceRef.current = newEventSource;
@@ -169,18 +203,6 @@ export function AdminChatDashboard() {
     }
   };
 
-  const fetchMessages = async (roomId: number) => {
-    try {
-      const response = await fetch(`/api/chat/rooms/${roomId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(data.messages || []);
-      }
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  };
-
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedRoom || isLoading) return;
 
@@ -196,10 +218,11 @@ export function AdminChatDashboard() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setMessages(prev => [...prev, data.message]);
+        await response.json(); // Just consume the response
+        // Don't add message to state here - SSE will handle it
         setNewMessage("");
         
+        // Optionally refresh chat rooms list
         fetchChatRooms();
       }
     } catch (error) {
@@ -605,6 +628,7 @@ export function AdminChatDashboard() {
                       )}
                     </div>
                   ))}
+                  <div ref={messagesEndRef} />
                 </div>
 
                 {/* Modern Message Input */}

@@ -230,6 +230,27 @@ export async function POST(
       data: updateData,
     });
 
+    // Broadcast to SSE connections
+    try {
+      const broadcastUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/chat/sse`;
+      await fetch(broadcastUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          roomId: roomId.toString(),
+          data: {
+            type: "new_message",
+            message: newMessage,
+          },
+        }),
+      });
+      console.log(`📡 Broadcasting message for room ${roomId}`);
+    } catch (broadcastError) {
+      console.error("Failed to broadcast message:", broadcastError);
+    }
+
     return NextResponse.json({ message: newMessage });
   } catch (error) {
     console.error("Error sending message:", error);

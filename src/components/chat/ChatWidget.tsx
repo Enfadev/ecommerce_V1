@@ -170,8 +170,20 @@ export function ChatWidget() {
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          if (data.type === 'NEW_MESSAGE' && data.roomId === chatRoom.id) {
-            setMessages(prev => [...prev, data.message]);
+          console.log('📨 User: SSE message received:', data);
+          
+          if (data.type === 'new_message' && data.message) {
+            setMessages(prev => {
+              const messageExists = prev.some(msg => msg.id === data.message.id);
+              if (!messageExists) {
+                const newMessages = [...prev, data.message];
+                // Auto scroll to bottom after new message
+                setTimeout(() => scrollToBottom(), 100);
+                return newMessages;
+              }
+              return prev;
+            });
+            
             // Mark message as read if chat is open
             if (isOpen && !isMinimized) {
               markMessagesAsRead();
@@ -282,15 +294,11 @@ export function ChatWidget() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json(); // Just consume the response
         console.log("Message sent successfully");
         
-        // Add the new message to the messages state immediately
-        if (data.message) {
-          setMessages(prev => [...prev, data.message]);
-          // Scroll to bottom to show the new message
-          setTimeout(() => scrollToBottom(), 100);
-        }
+        // Don't add message to state here - SSE will handle it
+        // Scroll to bottom will be handled by SSE message update
         
         // Clear the input
         setNewMessage("");

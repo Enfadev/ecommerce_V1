@@ -1,8 +1,38 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 
 const connections = new Map<string, ReadableStreamDefaultController>();
+
+// Make connections available globally for broadcasting
+declare global {
+  var sseConnections: Map<string, ReadableStreamDefaultController>;
+}
+global.sseConnections = connections;
+
+// Broadcasting function
+export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
+  console.log(`📡 Broadcasting to room ${roomId}:`, data);
+  let broadcasted = 0;
+  
+  for (const [connectionId, controller] of connections.entries()) {
+    // Connection ID format is "userId-roomId"
+    if (connectionId.endsWith(`-${roomId}`)) {
+      try {
+        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
+        broadcasted++;
+        console.log(`📡 Sent to connection: ${connectionId}`);
+      } catch (error) {
+        console.error(`Failed to send to connection ${connectionId}:`, error);
+        // Remove dead connection
+        connections.delete(connectionId);
+      }
+    }
+  }
+  
+  console.log(`📡 Broadcasted to ${broadcasted} connections for room ${roomId}`);
+  return broadcasted;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +48,8 @@ export async function GET(request: NextRequest) {
       return new Response("Room ID required", { status: 400 });
     }
 
-    const chatRoom = await prisma.chatRoom.findFirst({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const chatRoom = await (prisma as any).chatRoom.findFirst({
       where: {
         id: parseInt(roomId),
         OR: [
@@ -75,25 +106,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export function broadcastToRoom(roomId: number, message: object) {
-  const messageData = `data: ${JSON.stringify({
-    type: "message",
-    data: message,
-    timestamp: new Date().toISOString(),
-  })}\n\n`;
-
-  connections.forEach((controller, connectionId) => {
-    if (connectionId.endsWith(`-${roomId}`)) {
-      try {
-        controller.enqueue(messageData);
-      } catch (error) {
-        console.log("Failed to send message to connection:", connectionId, error);
-        connections.delete(connectionId);
-      }
-    }
-  });
-}
-
 export function broadcastTyping(roomId: number, userId: number, isTyping: boolean) {
   const typingData = `data: ${JSON.stringify({
     type: "typing",
@@ -111,4 +123,29 @@ export function broadcastTyping(roomId: number, userId: number, isTyping: boolea
       }
     }
   });
+}
+
+// POST method for broadcasting messages
+export async function POST(request: NextRequest) {
+  try {
+    const { roomId, data } = await request.json();
+    
+    if (!roomId || !data) {
+      return NextResponse.json({ error: "Missing roomId or data" }, { status: 400 });
+    }
+
+    const broadcasted = broadcastToRoom(roomId, data);
+    
+    return NextResponse.json({ 
+      success: true, 
+      broadcasted,
+      message: `Broadcasted to ${broadcasted} connections`
+    });
+  } catch (error) {
+    console.error("Error in broadcast POST:", error);
+    return NextResponse.json(
+      { error: "Failed to broadcast message" },
+      { status: 500 }
+    );
+  }
 }
