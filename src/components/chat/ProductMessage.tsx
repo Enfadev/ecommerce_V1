@@ -34,6 +34,10 @@ interface ProductMessageProps {
   onAddToWishlist?: (productId: number) => void;
   onViewProduct?: (productId: number) => void;
   showActions?: boolean;
+  isFromAdmin?: boolean;  // Add this prop
+  senderName?: string;    // Add this prop
+  timestamp?: string;     // Add this prop
+  asBubble?: boolean;     // Add this prop for bubble style
 }
 
 export function ProductMessage({ 
@@ -41,7 +45,11 @@ export function ProductMessage({
   onAddToCart, 
   onAddToWishlist, 
   onViewProduct,
-  showActions = true 
+  showActions = true,
+  isFromAdmin = false,
+  senderName,
+  timestamp,
+  asBubble = false
 }: ProductMessageProps) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -68,6 +76,127 @@ export function ProductMessage({
     onViewProduct?.(product.id);
   };
 
+  // If used as bubble in chat
+  if (asBubble) {
+    return (
+      <div className={`max-w-xs lg:max-w-md ${
+        isFromAdmin
+          ? "bg-primary text-primary-foreground shadow-md"
+          : "bg-background border border-border text-foreground shadow-sm"
+      } rounded-2xl p-4`}>
+        {/* Chat Header */}
+        {senderName && timestamp && (
+          <div className="flex items-center mb-2">
+            <span className="text-xs font-semibold">
+              {senderName}
+            </span>
+            <span className={`text-xs ml-2 ${
+              isFromAdmin 
+                ? "text-primary-foreground/70" 
+                : "text-muted-foreground"
+            }`}>
+              {timestamp}
+            </span>
+          </div>
+        )}
+
+        {/* Product Info */}
+        <div className="space-y-3">
+          <div className="flex items-start space-x-3">
+            <Avatar className="h-10 w-10 rounded-md">
+              <AvatarImage 
+                src={product.imageUrl || "/placeholder-product.svg"} 
+                alt={product.name}
+                className="object-cover"
+              />
+              <AvatarFallback className="rounded-md bg-muted">
+                <Package className="h-5 w-5 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex-1 min-w-0">
+              <h4 className={`font-medium text-sm leading-tight line-clamp-2 ${
+                isFromAdmin ? "text-primary-foreground" : "text-foreground"
+              }`}>
+                {product.name}
+              </h4>
+              
+              {product.brand && (
+                <p className={`text-xs mt-1 ${
+                  isFromAdmin ? "text-primary-foreground/70" : "text-muted-foreground"
+                }`}>
+                  by {product.brand}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="space-y-1">
+            {product.discountPrice ? (
+              <div className="flex items-center space-x-2">
+                <span className={`text-sm font-bold ${
+                  isFromAdmin ? "text-primary-foreground" : "text-red-600 dark:text-red-400"
+                }`}>
+                  {formatPrice(product.discountPrice)}
+                </span>
+                <span className={`text-xs line-through ${
+                  isFromAdmin ? "text-primary-foreground/60" : "text-muted-foreground"
+                }`}>
+                  {formatPrice(product.price)}
+                </span>
+              </div>
+            ) : (
+              <span className={`text-sm font-bold ${
+                isFromAdmin ? "text-primary-foreground" : "text-foreground"
+              }`}>
+                {formatPrice(product.price)}
+              </span>
+            )}
+
+            {product.discountPrice && (
+              <Badge variant="destructive" className="text-xs">
+                {getDiscountPercentage(product.price, product.discountPrice)}% OFF
+              </Badge>
+            )}
+          </div>
+
+          {/* Stock Status */}
+          <div className="flex items-center space-x-2">
+            <Badge variant={product.stock > 0 ? "default" : "secondary"} className="text-xs">
+              {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+            </Badge>
+          </div>
+
+          {/* Action Buttons */}
+          {showActions && (
+            <div className="flex space-x-2 pt-2">
+              <Button
+                onClick={handleAddToCart}
+                size="sm"
+                variant={isFromAdmin ? "secondary" : "default"}
+                disabled={product.stock === 0}
+                className="flex-1 text-xs"
+              >
+                <ShoppingCart className="h-3 w-3 mr-1" />
+                Add to Cart
+              </Button>
+              <Button
+                onClick={handleAddToWishlist}
+                size="sm"
+                variant="outline"
+                className="text-xs"
+              >
+                <Heart className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Original card style
   return (
     <Card className="max-w-xs bg-card border-border">
       <CardContent className="p-4">

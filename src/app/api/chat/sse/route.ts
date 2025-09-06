@@ -8,11 +8,13 @@ export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
     if (!user) {
+      console.error("SSE: Unauthorized user");
       return new Response("Unauthorized", { status: 401 });
     }
 
     const roomId = request.nextUrl.searchParams.get("roomId");
     if (!roomId) {
+      console.error("SSE: Missing roomId parameter");
       return new Response("Room ID required", { status: 400 });
     }
 
@@ -28,9 +30,11 @@ export async function GET(request: NextRequest) {
     });
 
     if (!chatRoom) {
+      console.error(`SSE: Chat room ${roomId} not found for user ${user.id}`);
       return new Response("Chat room not found", { status: 404 });
     }
 
+    console.log(`SSE: Establishing connection for user ${user.id} in room ${roomId}`);
     const connectionId = `${user.id}-${roomId}`;
 
     const stream = new ReadableStream({
@@ -71,7 +75,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export function broadcastToRoom(roomId: number, message: any) {
+export function broadcastToRoom(roomId: number, message: object) {
   const messageData = `data: ${JSON.stringify({
     type: "message",
     data: message,

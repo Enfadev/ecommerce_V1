@@ -4,7 +4,6 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   MessageCircle, 
@@ -166,7 +165,7 @@ export function ChatWidget() {
   useEffect(() => {
     // Only setup SSE if we have a chat room and chat is open
     if (chatRoom && user && isOpen) {
-      const eventSource = new EventSource(`/api/chat/sse?userId=${user.id}`);
+      const eventSource = new EventSource(`/api/chat/sse?roomId=${chatRoom.id}&userId=${user.id}`);
       
       eventSource.onmessage = (event) => {
         try {
@@ -440,8 +439,8 @@ export function ChatWidget() {
 
             {!isMinimized && (
               <div className="flex flex-col h-[406px]">
-                {/* Debug info */}
-                {process.env.NODE_ENV === 'development' && (
+                {/* Debug info - only show in development with specific flag */}
+                {process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SHOW_CHAT_DEBUG && (
                   <div className="p-2 bg-muted/30 text-xs text-muted-foreground border-b border-border">
                     ChatRoom: {chatRoom ? 'Yes' : 'No'} | Messages: {messages.length}
                   </div>
@@ -449,24 +448,19 @@ export function ChatWidget() {
                 
                 {chatRoom ? (
                   <>
-                    {/* Chat Info */}
+                    {/* Chat Status */}
                     <div className="px-3 py-2 bg-muted/30 border-b border-border">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 bg-green-500 rounded-full"></div>
-                          <Badge 
-                            variant={chatRoom.status === "OPEN" ? "secondary" : "outline"}
-                            className="text-xs h-5"
-                          >
-                            {chatRoom.status}
-                          </Badge>
-                          {chatRoom.admin && (
-                            <span className="text-xs text-muted-foreground">
-                              with {chatRoom.admin.name}
-                            </span>
-                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {chatRoom.admin ? `Chatting with ${chatRoom.admin.name}` : 'Support Team'}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">Online</span>
+                        <div className="flex items-center gap-1">
+                          <div className="h-1.5 w-1.5 bg-green-500 rounded-full"></div>
+                          <span className="text-xs text-muted-foreground">Online</span>
+                        </div>
                       </div>
                     </div>
 
@@ -478,25 +472,14 @@ export function ChatWidget() {
                           className={`flex ${Number(message.sender.id) === Number(user.id) ? "justify-end" : "justify-start"}`}
                         >
                           {message.messageType === "PRODUCT" && message.product ? (
-                            <div className="max-w-[240px]">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Avatar className="h-4 w-4">
-                                  <AvatarImage src={message.sender.image} />
-                                  <AvatarFallback className="text-xs bg-muted text-muted-foreground">
-                                    {message.sender.name?.charAt(0) || "U"}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <span className="text-xs text-muted-foreground">
-                                  {message.sender.name}
-                                </span>
-                              </div>
-                              <div className="bg-card border border-border rounded-lg p-2 shadow-sm">
-                                <ProductMessage product={message.product} />
-                              </div>
-                              <div className="text-xs text-muted-foreground mt-1 ml-6">
-                                {formatMessageTime(message.createdAt)}
-                              </div>
-                            </div>
+                            <ProductMessage 
+                              product={message.product}
+                              asBubble={true}
+                              isFromAdmin={Number(message.sender.id) !== Number(user.id)}
+                              senderName={message.sender.name}
+                              timestamp={formatMessageTime(message.createdAt)}
+                              showActions={true}
+                            />
                           ) : (
                             <div className="max-w-[240px]">
                               <div
