@@ -69,7 +69,7 @@ export function ProductMessage({
   };
 
   return (
-    <Card className="max-w-xs bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+    <Card className="max-w-xs bg-card border-border">
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Product Header */}
@@ -80,18 +80,18 @@ export function ProductMessage({
                 alt={product.name}
                 className="object-cover"
               />
-              <AvatarFallback className="rounded-md bg-blue-100">
-                <Package className="h-6 w-6 text-blue-600" />
+              <AvatarFallback className="rounded-md bg-muted">
+                <Package className="h-6 w-6 text-muted-foreground" />
               </AvatarFallback>
             </Avatar>
 
             <div className="flex-1 min-w-0">
-              <h4 className="font-medium text-gray-900 text-sm leading-tight line-clamp-2">
+              <h4 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
                 {product.name}
               </h4>
               
               {product.brand && (
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   by {product.brand}
                 </p>
               )}
@@ -102,28 +102,28 @@ export function ProductMessage({
           <div className="space-y-1">
             {product.discountPrice ? (
               <div className="flex items-center space-x-2">
-                <span className="text-lg font-bold text-red-600">
+                <span className="text-lg font-bold text-red-600 dark:text-red-400">
                   {formatPrice(product.discountPrice)}
                 </span>
-                <span className="text-sm text-gray-500 line-through">
+                <span className="text-sm text-muted-foreground line-through">
                   {formatPrice(product.price)}
                 </span>
               </div>
             ) : (
-              <span className="text-lg font-bold text-gray-900">
+              <span className="text-lg font-bold text-foreground">
                 {formatPrice(product.price)}
               </span>
             )}
 
             <div className="flex items-center space-x-2">
               {product.discountPrice && (
-                <Badge variant="secondary" className="bg-red-100 text-red-800 text-xs">
+                <Badge variant="secondary" className="bg-red-100 text-red-800 text-xs dark:bg-red-900/20 dark:text-red-400">
                   -{getDiscountPercentage(product.price, product.discountPrice)}% OFF
                 </Badge>
               )}
               
               {product.category && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs border-muted-foreground/30">
                   {product.category.name}
                 </Badge>
               )}
@@ -133,13 +133,13 @@ export function ProductMessage({
           {/* Stock Status */}
           <div className="flex items-center justify-between text-xs">
             <span className={`font-medium ${
-              product.stock > 0 ? "text-green-600" : "text-red-600"
+              product.stock > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
             }`}>
               {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
             </span>
             
             {product.sku && (
-              <span className="text-gray-500">
+              <span className="text-muted-foreground">
                 SKU: {product.sku}
               </span>
             )}
@@ -147,18 +147,18 @@ export function ProductMessage({
 
           {/* Description (if available) */}
           {product.description && (
-            <p className="text-xs text-gray-600 line-clamp-2">
+            <p className="text-xs text-muted-foreground line-clamp-2">
               {product.description}
             </p>
           )}
 
           {/* Action Buttons */}
           {showActions && (
-            <div className="space-y-2 pt-2 border-t border-blue-200">
+            <div className="space-y-2 pt-2 border-t border-border">
               <div className="flex space-x-2">
                 <Button
                   size="sm"
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="flex-1"
                   onClick={handleAddToCart}
                   disabled={product.stock <= 0}
                 >
@@ -170,7 +170,7 @@ export function ProductMessage({
                   size="sm"
                   variant="outline"
                   onClick={handleAddToWishlist}
-                  className="border-blue-200 hover:bg-blue-50"
+                  className="border-muted-foreground/30 hover:bg-muted/50"
                 >
                   <Heart className="h-3 w-3" />
                 </Button>
@@ -179,7 +179,7 @@ export function ProductMessage({
               <Button
                 size="sm"
                 variant="ghost"
-                className="w-full text-blue-600 hover:bg-blue-50"
+                className="w-full text-muted-foreground hover:bg-muted/50"
                 onClick={handleViewProduct}
               >
                 <ExternalLink className="h-3 w-3 mr-1" />

@@ -118,7 +118,7 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
         <div className="space-y-4">
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search products by name, brand, or SKU..."
               value={searchQuery}
@@ -130,8 +130,8 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
           {/* Loading */}
           {isLoading && currentPage === 1 && (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-              <span className="ml-2 text-gray-600">Searching products...</span>
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              <span className="ml-2 text-muted-foreground">Searching products...</span>
             </div>
           )}
 
@@ -141,7 +141,7 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
               {products.map((product) => (
                 <Card 
                   key={product.id} 
-                  className="cursor-pointer hover:shadow-md transition-shadow"
+                  className="cursor-pointer hover:bg-muted/30 transition-colors border-muted-foreground/20"
                   onClick={() => handleSelectProduct(product)}
                 >
                   <CardContent className="p-4">
@@ -153,25 +153,25 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
                           alt={product.name}
                           className="object-cover"
                         />
-                        <AvatarFallback className="rounded-md">
-                          <Package className="h-8 w-8 text-gray-400" />
+                        <AvatarFallback className="rounded-md bg-muted">
+                          <Package className="h-8 w-8 text-muted-foreground" />
                         </AvatarFallback>
                       </Avatar>
 
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 truncate">
+                        <h3 className="font-medium text-foreground truncate">
                           {product.name}
                         </h3>
                         
                         {product.brand && (
-                          <p className="text-sm text-gray-600 mb-1">
+                          <p className="text-sm text-muted-foreground mb-1">
                             by {product.brand}
                           </p>
                         )}
 
                         {product.description && (
-                          <p className="text-sm text-gray-500 line-clamp-2 mb-2">
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                             {product.description}
                           </p>
                         )}
@@ -180,18 +180,18 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
                         <div className="flex items-center space-x-2 mb-2">
                           {product.discountPrice ? (
                             <>
-                              <span className="text-lg font-bold text-red-600">
+                              <span className="text-lg font-bold text-red-600 dark:text-red-400">
                                 {formatPrice(product.discountPrice)}
                               </span>
-                              <span className="text-sm text-gray-500 line-through">
+                              <span className="text-sm text-muted-foreground line-through">
                                 {formatPrice(product.price)}
                               </span>
-                              <Badge variant="secondary" className="bg-red-100 text-red-800">
-                                -{getDiscountPercentage(product.price, product.discountPrice)}%
+                              <Badge variant="secondary" className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                -{getDiscountPercentage(product.price, product.discountPrice)}% OFF
                               </Badge>
                             </>
                           ) : (
-                            <span className="text-lg font-bold text-gray-900">
+                            <span className="text-lg font-bold text-foreground">
                               {formatPrice(product.price)}
                             </span>
                           )}
@@ -201,20 +201,20 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center space-x-2">
                             {product.category && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline" className="text-xs border-muted-foreground/30">
                                 {product.category.name}
                               </Badge>
                             )}
                             
                             <span className={`text-xs ${
-                              product.stock > 0 ? "text-green-600" : "text-red-600"
+                              product.stock > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                             }`}>
                               {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
                             </span>
                           </div>
 
                           {product.sku && (
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-muted-foreground">
                               SKU: {product.sku}
                             </span>
                           )}
@@ -263,11 +263,11 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
           {/* No Results */}
           {searchQuery.trim() && !isLoading && products.length === 0 && (
             <div className="text-center py-8">
-              <Package className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 No products found
               </h3>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Try searching with different keywords
               </p>
             </div>
@@ -276,11 +276,11 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
           {/* Empty State */}
           {!searchQuery.trim() && (
             <div className="text-center py-8">
-              <Search className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <Search className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 Search for products
               </h3>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Start typing to find products to share in your conversation
               </p>
             </div>
