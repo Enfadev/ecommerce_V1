@@ -123,6 +123,9 @@ model User {
   orders        Order[]
   securityLogs  SecurityLog[]
   wishlist      Wishlist?
+  chatRooms     ChatRoom[]
+  adminChats    ChatRoom[]    @relation("AdminChats")
+  sentMessages  ChatMessage[] @relation("SentMessages")
 }
 
 model Account {
@@ -322,4 +325,56 @@ enum LogStatus {
   SUCCESS
   FAILED
   WARNING
+}
+
+model ChatRoom {
+  id           Int           @id @default(autoincrement())
+  userId       Int
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminId      Int?
+  admin        User?         @relation("AdminChats", fields: [adminId], references: [id])
+  status       ChatStatus    @default(OPEN)
+  subject      String?
+  priority     ChatPriority  @default(NORMAL)
+  lastMessage  String?
+  lastActivity DateTime      @default(now())
+  isRead       Boolean       @default(false)
+  messages     ChatMessage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("chat_rooms")
+}
+
+model ChatMessage {
+  id         Int      @id @default(autoincrement())
+  chatRoomId Int
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  senderId   Int
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  message    String   @db.Text
+  messageType MessageType @default(TEXT)
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("chat_messages")
+}
+
+enum ChatStatus {
+  OPEN
+  CLOSED
+  RESOLVED
+}
+
+enum ChatPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
 }

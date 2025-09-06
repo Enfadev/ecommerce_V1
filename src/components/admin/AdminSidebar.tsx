@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/contexts/auth-context";
 import { useOrders } from "@/hooks/useOrders";
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, Home, Shield } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, ChevronLeft, ChevronRight, Bell, Search, LogOut, Settings, Home, Shield, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LucideIcon } from "lucide-react";
 
@@ -26,6 +26,7 @@ const menuItems: MenuItem[] = [
   { id: "products", label: "Products", icon: Package, href: "/admin/product", badge: null },
   { id: "orders", label: "Orders", icon: ShoppingCart, href: "/admin/orders", badge: "12" },
   { id: "customers", label: "Customers", icon: Users, href: "/admin/customers", badge: null },
+  { id: "chat", label: "Chat Support", icon: MessageSquare, href: "/admin/chat", badge: null },
   { id: "analytics", label: "Analytics", icon: BarChart3, href: "/admin/analytics", badge: null },
   { id: "security", label: "Security", icon: Shield, href: "/admin/security", badge: null },
   { id: "settings", label: "Settings", icon: Settings, href: "/admin/settings", badge: null },

@@ -8,6 +8,7 @@ import { CartProvider } from "@/components/contexts/cart-context";
 import { WishlistProvider } from "@/components/contexts/wishlist-context";
 import { useAuth } from "@/components/contexts/auth-context";
 import { useRouter, usePathname } from "next/navigation";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 interface CustomerLayoutProps {
   children: ReactNode;
@@ -43,6 +44,7 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
           </main>
           <Toaster />
           <Footer />
+          <ChatWidget />
         </div>
       </CartProvider>
     </WishlistProvider>
