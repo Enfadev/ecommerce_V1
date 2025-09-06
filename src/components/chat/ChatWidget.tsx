@@ -346,7 +346,7 @@ export function ChatWidget() {
             >
               <MessageCircle className="h-5 w-5" />
               {unreadCount > 0 && (
-                <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs font-medium flex items-center justify-center">
+                <div className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs font-medium flex items-center justify-center">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </div>
               )}
@@ -416,7 +416,7 @@ export function ChatWidget() {
               <div className="flex flex-col h-[406px]">
                 {/* Debug info */}
                 {process.env.NODE_ENV === 'development' && (
-                  <div className="p-2 bg-yellow-100 text-xs">
+                  <div className="p-2 bg-muted/30 text-xs text-muted-foreground border-b border-border">
                     ChatRoom: {chatRoom ? 'Yes' : 'No'} | Messages: {messages.length}
                   </div>
                 )}
@@ -476,7 +476,7 @@ export function ChatWidget() {
                               <div
                                 className={`rounded-lg px-3 py-2 text-sm ${
                                   Number(message.sender.id) === Number(user.id)
-                                    ? "bg-primary/10 text-foreground border border-primary/20 ml-auto"
+                                    ? "bg-slate-100 text-slate-900 border border-slate-200 ml-auto dark:bg-slate-800 dark:text-slate-100 dark:border-slate-700"
                                     : "bg-muted/50 text-foreground border border-border"
                                 }`}
                               >
