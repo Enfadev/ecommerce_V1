@@ -22,14 +22,12 @@ export function DynamicFavicon() {
             storeName: data.settings?.siteName || data.settings?.companyName || "Store"
           });
         } else {
-          // Fallback if API fails
           setSettings({
             storeName: "Store"
           });
         }
       } catch (error) {
         console.error("Failed to fetch logo for favicon:", error);
-        // Fallback
         setSettings({
           storeName: "Store"
         });

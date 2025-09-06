@@ -6,7 +6,6 @@ import { AuthProvider } from "@/components/contexts/auth-context";
 import { DynamicFavicon } from "@/components/ui/DynamicFavicon";
 import { getSystemSettingsWithFallback } from "@/lib/system-settings";
 
-// Generate SVG data URL for favicon fallback
 function generateSVGFavicon(initial: string): string {
   const svg = `
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -32,7 +31,6 @@ const geistMono = Geist_Mono({
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSystemSettingsWithFallback();
   
-  // Use logo if available, otherwise generate SVG favicon with store initial
   const faviconUrl = settings.logoUrl || generateSVGFavicon(settings.storeName.charAt(0).toUpperCase());
   
   return {

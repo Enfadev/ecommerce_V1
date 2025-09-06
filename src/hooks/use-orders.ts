@@ -55,7 +55,8 @@ export interface CreateOrderData {
   shippingAddress: string;
   postalCode?: string;
   notes?: string;
-  paymentMethod: string; 
+  paymentMethod: string;
+  paymentStatus?: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
   items: {
     productId: number;
     quantity: number;
@@ -115,7 +116,6 @@ export function useOrders() {
   const createOrder = async (orderData: CreateOrderData): Promise<Order | null> => {
     setCreating(true);
     try {
-      // Validate required fields before sending
       if (!orderData.customerName?.trim()) {
         throw new Error("Customer name is required");
       }
@@ -163,6 +163,7 @@ export function useOrders() {
           customerPhone: orderData.customerPhone.trim(),
           shippingAddress: orderData.shippingAddress.trim(),
           paymentMethod: orderData.paymentMethod.trim(),
+          paymentStatus: orderData.paymentStatus || "PENDING",
           postalCode: orderData.postalCode?.trim() || "",
           notes: orderData.notes?.trim() || "",
           shippingFee: orderData.shippingFee || 0,

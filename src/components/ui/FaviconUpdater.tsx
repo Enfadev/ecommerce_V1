@@ -7,7 +7,6 @@ interface FaviconUpdaterProps {
   storeName: string;
 }
 
-// Function to generate SVG favicon with store initial
 function generateSVGFavicon(initial: string): string {
   const svg = `
     <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -24,24 +23,20 @@ export function FaviconUpdater({ logoUrl, storeName }: FaviconUpdaterProps) {
   useEffect(() => {
     const faviconUrl = logoUrl || generateSVGFavicon(storeName.charAt(0).toUpperCase());
     
-    // Update existing favicon
     const existingFavicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     if (existingFavicon) {
       existingFavicon.href = faviconUrl;
     } else {
-      // Create new favicon if doesn't exist
       const newFavicon = document.createElement('link');
       newFavicon.rel = 'icon';
       newFavicon.href = faviconUrl;
       document.head.appendChild(newFavicon);
     }
 
-    // Update apple touch icon
     const existingAppleIcon = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
     if (existingAppleIcon) {
       existingAppleIcon.href = faviconUrl;
     } else {
-      // Create new apple touch icon if doesn't exist
       const newAppleIcon = document.createElement('link');
       newAppleIcon.rel = 'apple-touch-icon';
       newAppleIcon.href = faviconUrl;
@@ -49,5 +44,5 @@ export function FaviconUpdater({ logoUrl, storeName }: FaviconUpdaterProps) {
     }
   }, [logoUrl, storeName]);
 
-  return null; // This component doesn't render anything
+  return null;
 }

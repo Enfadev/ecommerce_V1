@@ -157,7 +157,6 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     if (!formData.nama || !formData.email || !formData.phone || !formData.alamat) {
-      // Enhanced validation with specific field details
       const missingFields = [];
       if (!formData.nama.trim()) missingFields.push("Full Name");
       if (!formData.email.trim()) missingFields.push("Email");
@@ -503,6 +502,7 @@ export default function CheckoutPage() {
                       postalCode: formData.kodePos?.trim() || "",
                       notes: formData.catatan?.trim() || "",
                       paymentMethod: "Credit Card",
+                      paymentStatus: "PAID" as const,
                       items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
                       subtotal,
                       shippingFee: ongkir,
@@ -545,6 +545,7 @@ export default function CheckoutPage() {
                           postalCode: formData.kodePos?.trim() || "",
                           notes: formData.catatan?.trim() || "",
                           paymentMethod: "PayPal",
+                          paymentStatus: "PAID" as const,
                           items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
                           subtotal,
                           shippingFee: ongkir,

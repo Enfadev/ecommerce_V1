@@ -27,6 +27,13 @@ const statusStyles = {
   RETURNED: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
 };
 
+const paymentStatusStyles = {
+  PENDING: "bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400",
+  PAID: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+  FAILED: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
+  REFUNDED: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+};
+
 const statusLabels = {
   PENDING: "Pending",
   CONFIRMED: "Confirmed",
@@ -35,6 +42,13 @@ const statusLabels = {
   DELIVERED: "Delivered",
   CANCELLED: "Cancelled",
   RETURNED: "Returned",
+};
+
+const paymentStatusLabels = {
+  PENDING: "Pending",
+  PAID: "Paid",
+  FAILED: "Failed", 
+  REFUNDED: "Refunded",
 };
 
 export default function OrderHistoryPage() {
@@ -101,7 +115,10 @@ export default function OrderHistoryPage() {
                     <p className="text-sm text-muted-foreground">Placed {formatDistanceToNow(new Date(selectedOrder.createdAt), { addSuffix: true })}</p>
                   </div>
                   <div className="text-right">
-                    <Badge className={statusStyles[selectedOrder.status]}>{statusLabels[selectedOrder.status]}</Badge>
+                    <div className="flex gap-2 mb-2">
+                      <Badge className={statusStyles[selectedOrder.status]}>{statusLabels[selectedOrder.status]}</Badge>
+                      <Badge className={paymentStatusStyles[selectedOrder.paymentStatus]}>{paymentStatusLabels[selectedOrder.paymentStatus]}</Badge>
+                    </div>
                     <div className="text-2xl font-bold text-primary mt-2">{formatCurrency(selectedOrder.totalAmount)}</div>
                     <Button 
                       variant="outline" 
@@ -220,13 +237,25 @@ export default function OrderHistoryPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CreditCard className="h-5 w-5" />
-                    Payment Method
+                    Payment Information
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="font-medium">{selectedOrder.paymentMethod}</div>
-                    <div className="text-sm text-muted-foreground">Payment on {formatDate(selectedOrder.createdAt)}</div>
+                    <div className="flex justify-between">
+                      <span>Payment Method</span>
+                      <span className="font-medium">{selectedOrder.paymentMethod}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Payment Status</span>
+                      <Badge className={paymentStatusStyles[selectedOrder.paymentStatus]}>
+                        {paymentStatusLabels[selectedOrder.paymentStatus]}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Payment Date</span>
+                      <span className="text-sm text-muted-foreground">{formatDate(selectedOrder.createdAt)}</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -368,7 +397,10 @@ export default function OrderHistoryPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <Badge className={statusStyles[order.status]}>{statusLabels[order.status]}</Badge>
+                      <div className="flex gap-1 mb-2">
+                        <Badge className={statusStyles[order.status]}>{statusLabels[order.status]}</Badge>
+                        <Badge className={paymentStatusStyles[order.paymentStatus]}>{paymentStatusLabels[order.paymentStatus]}</Badge>
+                      </div>
                       <div className="text-lg font-bold text-primary mt-2">{formatCurrency(order.totalAmount)}</div>
                     </div>
                   </div>
@@ -392,7 +424,7 @@ export default function OrderHistoryPage() {
 
                   <div className="flex justify-between items-center">
                     <div className="text-sm text-muted-foreground">
-                      {order.items.length} item{order.items.length > 1 ? "s" : ""} • {order.paymentMethod}
+                      {order.items.length} item{order.items.length > 1 ? "s" : ""} • {order.paymentMethod} • {paymentStatusLabels[order.paymentStatus]}
                     </div>
                     <div className="flex gap-2">
                       <Button 

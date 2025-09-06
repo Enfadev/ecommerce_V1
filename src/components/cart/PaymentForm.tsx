@@ -56,6 +56,7 @@ export default function PaymentForm({ clientSecret, orderData, onPaymentSuccess 
         const completeOrderData = {
           ...orderData,
           paymentMethod: "Credit Card",
+          paymentStatus: "PAID" as const,
         };
 
         console.log("Creating order with data:", completeOrderData);

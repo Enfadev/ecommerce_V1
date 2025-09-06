@@ -83,9 +83,8 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     
-    const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
+    const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, paymentStatus, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
 
-    // Enhanced validation with detailed logging
     const missingFields = [];
     
     if (!customerName || customerName.trim() === '') missingFields.push('customerName');
@@ -147,6 +146,7 @@ export async function POST(request: NextRequest) {
           postalCode,
           notes,
           paymentMethod: paymentMethod || "Bank Transfer",
+          paymentStatus: paymentStatus || "PENDING",
           subtotal,
           shippingFee: shippingFee || 0,
           tax: tax || 0,

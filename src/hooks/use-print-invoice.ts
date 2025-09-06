@@ -16,7 +16,6 @@ export const usePrintInvoice = () => {
     setIsLoading(true);
     
     try {
-      // Fetch company info if not provided
       let company = companyInfo;
       if (!company) {
         try {
@@ -29,12 +28,10 @@ export const usePrintInvoice = () => {
         }
       }
 
-      // Get current domain dynamically
       const currentDomain = typeof window !== 'undefined' 
         ? window.location.host 
         : 'localhost:3000';
 
-      // Create a new window for printing
       const printWindow = window.open('', '_blank', 'width=800,height=600');
       
       if (!printWindow) {
@@ -51,7 +48,6 @@ export const usePrintInvoice = () => {
 
       company = company || defaultCompanyInfo;
 
-      // Override website with current domain for dynamic behavior
       company.website = currentDomain;
 
       const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
@@ -64,7 +60,6 @@ export const usePrintInvoice = () => {
         });
       };
 
-      // Generate HTML content for the invoice
       const invoiceHTML = `
         <!DOCTYPE html>
         <html lang="en">
@@ -457,7 +452,6 @@ export const usePrintInvoice = () => {
       printWindow.document.write(invoiceHTML);
       printWindow.document.close();
       
-      // Handle print completion
       printWindow.onafterprint = () => {
         printWindow.close();
       };

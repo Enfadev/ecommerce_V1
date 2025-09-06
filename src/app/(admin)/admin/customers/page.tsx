@@ -121,13 +121,11 @@ export default function AdminCustomerManagement() {
       return 0;
     });
 
-  // Pagination calculations
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedCustomers = filteredCustomers.slice(startIndex, endIndex);
 
-  // Reset to first page when search/filter changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedStatus]);
@@ -380,8 +378,6 @@ export default function AdminCustomerManagement() {
                       <DropdownMenuItem 
                         key={count} 
                         onClick={() => {
-                          // For now, we'll keep the default value since itemsPerPage is readonly
-                          // In a real implementation, you'd make this mutable
                         }}
                       >
                         {count} items

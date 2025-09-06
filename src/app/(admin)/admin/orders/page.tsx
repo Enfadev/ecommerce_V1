@@ -56,11 +56,10 @@ export default function AdminOrderManagement() {
 
   const handlePrintInvoice = async (order: Order) => {
     try {
-      // Transform admin order format to customer order format for printing
       const printOrder = {
         id: parseInt(order.id) || 1,
         orderNumber: order.id,
-        userId: 1, // dummy userId for admin prints
+        userId: 1,
         customerName: order.customer.name,
         customerEmail: order.customer.email,
         customerPhone: order.customer.phone,
@@ -80,7 +79,7 @@ export default function AdminOrderManagement() {
         updatedAt: order.updatedAt,
         items: order.items.map((item, index) => ({
           id: index + 1,
-          productId: index + 1, // dummy productId
+          productId: index + 1,
           productName: item.name,
           productPrice: item.price,
           productImage: item.image || undefined,
