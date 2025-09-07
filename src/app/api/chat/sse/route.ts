@@ -86,7 +86,30 @@ export async function GET(request: NextRequest) {
           })}\n\n`
         );
 
+        // For global connections, send periodic heartbeat to prevent timeout
+        let heartbeatInterval: NodeJS.Timeout | null = null;
+        if (isGlobal) {
+          heartbeatInterval = setInterval(() => {
+            try {
+              controller.enqueue(
+                `data: ${JSON.stringify({
+                  type: "heartbeat",
+                  timestamp: new Date().toISOString()
+                })}\n\n`
+              );
+            } catch (error) {
+              if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+              }
+              connections.delete(connectionId);
+            }
+          }, 25000); // Send heartbeat every 25 seconds
+        }
+
         request.signal.addEventListener("abort", () => {
+          if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
+          }
           connections.delete(connectionId);
           try {
             controller.close();

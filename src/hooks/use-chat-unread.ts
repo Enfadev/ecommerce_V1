@@ -17,9 +17,11 @@ export function useChatUnreadCount() {
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const fallbackPollingRef = useRef<NodeJS.Timeout | null>(null);
   const maxReconnectAttempts = 5;
   const baseReconnectDelay = 1000; // 1 second
   const heartbeatInterval = 30000; // 30 seconds
+  const fallbackPollingInterval = 15000; // 15 seconds fallback
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user || user.role !== "ADMIN") return;
@@ -68,15 +70,25 @@ export function useChatUnreadCount() {
           // Reset reconnect attempts on successful connection
           reconnectAttemptsRef.current = 0;
           
+          // Clear fallback polling if SSE reconnects successfully
+          if (fallbackPollingRef.current) {
+            clearInterval(fallbackPollingRef.current);
+            fallbackPollingRef.current = null;
+          }
+          
           // Start heartbeat to keep connection alive
           if (heartbeatIntervalRef.current) {
             clearInterval(heartbeatIntervalRef.current);
           }
           
           heartbeatIntervalRef.current = setInterval(() => {
-            // Simply check if connection is still alive
+            // Check if connection is still alive and working
             if (globalEventSource.readyState !== EventSource.OPEN) {
-              // Connection lost, attempt reconnect
+              // Connection lost, clear interval and attempt reconnect
+              if (heartbeatIntervalRef.current) {
+                clearInterval(heartbeatIntervalRef.current);
+                heartbeatIntervalRef.current = null;
+              }
               if (user && user.role === "ADMIN") {
                 connectSSE();
               }
@@ -87,6 +99,12 @@ export function useChatUnreadCount() {
         globalEventSource.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
+            
+            // Handle heartbeat messages
+            if (data.type === 'heartbeat') {
+              // Just acknowledge heartbeat, no action needed
+              return;
+            }
             
             if (data.type === 'new_message' && data.message && data.roomId) {
               fetchUnreadCount();
@@ -120,6 +138,14 @@ export function useChatUnreadCount() {
                 connectSSE();
               }
             }, delay);
+          } else if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
+            // SSE failed multiple times, fallback to polling
+            console.log('SSE failed multiple times, switching to fallback polling');
+            fallbackPollingRef.current = setInterval(() => {
+              if (user && user.role === "ADMIN") {
+                fetchUnreadCount();
+              }
+            }, fallbackPollingInterval);
           }
         };
 
@@ -144,6 +170,10 @@ export function useChatUnreadCount() {
         if (heartbeatIntervalRef.current) {
           clearInterval(heartbeatIntervalRef.current);
           heartbeatIntervalRef.current = null;
+        }
+        if (fallbackPollingRef.current) {
+          clearInterval(fallbackPollingRef.current);
+          fallbackPollingRef.current = null;
         }
       };
     }
