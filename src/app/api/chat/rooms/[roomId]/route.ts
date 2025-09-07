@@ -60,6 +60,7 @@ export async function GET(
     const limit = 50;
     const skip = (page - 1) * limit;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messages = await (prisma as any).chatMessage.findMany({
       where: { chatRoomId: roomId },
       include: {
@@ -96,29 +97,8 @@ export async function GET(
       take: limit,
     });
 
-    if (user.role === "ADMIN") {
-      await prisma.chatMessage.updateMany({
-        where: {
-          chatRoomId: roomId,
-          isRead: false,
-          sender: {
-            role: "USER",
-          },
-        },
-        data: { isRead: true },
-      });
-    } else {
-      await prisma.chatMessage.updateMany({
-        where: {
-          chatRoomId: roomId,
-          isRead: false,
-          sender: {
-            role: "ADMIN",
-          },
-        },
-        data: { isRead: true },
-      });
-    }
+    // Don't automatically mark messages as read when fetching
+    // This should only be done explicitly through the /read endpoint
 
     return NextResponse.json({
       chatRoom,
@@ -182,6 +162,7 @@ export async function POST(
       ...(productId && { productId: parseInt(productId) }),
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const newMessage = await (prisma as any).chatMessage.create({
       data: messageData,
       include: {
@@ -215,6 +196,7 @@ export async function POST(
       },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {
       lastMessage: message,
       lastActivity: new Date(),

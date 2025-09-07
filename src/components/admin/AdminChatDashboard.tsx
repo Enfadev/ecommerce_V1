@@ -239,13 +239,22 @@ export function AdminChatDashboard() {
 
   const fetchChatRooms = async () => {
     try {
+      console.log("📊 AdminDashboard: Fetching chat rooms...");
       const response = await fetch("/api/chat/rooms");
       if (response.ok) {
         const data = await response.json();
         setChatRooms(data.chatRooms || []);
+        console.log(`📊 AdminDashboard: Loaded ${data.chatRooms?.length || 0} chat rooms`);
+        
+        // Calculate total unread and log
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const totalUnread = data.chatRooms?.reduce((total: number, room: any) => {
+          return total + (room.unreadCount || 0);
+        }, 0) || 0;
+        console.log(`📊 AdminDashboard: Total unread messages: ${totalUnread}`);
       }
     } catch (error) {
-      console.error("Error fetching chat rooms:", error);
+      console.error("📊 AdminDashboard: Error fetching chat rooms:", error);
     }
   };
 
@@ -268,8 +277,15 @@ export function AdminChatDashboard() {
         // Don't add message to state here - SSE will handle it
         setNewMessage("");
         
-        // Optionally refresh chat rooms list
+        // Refresh chat rooms list to get updated unread counts
         fetchChatRooms();
+        
+        // Also trigger a refresh of the sidebar badge
+        if (window.refreshChatUnreadCount) {
+          setTimeout(() => {
+            window.refreshChatUnreadCount?.();
+          }, 200);
+        }
       }
     } catch (error) {
       console.error("Error sending message:", error);
@@ -282,9 +298,9 @@ export function AdminChatDashboard() {
     console.log(`📨 Admin: Selecting room ${room.id}`);
     setSelectedRoom(room);
     
-    // Reset unread count for this room
+    // Only mark as read when admin actually opens the chat
     if (room.unreadCount && room.unreadCount > 0) {
-      console.log(`📨 Admin: Resetting unread count for room ${room.id}`);
+      console.log(`📨 Admin: Marking room ${room.id} as read`);
       try {
         await fetch(`/api/chat/rooms/${room.id}/read`, {
           method: 'POST'
@@ -298,8 +314,15 @@ export function AdminChatDashboard() {
         ));
         
         // Notify sidebar to decrease total unread count
-        if (window.resetChatUnreadCount) {
+        if (window.resetChatUnreadCount && room.unreadCount) {
           window.resetChatUnreadCount(room.unreadCount);
+        }
+        
+        // Also trigger a refresh of the sidebar
+        if (window.refreshChatUnreadCount) {
+          setTimeout(() => {
+            window.refreshChatUnreadCount?.();
+          }, 100);
         }
       } catch (error) {
         console.error('Error marking room as read:', error);

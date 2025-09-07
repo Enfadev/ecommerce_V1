@@ -14,29 +14,32 @@ global.sseConnections = connections;
 export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
   console.log(`📡 Broadcasting to room ${roomId}:`, data);
   let broadcasted = 0;
+  let globalBroadcasted = 0;
   
   for (const [connectionId, controller] of connections.entries()) {
-    // Connection ID format is "userId-roomId" or "userId-global"
-    if (connectionId.endsWith(`-${roomId}`) || connectionId.endsWith('-global')) {
-      try {
-        // Add roomId to the data for global connections
-        const broadcastData = connectionId.endsWith('-global') 
-          ? { ...data, roomId: parseInt(roomId) }
-          : data;
-        
-        controller.enqueue(`data: ${JSON.stringify(broadcastData)}\n\n`);
+    try {
+      // Connection ID format is "userId-roomId" or "userId-global"
+      if (connectionId.endsWith(`-${roomId}`)) {
+        // Send to specific room connections
+        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
         broadcasted++;
-        console.log(`📡 Sent to connection: ${connectionId}`);
-      } catch (error) {
-        console.error(`Failed to send to connection ${connectionId}:`, error);
-        // Remove dead connection
-        connections.delete(connectionId);
+        console.log(`📡 Sent to room connection: ${connectionId}`);
+      } else if (connectionId.endsWith('-global')) {
+        // Send to global connections (for admin sidebar)
+        const broadcastData = { ...data, roomId: parseInt(roomId) };
+        controller.enqueue(`data: ${JSON.stringify(broadcastData)}\n\n`);
+        globalBroadcasted++;
+        console.log(`📡 Sent to global connection: ${connectionId}`);
       }
+    } catch (error) {
+      console.error(`Failed to send to connection ${connectionId}:`, error);
+      // Remove dead connection
+      connections.delete(connectionId);
     }
   }
   
-  console.log(`📡 Broadcasted to ${broadcasted} connections for room ${roomId}`);
-  return broadcasted;
+  console.log(`📡 Broadcasted to ${broadcasted} room connections and ${globalBroadcasted} global connections for room ${roomId}`);
+  return broadcasted + globalBroadcasted;
 }
 
 export async function GET(request: NextRequest) {

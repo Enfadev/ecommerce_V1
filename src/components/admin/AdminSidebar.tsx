@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -39,7 +39,26 @@ export default function AdminSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { stats } = useOrders();
-  const { totalUnreadCount } = useChatUnreadCount();
+  const { totalUnreadCount, refreshUnreadCount } = useChatUnreadCount();
+
+  // Refresh unread count when component mounts or when navigating to chat page
+  useEffect(() => {
+    if (pathname?.includes('/admin/chat') && refreshUnreadCount) {
+      refreshUnreadCount();
+    }
+  }, [pathname, refreshUnreadCount]);
+
+  // Backup: Refresh unread count every 15 seconds as fallback  
+  useEffect(() => {
+    if (user?.role === "ADMIN" && refreshUnreadCount) {
+      const interval = setInterval(() => {
+        console.log(`🔄 Sidebar: Backup refresh of unread count`);
+        refreshUnreadCount();
+      }, 15000); // 15 seconds - lebih sering untuk testing
+
+      return () => clearInterval(interval);
+    }
+  }, [user, refreshUnreadCount]);
 
   const isActiveRoute = (href: string) => {
     if (href === "/admin") {
@@ -124,8 +143,9 @@ export default function AdminSidebar() {
                       <Badge 
                         variant={isActive ? "secondary" : (item.id === "chat" ? "destructive" : "outline")} 
                         className={cn(
-                          "h-5 px-1.5 text-xs",
-                          item.id === "chat" && "animate-pulse"
+                          "h-5 px-1.5 text-xs font-semibold transition-all duration-300",
+                          item.id === "chat" && totalUnreadCount > 0 && "animate-pulse shadow-md scale-105",
+                          item.id === "chat" && "bg-red-500 text-white border-red-600"
                         )}
                       >
                         {badgeValue}
