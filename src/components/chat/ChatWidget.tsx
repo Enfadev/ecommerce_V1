@@ -78,16 +78,17 @@ export function ChatWidget() {
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [subject, setSubject] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [sseReconnectAttempts, setSseReconnectAttempts] = useState(0);
+  const [subject, setSubject] = useState("");
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const stateRef = useRef({ isOpen: false, isMinimized: false });
-  stateRef.current = { isOpen, isMinimized };
-  
   const processedMessagesRef = useRef(new Set<number>());
+  const stateRef = useRef({ isOpen: false, isMinimized: false });
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const maxSseReconnectAttempts = 3;
+  
+  stateRef.current = { isOpen, isMinimized };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -164,6 +165,8 @@ export function ChatWidget() {
       const eventSource = new EventSource(`/api/chat/sse?roomId=${chatRoom.id}`);
       
       eventSource.onopen = () => {
+        // Reset reconnect attempts on successful connection
+        setSseReconnectAttempts(0);
       };
       
       eventSource.onmessage = (event) => {
@@ -214,13 +217,24 @@ export function ChatWidget() {
       eventSource.onerror = (error) => {
         console.warn('SSE connection failed:', error);
         eventSource.close();
+        
+        // Auto-reconnect with limited attempts
+        if (sseReconnectAttempts < maxSseReconnectAttempts) {
+          setSseReconnectAttempts(prev => prev + 1);
+          setTimeout(() => {
+            if (chatRoom && user) {
+              // Force re-render to trigger useEffect again
+              setChatRoom(prevRoom => ({ ...prevRoom! }));
+            }
+          }, 3000 * (sseReconnectAttempts + 1)); // Exponential backoff
+        }
       };
 
       return () => {
         eventSource.close();
       };
     }
-  }, [chatRoom, user]);
+  }, [chatRoom, user, sseReconnectAttempts]);
 
   useEffect(() => {
     if (isOpen && !isMinimized && chatRoom && unreadCount > 0) {

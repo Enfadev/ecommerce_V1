@@ -14,6 +14,12 @@ export function useChatUnreadCount() {
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const { user } = useAuth();
   const eventSourceRef = useRef<EventSource | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttemptsRef = useRef(0);
+  const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const maxReconnectAttempts = 5;
+  const baseReconnectDelay = 1000; // 1 second
+  const heartbeatInterval = 30000; // 30 seconds
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user || user.role !== "ADMIN") return;
@@ -45,9 +51,37 @@ export function useChatUnreadCount() {
       }
 
       const connectSSE = () => {
+        // Close existing connection
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+        }
+
+        // Clear existing reconnect timeout
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+          reconnectTimeoutRef.current = null;
+        }
+
         const globalEventSource = new EventSource('/api/chat/sse?global=true');
         
         globalEventSource.onopen = () => {
+          // Reset reconnect attempts on successful connection
+          reconnectAttemptsRef.current = 0;
+          
+          // Start heartbeat to keep connection alive
+          if (heartbeatIntervalRef.current) {
+            clearInterval(heartbeatIntervalRef.current);
+          }
+          
+          heartbeatIntervalRef.current = setInterval(() => {
+            // Simply check if connection is still alive
+            if (globalEventSource.readyState !== EventSource.OPEN) {
+              // Connection lost, attempt reconnect
+              if (user && user.role === "ADMIN") {
+                connectSSE();
+              }
+            }
+          }, heartbeatInterval);
         };
         
         globalEventSource.onmessage = (event) => {
@@ -66,11 +100,27 @@ export function useChatUnreadCount() {
 
         globalEventSource.onerror = (error) => {
           console.error('SSE connection error:', error);
-          setTimeout(() => {
-            if (user && user.role === "ADMIN" && globalEventSource.readyState === EventSource.CLOSED) {
-              connectSSE();
-            }
-          }, 3000);
+          
+          // Clear heartbeat
+          if (heartbeatIntervalRef.current) {
+            clearInterval(heartbeatIntervalRef.current);
+            heartbeatIntervalRef.current = null;
+          }
+          
+          // Close the current connection
+          globalEventSource.close();
+          
+          // Attempt to reconnect with exponential backoff
+          if (user && user.role === "ADMIN" && reconnectAttemptsRef.current < maxReconnectAttempts) {
+            const delay = baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current);
+            reconnectAttemptsRef.current += 1;
+            
+            reconnectTimeoutRef.current = setTimeout(() => {
+              if (user && user.role === "ADMIN") {
+                connectSSE();
+              }
+            }, delay);
+          }
         };
 
         eventSourceRef.current = globalEventSource;
@@ -87,8 +137,37 @@ export function useChatUnreadCount() {
           eventSourceRef.current.close();
           eventSourceRef.current = null;
         }
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+          reconnectTimeoutRef.current = null;
+        }
+        if (heartbeatIntervalRef.current) {
+          clearInterval(heartbeatIntervalRef.current);
+          heartbeatIntervalRef.current = null;
+        }
       };
     }
+  }, [user, fetchUnreadCount]);
+
+  // Handle page visibility changes
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (user && user.role === "ADMIN") {
+        if (document.visibilityState === 'visible') {
+          // Page is visible again, ensure SSE connection is active
+          if (!eventSourceRef.current || eventSourceRef.current.readyState === EventSource.CLOSED) {
+            // Refresh count and potentially reconnect SSE
+            fetchUnreadCount();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [user, fetchUnreadCount]);
 
   useEffect(() => {
