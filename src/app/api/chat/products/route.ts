@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
 
-    // Get products with their categories
     const [products, totalCount] = await Promise.all([
       prisma.product.findMany({
         skip,
@@ -24,8 +23,8 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: [
-          { stock: "desc" }, // Prioritize in-stock products
-          { createdAt: "desc" }, // Then newest products
+          { stock: "desc" },
+          { createdAt: "desc" },
         ],
       }),
       prisma.product.count(),

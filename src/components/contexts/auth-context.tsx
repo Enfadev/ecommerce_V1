@@ -57,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             dateOfBirth: nextAuthData.user.dateOfBirth,
             avatar: nextAuthData.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(nextAuthData.user.name)}&background=6366f1&color=fff`,
           });
-          console.log("✅ NextAuth user loaded successfully");
           return;
         }
       }
@@ -71,16 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (!authCheck.ok) {
-        console.log("Auth check failed:", authCheck.status);
         setUser(null);
         return;
       }
 
       const authData = await authCheck.json();
-      console.log("🔍 Auth check result:", authData);
 
       if (!authData.authenticated) {
-        console.log("Not authenticated:", authData.error);
         setUser(null);
         return;
       }
@@ -107,13 +103,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           dateOfBirth: userData.dateOfBirth,
           avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
         });
-        console.log("✅ User profile loaded successfully");
       } else {
-        console.log("❌ Failed to load user profile:", res.status);
         setUser(null);
       }
     } catch (error) {
-      console.error("❌ Error fetching user profile:", error);
+      console.error("Error fetching user profile:", error);
       setUser(null);
     } finally {
       setIsLoading(false);

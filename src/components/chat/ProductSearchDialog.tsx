@@ -47,13 +47,11 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
     if (searchQuery.trim()) {
       searchProducts(searchQuery, 1);
     } else {
-      // Load featured/popular products when no search query
       loadFeaturedProducts();
     }
   }, [searchQuery]);
 
   useEffect(() => {
-    // Load featured products when dialog opens
     if (isOpen && !searchQuery.trim() && products.length === 0) {
       loadFeaturedProducts();
     }
@@ -62,7 +60,6 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
   const loadFeaturedProducts = async () => {
     setIsLoading(true);
     try {
-      // Try to load featured products first, fallback to all products
       const response = await fetch('/api/chat/products?page=1&limit=10');
       
       if (response.ok) {

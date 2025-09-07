@@ -4,13 +4,11 @@ import { prisma } from "@/lib/prisma";
 
 const connections = new Map<string, ReadableStreamDefaultController>();
 
-// Make connections available globally for broadcasting
 declare global {
   var sseConnections: Map<string, ReadableStreamDefaultController>;
 }
 global.sseConnections = connections;
 
-// Broadcasting function
 export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
   console.log(`📡 Broadcasting to room ${roomId}:`, data);
   let broadcasted = 0;
@@ -18,14 +16,11 @@ export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
   
   for (const [connectionId, controller] of connections.entries()) {
     try {
-      // Connection ID format is "userId-roomId" or "userId-global"
       if (connectionId.endsWith(`-${roomId}`)) {
-        // Send to specific room connections
         controller.enqueue(`data: ${JSON.stringify(data)}\n\n`);
         broadcasted++;
         console.log(`📡 Sent to room connection: ${connectionId}`);
       } else if (connectionId.endsWith('-global')) {
-        // Send to global connections (for admin sidebar)
         const broadcastData = { ...data, roomId: parseInt(roomId) };
         controller.enqueue(`data: ${JSON.stringify(broadcastData)}\n\n`);
         globalBroadcasted++;
@@ -33,7 +28,6 @@ export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
       }
     } catch (error) {
       console.error(`Failed to send to connection ${connectionId}:`, error);
-      // Remove dead connection
       connections.delete(connectionId);
     }
   }
@@ -58,7 +52,6 @@ export async function GET(request: NextRequest) {
       return new Response("Room ID required or set global=true", { status: 400 });
     }
 
-    // Verify room access for specific room connections, skip for global
     if (!isGlobal) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const chatRoom = await (prisma as any).chatRoom.findFirst({
@@ -73,13 +66,11 @@ export async function GET(request: NextRequest) {
       });
 
       if (!chatRoom) {
-        console.error(`SSE: Chat room ${roomId} not found for user ${user.id}`);
         return new Response("Chat room not found", { status: 404 });
       }
     }
 
     const connectionType = isGlobal ? 'global' : roomId;
-    console.log(`SSE: Establishing ${isGlobal ? 'global' : 'room'} connection for user ${user.id} ${isGlobal ? '' : `in room ${roomId}`}`);
     const connectionId = `${user.id}-${connectionType}`;
 
     const stream = new ReadableStream({
@@ -141,7 +132,6 @@ export function broadcastTyping(roomId: number, userId: number, isTyping: boolea
   });
 }
 
-// POST method for broadcasting messages
 export async function POST(request: NextRequest) {
   try {
     const { roomId, data } = await request.json();

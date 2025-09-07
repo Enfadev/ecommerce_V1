@@ -5,7 +5,6 @@ import { useAuth } from "@/components/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import { ChatDebugInfo } from "@/components/admin/ChatDebugInfo";
 import { Toaster } from "@/components/ui/sonner";
 
 interface AdminLayoutProps {
@@ -39,9 +38,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex-1 overflow-auto">
         <div className="p-6">{children}</div>
       </div>
-
-      {/* Debug Info - Only in development */}
-      {process.env.NODE_ENV === 'development' && <ChatDebugInfo />}
 
       <Toaster />
     </div>

@@ -41,20 +41,17 @@ export default function AdminSidebar() {
   const { stats } = useOrders();
   const { totalUnreadCount, refreshUnreadCount } = useChatUnreadCount();
 
-  // Refresh unread count when component mounts or when navigating to chat page
   useEffect(() => {
     if (pathname?.includes('/admin/chat') && refreshUnreadCount) {
       refreshUnreadCount();
     }
   }, [pathname, refreshUnreadCount]);
 
-  // Backup: Refresh unread count every 15 seconds as fallback  
   useEffect(() => {
     if (user?.role === "ADMIN" && refreshUnreadCount) {
       const interval = setInterval(() => {
-        console.log(`🔄 Sidebar: Backup refresh of unread count`);
         refreshUnreadCount();
-      }, 15000); // 15 seconds - lebih sering untuk testing
+      }, 15000);
 
       return () => clearInterval(interval);
     }
@@ -125,7 +122,6 @@ export default function AdminSidebar() {
           const isActive = isActiveRoute(item.href);
           let badgeValue = item.badge;
           
-          // Dynamic badge values
           if (item.id === "orders") {
             badgeValue = stats.total?.toString() || null;
           } else if (item.id === "chat") {

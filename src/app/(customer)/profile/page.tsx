@@ -151,15 +151,11 @@ export default function ProfilePage() {
           credentials: "include",
         });
 
-        console.log("📤 Upload response status:", uploadResponse.status);
-
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json();
-          console.log("✅ Upload successful:", uploadData);
           avatarUrl = uploadData.url;
         } else {
           const errorData = await uploadResponse.json();
-          console.error("❌ Upload failed:", errorData);
           setToast({
             show: true,
             message: errorData.error || "Failed to upload image. Please try again.",
@@ -298,8 +294,7 @@ export default function ProfilePage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("✅ Avatar deleted successfully:", data);
+        await response.json();
 
         const defaultAvatarUrl = generateAvatarUrl(user.name);
         setImagePreview(defaultAvatarUrl);

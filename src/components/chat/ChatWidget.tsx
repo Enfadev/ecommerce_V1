@@ -84,14 +84,11 @@ export function ChatWidget() {
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Keep track of current state for SSE handler
   const stateRef = useRef({ isOpen: false, isMinimized: false });
   stateRef.current = { isOpen, isMinimized };
   
-  // Keep track of processed messages to prevent duplicates
   const processedMessagesRef = useRef(new Set<number>());
 
-  // Auto scroll to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -100,7 +97,6 @@ export function ChatWidget() {
     scrollToBottom();
   }, [messages]);
 
-  // Format time utility
   const formatMessageTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('en-US', { 
@@ -115,7 +111,6 @@ export function ChatWidget() {
       const response = await fetch(`/api/chat/rooms/${roomId}`);
       if (response.ok) {
         const data = await response.json();
-        console.log("Load messages response:", data); // Debug log
         setMessages(data.messages || []);
       } else {
         console.error("Failed to load messages:", response.status);
@@ -130,15 +125,12 @@ export function ChatWidget() {
       const response = await fetch('/api/chat/rooms');
       if (response.ok) {
         const data = await response.json();
-        console.log("Load chat room response:", data); // Debug log
         
         if (data.chatRooms && data.chatRooms.length > 0) {
           const room = data.chatRooms[0];
           setChatRoom(room);
           setUnreadCount(room.unreadCount || 0);
           await loadMessages(room.id);
-        } else {
-          console.log("No existing chat rooms found");
         }
       } else {
         console.error("Failed to load chat rooms:", response.status);
@@ -161,80 +153,57 @@ export function ChatWidget() {
     }
   }, [chatRoom]);
 
-  // Load chat room when component mounts
   useEffect(() => {
     if (user) {
       loadChatRoom();
     }
   }, [user, loadChatRoom]);
 
-  // Setup SSE for real-time messages - Always active when user has chatRoom
   useEffect(() => {
-    // Setup SSE if we have a chat room and user, regardless of isOpen status
     if (chatRoom && user) {
-      console.log(`🔗 User: Setting up SSE for room ${chatRoom.id}`);
       const eventSource = new EventSource(`/api/chat/sse?roomId=${chatRoom.id}`);
       
       eventSource.onopen = () => {
-        console.log(`✅ User: SSE connection opened for room ${chatRoom.id}`);
       };
       
       eventSource.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log('📨 User: SSE message received:', data);
           
           if (data.type === 'new_message' && data.message) {
             const messageId = data.message.id;
             
-            // Check if we've already processed this message
             if (processedMessagesRef.current.has(messageId)) {
-              console.log(`📨 User: Message ${messageId} already processed, skipping`);
               return;
             }
             
-            // Mark as processed immediately to prevent duplicates
             processedMessagesRef.current.add(messageId);
-            console.log(`📨 User: Processing new message ${messageId}`);
             
-            // Add message to state
             setMessages(prev => {
               const messageExists = prev.some(msg => msg.id === messageId);
               if (messageExists) {
-                console.log(`📨 User: Message ${messageId} already in state, skipping`);
                 return prev;
               }
               
-              console.log(`📨 User: Adding message ${messageId} to state`);
               return [...prev, data.message];
             });
             
-            // Handle unread count and actions
             const { isOpen: currentIsOpen, isMinimized: currentIsMinimized } = stateRef.current;
-            console.log(`📨 User: Chat state - isOpen: ${currentIsOpen}, isMinimized: ${currentIsMinimized}`);
             
             if (currentIsOpen && !currentIsMinimized) {
-              console.log(`📨 User: Chat is open, auto-scrolling and marking as read`);
               setTimeout(() => scrollToBottom(), 100);
               
-              // Mark as read if chat is open
               setTimeout(() => {
                 fetch(`/api/chat/rooms/${chatRoom.id}/read`, {
                   method: 'POST'
                 }).then(() => {
-                  console.log(`📨 User: Messages marked as read`);
                   setUnreadCount(0);
                 }).catch(error => {
                   console.error('Error marking messages as read:', error);
                 });
               }, 200);
             } else {
-              console.log(`📨 User: Chat closed/minimized, incrementing unread count`);
-              setUnreadCount(prev => {
-                const newCount = prev + 1;
-                console.log(`📨 User: Unread count updated from ${prev} to: ${newCount}`);
-                return newCount;
-              });
+              setUnreadCount(prev => prev + 1);
             }
           }
         } catch (error) {
@@ -243,19 +212,16 @@ export function ChatWidget() {
       };
 
       eventSource.onerror = (error) => {
-        console.warn('❌ User: SSE connection failed:', error);
-        console.warn('❌ User: SSE readyState:', eventSource.readyState);
+        console.warn('SSE connection failed:', error);
         eventSource.close();
       };
 
       return () => {
-        console.log(`🔗 User: Cleaning up SSE connection for room ${chatRoom.id}`);
         eventSource.close();
       };
     }
-  }, [chatRoom, user]); // Only depend on chatRoom and user to prevent multiple connections
+  }, [chatRoom, user]);
 
-  // Mark messages as read when chat opens
   useEffect(() => {
     if (isOpen && !isMinimized && chatRoom && unreadCount > 0) {
       markMessagesAsRead();
@@ -283,32 +249,23 @@ export function ChatWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           subject: subject.trim() || undefined,
-          message: newMessage, // Changed from initialMessage to message
+          message: newMessage,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("API Response:", data); // Debug log
         
-        // Handle both new chat room and existing room scenarios
         if (data.chatRoom) {
           setChatRoom(data.chatRoom);
           
-          // Set messages from the chat room data
           if (data.chatRoom.messages && data.chatRoom.messages.length > 0) {
             setMessages(data.chatRoom.messages);
-            console.log("Messages set from chatRoom.messages:", data.chatRoom.messages);
-            // Scroll to bottom after setting messages
             setTimeout(() => scrollToBottom(), 100);
           } else if (data.message) {
-            // If there's a separate message object (for existing rooms)
             setMessages([data.message]);
-            console.log("Messages set from data.message:", data.message);
-            // Scroll to bottom after setting message
             setTimeout(() => scrollToBottom(), 100);
           } else {
-            // Fallback: load messages separately
             console.log("Loading messages separately for room:", data.chatRoom.id);
             await loadMessages(data.chatRoom.id);
           }
@@ -344,13 +301,10 @@ export function ChatWidget() {
       });
 
       if (response.ok) {
-        await response.json(); // Just consume the response
+        await response.json();
         console.log("Message sent successfully");
         
-        // Don't add message to state here - SSE will handle it
-        // Scroll to bottom will be handled by SSE message update
         
-        // Clear the input
         setNewMessage("");
       } else {
         console.error("Failed to send message");
@@ -395,14 +349,11 @@ export function ChatWidget() {
         const data = await response.json();
         console.log("Product shared successfully");
         
-        // Add the new message to the messages state immediately
         if (data.message) {
           setMessages(prev => [...prev, data.message]);
-          // Scroll to bottom to show the new message
           setTimeout(() => scrollToBottom(), 100);
         }
         
-        // Close the product dialog
         setIsProductDialogOpen(false);
       } else {
         console.error("Failed to share product");
@@ -425,7 +376,6 @@ export function ChatWidget() {
             <Button
               onClick={() => {
                 setIsOpen(true);
-                // Mark messages as read when opening chat
                 if (unreadCount > 0) {
                   markMessagesAsRead();
                 }

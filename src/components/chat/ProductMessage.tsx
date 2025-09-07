@@ -34,10 +34,10 @@ interface ProductMessageProps {
   onAddToWishlist?: (productId: number) => void;
   onViewProduct?: (productId: number) => void;
   showActions?: boolean;
-  isFromAdmin?: boolean;  // Add this prop
-  senderName?: string;    // Add this prop
-  timestamp?: string;     // Add this prop
-  asBubble?: boolean;     // Add this prop for bubble style
+  isFromAdmin?: boolean;
+  senderName?: string;
+  timestamp?: string;
+  asBubble?: boolean;
 }
 
 export function ProductMessage({ 
@@ -76,7 +76,6 @@ export function ProductMessage({
     onViewProduct?.(product.id);
   };
 
-  // If used as bubble in chat
   if (asBubble) {
     return (
       <div className={`max-w-xs lg:max-w-md ${
@@ -196,7 +195,6 @@ export function ProductMessage({
     );
   }
 
-  // Original card style
   return (
     <Card className="max-w-xs bg-card border-border">
       <CardContent className="p-4">

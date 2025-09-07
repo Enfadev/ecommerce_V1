@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/components/contexts/auth-context";
 
-// Extend Window interface
 declare global {
   interface Window {
     resetChatUnreadCount?: (count: number) => void;
@@ -20,7 +19,6 @@ export function useChatUnreadCount() {
     if (!user || user.role !== "ADMIN") return;
 
     try {
-      console.log(`📊 Sidebar: Fetching unread count...`);
       const response = await fetch("/api/chat/rooms");
       if (response.ok) {
         const data = await response.json();
@@ -29,76 +27,47 @@ export function useChatUnreadCount() {
           return total + (room.unreadCount || 0);
         }, 0) || 0;
         
-        console.log(`📊 Sidebar: Total unread count: ${totalUnread}`);
         setTotalUnreadCount(totalUnread);
-        
-        // Trigger a re-render by updating timestamp
-        const timestamp = Date.now();
-        console.log(`📊 Sidebar: Updated timestamp: ${timestamp}`);
-        
         return totalUnread;
-      } else {
-        console.error(`📊 Sidebar: Failed to fetch unread count:`, response.status);
       }
     } catch (error) {
-      console.error("📊 Sidebar: Error fetching chat unread count:", error);
+      console.error("Error fetching chat unread count:", error);
     }
   }, [user]);
 
   useEffect(() => {
     if (user && user.role === "ADMIN") {
-      // Initial fetch
       fetchUnreadCount();
 
-      // Cleanup any existing connection first
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
 
-      // Setup global SSE for real-time updates with retry logic
       const connectSSE = () => {
-        console.log(`🔗 Sidebar: Setting up global SSE for total unread count`);
         const globalEventSource = new EventSource('/api/chat/sse?global=true');
         
         globalEventSource.onopen = () => {
-          console.log(`✅ Sidebar: Global SSE connection opened for user ${user.id}`);
         };
         
         globalEventSource.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            console.log(`📨 Sidebar: Global SSE message received for user ${user.id}:`, data);
             
             if (data.type === 'new_message' && data.message && data.roomId) {
-              console.log(`📨 Sidebar: New message in room ${data.roomId}, updating total count`);
-              
-              // Refresh the entire count from server to ensure accuracy
               fetchUnreadCount();
               
-              // Also increment local count for immediate feedback
-              setTotalUnreadCount(prev => {
-                const newTotal = prev + 1;
-                console.log(`📨 Sidebar: Total unread count updated from ${prev} to: ${newTotal}`);
-                return newTotal;
-              });
-            }
-            
-            // Handle connection confirmation
-            if (data.type === 'connected') {
-              console.log(`✅ Sidebar: SSE connection confirmed for user ${user.id}`);
+              setTotalUnreadCount(prev => prev + 1);
             }
           } catch (error) {
-            console.error('❌ Sidebar: Error parsing global SSE message:', error);
+            console.error('Error parsing global SSE message:', error);
           }
         };
 
         globalEventSource.onerror = (error) => {
-          console.error('❌ Sidebar: Global SSE Error:', error);
-          // Retry connection after 3 seconds if connection fails
+          console.error('SSE connection error:', error);
           setTimeout(() => {
             if (user && user.role === "ADMIN" && globalEventSource.readyState === EventSource.CLOSED) {
-              console.log('🔄 Sidebar: Retrying SSE connection...');
               connectSSE();
             }
           }, 3000);
@@ -122,17 +91,12 @@ export function useChatUnreadCount() {
     }
   }, [user, fetchUnreadCount]);
 
-  // Create a global function to reset total count (called from chat dashboard)
   useEffect(() => {
-    // Make the decrementUnreadCount function available globally
     window.resetChatUnreadCount = (count: number) => {
-      console.log(`📨 Sidebar: Resetting ${count} unread messages`);
       setTotalUnreadCount(prev => Math.max(0, prev - count));
     };
 
-    // Also add a refresh function for manual updates
     window.refreshChatUnreadCount = () => {
-      console.log(`📨 Sidebar: Manual refresh requested`);
       fetchUnreadCount();
     };
 
@@ -142,7 +106,6 @@ export function useChatUnreadCount() {
     };
   }, [fetchUnreadCount]);
 
-  // Reset count when admin reads messages (can be called from outside)
   const decrementUnreadCount = (count: number = 1) => {
     setTotalUnreadCount(prev => Math.max(0, prev - count));
   };

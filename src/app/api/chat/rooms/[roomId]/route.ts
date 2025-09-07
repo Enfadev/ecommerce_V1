@@ -97,8 +97,6 @@ export async function GET(
       take: limit,
     });
 
-    // Don't automatically mark messages as read when fetching
-    // This should only be done explicitly through the /read endpoint
 
     return NextResponse.json({
       chatRoom,
@@ -153,7 +151,6 @@ export async function POST(
       );
     }
 
-    // Create message data
     const messageData = {
       chatRoomId: roomId,
       senderId: user.id,
@@ -212,7 +209,6 @@ export async function POST(
       data: updateData,
     });
 
-    // Broadcast to SSE connections
     try {
       const broadcastUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/chat/sse`;
       await fetch(broadcastUrl, {

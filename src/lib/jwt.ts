@@ -42,13 +42,7 @@ export async function signJWT(payload: Omit<CustomJWTPayload, 'iat' | 'exp'>) {
 
 export async function verifyJWT(token: string): Promise<CustomJWTPayload | null> {
   try {
-    console.log('🔍 Verifying JWT token...');
-    console.log('🔍 Token length:', token.length);
-    console.log('🔍 Token preview:', token.substring(0, 50) + '...');
-    
     const { payload } = await jwtVerify(token, secret);
-    
-    console.log('✅ JWT verified successfully for user:', payload.email);
     
     return {
       id: payload.id as string,

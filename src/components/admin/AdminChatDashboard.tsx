@@ -107,7 +107,6 @@ export function AdminChatDashboard() {
       if (response.ok) {
         const data = await response.json();
         setMessages(data.messages || []);
-        // Scroll to bottom after loading messages
         setTimeout(() => scrollToBottom(), 100);
       }
     } catch (error) {
@@ -118,22 +117,16 @@ export function AdminChatDashboard() {
   useEffect(() => {
     fetchChatRooms();
     
-    // Setup global SSE connection for unread count updates
-    console.log(`🔗 Admin: Setting up global SSE for unread count monitoring`);
     const globalEventSource = new EventSource('/api/chat/sse?global=true');
     
     globalEventSource.onopen = () => {
-      console.log(`✅ Admin: Global SSE connection opened`);
     };
     
     globalEventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('📨 Admin: Global SSE message received:', data);
         
         if (data.type === 'new_message' && data.message && data.roomId) {
-          // Update unread count for the specific room
-          console.log(`📨 Admin: Updating unread count for room ${data.roomId}`);
           setChatRooms(prev => prev.map(room => {
             if (room.id === data.roomId) {
               return {
@@ -148,12 +141,12 @@ export function AdminChatDashboard() {
           }));
         }
       } catch (error) {
-        console.error('❌ Admin: Error parsing global SSE message:', error);
+        console.error('Error parsing global SSE message:', error);
       }
     };
     
     globalEventSource.onerror = (error) => {
-      console.error('❌ Admin: Global SSE Error:', error);
+      console.error('Global SSE Error:', error);
     };
     
     globalEventSourceRef.current = globalEventSource;
@@ -161,7 +154,7 @@ export function AdminChatDashboard() {
     return () => {
       globalEventSource.close();
     };
-  }, []); // No dependencies needed for initial setup
+  }, []);
 
   useEffect(() => {
     if (selectedRoom) {
@@ -169,66 +162,49 @@ export function AdminChatDashboard() {
     }
   }, [selectedRoom, fetchMessages]);
 
-  // Real-time SSE connection
   useEffect(() => {
     if (selectedRoom) {
-      console.log(`🔗 Admin: Setting up SSE for room ${selectedRoom.id}`);
-      
-      // Close existing connection
       if (eventSourceRef.current) {
-        console.log(`🔗 Admin: Closing existing SSE connection`);
         eventSourceRef.current.close();
       }
 
-      // Create new SSE connection
       const newEventSource = new EventSource(`/api/chat/sse?roomId=${selectedRoom.id}`);
       
       newEventSource.onopen = () => {
-        console.log(`✅ Admin: SSE connection opened for room ${selectedRoom.id}`);
       };
       
       newEventSource.onmessage = (event) => {
-        console.log(`📨 Admin: SSE raw message:`, event.data);
         try {
           const data = JSON.parse(event.data);
-          console.log("📨 Admin: SSE parsed data:", data);
           
           if (data.type === "new_message" && data.message) {
-            console.log("📨 Admin: Adding new message:", data.message);
-            // Add new message to the list if it's not already there
             setMessages(prevMessages => {
               const messageExists = prevMessages.some(msg => msg.id === data.message.id);
               if (!messageExists) {
-                console.log("📨 Admin: Message added to state");
                 const newMessages = [...prevMessages, data.message];
-                // Auto scroll to bottom after new message
                 setTimeout(() => scrollToBottom(), 100);
                 return newMessages;
               }
-              console.log("📨 Admin: Message already exists, skipping");
               return prevMessages;
             });
           }
         } catch (error) {
-          console.error("❌ Admin: Error parsing SSE message:", error);
+          console.error("Error parsing SSE message:", error);
         }
       };
 
       newEventSource.onerror = (error) => {
-        console.error("❌ Admin: SSE Error:", error);
-        console.error("❌ Admin: SSE readyState:", newEventSource.readyState);
+        console.error("SSE Error:", error);
       };
 
       eventSourceRef.current = newEventSource;
 
-      // Cleanup function
       return () => {
         newEventSource.close();
       };
     }
   }, [selectedRoom]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
@@ -239,22 +215,13 @@ export function AdminChatDashboard() {
 
   const fetchChatRooms = async () => {
     try {
-      console.log("📊 AdminDashboard: Fetching chat rooms...");
       const response = await fetch("/api/chat/rooms");
       if (response.ok) {
         const data = await response.json();
         setChatRooms(data.chatRooms || []);
-        console.log(`📊 AdminDashboard: Loaded ${data.chatRooms?.length || 0} chat rooms`);
-        
-        // Calculate total unread and log
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const totalUnread = data.chatRooms?.reduce((total: number, room: any) => {
-          return total + (room.unreadCount || 0);
-        }, 0) || 0;
-        console.log(`📊 AdminDashboard: Total unread messages: ${totalUnread}`);
       }
     } catch (error) {
-      console.error("📊 AdminDashboard: Error fetching chat rooms:", error);
+      console.error("Error fetching chat rooms:", error);
     }
   };
 
@@ -273,14 +240,11 @@ export function AdminChatDashboard() {
       });
 
       if (response.ok) {
-        await response.json(); // Just consume the response
-        // Don't add message to state here - SSE will handle it
+        await response.json();
         setNewMessage("");
         
-        // Refresh chat rooms list to get updated unread counts
         fetchChatRooms();
         
-        // Also trigger a refresh of the sidebar badge
         if (window.refreshChatUnreadCount) {
           setTimeout(() => {
             window.refreshChatUnreadCount?.();
@@ -295,30 +259,24 @@ export function AdminChatDashboard() {
   };
 
   const handleRoomSelection = async (room: ChatRoom) => {
-    console.log(`📨 Admin: Selecting room ${room.id}`);
     setSelectedRoom(room);
     
-    // Only mark as read when admin actually opens the chat
     if (room.unreadCount && room.unreadCount > 0) {
-      console.log(`📨 Admin: Marking room ${room.id} as read`);
       try {
         await fetch(`/api/chat/rooms/${room.id}/read`, {
           method: 'POST'
         });
         
-        // Update the chat rooms list to reset unread count
         setChatRooms(prev => prev.map(r => 
           r.id === room.id 
             ? { ...r, unreadCount: 0, isRead: true }
             : r
         ));
         
-        // Notify sidebar to decrease total unread count
         if (window.resetChatUnreadCount && room.unreadCount) {
           window.resetChatUnreadCount(room.unreadCount);
         }
         
-        // Also trigger a refresh of the sidebar
         if (window.refreshChatUnreadCount) {
           setTimeout(() => {
             window.refreshChatUnreadCount?.();

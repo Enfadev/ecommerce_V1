@@ -98,7 +98,6 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Format the response to include unreadCount
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formattedChatRooms = chatRooms.map((room: any) => ({
       ...room,
