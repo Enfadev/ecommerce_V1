@@ -13,50 +13,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Valid productId required" }, { status: 400 });
     }
 
-    const reviews = await prisma.productReview.findMany({
-      where: {
-        productId: Number(productId),
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-        order: {
-          select: {
-            orderNumber: true,
-            status: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    const formattedReviews = reviews.map((review) => ({
-      id: review.id,
-      rating: review.rating,
-      comment: review.comment,
-      user: review.isAnonymous ? "Anonymous" : review.user.name || "Anonymous",
-      date: review.createdAt.toISOString(),
-      isVerified: review.isVerified,
-      isAnonymous: review.isAnonymous,
-      orderNumber: review.order.orderNumber,
-      helpfulCount: review.helpfulCount,
-    }));
-
-    return NextResponse.json(formattedReviews);
-  } catch (error) {
-    console.error("Error fetching reviews:", error);
-    return NextResponse.json({ error: "Failed to fetch reviews" }, { status: 500 });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
     // Try NextAuth first
     const session = await getServerSession(authOptions);
     let user = null;
@@ -64,15 +20,19 @@ export async function POST(request: NextRequest) {
 
     if (session?.user?.email) {
       userEmail = session.user.email;
+      console.log(`DEBUG: Using NextAuth session for ${userEmail}`);
     } else {
       // Try custom JWT auth
       const token = request.cookies.get("auth-token")?.value;
       if (token) {
         try {
           const payload = await verifyJWT(token);
-          userEmail = payload.email;
+          if (payload?.email) {
+            userEmail = payload.email;
+            console.log(`DEBUG: Using custom JWT auth for ${userEmail}`);
+          }
         } catch (error) {
-          console.log(`JWT verification failed:`, error);
+          console.log(`DEBUG: JWT verification failed:`, error);
         }
       }
     }
@@ -81,28 +41,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
-    const productId = searchParams.get("productId");
-
-    if (!productId || isNaN(Number(productId))) {
-      return NextResponse.json({ error: "Valid productId required" }, { status: 400 });
-    }
-
-    const { rating, comment, isAnonymous = false, orderId } = await request.json();
-
-    if (!rating || rating < 1 || rating > 5) {
-      return NextResponse.json({ error: "Rating must be between 1 and 5" }, { status: 400 });
-    }
-
-    if (!comment || comment.trim().length < 5) {
-      return NextResponse.json({ error: "Comment must be at least 5 characters" }, { status: 400 });
-    }
-
-    if (!orderId) {
-      return NextResponse.json({ error: "Order ID required" }, { status: 400 });
-    }
-
-    // Get user
+    // Get user from database
     user = await prisma.user.findUnique({
       where: { email: userEmail },
     });
@@ -111,7 +50,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Only allow regular users (not admins) to write reviews
+    // Only allow regular users (not admins) to access eligible orders for reviews
     if (user.role === "ADMIN") {
       return NextResponse.json(
         { error: "Administrators cannot write product reviews. Only customers who have purchased the product can write reviews." },
@@ -119,93 +58,79 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Only allow regular users (not admins) to write reviews
-    if (user.role === "ADMIN") {
-      return NextResponse.json(
-        { error: "Administrators cannot write product reviews. Only customers who have purchased the product can write reviews." },
-        { status: 403 }
-      );
-    }
+    console.log(`DEBUG: User ${user.email} (ID: ${user.id}, Role: ${user.role}) requesting eligible orders for product ${productId}`);
 
-    // Verify that the user has purchased this product in the specified order
-    const order = await prisma.order.findFirst({
+    // Get orders that contain this product and are delivered
+    const eligibleOrders = await prisma.order.findMany({
       where: {
-        id: Number(orderId),
         userId: user.id,
-        status: "DELIVERED", // Only allow reviews for delivered orders
+        status: "DELIVERED",
+        items: {
+          some: {
+            productId: Number(productId),
+          },
+        },
       },
       include: {
         items: {
           where: {
             productId: Number(productId),
           },
+          include: {
+            product: {
+              select: {
+                name: true,
+                imageUrl: true,
+              },
+            },
+          },
         },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
-    if (!order || order.items.length === 0) {
-      return NextResponse.json(
-        { error: "You can only review products from your delivered orders" },
-        { status: 403 }
-      );
-    }
-
-    // Check if user has already reviewed this product for this order
-    const existingReview = await prisma.productReview.findFirst({
+    console.log(`DEBUG: Found ${eligibleOrders.length} eligible orders for user ${user.email}`);
+    
+    // Get existing reviews for this product by this user
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existingReviews = await (prisma as any).productReview.findMany({
       where: {
-        userId: user.id,
         productId: Number(productId),
-        orderId: Number(orderId),
+        userId: user.id,
+      },
+      select: {
+        orderId: true,
       },
     });
 
-    if (existingReview) {
-      return NextResponse.json(
-        { error: "You have already reviewed this product for this order" },
-        { status: 409 }
-      );
-    }
-
-    // Create the review
-    const review = await prisma.productReview.create({
-      data: {
-        productId: Number(productId),
-        userId: user.id,
-        orderId: Number(orderId),
-        rating: Number(rating),
-        comment: String(comment).trim(),
-        isAnonymous: Boolean(isAnonymous),
-        isVerified: true,
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-          },
-        },
-        order: {
-          select: {
-            orderNumber: true,
-          },
-        },
-      },
+    const reviewedOrderIds = existingReviews.map((review: { orderId: number }) => review.orderId);
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    eligibleOrders.forEach((order: any) => {
+      const hasReview = reviewedOrderIds.includes(order.id);
+      console.log(`DEBUG: Order ${order.orderNumber} - Status: ${order.status}, Items: ${order.items.length}, Has Review: ${hasReview}`);
     });
 
-    const formattedReview = {
-      id: review.id,
-      rating: review.rating,
-      comment: review.comment,
-      user: review.isAnonymous ? "Anonymous" : review.user.name || "Anonymous",
-      date: review.createdAt.toISOString(),
-      isVerified: review.isVerified,
-      isAnonymous: review.isAnonymous,
-      orderNumber: review.order.orderNumber,
-      helpfulCount: review.helpfulCount,
-    };
+    // Filter out orders that already have reviews for this product
+    const ordersWithoutReview = eligibleOrders.filter(order => !reviewedOrderIds.includes(order.id));
 
-    return NextResponse.json(formattedReview, { status: 201 });
+    console.log(`DEBUG: After filtering reviews, ${ordersWithoutReview.length} orders available for review`);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formattedOrders = ordersWithoutReview.map((order: any) => ({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      createdAt: order.createdAt.toISOString(),
+      totalAmount: order.totalAmount,
+      productInfo: order.items[0], // Since we're filtering by product, there should be exactly one item for this product
+    }));
+
+    console.log(`DEBUG: Returning ${formattedOrders.length} formatted orders:`, JSON.stringify(formattedOrders, null, 2));
+    return NextResponse.json(formattedOrders);
   } catch (error) {
-    console.error("Error creating review:", error);
-    return NextResponse.json({ error: "Failed to create review" }, { status: 500 });
+    console.error("Error fetching eligible orders:", error);
+    return NextResponse.json({ error: "Failed to fetch eligible orders" }, { status: 500 });
   }
 }

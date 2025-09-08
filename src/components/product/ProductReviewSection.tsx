@@ -78,9 +78,24 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
       if (response.ok) {
         const orders = await response.json();
         console.log(`Received ${orders.length} eligible orders:`, orders);
+        console.log(`Setting eligibleOrders state with:`, orders);
         setEligibleOrders(orders);
+        
+        // Debug check
+        if (orders.length === 0) {
+          console.log('No eligible orders found - will show Purchase Required message');
+        } else {
+          console.log('Eligible orders found - will show review form');
+        }
       } else {
         console.error(`Error response status: ${response.status} ${response.statusText}`);
+        // Log response body for debugging
+        try {
+          const errorText = await response.text();
+          console.error('Error response body:', errorText);
+        } catch {
+          console.error('Could not read error response body');
+        }
         setEligibleOrders([]);
       }
     } catch (error) {
@@ -93,6 +108,14 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
   useEffect(() => {
     fetchEligibleOrders();
   }, [fetchEligibleOrders]);
+
+  // Debug useEffect to track state changes
+  useEffect(() => {
+    console.log('FRONTEND DEBUG: eligibleOrders state changed:', eligibleOrders);
+    console.log('FRONTEND DEBUG: loadingOrders state:', loadingOrders);
+    console.log('FRONTEND DEBUG: user state:', user);
+    console.log('FRONTEND DEBUG: authLoading state:', authLoading);
+  }, [eligibleOrders, loadingOrders, user, authLoading]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -171,6 +194,8 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
   }
 
   if (eligibleOrders.length === 0) {
+    console.log('FRONTEND DEBUG: eligibleOrders.length is 0, showing Purchase Required');
+    console.log('FRONTEND DEBUG: eligibleOrders state:', eligibleOrders);
     return (
       <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
@@ -184,6 +209,8 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
       </div>
     );
   }
+
+  console.log('FRONTEND DEBUG: Showing review form because eligibleOrders.length =', eligibleOrders.length);
 
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg">
