@@ -83,6 +83,7 @@ model Product {
   orderItems      OrderItem[]
   wishlistItems   WishlistItem[]
   chatMessages    ChatMessage[]  @relation("ChatProductMessages")
+  reviews         ProductReview[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }
@@ -127,6 +128,7 @@ model User {
   chatRooms     ChatRoom[]
   adminChats    ChatRoom[]    @relation("AdminChats")
   sentMessages  ChatMessage[] @relation("SentMessages")
+  reviews       ProductReview[]
 }
 
 model Account {
@@ -214,6 +216,7 @@ model Order {
   userId      Int
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       OrderItem[]
+  reviews     ProductReview[]
   status      OrderStatus @default(PENDING)
 
   // Customer Information
@@ -381,4 +384,24 @@ enum MessageType {
   IMAGE
   FILE
   PRODUCT
+}
+
+model ProductReview {
+  id           Int      @id @default(autoincrement())
+  productId    Int
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId      Int      // Reference to the order to verify purchase
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  rating       Int      // 1-5 stars
+  comment      String   @db.Text
+  isAnonymous  Boolean  @default(false) // Whether to show review as anonymous
+  isVerified   Boolean  @default(true)  // Whether purchase is verified
+  helpfulCount Int      @default(0)     // For future: helpful votes
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, productId, orderId]) // One review per user per product per order
+  @@map("product_reviews")
 }
