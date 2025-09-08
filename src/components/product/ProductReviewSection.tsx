@@ -7,8 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Package, Calendar, DollarSign } from "lucide-react";
 import ProductReviewStats from "./ProductReviewStats";
-import ReviewDebugInfo from "./ReviewDebugInfo";
-import DebugState from "./DebugState";
 import { useAuth } from "@/hooks/use-auth";
 
 interface StarRatingProps {
@@ -57,7 +55,7 @@ interface ReviewFormProps {
 }
 
 function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
-  const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -72,31 +70,12 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
     
     setLoadingOrders(true);
     try {
-      console.log(`Fetching eligible orders for product ${productId} for user ${user.email}`);
       const response = await fetch(`/api/review/eligible-orders?productId=${productId}`);
-      console.log(`Response status: ${response.status}`);
       
       if (response.ok) {
         const orders = await response.json();
-        console.log(`Received ${orders.length} eligible orders:`, orders);
-        console.log(`Setting eligibleOrders state with:`, orders);
         setEligibleOrders(orders);
-        
-        // Debug check
-        if (orders.length === 0) {
-          console.log('No eligible orders found - will show Purchase Required message');
-        } else {
-          console.log('Eligible orders found - will show review form');
-        }
       } else {
-        console.error(`Error response status: ${response.status} ${response.statusText}`);
-        // Log response body for debugging
-        try {
-          const errorText = await response.text();
-          console.error('Error response body:', errorText);
-        } catch {
-          console.error('Could not read error response body');
-        }
         setEligibleOrders([]);
       }
     } catch (error) {
@@ -109,19 +88,6 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
   useEffect(() => {
     fetchEligibleOrders();
   }, [fetchEligibleOrders]);
-
-  // Debug useEffect to track state changes
-  useEffect(() => {
-    console.log('FRONTEND DEBUG: State changed - eligibleOrders:', eligibleOrders.length, 'loadingOrders:', loadingOrders, 'user:', user?.email, 'authLoading:', authLoading);
-  }, [eligibleOrders, loadingOrders, user, authLoading]);
-
-  // Debug useEffect to track state changes
-  useEffect(() => {
-    console.log('FRONTEND DEBUG: eligibleOrders state changed:', eligibleOrders);
-    console.log('FRONTEND DEBUG: loadingOrders state:', loadingOrders);
-    console.log('FRONTEND DEBUG: user state:', user);
-    console.log('FRONTEND DEBUG: authLoading state:', authLoading);
-  }, [eligibleOrders, loadingOrders, user, authLoading]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -177,55 +143,42 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
 
   if (!user) {
     return (
-      <div>
-        <DebugState eligibleOrders={eligibleOrders} loadingOrders={loadingOrders} user={user} authLoading={authLoading} />
-        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-            <span className="text-2xl">🔒</span>
-          </div>
-          <p className="text-gray-200 text-lg font-medium mb-2">Sign In Required</p>
-          <p className="text-gray-400 text-sm">Please sign in to write a review for this product.</p>
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+          <span className="text-2xl">🔒</span>
         </div>
+        <p className="text-gray-200 text-lg font-medium mb-2">Sign In Required</p>
+        <p className="text-gray-400 text-sm">Please sign in to write a review for this product.</p>
       </div>
     );
   }
 
   if (authLoading || loadingOrders) {
     return (
-      <div>
-        <DebugState eligibleOrders={eligibleOrders} loadingOrders={loadingOrders} user={user} authLoading={authLoading} />
-        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg">
-          <div className="space-y-4">
-            <Skeleton className="h-6 w-32 bg-gray-700 rounded-md" />
-            <Skeleton className="h-12 w-full bg-gray-700 rounded-xl" />
-            <Skeleton className="h-20 w-full bg-gray-700 rounded-xl" />
-          </div>
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg">
+        <div className="space-y-4">
+          <Skeleton className="h-6 w-32 bg-gray-700 rounded-md" />
+          <Skeleton className="h-12 w-full bg-gray-700 rounded-xl" />
+          <Skeleton className="h-20 w-full bg-gray-700 rounded-xl" />
         </div>
       </div>
     );
   }
 
   if (eligibleOrders.length === 0) {
-    console.log('FRONTEND DEBUG: eligibleOrders.length is 0, showing Purchase Required');
-    console.log('FRONTEND DEBUG: eligibleOrders state:', eligibleOrders);
     return (
-      <div>
-        <DebugState eligibleOrders={eligibleOrders} loadingOrders={loadingOrders} user={user} authLoading={authLoading} />
-        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-            <Package className="w-8 h-8 text-gray-400" />
-          </div>
-          <p className="text-gray-200 text-lg font-medium mb-2">Purchase Required</p>
-          <p className="text-gray-400 text-sm">
-            You can only review products that you have purchased and received. 
-            Complete a purchase of this product to write a review.
-          </p>
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+          <Package className="w-8 h-8 text-gray-400" />
         </div>
+        <p className="text-gray-200 text-lg font-medium mb-2">Purchase Required</p>
+        <p className="text-gray-400 text-sm">
+          You can only review products that you have purchased and received. 
+          Complete a purchase of this product to write a review.
+        </p>
       </div>
     );
   }
-
-  console.log('FRONTEND DEBUG: Showing review form because eligibleOrders.length =', eligibleOrders.length);
 
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg">
@@ -457,9 +410,6 @@ export default function ProductReviewSection({ productId }: ProductReviewSection
         <h2 className="text-3xl font-bold text-gray-100 mb-2">Reviews & Ratings</h2>
         <p className="text-gray-400">Share your experience with this product</p>
       </div>
-
-      {/* Debug Info */}
-      <ReviewDebugInfo productId={productId} />
 
       {/* Review Statistics */}
       <div className="mb-8">
