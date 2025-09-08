@@ -432,7 +432,7 @@ export default function AdminSettingsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Database Connection</span>
-                    <Badge variant="default">Online</Badge>
+                    <Badge variant="default">Connected</Badge>
                   </div>
 
                   <div className="flex items-center justify-between">

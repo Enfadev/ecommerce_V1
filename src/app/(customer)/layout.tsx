@@ -44,7 +44,10 @@ export default function CustomerLayout({ children }: CustomerLayoutProps) {
           </main>
           <Toaster />
           <Footer />
-          <ChatWidget />
+          {/* Only show ChatWidget for non-admin users */}
+          {(!isAuthenticated || (isAuthenticated && user?.role !== "ADMIN")) && (
+            <ChatWidget />
+          )}
         </div>
       </CartProvider>
     </WishlistProvider>

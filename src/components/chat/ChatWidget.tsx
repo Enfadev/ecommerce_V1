@@ -429,7 +429,6 @@ export function ChatWidget() {
                         <Shield className="h-3.5 w-3.5" />
                       </AvatarFallback>
                     </Avatar>
-                    <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 bg-green-500 rounded-full border border-card"></div>
                   </div>
                   <div>
                     <h3 className="font-medium text-sm text-foreground">
@@ -480,14 +479,9 @@ export function ChatWidget() {
                     <div className="px-3 py-2 bg-muted/30 border-b border-border">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <div className="h-1.5 w-1.5 bg-green-500 rounded-full"></div>
                           <span className="text-xs text-muted-foreground">
                             {chatRoom.admin ? `Chatting with ${chatRoom.admin.name}` : 'Support Team'}
                           </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <div className="h-1.5 w-1.5 bg-green-500 rounded-full"></div>
-                          <span className="text-xs text-muted-foreground">Online</span>
                         </div>
                       </div>
                     </div>
