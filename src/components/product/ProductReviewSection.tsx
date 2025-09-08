@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Package, Calendar, DollarSign } from "lucide-react";
 import ProductReviewStats from "./ProductReviewStats";
 import ReviewDebugInfo from "./ReviewDebugInfo";
+import DebugState from "./DebugState";
 import { useAuth } from "@/hooks/use-auth";
 
 interface StarRatingProps {
@@ -111,6 +112,11 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
 
   // Debug useEffect to track state changes
   useEffect(() => {
+    console.log('FRONTEND DEBUG: State changed - eligibleOrders:', eligibleOrders.length, 'loadingOrders:', loadingOrders, 'user:', user?.email, 'authLoading:', authLoading);
+  }, [eligibleOrders, loadingOrders, user, authLoading]);
+
+  // Debug useEffect to track state changes
+  useEffect(() => {
     console.log('FRONTEND DEBUG: eligibleOrders state changed:', eligibleOrders);
     console.log('FRONTEND DEBUG: loadingOrders state:', loadingOrders);
     console.log('FRONTEND DEBUG: user state:', user);
@@ -171,23 +177,29 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
 
   if (!user) {
     return (
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-          <span className="text-2xl">🔒</span>
+      <div>
+        <DebugState eligibleOrders={eligibleOrders} loadingOrders={loadingOrders} user={user} authLoading={authLoading} />
+        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+            <span className="text-2xl">🔒</span>
+          </div>
+          <p className="text-gray-200 text-lg font-medium mb-2">Sign In Required</p>
+          <p className="text-gray-400 text-sm">Please sign in to write a review for this product.</p>
         </div>
-        <p className="text-gray-200 text-lg font-medium mb-2">Sign In Required</p>
-        <p className="text-gray-400 text-sm">Please sign in to write a review for this product.</p>
       </div>
     );
   }
 
   if (authLoading || loadingOrders) {
     return (
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg">
-        <div className="space-y-4">
-          <Skeleton className="h-6 w-32 bg-gray-700 rounded-md" />
-          <Skeleton className="h-12 w-full bg-gray-700 rounded-xl" />
-          <Skeleton className="h-20 w-full bg-gray-700 rounded-xl" />
+      <div>
+        <DebugState eligibleOrders={eligibleOrders} loadingOrders={loadingOrders} user={user} authLoading={authLoading} />
+        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg">
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-32 bg-gray-700 rounded-md" />
+            <Skeleton className="h-12 w-full bg-gray-700 rounded-xl" />
+            <Skeleton className="h-20 w-full bg-gray-700 rounded-xl" />
+          </div>
         </div>
       </div>
     );
@@ -197,15 +209,18 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
     console.log('FRONTEND DEBUG: eligibleOrders.length is 0, showing Purchase Required');
     console.log('FRONTEND DEBUG: eligibleOrders state:', eligibleOrders);
     return (
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-          <Package className="w-8 h-8 text-gray-400" />
+      <div>
+        <DebugState eligibleOrders={eligibleOrders} loadingOrders={loadingOrders} user={user} authLoading={authLoading} />
+        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+            <Package className="w-8 h-8 text-gray-400" />
+          </div>
+          <p className="text-gray-200 text-lg font-medium mb-2">Purchase Required</p>
+          <p className="text-gray-400 text-sm">
+            You can only review products that you have purchased and received. 
+            Complete a purchase of this product to write a review.
+          </p>
         </div>
-        <p className="text-gray-200 text-lg font-medium mb-2">Purchase Required</p>
-        <p className="text-gray-400 text-sm">
-          You can only review products that you have purchased and received. 
-          Complete a purchase of this product to write a review.
-        </p>
       </div>
     );
   }
