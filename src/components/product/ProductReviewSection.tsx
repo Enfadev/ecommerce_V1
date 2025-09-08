@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Package, Calendar, DollarSign } from "lucide-react";
+import { Calendar, DollarSign } from "lucide-react";
 import ProductReviewStats from "./ProductReviewStats";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -166,18 +166,7 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
   }
 
   if (eligibleOrders.length === 0) {
-    return (
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-          <Package className="w-8 h-8 text-gray-400" />
-        </div>
-        <p className="text-gray-200 text-lg font-medium mb-2">Purchase Required</p>
-        <p className="text-gray-400 text-sm">
-          You can only review products that you have purchased and received. 
-          Complete a purchase of this product to write a review.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -423,12 +412,7 @@ export default function ProductReviewSection({ productId }: ProductReviewSection
 
       {/* Review List */}
       <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-900 rounded-full flex items-center justify-center">
-            <span className="text-blue-400 text-sm">💬</span>
-          </div>
-          Customer Reviews
-        </h3>
+
         <ReviewList productId={productId} key={refresh} />
       </div>
     </section>

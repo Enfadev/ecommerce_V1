@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Star, BarChart3 } from "lucide-react";
+import { Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ReviewStatsProps {
@@ -50,21 +50,12 @@ export default function ProductReviewStats({ productId }: ReviewStatsProps) {
   }
 
   if (!stats || stats.totalReviews === 0) {
-    return (
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-          <BarChart3 className="w-8 h-8 text-gray-400" />
-        </div>
-        <p className="text-gray-200 text-lg font-medium">No ratings yet</p>
-        <p className="text-gray-400 text-sm">Be the first to rate this product</p>
-      </div>
-    );
+    return null;
   }
 
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-100 mb-2">Customer Reviews</h3>
         <div className="flex items-center justify-center gap-2 mb-2">
           <div className="flex items-center">
             {[1, 2, 3, 4, 5].map((star) => (
