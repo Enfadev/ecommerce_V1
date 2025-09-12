@@ -32,12 +32,27 @@ const productSchema = z.object({
   metaDescription: z.string().optional(),
   discountPrice: z.number().min(0).optional().nullable(),
   promoExpired: z.string().optional(),
+  compareAtPrice: z.number().min(0).optional().nullable(),
+  costPerItem: z.number().min(0).optional().nullable(),
+  taxable: z.boolean().optional(),
+  featured: z.boolean().optional(),
+  requiresShipping: z.boolean().optional(),
+  barcode: z.string().optional(),
+  minimumOrderQuantity: z.number().min(1).optional(),
+  maximumOrderQuantity: z.number().min(1).optional(),
+  weight: z.number().min(0).optional().nullable(),
+  dimensions: z.string().optional(),
+  warranty: z.string().optional(),
+  trackQuantity: z.boolean().optional(),
+  allowBackorder: z.boolean().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema> & {
   imageFiles?: File[];
   imageUrl?: string;
   gallery?: string[];
+  tags?: string[];
 };
 
 type ProductFormProps = {
@@ -55,6 +70,8 @@ const statusOptions = [
 export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormProps) {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState("basic");
+  const [tagInput, setTagInput] = useState<string>("");
+  const [tags, setTags] = useState<string[]>(product?.tags || []);
 
   const {
     register,

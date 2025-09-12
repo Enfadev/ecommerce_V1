@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/auth-utils";
 
-interface PageParams {
-  params: {
-    roomId: string;
-  };
-}
-
 export async function PATCH(
   request: NextRequest,
-  { params }: PageParams
+  context: { params: Promise<{ roomId: string }> | { roomId: string } }
 ) {
   try {
     const user = await getUserFromRequest(request);
@@ -21,14 +15,15 @@ export async function PATCH(
       );
     }
 
-    const roomId = parseInt(params.roomId);
+    const resolvedParams = await context.params;
+    const roomId = parseInt(resolvedParams.roomId);
     const { status, priority, adminId } = await request.json();
 
-    const updateData: {
-      status?: string;
-      priority?: string;
-      adminId?: number;
-    } = {};
+  // Use any here because Prisma's generated Update types can be strict about
+  // relation vs scalar fields (adminId). Using `any` keeps the update simple
+  // and avoids complex union types in this handler.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updateData: any = {};
 
     if (status) updateData.status = status;
     if (priority) updateData.priority = priority;

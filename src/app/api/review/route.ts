@@ -70,7 +70,9 @@ export async function POST(request: NextRequest) {
       if (token) {
         try {
           const payload = await verifyJWT(token);
-          userEmail = payload.email;
+          if (payload && payload.email) {
+            userEmail = payload.email;
+          }
         } catch (error) {
           console.log(`JWT verification failed:`, error);
         }
@@ -112,15 +114,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Only allow regular users (not admins) to write reviews
-    if (user.role === "ADMIN") {
-      return NextResponse.json(
-        { error: "Administrators cannot write product reviews. Only customers who have purchased the product can write reviews." },
-        { status: 403 }
-      );
-    }
-
-    // Only allow regular users (not admins) to write reviews
-    if (user.role === "ADMIN") {
+    if (String(user.role) === "ADMIN") {
       return NextResponse.json(
         { error: "Administrators cannot write product reviews. Only customers who have purchased the product can write reviews." },
         { status: 403 }

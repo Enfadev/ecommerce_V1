@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/auth-utils";
 
-interface PageParams {
-  params: {
-    roomId: string;
-  };
-}
-
 export async function GET(
   request: NextRequest,
-  { params }: PageParams
+  context: { params: Promise<{ roomId: string }> | { roomId: string } }
 ) {
   try {
     const user = await getUserFromRequest(request);
@@ -18,8 +12,8 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const resolvedParams = await params;
-    const roomId = parseInt(resolvedParams.roomId);
+  const resolvedParams = await context.params;
+  const roomId = parseInt(resolvedParams.roomId);
 
     const chatRoom = await prisma.chatRoom.findFirst({
       where: {
@@ -114,7 +108,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: PageParams
+  context: { params: Promise<{ roomId: string }> | { roomId: string } }
 ) {
   try {
     const user = await getUserFromRequest(request);
@@ -122,8 +116,8 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const resolvedParams = await params;
-    const roomId = parseInt(resolvedParams.roomId);
+  const resolvedParams = await context.params;
+  const roomId = parseInt(resolvedParams.roomId);
     const { message, messageType = "TEXT", productId } = await request.json();
 
     if (!message) {

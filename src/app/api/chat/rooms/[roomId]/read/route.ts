@@ -2,15 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/auth-utils";
 
-interface PageParams {
-  params: {
-    roomId: string;
-  };
-}
-
 export async function POST(
   request: NextRequest,
-  { params }: PageParams
+  context: { params: Promise<{ roomId: string }> | { roomId: string } }
 ) {
   try {
     const user = await getUserFromRequest(request);
@@ -18,8 +12,8 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const resolvedParams = await params;
-    const roomId = parseInt(resolvedParams.roomId);
+  const resolvedParams = await context.params;
+  const roomId = parseInt(resolvedParams.roomId);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const chatRoom = await (prisma as any).chatRoom.findFirst({
