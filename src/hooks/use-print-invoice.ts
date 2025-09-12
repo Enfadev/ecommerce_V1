@@ -7,6 +7,7 @@ interface CompanyInfo {
   phone: string;
   email: string;
   website?: string;
+  logoUrl?: string;
 }
 
 export const usePrintInvoice = () => {
@@ -31,6 +32,10 @@ export const usePrintInvoice = () => {
       const currentDomain = typeof window !== 'undefined' 
         ? window.location.host 
         : 'localhost:3000';
+
+      const origin = typeof window !== 'undefined'
+        ? window.location.origin
+        : 'http://localhost:3000';
 
       const printWindow = window.open('', '_blank', 'width=800,height=600');
       
@@ -59,6 +64,11 @@ export const usePrintInvoice = () => {
           day: 'numeric'
         });
       };
+
+      const logoUrlFromCompany = company && (company as CompanyInfo).logoUrl;
+      const logoSrc = logoUrlFromCompany
+        ? (logoUrlFromCompany.startsWith('http') ? logoUrlFromCompany : `${origin}${logoUrlFromCompany.startsWith('/') ? '' : '/'}${logoUrlFromCompany}`)
+        : `${origin}/logo.svg`;
 
       const invoiceHTML = `
         <!DOCTYPE html>
@@ -98,6 +108,16 @@ export const usePrintInvoice = () => {
               display: flex;
               justify-content: space-between;
               align-items: flex-start;
+            }
+
+            .header-left {
+              display: flex;
+              align-items: flex-start;
+            }
+
+            .company-logo {
+              max-height: 60px;
+              margin-right: 12px;
             }
             
             .invoice-title {
@@ -306,9 +326,12 @@ export const usePrintInvoice = () => {
           <div class="invoice-container">
             <!-- Invoice Header -->
             <div class="invoice-header">
-              <div>
-                <h1 class="invoice-title">INVOICE</h1>
-                <p class="invoice-number">Invoice #${order.orderNumber}</p>
+              <div class="header-left">
+                <img class="company-logo" src="${logoSrc}" alt="${company.name} logo" />
+                <div>
+                  <h1 class="invoice-title">INVOICE</h1>
+                  <p class="invoice-number">Invoice #${order.orderNumber}</p>
+                </div>
               </div>
               <div class="company-info">
                 <h2 class="company-name">${company.name}</h2>
