@@ -225,7 +225,7 @@ export default function Contact() {
                     <div className={`w-16 h-16 ${method.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">{method.title}</h3>
+                      <h2 className="font-semibold text-lg mb-2">{method.title}</h2>
                     <p className="text-sm text-muted-foreground mb-3">{method.subtitle}</p>
                     <a href={method.link} className="text-primary font-medium hover:underline">
                       {method.value}
