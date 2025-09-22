@@ -89,13 +89,13 @@ export default function Footer() {
               {settings.storeDescription} with a wide selection of quality products, attractive promos, and the best customer service for your satisfaction.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors">
+              <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors" aria-label="Facebook">
                 <Facebook className="h-4 w-4 text-primary" />
               </a>
-              <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors">
+              <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors" aria-label="Instagram">
                 <Instagram className="h-4 w-4 text-primary" />
               </a>
-              <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors">
+              <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors" aria-label="Twitter">
                 <Twitter className="h-4 w-4 text-primary" />
               </a>
             </div>
