@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -14,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import Image from "next/image";
 import { Upload, X, AlertCircle, Package, Globe, DollarSign } from "lucide-react";
 import { CategoryInput } from "../ui/category-input";
+import { RichTextEditor } from "../ui/rich-text-editor";
 
 const productSchema = z.object({
   id: z.number().optional(),
@@ -293,7 +293,12 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
-                  <Textarea id="description" {...register("description")} placeholder="Describe your product..." rows={3} className="resize-none" />
+                  <RichTextEditor 
+                    value={watch("description") || ""} 
+                    onChange={(value) => setValue("description", value)}
+                    placeholder="Describe your product..."
+                    className="min-h-32"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -428,7 +433,12 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
 
                   <div className="space-y-2">
                     <Label htmlFor="metaDescription">Meta Description</Label>
-                    <Textarea id="metaDescription" {...register("metaDescription")} placeholder="SEO description for search engines" rows={3} className="resize-none" />
+                    <RichTextEditor 
+                      value={watch("metaDescription") || ""} 
+                      onChange={(value) => setValue("metaDescription", value)}
+                      placeholder="SEO description for search engines"
+                      className="min-h-24"
+                    />
                   </div>
                 </div>
               </CardContent>
