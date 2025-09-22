@@ -33,7 +33,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
     if (hasValidDiscount()) {
       return (
         <div className="h-14 flex flex-col justify-center">
-          <div className="text-sm text-gray-700 line-through mb-1">
+          <div className="text-sm text-gray-900 dark:text-gray-200 line-through mb-1">
             {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
           </div>
           <div className="flex items-baseline gap-2">
@@ -68,7 +68,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
               -{getDiscountPercentage()}%
             </span>
           </div>
-          <span className="text-sm text-gray-700 line-through">
+          <span className="text-sm text-gray-900 dark:text-gray-200 line-through">
             {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
           </span>
         </div>
@@ -138,14 +138,14 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">{product.category}</span>
                 <div className="flex items-center gap-1">
                   <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                   <span className="text-xs text-gray-700">4.5</span>
+          <span className="text-xs text-gray-900 dark:text-gray-200">4.5</span>
                 </div>
               </div>
 
               <div className="flex justify-between items-center">
                 <div>
                   {renderPriceSectionList()}
-                   <p className="text-sm text-gray-700">Stock: {product.stock}</p>
+                  <p className="text-sm text-gray-900 dark:text-gray-200">Stock: {product.stock}</p>
                 </div>
 
                 {admin ? (
@@ -239,7 +239,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
           <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">{product.category}</span>
           <div className="flex items-center gap-1">
             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                   <span className="text-xs text-gray-700">4.5</span>
+          <span className="text-xs text-gray-900 dark:text-gray-200">4.5</span>
           </div>
         </div>
 
@@ -250,7 +250,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         <div className="flex items-center justify-between mb-4">
           <div>
             {renderPriceSection()}
-                   <p className="text-xs text-gray-700 mt-1">Stock: {product.stock}</p>
+                  <p className="text-xs text-gray-900 dark:text-gray-200 mt-1">Stock: {product.stock}</p>
           </div>
         </div>
 
