@@ -32,6 +32,8 @@ function ProductPageContent() {
   const category = searchParams.get("category") || "All";
   const price = searchParams.get("price") || "all";
 
+
+  const [inputSearch, setInputSearch] = useState(search);
   const [localSearch, setLocalSearch] = useState(search);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -39,6 +41,14 @@ function ProductPageContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Debounce logic
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setLocalSearch(inputSearch);
+    }, 400); // 400ms debounce
+    return () => clearTimeout(handler);
+  }, [inputSearch]);
 
   useEffect(() => {
     setLoading(true);
@@ -135,8 +145,8 @@ function ProductPageContent() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 w-5 h-5 group-focus-within:text-primary transition-colors duration-200 z-10 pointer-events-none" />
               <Input
                 placeholder="Search for products you want..."
-                value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
+                value={inputSearch}
+                onChange={(e) => setInputSearch(e.target.value)}
                 className="pl-12 pr-4 h-14 text-base bg-background/50 backdrop-blur-sm border-0 rounded-2xl shadow-sm focus:shadow-lg focus:bg-background transition-all duration-300 placeholder:text-muted-foreground/50 relative"
               />
             </div>
@@ -235,6 +245,7 @@ function ProductPageContent() {
             <Button
               variant="outline"
               onClick={() => {
+                setInputSearch("");
                 setLocalSearch("");
                 setSortBy("newest");
               }}
