@@ -98,6 +98,12 @@ export default function Footer() {
               <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors" aria-label="Twitter">
                 <Twitter className="h-4 w-4 text-primary" />
               </a>
+              <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors" aria-label="YouTube">
+                {/* Ganti dengan ikon YouTube sesuai library/icon yang digunakan */}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-primary">
+                  <path d="M23.498 6.186a2.994 2.994 0 0 0-2.112-2.112C19.413 3.5 12 3.5 12 3.5s-7.413 0-9.386.574A2.994 2.994 0 0 0 .502 6.186C0 8.16 0 12 0 12s0 3.84.502 5.814a2.994 2.994 0 0 0 2.112 2.112C4.587 20.5 12 20.5 12 20.5s7.413 0 9.386-.574a2.994 2.994 0 0 0 2.112-2.112C24 15.84 24 12 24 12s0-3.84-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              </a>
             </div>
           </div>
 

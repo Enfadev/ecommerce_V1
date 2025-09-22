@@ -365,7 +365,7 @@ export default function Contact() {
             {contactData.socialMedia.map((social, index) => {
               const IconComponent = iconMap[social.icon] || Globe;
               return (
-                <a key={index} href={social.link} className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1">
+                <a key={index} href={social.link} className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1" aria-label={social.name}>
                   <IconComponent className={`w-7 h-7 ${social.color}`} />
                 </a>
               );
