@@ -13,6 +13,7 @@ export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
   console.log(`📡 Broadcasting to room ${roomId}:`, data);
   let broadcasted = 0;
   let globalBroadcasted = 0;
+  const staleConnections: string[] = [];
   
   for (const [connectionId, controller] of connections.entries()) {
     try {
@@ -26,13 +27,22 @@ export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
         globalBroadcasted++;
         console.log(`📡 Sent to global connection: ${connectionId}`);
       }
-    } catch (error) {
-      console.error(`Failed to send to connection ${connectionId}:`, error);
-      connections.delete(connectionId);
+    } catch {
+      console.log(`Connection ${connectionId} appears stale, marking for cleanup`);
+      staleConnections.push(connectionId);
     }
   }
   
+  // Clean up stale connections
+  staleConnections.forEach(connectionId => {
+    connections.delete(connectionId);
+  });
+  
   console.log(`📡 Broadcasted to ${broadcasted} room connections and ${globalBroadcasted} global connections for room ${roomId}`);
+  if (staleConnections.length > 0) {
+    console.log(`🧹 Cleaned up ${staleConnections.length} stale connections`);
+  }
+  
   return broadcasted + globalBroadcasted;
 }
 
@@ -91,32 +101,62 @@ export async function GET(request: NextRequest) {
         if (isGlobal) {
           heartbeatInterval = setInterval(() => {
             try {
-              controller.enqueue(
-                `data: ${JSON.stringify({
-                  type: "heartbeat",
-                  timestamp: new Date().toISOString()
-                })}\n\n`
-              );
-            } catch (error) {
+              // Check if controller is still usable
+              if (connections.has(connectionId)) {
+                controller.enqueue(
+                  `data: ${JSON.stringify({
+                    type: "heartbeat",
+                    timestamp: new Date().toISOString()
+                  })}\n\n`
+                );
+              } else {
+                // Connection was already cleaned up
+                if (heartbeatInterval) {
+                  clearInterval(heartbeatInterval);
+                }
+              }
+            } catch {
+              // Connection closed or error occurred, clean up
               if (heartbeatInterval) {
                 clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
               }
               connections.delete(connectionId);
             }
           }, 25000); // Send heartbeat every 25 seconds
         }
 
-        request.signal.addEventListener("abort", () => {
+        // Handle connection cleanup
+        const cleanup = () => {
           if (heartbeatInterval) {
             clearInterval(heartbeatInterval);
+            heartbeatInterval = null;
           }
           connections.delete(connectionId);
           try {
             controller.close();
-          } catch (error) {
-            console.log("Controller already closed:", error);
+          } catch {
+            // Ignore close errors - connection might already be closed
           }
-        });
+        };
+
+        // Listen for abort signal (client disconnect)
+        request.signal.addEventListener("abort", cleanup);
+        
+        // Additional cleanup listener for error scenarios
+        if (typeof window === 'undefined') {
+          // Server-side: Add timeout cleanup as safety net
+          const timeoutCleanup = setTimeout(() => {
+            if (connections.has(connectionId)) {
+              console.log(`Cleaning up stale SSE connection: ${connectionId}`);
+              cleanup();
+            }
+          }, 300000); // 5 minutes timeout
+          
+          request.signal.addEventListener("abort", () => {
+            clearTimeout(timeoutCleanup);
+          });
+        }
       },
     });
 

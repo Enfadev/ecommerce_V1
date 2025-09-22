@@ -117,32 +117,50 @@ export function useChatUnreadCount() {
         };
 
         globalEventSource.onerror = (error) => {
-          console.error('SSE connection error:', error);
-          
-          // Clear heartbeat
+          // Only log meaningful errors, not connection timeout/idle errors
+        const isConnectionTimeout = globalEventSource.readyState === EventSource.CLOSED;
+        // Silent handling for connection timeout - ini adalah behavior normal
+        if (!isConnectionTimeout) {
+          // Log hanya untuk development debugging
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('SSE connection error (non-timeout):', error);
+          }
+        }          // Clear heartbeat
           if (heartbeatIntervalRef.current) {
             clearInterval(heartbeatIntervalRef.current);
             heartbeatIntervalRef.current = null;
           }
           
-          // Close the current connection
-          globalEventSource.close();
+          // Close the current connection gracefully
+          try {
+            if (globalEventSource.readyState !== EventSource.CLOSED) {
+              globalEventSource.close();
+            }
+          } catch {
+            // Ignore close errors - connection might already be closed
+          }
           
-          // Attempt to reconnect with exponential backoff
-          if (user && user.role === "ADMIN" && reconnectAttemptsRef.current < maxReconnectAttempts) {
+          // Only attempt to reconnect if we're still in an active admin session
+          // and the connection wasn't closed intentionally
+          if (user && user.role === "ADMIN" && 
+              document.visibilityState === 'visible' && 
+              reconnectAttemptsRef.current < maxReconnectAttempts) {
+            
             const delay = baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current);
             reconnectAttemptsRef.current += 1;
             
             reconnectTimeoutRef.current = setTimeout(() => {
-              if (user && user.role === "ADMIN") {
+              // Double-check we're still in an active admin session before reconnecting
+              if (user && user.role === "ADMIN" && document.visibilityState === 'visible') {
                 connectSSE();
               }
             }, delay);
-          } else if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
-            // SSE failed multiple times, fallback to polling
-            console.log('SSE failed multiple times, switching to fallback polling');
+          } else if (reconnectAttemptsRef.current >= maxReconnectAttempts && 
+                     user && user.role === "ADMIN" && 
+                     document.visibilityState === 'visible') {
+            // SSE failed multiple times, fallback to polling only if page is visible
             fallbackPollingRef.current = setInterval(() => {
-              if (user && user.role === "ADMIN") {
+              if (user && user.role === "ADMIN" && document.visibilityState === 'visible') {
                 fetchUnreadCount();
               }
             }, fallbackPollingInterval);
@@ -186,8 +204,21 @@ export function useChatUnreadCount() {
         if (document.visibilityState === 'visible') {
           // Page is visible again, ensure SSE connection is active
           if (!eventSourceRef.current || eventSourceRef.current.readyState === EventSource.CLOSED) {
+            // Reset reconnect attempts when page becomes visible again
+            reconnectAttemptsRef.current = 0;
             // Refresh count and potentially reconnect SSE
             fetchUnreadCount();
+          }
+        } else {
+          // Page is hidden, stop reconnection attempts to prevent errors
+          if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+            reconnectTimeoutRef.current = null;
+          }
+          // Clear fallback polling when page is hidden
+          if (fallbackPollingRef.current) {
+            clearInterval(fallbackPollingRef.current);
+            fallbackPollingRef.current = null;
           }
         }
       }
