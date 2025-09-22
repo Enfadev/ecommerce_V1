@@ -105,7 +105,7 @@ export function Header() {
                 <Button variant="ghost" className="relative h-10 w-auto px-3 rounded-2xl">
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarImage src={user.avatar} alt="User avatar" />
                       <AvatarFallback className="bg-primary text-primary-foreground text-xs">{getUserInitials(user.name)}</AvatarFallback>
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start">
@@ -195,7 +195,7 @@ export function Header() {
                     {isAuthenticated && user && (
                       <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg mb-4">
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={user.avatar} alt={user.name} />
+                          <AvatarImage src={user.avatar} alt="User avatar" />
                           <AvatarFallback className="bg-primary text-primary-foreground">{getUserInitials(user.name)}</AvatarFallback>
                         </Avatar>
                         <div>

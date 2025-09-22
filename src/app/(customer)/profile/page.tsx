@@ -353,7 +353,7 @@ export default function ProfilePage() {
               <div className="relative">
                 <ProfileAvatar 
                   src={imagePreview || user.avatar}
-                  alt="Avatar"
+                  alt="User avatar"
                   name={user.name}
                   size={128}
                   className="w-32 h-32 rounded-full border-4 border-gray-600 shadow-xl"
