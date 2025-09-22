@@ -157,24 +157,30 @@ export async function PUT(req: Request) {
       categoryData = { categoryId: categoryRecord.id };
     }
 
+    const updateData: Record<string, unknown> = {
+      name,
+      description,
+      price: parseFloat(price),
+      ...categoryData,
+      stock: stock ? Number(stock) : 0,
+      status: status || "active",
+      sku,
+      brand,
+      slug,
+      metaTitle,
+      metaDescription,
+      discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
+      promoExpired: promoExpired ? new Date(promoExpired) : null,
+    };
+
+    // Only update imageUrl if it's explicitly provided
+    if (imageUrl !== undefined) {
+      updateData.imageUrl = imageUrl;
+    }
+
     await prisma.product.update({
       where: { id: Number(id) },
-      data: {
-        name,
-        description,
-        price: parseFloat(price),
-        imageUrl,
-        ...categoryData,
-        stock: stock ? Number(stock) : 0,
-        status: status || "active",
-        sku,
-        brand,
-        slug,
-        metaTitle,
-        metaDescription,
-        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
-        promoExpired: promoExpired ? new Date(promoExpired) : null,
-      },
+      data: updateData,
       include: { category: true, images: true },
     });
 

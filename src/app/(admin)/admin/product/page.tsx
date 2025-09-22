@@ -210,6 +210,7 @@ export default function AdminProductManagement() {
       try {
         let imageUrl = editingProduct.imageUrl;
         let galleryUrls = editingProduct.gallery || [];
+        let hasNewImage = false;
 
         if (productData.imageFiles && productData.imageFiles.length > 0) {
           const formData = new FormData();
@@ -227,6 +228,7 @@ export default function AdminProductManagement() {
 
           const uploadData = await uploadRes.json();
           imageUrl = uploadData.url;
+          hasNewImage = true;
 
           if (productData.imageFiles.length > 1) {
             const galleryForm = new FormData();
@@ -253,27 +255,34 @@ export default function AdminProductManagement() {
           galleryUrls = productData.gallery || [];
         }
 
+        // Prepare update data - only include imageUrl if there's a new image uploaded
+        const updatePayload: Record<string, unknown> = {
+          id: editingProduct.id,
+          name: productData.name,
+          price: productData.price,
+          description: productData.description,
+          category: productData.category,
+          stock: productData.stock,
+          status: productData.status,
+          sku: productData.sku,
+          brand: productData.brand,
+          slug: productData.slug,
+          metaTitle: productData.metaTitle,
+          metaDescription: productData.metaDescription,
+          discountPrice: productData.discountPrice,
+          promoExpired: productData.promoExpired,
+          gallery: galleryUrls,
+        };
+
+        // Only include imageUrl if there's a new image uploaded
+        if (hasNewImage) {
+          updatePayload.imageUrl = imageUrl;
+        }
+
         const res = await fetch(`/api/product`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: editingProduct.id,
-            name: productData.name,
-            price: productData.price,
-            imageUrl,
-            description: productData.description,
-            category: productData.category,
-            stock: productData.stock,
-            status: productData.status,
-            sku: productData.sku,
-            brand: productData.brand,
-            slug: productData.slug,
-            metaTitle: productData.metaTitle,
-            metaDescription: productData.metaDescription,
-            discountPrice: productData.discountPrice,
-            promoExpired: productData.promoExpired,
-            gallery: galleryUrls,
-          }),
+          body: JSON.stringify(updatePayload),
         });
 
         if (!res.ok) {
@@ -288,7 +297,6 @@ export default function AdminProductManagement() {
             p.id === updatedProduct.id
               ? {
                   ...updatedProduct,
-                  imageUrl: updatedProduct.imageUrl || "/placeholder-image.svg",
                   category: updatedProduct.category || "General",
                   stock: updatedProduct.stock || 0,
                   status: updatedProduct.status || "active",
@@ -383,7 +391,6 @@ export default function AdminProductManagement() {
         setProducts([
           {
             ...newProduct,
-            imageUrl: newProduct.imageUrl || "/placeholder-image.svg",
             category: newProduct.category || "General",
             stock: newProduct.stock || 0,
             status: newProduct.status || "active",
