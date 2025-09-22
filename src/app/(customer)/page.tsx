@@ -240,7 +240,7 @@ export default async function Home() {
                   <IconComponent className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">{feature.title}</h3>
+                  <h2 className="font-semibold">{feature.title}</h2>
                   <p className="text-sm text-muted-foreground">{feature.description}</p>
                 </div>
               </div>
