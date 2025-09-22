@@ -55,7 +55,7 @@ export function ProductFilter() {
     <div className="bg-card/50 backdrop-blur-sm rounded-3xl border border-border/40 overflow-hidden">
       {/* Header */}
       <div className="px-8 py-6 bg-gradient-to-r from-muted/30 to-muted/10 border-b border-border/20">
-        <h3 className="text-xl font-medium tracking-tight text-foreground">Filters</h3>
+  <h2 className="text-xl font-medium tracking-tight text-foreground">Filters</h2>
       </div>
 
       <div className="p-8 space-y-8">

@@ -103,7 +103,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wide">Quick Links</h4>
+            <h2 className="text-sm font-semibold uppercase tracking-wide">Quick Links</h2>
             <nav className="flex flex-col space-y-2">
               <NextLink href="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Home
@@ -122,7 +122,7 @@ export default function Footer() {
 
           {/* Customer Service */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wide">Customer Service</h4>
+            <h2 className="text-sm font-semibold uppercase tracking-wide">Customer Service</h2>
             <nav className="flex flex-col space-y-2">
               <NextLink href="/help" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Help Center
@@ -141,7 +141,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold uppercase tracking-wide">Contact</h4>
+            <h2 className="text-sm font-semibold uppercase tracking-wide">Contact</h2>
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />

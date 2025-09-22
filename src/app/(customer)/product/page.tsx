@@ -187,6 +187,7 @@ function ProductPageContent() {
                 size="sm"
                 onClick={() => setViewMode("grid")}
                 className={`h-12 w-12 rounded-xl transition-all duration-200 ${viewMode === "grid" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 text-muted-foreground"}`}
+                aria-label="Grid view"
               >
                 <Grid className="w-5 h-5" />
               </Button>
@@ -195,6 +196,7 @@ function ProductPageContent() {
                 size="sm"
                 onClick={() => setViewMode("list")}
                 className={`h-12 w-12 rounded-xl transition-all duration-200 ${viewMode === "list" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 text-muted-foreground"}`}
+                aria-label="List view"
               >
                 <List className="w-5 h-5" />
               </Button>
@@ -223,14 +225,14 @@ function ProductPageContent() {
             <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center animate-pulse">
               <Search className="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Loading products...</h3>
+            <h2 className="text-xl font-semibold mb-2">Loading products...</h2>
           </div>
         ) : error ? (
           <div className="text-center py-20">
             <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
               <Search className="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">{error}</h3>
+            <h2 className="text-xl font-semibold mb-2">{error}</h2>
             <Button variant="outline" onClick={() => window.location.reload()}>
               Retry
             </Button>
@@ -240,7 +242,7 @@ function ProductPageContent() {
             <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
               <Search className="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Product not found</h3>
+            <h2 className="text-xl font-semibold mb-2">Product not found</h2>
             <p className="text-muted-foreground mb-6">Try changing your search keyword or filter</p>
             <Button
               variant="outline"
