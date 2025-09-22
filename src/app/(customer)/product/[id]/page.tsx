@@ -5,6 +5,7 @@ import Image from "next/image";
 import ProductReviewSection from "@/components/product/ProductReviewSection";
 import ProductRecommendation from "@/components/product/ProductRecommendation";
 import { useCart } from "@/components/contexts/cart-context";
+import RichTextDisplay from "@/components/ui/RichTextDisplay";
 import * as React from "react";
 
 interface ProductDetail {
@@ -164,7 +165,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         {product.description && (
           <div className="bg-card rounded-2xl shadow-sm border p-6 mb-8">
             <h2 className="text-xl font-semibold text-foreground mb-4">Description</h2>
-            <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+            <RichTextDisplay 
+              content={product.description} 
+              className="text-muted-foreground leading-relaxed"
+            />
           </div>
         )}
 
