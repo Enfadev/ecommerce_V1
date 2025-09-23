@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
 import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/contexts/auth-context";
-import { useWishlist } from "@/components/contexts/wishlist-context";
 import { Toast } from "@/components/ui/toast";
 
 const profileSchema = z.object({
@@ -45,7 +44,6 @@ type PasswordValues = z.infer<typeof passwordSchema>;
 export default function ProfilePage() {
   const router = useRouter();
   const { user, updateProfile, signOut, isLoading, isAuthenticated, refreshUser } = useAuth();
-  const { getWishlistCount } = useWishlist();
 
   const generateAvatarUrl = useCallback((name: string) => {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=200`;
@@ -74,10 +72,6 @@ export default function ProfilePage() {
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [userStats, setUserStats] = useState<{ totalOrders: number; wishlistItems: number }>({
-    totalOrders: 0,
-    wishlistItems: 0,
-  });
 
   const profileForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
@@ -106,21 +100,6 @@ export default function ProfilePage() {
   }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
-    const fetchUserStats = async () => {
-      try {
-        const response = await fetch("/api/user/stats");
-        if (response.ok) {
-          const stats = await response.json();
-          setUserStats({
-            totalOrders: stats.totalOrders,
-            wishlistItems: getWishlistCount(),
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching user stats:", error);
-      }
-    };
-
     if (user) {
       profileForm.reset({
         name: user.name || "",
@@ -129,12 +108,9 @@ export default function ProfilePage() {
         address: user.address || "",
         dateOfBirth: user.dateOfBirth || "",
       });
-
       setImagePreview(getValidImageSrc(user.avatar, user.name));
-
-      fetchUserStats();
     }
-  }, [user, profileForm, getWishlistCount, getValidImageSrc]);
+  }, [user, profileForm, getValidImageSrc]);
 
   async function onProfileSubmit(values: ProfileValues) {
     try {
@@ -655,26 +631,7 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            {/* Account Stats */}
-            <Card className="bg-gray-800/80 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white text-lg">Account Statistics</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Total Orders</span>
-                  <Badge variant="secondary" className="bg-blue-600">
-                    {userStats.totalOrders}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Wishlist Items</span>
-                  <Badge variant="secondary" className="bg-red-600">
-                    {userStats.wishlistItems}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+
           </div>
         </div>
 
