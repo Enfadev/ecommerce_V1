@@ -60,8 +60,10 @@ export default function OrderHistoryPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    if (user?.role !== "ADMIN") {
+      fetchOrders();
+    }
+  }, [fetchOrders, user]);
 
   const handlePrintInvoice = async (order: Order) => {
     try {
