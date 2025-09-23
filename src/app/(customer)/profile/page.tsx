@@ -368,10 +368,12 @@ export default function ProfilePage() {
                   accept="image/*"
                   onChange={handleImageUpload}
                   className="hidden"
+                  aria-label="Upload avatar image"
                 />
                 <div className="absolute bottom-2 right-2 flex gap-1">
                   <Button size="sm" variant="secondary" className="rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
-                    <Camera className="h-4 w-4" />
+                    <Camera className="h-4 w-4" aria-label="Upload avatar" />
+                    <span className="sr-only">Upload avatar</span>
                   </Button>
                   {user.avatar && user.avatar.startsWith("/uploads/") && (
                     <Button size="sm" variant="destructive" className="rounded-full p-2" onClick={deleteAvatar}>
@@ -525,11 +527,14 @@ export default function ProfilePage() {
                           <label className="text-gray-200 text-sm font-medium">Avatar Image</label>
                           <div className="flex items-center gap-4">
                             <input
+                              id="avatar-upload-form"
                               type="file"
                               accept="image/*"
                               onChange={handleImageUpload}
                               className="bg-gray-700/50 border border-gray-600 text-white rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                              aria-label="Upload avatar image"
                             />
+                            <label htmlFor="avatar-upload-form" className="sr-only">Upload avatar image</label>
                             <Button type="button" variant="outline" size="sm" onClick={generateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
                               Generate Avatar
                             </Button>
@@ -544,8 +549,8 @@ export default function ProfilePage() {
                         </div>
 
                         <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-                          <Save className="h-4 w-4 mr-2" />
-                          Save Changes
+                          <Save className="h-4 w-4 mr-2 text-white" />
+                          <span className="text-white font-medium">Save Changes</span>
                         </Button>
                       </form>
                     </Form>
