@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
+
     const homePage = await prisma.homePage.create({
       data: {
         heroTitle: body.heroTitle,
@@ -25,9 +25,18 @@ export async function POST(req: Request) {
         statsData: body.statsData || [],
         aboutPreview: body.aboutPreview || {},
         testimonialsData: body.testimonialsData || [],
+        // SEO fields
+        metaTitle: body.metaTitle || null,
+        metaDescription: body.metaDescription || null,
+        metaKeywords: body.metaKeywords || null,
+        ogTitle: body.ogTitle || null,
+        ogDescription: body.ogDescription || null,
+        ogImageUrl: body.ogImageUrl || null,
+        canonicalUrl: body.canonicalUrl || null,
+        noindex: body.noindex || false,
       },
     });
-    
+
     return NextResponse.json(homePage);
   } catch (error) {
     console.error("Error creating home page:", error);
@@ -38,7 +47,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    
+
     const updated = await prisma.homePage.update({
       where: { id: body.id },
       data: {
@@ -50,9 +59,18 @@ export async function PUT(req: Request) {
         statsData: body.statsData || [],
         aboutPreview: body.aboutPreview || {},
         testimonialsData: body.testimonialsData || [],
+        // SEO fields
+        metaTitle: body.metaTitle || null,
+        metaDescription: body.metaDescription || null,
+        metaKeywords: body.metaKeywords || null,
+        ogTitle: body.ogTitle || null,
+        ogDescription: body.ogDescription || null,
+        ogImageUrl: body.ogImageUrl || null,
+        canonicalUrl: body.canonicalUrl || null,
+        noindex: body.noindex || false,
       },
     });
-    
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating home page:", error);

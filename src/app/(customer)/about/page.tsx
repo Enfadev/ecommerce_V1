@@ -4,6 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Target, Award, Heart, Shield, Truck, Clock, Star, MapPin, Phone, Mail, Globe } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { Metadata } from "next";
+import { generatePageMetadata } from "@/lib/seo-utils";
+
+// Generate dynamic metadata for about page
+export async function generateMetadata(): Promise<Metadata> {
+  const aboutPage = await prisma.aboutPage.findFirst();
+  return generatePageMetadata({
+    pageData: aboutPage,
+    fallbackTitle: "About Us",
+    defaultPath: "/about",
+  });
+}
 
 async function getAboutPageData() {
   try {

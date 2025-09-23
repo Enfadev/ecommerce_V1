@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
+
     const contactPage = await prisma.contactPage.create({
       data: {
         heroTitle: body.heroTitle,
@@ -24,9 +24,18 @@ export async function POST(req: Request) {
         officeLocations: body.officeLocations || [],
         businessHours: body.businessHours || [],
         socialMedia: body.socialMedia || [],
+        // SEO fields
+        metaTitle: body.metaTitle || null,
+        metaDescription: body.metaDescription || null,
+        metaKeywords: body.metaKeywords || null,
+        ogTitle: body.ogTitle || null,
+        ogDescription: body.ogDescription || null,
+        ogImageUrl: body.ogImageUrl || null,
+        canonicalUrl: body.canonicalUrl || null,
+        noindex: body.noindex || false,
       },
     });
-    
+
     return NextResponse.json(contactPage);
   } catch (error) {
     console.error("Error creating contact page:", error);
@@ -37,7 +46,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    
+
     const updated = await prisma.contactPage.update({
       where: { id: body.id },
       data: {
@@ -48,9 +57,18 @@ export async function PUT(req: Request) {
         officeLocations: body.officeLocations || [],
         businessHours: body.businessHours || [],
         socialMedia: body.socialMedia || [],
+        // SEO fields
+        metaTitle: body.metaTitle || null,
+        metaDescription: body.metaDescription || null,
+        metaKeywords: body.metaKeywords || null,
+        ogTitle: body.ogTitle || null,
+        ogDescription: body.ogDescription || null,
+        ogImageUrl: body.ogImageUrl || null,
+        canonicalUrl: body.canonicalUrl || null,
+        noindex: body.noindex || false,
       },
     });
-    
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating contact page:", error);

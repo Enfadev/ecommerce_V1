@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
+
     const aboutPage = await prisma.aboutPage.create({
       data: {
         heroTitle: body.heroTitle,
@@ -28,9 +28,18 @@ export async function POST(req: Request) {
         features: body.features || [],
         teamMembers: body.teamMembers || [],
         timeline: body.timeline || [],
+        // SEO fields
+        metaTitle: body.metaTitle || null,
+        metaDescription: body.metaDescription || null,
+        metaKeywords: body.metaKeywords || null,
+        ogTitle: body.ogTitle || null,
+        ogDescription: body.ogDescription || null,
+        ogImageUrl: body.ogImageUrl || null,
+        canonicalUrl: body.canonicalUrl || null,
+        noindex: body.noindex || false,
       },
     });
-    
+
     return NextResponse.json(aboutPage);
   } catch (error) {
     console.error("Error creating about page:", error);
@@ -41,7 +50,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    
+
     const updated = await prisma.aboutPage.update({
       where: { id: body.id },
       data: {
@@ -56,9 +65,18 @@ export async function PUT(req: Request) {
         features: body.features || [],
         teamMembers: body.teamMembers || [],
         timeline: body.timeline || [],
+        // SEO fields
+        metaTitle: body.metaTitle || null,
+        metaDescription: body.metaDescription || null,
+        metaKeywords: body.metaKeywords || null,
+        ogTitle: body.ogTitle || null,
+        ogDescription: body.ogDescription || null,
+        ogImageUrl: body.ogImageUrl || null,
+        canonicalUrl: body.canonicalUrl || null,
+        noindex: body.noindex || false,
       },
     });
-    
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Error updating about page:", error);

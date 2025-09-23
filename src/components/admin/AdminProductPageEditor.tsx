@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, Save, Plus, Trash2 } from "lucide-react";
+import { Loader2, Save, Plus, Trash2, Globe, Package } from "lucide-react";
+import SeoSettingsCard from "./SeoSettingsCard";
 
 interface FeaturedCategory {
   name: string;
@@ -33,6 +35,17 @@ interface SeoContentBlock {
   type: string;
 }
 
+interface SeoData {
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImageUrl?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
+}
+
 interface ProductPageData {
   id: number;
   heroTitle: string;
@@ -50,6 +63,15 @@ interface ProductPageData {
   filterOptions: FilterOption[];
   sortOptions: SortOption[];
   seoContent: SeoContentBlock[];
+  // SEO fields
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImageUrl?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
 }
 
 export default function AdminProductPageEditor() {
@@ -70,6 +92,15 @@ export default function AdminProductPageEditor() {
     filterOptions: [],
     sortOptions: [],
     seoContent: [],
+    // SEO fields
+    metaTitle: "",
+    metaDescription: "",
+    metaKeywords: "",
+    ogTitle: "",
+    ogDescription: "",
+    ogImageUrl: "",
+    canonicalUrl: "",
+    noindex: false,
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -237,6 +268,10 @@ export default function AdminProductPageEditor() {
     setData({ ...data, seoContent: newContent });
   };
 
+  const handleSeoFieldChange = (field: keyof SeoData, value: string | boolean) => {
+    setData({ ...data, [field]: value });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -255,251 +290,283 @@ export default function AdminProductPageEditor() {
         </Button>
       </div>
 
-      {/* Hero Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Hero Section</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Hero Title</label>
-            <Input value={data.heroTitle} onChange={(e) => setData({ ...data, heroTitle: e.target.value })} placeholder="Product page title" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-            <Input value={data.heroSubtitle} onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })} placeholder="Product page subtitle" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Hero Description</label>
-            <Textarea value={data.heroDescription} onChange={(e) => setData({ ...data, heroDescription: e.target.value })} placeholder="Product page description" rows={3} />
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="content" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="content" className="flex items-center gap-2">
+            <Package className="w-4 h-4" />
+            Content
+          </TabsTrigger>
+          <TabsTrigger value="seo" className="flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            SEO Settings
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Promotional Banner */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Promotional Banner</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={data.promotionalBanner.isActive}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  promotionalBanner: { ...data.promotionalBanner, isActive: e.target.checked },
-                })
-              }
-            />
-            <label className="text-sm font-medium">Enable Promotional Banner</label>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              placeholder="Banner title"
-              value={data.promotionalBanner.title}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  promotionalBanner: { ...data.promotionalBanner, title: e.target.value },
-                })
-              }
-            />
-            <Input
-              placeholder="Button text"
-              value={data.promotionalBanner.buttonText}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  promotionalBanner: { ...data.promotionalBanner, buttonText: e.target.value },
-                })
-              }
-            />
-            <Input
-              placeholder="Button link"
-              value={data.promotionalBanner.buttonLink}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  promotionalBanner: { ...data.promotionalBanner, buttonLink: e.target.value },
-                })
-              }
-            />
-            <Input
-              placeholder="Background color class"
-              value={data.promotionalBanner.bgColor}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  promotionalBanner: { ...data.promotionalBanner, bgColor: e.target.value },
-                })
-              }
-            />
-          </div>
-          <Textarea
-            placeholder="Banner description"
-            value={data.promotionalBanner.description}
-            onChange={(e) =>
-              setData({
-                ...data,
-                promotionalBanner: { ...data.promotionalBanner, description: e.target.value },
-              })
-            }
-            rows={2}
+        <TabsContent value="content" className="space-y-6">
+          {/* Hero Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Hero Section</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Hero Title</label>
+                <Input value={data.heroTitle} onChange={(e) => setData({ ...data, heroTitle: e.target.value })} placeholder="Product page title" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+                <Input value={data.heroSubtitle} onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })} placeholder="Product page subtitle" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Hero Description</label>
+                <Textarea value={data.heroDescription} onChange={(e) => setData({ ...data, heroDescription: e.target.value })} placeholder="Product page description" rows={3} />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Promotional Banner */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Promotional Banner</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={data.promotionalBanner.isActive}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      promotionalBanner: { ...data.promotionalBanner, isActive: e.target.checked },
+                    })
+                  }
+                />
+                <label className="text-sm font-medium">Enable Promotional Banner</label>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  placeholder="Banner title"
+                  value={data.promotionalBanner.title}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      promotionalBanner: { ...data.promotionalBanner, title: e.target.value },
+                    })
+                  }
+                />
+                <Input
+                  placeholder="Button text"
+                  value={data.promotionalBanner.buttonText}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      promotionalBanner: { ...data.promotionalBanner, buttonText: e.target.value },
+                    })
+                  }
+                />
+                <Input
+                  placeholder="Button link"
+                  value={data.promotionalBanner.buttonLink}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      promotionalBanner: { ...data.promotionalBanner, buttonLink: e.target.value },
+                    })
+                  }
+                />
+                <Input
+                  placeholder="Background color class"
+                  value={data.promotionalBanner.bgColor}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      promotionalBanner: { ...data.promotionalBanner, bgColor: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <Textarea
+                placeholder="Banner description"
+                value={data.promotionalBanner.description}
+                onChange={(e) =>
+                  setData({
+                    ...data,
+                    promotionalBanner: { ...data.promotionalBanner, description: e.target.value },
+                  })
+                }
+                rows={2}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Featured Categories */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Featured Categories</CardTitle>
+                <Button onClick={addFeaturedCategory}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Category
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Array.isArray(data.featuredCategories) &&
+                data.featuredCategories.map((category, index) => (
+                  <Card key={index} className="border-l-4 border-blue-500">
+                    <CardHeader>
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Category {index + 1}</h4>
+                        <Button variant="outline" size="sm" onClick={() => removeFeaturedCategory(index)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input placeholder="Category name" value={category.name} onChange={(e) => updateFeaturedCategory(index, "name", e.target.value)} />
+                      <Input placeholder="Category link" value={category.link} onChange={(e) => updateFeaturedCategory(index, "link", e.target.value)} />
+                      <Input placeholder="Image URL" value={category.image} onChange={(e) => updateFeaturedCategory(index, "image", e.target.value)} />
+                      <Input placeholder="Background color class" value={category.bgColor} onChange={(e) => updateFeaturedCategory(index, "bgColor", e.target.value)} />
+                      <div className="md:col-span-2">
+                        <Textarea placeholder="Category description" value={category.description} onChange={(e) => updateFeaturedCategory(index, "description", e.target.value)} rows={2} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </CardContent>
+          </Card>
+
+          {/* Filter Options */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Filter Options</CardTitle>
+                <Button onClick={addFilterOption}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Filter
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Array.isArray(data.filterOptions) &&
+                data.filterOptions.map((filter, index) => (
+                  <Card key={index} className="border-l-4 border-orange-500">
+                    <CardHeader>
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Filter {index + 1}</h4>
+                        <Button variant="outline" size="sm" onClick={() => removeFilterOption(index)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input placeholder="Filter type" value={filter.type} onChange={(e) => updateFilterOption(index, "type", e.target.value)} />
+                      <Input placeholder="Filter label" value={filter.label} onChange={(e) => updateFilterOption(index, "label", e.target.value)} />
+                      <div className="md:col-span-2">
+                        <Textarea
+                          placeholder="Filter options (comma-separated)"
+                          value={Array.isArray(filter.options) ? filter.options.join(", ") : ""}
+                          onChange={(e) =>
+                            updateFilterOption(
+                              index,
+                              "options",
+                              e.target.value.split(", ").filter((opt) => opt.trim())
+                            )
+                          }
+                          rows={2}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </CardContent>
+          </Card>
+
+          {/* Sort Options */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Sort Options</CardTitle>
+                <Button onClick={addSortOption}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Sort Option
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Array.isArray(data.sortOptions) &&
+                data.sortOptions.map((sort, index) => (
+                  <Card key={index} className="border-l-4 border-green-500">
+                    <CardHeader>
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Sort Option {index + 1}</h4>
+                        <Button variant="outline" size="sm" onClick={() => removeSortOption(index)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input placeholder="Sort value" value={sort.value} onChange={(e) => updateSortOption(index, "value", e.target.value)} />
+                      <Input placeholder="Sort label" value={sort.label} onChange={(e) => updateSortOption(index, "label", e.target.value)} />
+                    </CardContent>
+                  </Card>
+                ))}
+            </CardContent>
+          </Card>
+
+          {/* SEO Content */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>SEO Content Blocks</CardTitle>
+                <Button onClick={addSeoContent}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Content Block
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Array.isArray(data.seoContent) &&
+                data.seoContent.map((content, index) => (
+                  <Card key={index} className="border-l-4 border-purple-500">
+                    <CardHeader>
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium">Content Block {index + 1}</h4>
+                        <Button variant="outline" size="sm" onClick={() => removeSeoContent(index)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input placeholder="Content title" value={content.title} onChange={(e) => updateSeoContent(index, "title", e.target.value)} />
+                      <Input placeholder="Content type" value={content.type} onChange={(e) => updateSeoContent(index, "type", e.target.value)} />
+                      <div className="md:col-span-2">
+                        <Textarea placeholder="Content description" value={content.content} onChange={(e) => updateSeoContent(index, "content", e.target.value)} rows={3} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="seo">
+          <SeoSettingsCard
+            data={{
+              metaTitle: data.metaTitle,
+              metaDescription: data.metaDescription,
+              metaKeywords: data.metaKeywords,
+              ogTitle: data.ogTitle,
+              ogDescription: data.ogDescription,
+              ogImageUrl: data.ogImageUrl,
+              canonicalUrl: data.canonicalUrl,
+              noindex: data.noindex,
+            }}
+            onChange={handleSeoFieldChange}
+            pageName="Product"
           />
-        </CardContent>
-      </Card>
-
-      {/* Featured Categories */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Featured Categories</CardTitle>
-            <Button onClick={addFeaturedCategory}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Category
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {Array.isArray(data.featuredCategories) &&
-            data.featuredCategories.map((category, index) => (
-              <Card key={index} className="border-l-4 border-blue-500">
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Category {index + 1}</h4>
-                    <Button variant="outline" size="sm" onClick={() => removeFeaturedCategory(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input placeholder="Category name" value={category.name} onChange={(e) => updateFeaturedCategory(index, "name", e.target.value)} />
-                  <Input placeholder="Category link" value={category.link} onChange={(e) => updateFeaturedCategory(index, "link", e.target.value)} />
-                  <Input placeholder="Image URL" value={category.image} onChange={(e) => updateFeaturedCategory(index, "image", e.target.value)} />
-                  <Input placeholder="Background color class" value={category.bgColor} onChange={(e) => updateFeaturedCategory(index, "bgColor", e.target.value)} />
-                  <div className="md:col-span-2">
-                    <Textarea placeholder="Category description" value={category.description} onChange={(e) => updateFeaturedCategory(index, "description", e.target.value)} rows={2} />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-        </CardContent>
-      </Card>
-
-      {/* Filter Options */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Filter Options</CardTitle>
-            <Button onClick={addFilterOption}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Filter
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {Array.isArray(data.filterOptions) &&
-            data.filterOptions.map((filter, index) => (
-              <Card key={index} className="border-l-4 border-orange-500">
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Filter {index + 1}</h4>
-                    <Button variant="outline" size="sm" onClick={() => removeFilterOption(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input placeholder="Filter type" value={filter.type} onChange={(e) => updateFilterOption(index, "type", e.target.value)} />
-                  <Input placeholder="Filter label" value={filter.label} onChange={(e) => updateFilterOption(index, "label", e.target.value)} />
-                  <div className="md:col-span-2">
-                    <Textarea
-                      placeholder="Filter options (comma-separated)"
-                      value={Array.isArray(filter.options) ? filter.options.join(", ") : ""}
-                      onChange={(e) =>
-                        updateFilterOption(
-                          index,
-                          "options",
-                          e.target.value.split(", ").filter((opt) => opt.trim())
-                        )
-                      }
-                      rows={2}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-        </CardContent>
-      </Card>
-
-      {/* Sort Options */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Sort Options</CardTitle>
-            <Button onClick={addSortOption}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Sort Option
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {Array.isArray(data.sortOptions) &&
-            data.sortOptions.map((sort, index) => (
-              <Card key={index} className="border-l-4 border-green-500">
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Sort Option {index + 1}</h4>
-                    <Button variant="outline" size="sm" onClick={() => removeSortOption(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input placeholder="Sort value" value={sort.value} onChange={(e) => updateSortOption(index, "value", e.target.value)} />
-                  <Input placeholder="Sort label" value={sort.label} onChange={(e) => updateSortOption(index, "label", e.target.value)} />
-                </CardContent>
-              </Card>
-            ))}
-        </CardContent>
-      </Card>
-
-      {/* SEO Content */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>SEO Content Blocks</CardTitle>
-            <Button onClick={addSeoContent}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Content Block
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {Array.isArray(data.seoContent) &&
-            data.seoContent.map((content, index) => (
-              <Card key={index} className="border-l-4 border-purple-500">
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Content Block {index + 1}</h4>
-                    <Button variant="outline" size="sm" onClick={() => removeSeoContent(index)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input placeholder="Content title" value={content.title} onChange={(e) => updateSeoContent(index, "title", e.target.value)} />
-                  <Input placeholder="Content type" value={content.type} onChange={(e) => updateSeoContent(index, "type", e.target.value)} />
-                  <div className="md:col-span-2">
-                    <Textarea placeholder="Content description" value={content.content} onChange={(e) => updateSeoContent(index, "content", e.target.value)} rows={3} />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-        </CardContent>
-      </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

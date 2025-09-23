@@ -7,6 +7,8 @@ import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import NextLink from "next/link";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
+import { Metadata } from "next";
+import { generatePageMetadata } from "@/lib/seo-utils";
 
 interface HeroSlide {
   title: string;
@@ -21,6 +23,16 @@ interface Feature {
   icon: string;
   title: string;
   description: string;
+}
+
+// Generate dynamic metadata for home page
+export async function generateMetadata(): Promise<Metadata> {
+  const homePage = await prisma.homePage.findFirst();
+  return generatePageMetadata({
+    pageData: homePage,
+    fallbackTitle: "Home",
+    defaultPath: "",
+  });
 }
 
 async function getHomePageData() {
@@ -337,7 +349,6 @@ export default async function Home() {
       </section>{" "}
       {/* Special Offers with Real Discounted Products */}
       <DiscountedProducts maxItems={6} title="🔥 This Week's Special Offers" />
-      
       {/* Featured Products */}
       <section>
         <div className="flex items-center justify-between mb-8">

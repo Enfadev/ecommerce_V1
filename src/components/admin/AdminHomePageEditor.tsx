@@ -5,8 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, Save, Plus, Trash2 } from "lucide-react";
+import { Loader2, Save, Plus, Trash2, Globe, Home } from "lucide-react";
+import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
 
 interface HeroSlide {
   title: string;
@@ -51,6 +53,15 @@ interface HomePageData {
   statsData: StatData[];
   aboutPreview: object;
   testimonialsData: TestimonialData[];
+  // SEO fields
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImageUrl?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
 }
 
 export default function AdminHomePageEditor() {
@@ -64,6 +75,15 @@ export default function AdminHomePageEditor() {
     statsData: [],
     aboutPreview: {},
     testimonialsData: [],
+    // SEO fields
+    metaTitle: "",
+    metaDescription: "",
+    metaKeywords: "",
+    ogTitle: "",
+    ogDescription: "",
+    ogImageUrl: "",
+    canonicalUrl: "",
+    noindex: false,
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -79,7 +99,18 @@ export default function AdminHomePageEditor() {
       if (res.ok) {
         const pageData = await res.json();
         if (pageData) {
-          setData(pageData);
+          setData({
+            ...pageData,
+            // Ensure SEO fields have default values if null
+            metaTitle: pageData.metaTitle || "",
+            metaDescription: pageData.metaDescription || "",
+            metaKeywords: pageData.metaKeywords || "",
+            ogTitle: pageData.ogTitle || "",
+            ogDescription: pageData.ogDescription || "",
+            ogImageUrl: pageData.ogImageUrl || "",
+            canonicalUrl: pageData.canonicalUrl || "",
+            noindex: pageData.noindex || false,
+          });
         }
       }
     } catch (error) {
@@ -182,6 +213,10 @@ export default function AdminHomePageEditor() {
     setData({ ...data, statsData: newStats });
   };
 
+  const handleSeoChange = (field: keyof HomePageData, value: string | boolean) => {
+    setData({ ...data, [field]: value });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -200,192 +235,161 @@ export default function AdminHomePageEditor() {
         </Button>
       </div>
 
-      {/* Hero Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Hero Section</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Hero Title</label>
-            <Input
-              value={data.heroTitle}
-              onChange={(e) => setData({ ...data, heroTitle: e.target.value })}
-              placeholder="Main hero title"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
-            <Input
-              value={data.heroSubtitle}
-              onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })}
-              placeholder="Hero subtitle"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Hero Description</label>
-            <Textarea
-              value={data.heroDescription}
-              onChange={(e) => setData({ ...data, heroDescription: e.target.value })}
-              placeholder="Hero description"
-              rows={3}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="content" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="content" className="flex items-center gap-2">
+            <Home className="w-4 h-4" />
+            Content
+          </TabsTrigger>
+          <TabsTrigger value="seo" className="flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            SEO Settings
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Hero Slides */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Hero Carousel Slides</CardTitle>
-            <Button onClick={addHeroSlide}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Slide
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {data.heroSlides.map((slide, index) => (
-            <Card key={index} className="border-l-4 border-blue-500">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Slide {index + 1}</h4>
-                  <Button variant="outline" size="sm" onClick={() => removeHeroSlide(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  placeholder="Slide title"
-                  value={slide.title}
-                  onChange={(e) => updateHeroSlide(index, "title", e.target.value)}
-                />
-                <Input
-                  placeholder="Slide subtitle"
-                  value={slide.subtitle}
-                  onChange={(e) => updateHeroSlide(index, "subtitle", e.target.value)}
-                />
-                <Input
-                  placeholder="Badge text"
-                  value={slide.badgeText}
-                  onChange={(e) => updateHeroSlide(index, "badgeText", e.target.value)}
-                />
-                <Input
-                  placeholder="Background gradient (e.g., from-blue-600 to-purple-600)"
-                  value={slide.bgGradient}
-                  onChange={(e) => updateHeroSlide(index, "bgGradient", e.target.value)}
-                />
-                <div className="md:col-span-2">
-                  <Textarea
-                    placeholder="Slide description"
-                    value={slide.description}
-                    onChange={(e) => updateHeroSlide(index, "description", e.target.value)}
-                    rows={2}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </CardContent>
-      </Card>
+        <TabsContent value="content" className="space-y-6">
+          {/* Hero Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Hero Section</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Hero Title</label>
+                <Input value={data.heroTitle} onChange={(e) => setData({ ...data, heroTitle: e.target.value })} placeholder="Main hero title" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Hero Subtitle</label>
+                <Input value={data.heroSubtitle} onChange={(e) => setData({ ...data, heroSubtitle: e.target.value })} placeholder="Hero subtitle" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Hero Description</label>
+                <Textarea value={data.heroDescription} onChange={(e) => setData({ ...data, heroDescription: e.target.value })} placeholder="Hero description" rows={3} />
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Features Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Features Section</CardTitle>
-            <Button onClick={addFeature}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Feature
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {data.features.map((feature, index) => (
-            <Card key={index} className="border-l-4 border-green-500">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Feature {index + 1}</h4>
-                  <Button variant="outline" size="sm" onClick={() => removeFeature(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input
-                  placeholder="Icon name (e.g., Shield, Truck)"
-                  value={feature.icon}
-                  onChange={(e) => updateFeature(index, "icon", e.target.value)}
-                />
-                <Input
-                  placeholder="Feature title"
-                  value={feature.title}
-                  onChange={(e) => updateFeature(index, "title", e.target.value)}
-                />
-                <Input
-                  placeholder="Background color class"
-                  value={feature.bgColor}
-                  onChange={(e) => updateFeature(index, "bgColor", e.target.value)}
-                />
-                <div className="md:col-span-3">
-                  <Textarea
-                    placeholder="Feature description"
-                    value={feature.description}
-                    onChange={(e) => updateFeature(index, "description", e.target.value)}
-                    rows={2}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </CardContent>
-      </Card>
+          {/* Hero Slides */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Hero Carousel Slides</CardTitle>
+                <Button onClick={addHeroSlide}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Slide
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {data.heroSlides.map((slide, index) => (
+                <Card key={index} className="border-l-4 border-blue-500">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Slide {index + 1}</h4>
+                      <Button variant="outline" size="sm" onClick={() => removeHeroSlide(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input placeholder="Slide title" value={slide.title} onChange={(e) => updateHeroSlide(index, "title", e.target.value)} />
+                    <Input placeholder="Slide subtitle" value={slide.subtitle} onChange={(e) => updateHeroSlide(index, "subtitle", e.target.value)} />
+                    <Input placeholder="Badge text" value={slide.badgeText} onChange={(e) => updateHeroSlide(index, "badgeText", e.target.value)} />
+                    <Input placeholder="Background gradient (e.g., from-blue-600 to-purple-600)" value={slide.bgGradient} onChange={(e) => updateHeroSlide(index, "bgGradient", e.target.value)} />
+                    <div className="md:col-span-2">
+                      <Textarea placeholder="Slide description" value={slide.description} onChange={(e) => updateHeroSlide(index, "description", e.target.value)} rows={2} />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </CardContent>
+          </Card>
 
-      {/* Statistics Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Statistics Section</CardTitle>
-            <Button onClick={addStat}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Statistic
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {data.statsData.map((stat, index) => (
-            <Card key={index} className="border-l-4 border-yellow-500">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Statistic {index + 1}</h4>
-                  <Button variant="outline" size="sm" onClick={() => removeStat(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Input
-                  placeholder="Statistic label"
-                  value={stat.label}
-                  onChange={(e) => updateStat(index, "label", e.target.value)}
-                />
-                <Input
-                  placeholder="Statistic value"
-                  value={stat.value}
-                  onChange={(e) => updateStat(index, "value", e.target.value)}
-                />
-                <Input
-                  placeholder="Icon name"
-                  value={stat.icon}
-                  onChange={(e) => updateStat(index, "icon", e.target.value)}
-                />
-              </CardContent>
-            </Card>
-          ))}
-        </CardContent>
-      </Card>
+          {/* Features Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Features Section</CardTitle>
+                <Button onClick={addFeature}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Feature
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {data.features.map((feature, index) => (
+                <Card key={index} className="border-l-4 border-green-500">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Feature {index + 1}</h4>
+                      <Button variant="outline" size="sm" onClick={() => removeFeature(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Input placeholder="Icon name (e.g., Shield, Truck)" value={feature.icon} onChange={(e) => updateFeature(index, "icon", e.target.value)} />
+                    <Input placeholder="Feature title" value={feature.title} onChange={(e) => updateFeature(index, "title", e.target.value)} />
+                    <Input placeholder="Background color class" value={feature.bgColor} onChange={(e) => updateFeature(index, "bgColor", e.target.value)} />
+                    <div className="md:col-span-3">
+                      <Textarea placeholder="Feature description" value={feature.description} onChange={(e) => updateFeature(index, "description", e.target.value)} rows={2} />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Statistics Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Statistics Section</CardTitle>
+                <Button onClick={addStat}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Statistic
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {data.statsData.map((stat, index) => (
+                <Card key={index} className="border-l-4 border-yellow-500">
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Statistic {index + 1}</h4>
+                      <Button variant="outline" size="sm" onClick={() => removeStat(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Input placeholder="Statistic label" value={stat.label} onChange={(e) => updateStat(index, "label", e.target.value)} />
+                    <Input placeholder="Statistic value" value={stat.value} onChange={(e) => updateStat(index, "value", e.target.value)} />
+                    <Input placeholder="Icon name" value={stat.icon} onChange={(e) => updateStat(index, "icon", e.target.value)} />
+                  </CardContent>
+                </Card>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="seo" className="space-y-6">
+          <SeoSettingsCard
+            data={{
+              metaTitle: data.metaTitle,
+              metaDescription: data.metaDescription,
+              metaKeywords: data.metaKeywords,
+              ogTitle: data.ogTitle,
+              ogDescription: data.ogDescription,
+              ogImageUrl: data.ogImageUrl,
+              canonicalUrl: data.canonicalUrl,
+              noindex: data.noindex,
+            }}
+            onChange={handleSeoChange}
+            pageName="Home"
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
