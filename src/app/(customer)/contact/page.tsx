@@ -225,7 +225,7 @@ export default function Contact() {
                     <div className={`w-16 h-16 ${method.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-2">{method.title}</h3>
+                    <h2 className="font-semibold text-lg mb-2">{method.title}</h2>
                     <p className="text-sm text-muted-foreground mb-3">{method.subtitle}</p>
                     <a href={method.link} className="text-primary font-medium hover:underline">
                       {method.value}
@@ -365,7 +365,12 @@ export default function Contact() {
             {contactData.socialMedia.map((social, index) => {
               const IconComponent = iconMap[social.icon] || Globe;
               return (
-                <a key={index} href={social.link} className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1">
+                <a
+                  key={index}
+                  href={social.link}
+                  className="w-14 h-14 bg-white rounded-full flex items-center justify-center hover:shadow-lg transition-all hover:-translate-y-1"
+                  aria-label={social.name || social.icon}
+                >
                   <IconComponent className={`w-7 h-7 ${social.color}`} />
                 </a>
               );
