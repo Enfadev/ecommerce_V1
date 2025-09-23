@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
-import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Package, Heart, Edit3, Crown, Trash2 } from "lucide-react";
+import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Edit3, Crown, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/contexts/auth-context";
 import { Toast } from "@/components/ui/toast";
 
@@ -610,26 +609,6 @@ export default function ProfilePage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card className="bg-gray-800/80 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link href="/order-history">
-                  <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
-                    <Package className="h-4 w-4 mr-2" />
-                    Order History
-                  </Button>
-                </Link>
-                <Link href="/wishlist">
-                  <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700">
-                    <Heart className="h-4 w-4 mr-2" />
-                    Wishlist
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
 
 
           </div>
