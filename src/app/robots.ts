@@ -1,0 +1,16 @@
+import type { MetadataRoute } from "next";
+import { getSystemSettingsWithFallback } from "@/lib/system-settings";
+
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const settings = await getSystemSettingsWithFallback();
+  const allow = settings.enableIndexing !== false;
+  const base = settings.canonicalBaseUrl || undefined;
+  return {
+    rules: {
+      userAgent: "*",
+      allow: allow ? "/" : undefined,
+      disallow: allow ? undefined : "/",
+    },
+    sitemap: base ? [`${base.replace(/\/$/, "")}/sitemap.xml`] : undefined,
+  };
+}

@@ -16,6 +16,16 @@ model ContactPage {
   officeLocations Json
   businessHours   Json
   socialMedia     Json
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  ogTitle         String?
+  ogDescription   String?
+  ogImageUrl      String?
+  canonicalUrl    String?
+  noindex         Boolean  @default(false)
+  seoExtras       Json?
   updatedAt       DateTime @updatedAt
 }
 
@@ -29,6 +39,16 @@ model HomePage {
   statsData        Json // Stats section data
   aboutPreview     Json // About section preview
   testimonialsData Json // Testimonials data
+  // SEO fields
+  metaTitle        String?
+  metaDescription  String?
+  metaKeywords     String?
+  ogTitle          String?
+  ogDescription    String?
+  ogImageUrl       String?
+  canonicalUrl     String?
+  noindex          Boolean  @default(false)
+  seoExtras        Json?
   updatedAt        DateTime @updatedAt
 }
 
@@ -45,6 +65,16 @@ model AboutPage {
   features        Json // Array of features
   teamMembers     Json // Array of team members
   timeline        Json // Company history timeline
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  ogTitle         String?
+  ogDescription   String?
+  ogImageUrl      String?
+  canonicalUrl    String?
+  noindex         Boolean  @default(false)
+  seoExtras       Json?
   updatedAt       DateTime @updatedAt
 }
 
@@ -58,34 +88,51 @@ model ProductPage {
   filterOptions      Json // Available filter options
   sortOptions        Json // Available sort options
   seoContent         Json // SEO content blocks
+  // SEO fields
+  metaTitle          String?
+  metaDescription    String?
+  metaKeywords       String?
+  ogTitle            String?
+  ogDescription      String?
+  ogImageUrl         String?
+  canonicalUrl       String?
+  noindex            Boolean  @default(false)
+  seoExtras          Json?
   updatedAt          DateTime @updatedAt
 }
 
 model Product {
-  id              Int            @id @default(autoincrement())
+  id              Int             @id @default(autoincrement())
   name            String
   description     String?
   price           Float
   imageUrl        String?
   images          ProductImage[]
-  stock           Int            @default(0)
-  status          String         @default("active")
-  sku             String?        @unique
+  stock           Int             @default(0)
+  status          String          @default("active")
+  sku             String?         @unique
   brand           String?
-  slug            String?        @unique
+  slug            String?         @unique
   metaTitle       String?
   metaDescription String?
+  metaKeywords    String?
+  ogTitle         String?
+  ogDescription   String?
+  ogImageUrl      String?
+  canonicalUrl    String?
+  noindex         Boolean         @default(false)
+  structuredData  Json?
   discountPrice   Float?
   promoExpired    DateTime?
   categoryId      Int?
-  category        Category?      @relation(fields: [categoryId], references: [id])
+  category        Category?       @relation(fields: [categoryId], references: [id])
   cartItems       CartItem[]
   orderItems      OrderItem[]
   wishlistItems   WishlistItem[]
-  chatMessages    ChatMessage[]  @relation("ChatProductMessages")
+  chatMessages    ChatMessage[]   @relation("ChatProductMessages")
   reviews         ProductReview[]
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
 
 model ProductImage {
@@ -96,9 +143,17 @@ model ProductImage {
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  products Product[]
+  id              Int       @id @default(autoincrement())
+  name            String    @unique
+  products        Product[]
+  // Optional SEO fields for category pages (future/use if category routes exist)
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String?
+  ogImageUrl      String?
+  canonicalUrl    String?
+  noindex         Boolean   @default(false)
+  seoExtras       Json?
 }
 
 enum Role {
@@ -107,11 +162,11 @@ enum Role {
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   name          String?
-  email         String        @unique
+  email         String          @unique
   password      String?
-  role          Role          @default(USER)
+  role          Role            @default(USER)
   emailVerified DateTime?
   image         String?
   phoneNumber   String?
@@ -119,15 +174,15 @@ model User {
   dateOfBirth   String?
   accounts      Account[]
   sessions      Session[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   cart          Cart?
   orders        Order[]
   securityLogs  SecurityLog[]
   wishlist      Wishlist?
   chatRooms     ChatRoom[]
-  adminChats    ChatRoom[]    @relation("AdminChats")
-  sentMessages  ChatMessage[] @relation("SentMessages")
+  adminChats    ChatRoom[]      @relation("AdminChats")
+  sentMessages  ChatMessage[]   @relation("SentMessages")
   reviews       ProductReview[]
 }
 
@@ -211,13 +266,13 @@ model WishlistItem {
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  orderNumber String      @unique
+  id          Int             @id @default(autoincrement())
+  orderNumber String          @unique
   userId      Int
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       OrderItem[]
   reviews     ProductReview[]
-  status      OrderStatus @default(PENDING)
+  status      OrderStatus     @default(PENDING)
 
   // Customer Information
   customerName    String
@@ -285,18 +340,28 @@ enum PaymentStatus {
 }
 
 model SystemSettings {
-  id               Int     @id @default(autoincrement())
-  storeName        String  @default("E-Commerce Store")
-  storeDescription String  @default("Trusted online store")
-  contactEmail     String  @default("contact@store.com")
-  currency         String  @default("USD")
-  timezone         String  @default("Asia/Jakarta")
-  language         String  @default("en")
-  logoUrl          String? // Logo website
+  id                     Int     @id @default(autoincrement())
+  storeName              String  @default("E-Commerce Store")
+  storeDescription       String  @default("Trusted online store")
+  contactEmail           String  @default("contact@store.com")
+  currency               String  @default("USD")
+  timezone               String  @default("Asia/Jakarta")
+  language               String  @default("en")
+  logoUrl                String? // Logo website
+  // Global SEO defaults
+  defaultMetaTitle       String?
+  defaultMetaDescription String?
+  defaultMetaKeywords    String?
+  defaultOgImageUrl      String?
+  twitterHandle          String?
+  facebookPage           String?
+  canonicalBaseUrl       String?
+  enableIndexing         Boolean @default(true)
+  robotsRules            Json?
 
   // Company Contact Information
-  phoneNumber      String? // Nomor telepon kantor
-  officeAddress    String? @db.Text // Alamat kantor
+  phoneNumber   String? // Nomor telepon kantor
+  officeAddress String? @db.Text // Alamat kantor
 
   // Security Settings
   enableTwoFactor Boolean @default(false)
@@ -351,17 +416,17 @@ model ChatRoom {
 }
 
 model ChatMessage {
-  id         Int      @id @default(autoincrement())
-  chatRoomId Int
-  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
-  senderId   Int
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
-  message    String   @db.Text
+  id          Int         @id @default(autoincrement())
+  chatRoomId  Int
+  chatRoom    ChatRoom    @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  senderId    Int
+  sender      User        @relation("SentMessages", fields: [senderId], references: [id])
+  message     String      @db.Text
   messageType MessageType @default(TEXT)
-  isRead     Boolean  @default(false)
-  productId  Int?     // Tambahan untuk produk yang ditanyakan
-  product    Product? @relation("ChatProductMessages", fields: [productId], references: [id])
-  createdAt  DateTime @default(now())
+  isRead      Boolean     @default(false)
+  productId   Int? // Tambahan untuk produk yang ditanyakan
+  product     Product?    @relation("ChatProductMessages", fields: [productId], references: [id])
+  createdAt   DateTime    @default(now())
 
   @@map("chat_messages")
 }
@@ -392,13 +457,13 @@ model ProductReview {
   product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   userId       Int
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderId      Int      // Reference to the order to verify purchase
+  orderId      Int // Reference to the order to verify purchase
   order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  rating       Int      // 1-5 stars
+  rating       Int // 1-5 stars
   comment      String   @db.Text
   isAnonymous  Boolean  @default(false) // Whether to show review as anonymous
-  isVerified   Boolean  @default(true)  // Whether purchase is verified
-  helpfulCount Int      @default(0)     // For future: helpful votes
+  isVerified   Boolean  @default(true) // Whether purchase is verified
+  helpfulCount Int      @default(0) // For future: helpful votes
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

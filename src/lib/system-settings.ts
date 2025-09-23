@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export interface SystemSettings {
   id: number;
@@ -16,6 +17,16 @@ export interface SystemSettings {
   version: string;
   createdAt: Date;
   updatedAt: Date;
+  // SEO defaults
+  defaultMetaTitle?: string | null;
+  defaultMetaDescription?: string | null;
+  defaultMetaKeywords?: string | null;
+  defaultOgImageUrl?: string | null;
+  twitterHandle?: string | null;
+  facebookPage?: string | null;
+  canonicalBaseUrl?: string | null;
+  enableIndexing?: boolean;
+  robotsRules?: Prisma.JsonValue | null;
 }
 
 /**
@@ -25,7 +36,7 @@ export interface SystemSettings {
 export async function getSystemSettings(): Promise<SystemSettings | null> {
   try {
     let settings = await prisma.systemSettings.findFirst();
-    
+
     if (!settings) {
       settings = await prisma.systemSettings.create({
         data: {
@@ -37,8 +48,8 @@ export async function getSystemSettings(): Promise<SystemSettings | null> {
           language: "en",
           enableTwoFactor: false,
           sessionTimeout: 24,
-          version: "1.0.0"
-        }
+          version: "1.0.0",
+        },
       });
     }
 
@@ -54,26 +65,39 @@ export async function getSystemSettings(): Promise<SystemSettings | null> {
  */
 export async function getSystemSettingsWithFallback(): Promise<SystemSettings> {
   const settings = await getSystemSettings();
-  
-  if (!settings) {
-    return {
-      id: 0,
-      storeName: "Brandify",
-      storeDescription: "A trusted online shopping platform",
-      contactEmail: "contact@brandify.com",
-      currency: "USD",
-      timezone: "Asia/Jakarta",
-      language: "en",
-      logoUrl: null,
-      phoneNumber: "+1 (555) 000-0000",
-      officeAddress: "123 Business District, Suite 100, Jakarta, Indonesia",
-      enableTwoFactor: false,
-      sessionTimeout: 24,
-      version: "1.0.0",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-  }
-  
-  return settings;
+
+  const fallbackTitle = "Brandify - Trusted Online Shopping";
+  const fallbackDesc = "Shop quality products at Brandify with secure payment and fast shipping.";
+  const fallbackKeywords = "ecommerce, shop, online store, brandify";
+
+  // Gabungkan nilai dari DB dengan fallback apabila null/undefined
+  const merged: SystemSettings = {
+    id: settings?.id ?? 0,
+    storeName: settings?.storeName ?? "Brandify",
+    storeDescription: settings?.storeDescription ?? "A trusted online shopping platform",
+    contactEmail: settings?.contactEmail ?? "contact@brandify.com",
+    currency: settings?.currency ?? "USD",
+    timezone: settings?.timezone ?? "Asia/Jakarta",
+    language: settings?.language ?? "en",
+    logoUrl: settings?.logoUrl ?? null,
+    phoneNumber: settings?.phoneNumber ?? "+1 (555) 000-0000",
+    officeAddress: settings?.officeAddress ?? "123 Business District, Suite 100, Jakarta, Indonesia",
+    enableTwoFactor: settings?.enableTwoFactor ?? false,
+    sessionTimeout: settings?.sessionTimeout ?? 24,
+    version: settings?.version ?? "1.0.0",
+    createdAt: settings?.createdAt ?? new Date(),
+    updatedAt: settings?.updatedAt ?? new Date(),
+    // SEO defaults dengan fallback bila null/undefined
+    defaultMetaTitle: settings?.defaultMetaTitle ?? fallbackTitle,
+    defaultMetaDescription: settings?.defaultMetaDescription ?? fallbackDesc,
+    defaultMetaKeywords: settings?.defaultMetaKeywords ?? fallbackKeywords,
+    defaultOgImageUrl: settings?.defaultOgImageUrl ?? null,
+    twitterHandle: settings?.twitterHandle ?? null,
+    facebookPage: settings?.facebookPage ?? null,
+    canonicalBaseUrl: settings?.canonicalBaseUrl ?? null,
+    enableIndexing: settings?.enableIndexing ?? true,
+    robotsRules: (settings as unknown as { robotsRules?: Prisma.JsonValue | null })?.robotsRules ?? null,
+  };
+
+  return merged;
 }

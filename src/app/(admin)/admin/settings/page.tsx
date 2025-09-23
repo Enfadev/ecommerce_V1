@@ -14,7 +14,6 @@ import AdminAboutPageEditor from "@/components/admin/AdminAboutPageEditor";
 import AdminProductPageEditor from "@/components/admin/AdminProductPageEditor";
 import { LogoUpload } from "@/components/admin/LogoUpload";
 
-
 interface SystemStats {
   users: {
     total: number;
@@ -68,6 +67,15 @@ export default function AdminSettingsPage() {
     officeAddress: "",
     timezone: "Asia/Jakarta",
     logoUrl: null as string | null,
+    // SEO defaults
+    defaultMetaTitle: "",
+    defaultMetaDescription: "",
+    defaultMetaKeywords: "",
+    defaultOgImageUrl: "",
+    twitterHandle: "",
+    facebookPage: "",
+    canonicalBaseUrl: "",
+    enableIndexing: true,
   });
 
   useEffect(() => {
@@ -89,6 +97,14 @@ export default function AdminSettingsPage() {
             officeAddress: data.settings.officeAddress || "",
             timezone: data.settings.timezone || "Asia/Jakarta",
             logoUrl: data.settings.logoUrl || null,
+            defaultMetaTitle: data.settings.defaultMetaTitle || "",
+            defaultMetaDescription: data.settings.defaultMetaDescription || "",
+            defaultMetaKeywords: data.settings.defaultMetaKeywords || "",
+            defaultOgImageUrl: data.settings.defaultOgImageUrl || "",
+            twitterHandle: data.settings.twitterHandle || "",
+            facebookPage: data.settings.facebookPage || "",
+            canonicalBaseUrl: data.settings.canonicalBaseUrl || "",
+            enableIndexing: data.settings.enableIndexing ?? true,
           });
         }
       }
@@ -163,6 +179,10 @@ export default function AdminSettingsPage() {
             <Globe className="w-4 h-4" />
             Page Management
           </TabsTrigger>
+          <TabsTrigger value="seo" className="flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            SEO Defaults
+          </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             Users
@@ -188,13 +208,7 @@ export default function AdminSettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <LogoUpload
-                currentLogoUrl={generalSettings.logoUrl || undefined}
-                onLogoChange={(logoUrl) => 
-                  setGeneralSettings(prev => ({ ...prev, logoUrl }))
-                }
-                disabled={loading}
-              />
+              <LogoUpload currentLogoUrl={generalSettings.logoUrl || undefined} onLogoChange={(logoUrl) => setGeneralSettings((prev) => ({ ...prev, logoUrl }))} disabled={loading} />
               <div>
                 <label className="block text-sm font-medium mb-2">Store Name</label>
                 <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" />
@@ -266,6 +280,69 @@ export default function AdminSettingsPage() {
               <AdminContactPageEditor />
             </TabsContent>
           </Tabs>
+        </TabsContent>
+
+        {/* SEO Defaults */}
+        <TabsContent value="seo" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="w-5 h-5" />
+                SEO & Meta Defaults
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Default Meta Title</label>
+                <Input value={generalSettings.defaultMetaTitle} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, defaultMetaTitle: e.target.value }))} placeholder="Site default title (used as fallback)" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Default Meta Description</label>
+                <Textarea
+                  value={generalSettings.defaultMetaDescription}
+                  onChange={(e) => setGeneralSettings((prev) => ({ ...prev, defaultMetaDescription: e.target.value }))}
+                  placeholder="Default description for pages without specific SEO"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Default Meta Keywords</label>
+                <Input value={generalSettings.defaultMetaKeywords} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, defaultMetaKeywords: e.target.value }))} placeholder="keyword1, keyword2, keyword3" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Default OG Image URL</label>
+                <Input value={generalSettings.defaultOgImageUrl} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, defaultOgImageUrl: e.target.value }))} placeholder="/uploads/og-default.jpg or https://..." />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Twitter Handle</label>
+                  <Input value={generalSettings.twitterHandle} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, twitterHandle: e.target.value }))} placeholder="@brand" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Facebook Page URL</label>
+                  <Input value={generalSettings.facebookPage} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, facebookPage: e.target.value }))} placeholder="https://facebook.com/yourpage" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Canonical Base URL</label>
+                <Input value={generalSettings.canonicalBaseUrl} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, canonicalBaseUrl: e.target.value }))} placeholder="https://www.example.com" />
+              </div>
+              <div className="flex items-center justify-between p-3 border rounded-md">
+                <div>
+                  <div className="text-sm font-medium">Enable Indexing</div>
+                  <div className="text-xs text-muted-foreground">Allow search engines to index the site</div>
+                </div>
+                <Button type="button" variant={generalSettings.enableIndexing ? "default" : "outline"} onClick={() => setGeneralSettings((prev) => ({ ...prev, enableIndexing: !prev.enableIndexing }))}>
+                  {generalSettings.enableIndexing ? "Enabled" : "Disabled"}
+                </Button>
+              </div>
+
+              <Button onClick={handleSaveGeneral} className="w-full" disabled={loading}>
+                <Save className="w-4 h-4 mr-2" />
+                {loading ? "Saving..." : "Save Changes"}
+              </Button>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* User Management */}

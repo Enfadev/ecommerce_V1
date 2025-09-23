@@ -29,6 +29,13 @@ interface Product {
   slug?: string;
   metaTitle?: string;
   metaDescription?: string;
+  metaKeywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImageUrl?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
+  structuredData?: string;
   discountPrice?: number | null;
   promoExpired?: string;
   category?: string;
@@ -50,6 +57,13 @@ interface ProductFormData {
   slug?: string;
   metaTitle?: string;
   metaDescription?: string;
+  metaKeywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImageUrl?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
+  structuredData?: string;
   discountPrice?: number | null;
   promoExpired?: string;
   imageFile?: File;
@@ -124,20 +138,14 @@ export default function AdminProductManagement() {
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
-    
+
     let matchesDiscount = true;
     if (discountFilter === "on-sale") {
-      matchesDiscount = !!(product.discountPrice && 
-                          product.discountPrice > 0 && 
-                          product.discountPrice < product.price &&
-                          (!product.promoExpired || new Date(product.promoExpired) > new Date()));
+      matchesDiscount = !!(product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()));
     } else if (discountFilter === "no-discount") {
-      matchesDiscount = !product.discountPrice || 
-                       product.discountPrice <= 0 ||
-                       product.discountPrice >= product.price ||
-                       !!(product.promoExpired && new Date(product.promoExpired) <= new Date());
+      matchesDiscount = !product.discountPrice || product.discountPrice <= 0 || product.discountPrice >= product.price || !!(product.promoExpired && new Date(product.promoExpired) <= new Date());
     }
-    
+
     return matchesSearch && matchesCategory && matchesDiscount;
   });
 
@@ -269,6 +277,13 @@ export default function AdminProductManagement() {
           slug: productData.slug,
           metaTitle: productData.metaTitle,
           metaDescription: productData.metaDescription,
+          metaKeywords: productData.metaKeywords,
+          ogTitle: productData.ogTitle,
+          ogDescription: productData.ogDescription,
+          ogImageUrl: productData.ogImageUrl,
+          canonicalUrl: productData.canonicalUrl,
+          noindex: productData.noindex,
+          structuredData: productData.structuredData,
           discountPrice: productData.discountPrice,
           promoExpired: productData.promoExpired,
           gallery: galleryUrls,
@@ -375,6 +390,13 @@ export default function AdminProductManagement() {
             slug: productData.slug,
             metaTitle: productData.metaTitle,
             metaDescription: productData.metaDescription,
+            metaKeywords: productData.metaKeywords,
+            ogTitle: productData.ogTitle,
+            ogDescription: productData.ogDescription,
+            ogImageUrl: productData.ogImageUrl,
+            canonicalUrl: productData.canonicalUrl,
+            noindex: productData.noindex,
+            structuredData: productData.structuredData,
             discountPrice: productData.discountPrice,
             promoExpired: productData.promoExpired,
             gallery: galleryUrls,
@@ -490,19 +512,10 @@ export default function AdminProductManagement() {
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-500/10 rounded-lg flex items-center justify-center">
-              🏷️
-            </div>
+            <div className="w-10 h-10 bg-orange-500/10 rounded-lg flex items-center justify-center">🏷️</div>
             <div>
               <p className="text-sm text-muted-foreground">Products On Sale</p>
-              <p className="text-xl font-bold">
-                {products.filter((p) => 
-                  p.discountPrice && 
-                  p.discountPrice > 0 && 
-                  p.discountPrice < p.price &&
-                  (!p.promoExpired || new Date(p.promoExpired) > new Date())
-                ).length}
-              </p>
+              <p className="text-xl font-bold">{products.filter((p) => p.discountPrice && p.discountPrice > 0 && p.discountPrice < p.price && (!p.promoExpired || new Date(p.promoExpired) > new Date())).length}</p>
             </div>
           </div>
         </Card>
@@ -555,28 +568,21 @@ export default function AdminProductManagement() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             {/* Tombol filter diskon */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
                   🏷️
-                  {discountFilter === "all" ? "All Products" : 
-                   discountFilter === "on-sale" ? "On Sale" : "No Discount"}
+                  {discountFilter === "all" ? "All Products" : discountFilter === "on-sale" ? "On Sale" : "No Discount"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel>Discount Filter</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setDiscountFilter("all")}>
-                  All Products
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setDiscountFilter("on-sale")}>
-                  🔥 Products On Sale
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setDiscountFilter("no-discount")}>
-                  Regular Priced
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDiscountFilter("all")}>All Products</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDiscountFilter("on-sale")}>🔥 Products On Sale</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setDiscountFilter("no-discount")}>Regular Priced</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -654,30 +660,15 @@ export default function AdminProductManagement() {
                                 <span className="text-muted-foreground">-</span>
                               )
                             ) : col.key === "price" ? (
-                              <DiscountDisplay 
-                                originalPrice={product.price}
-                                discountPrice={product.discountPrice}
-                                promoExpired={product.promoExpired}
-                                compact={true}
-                                showExpiry={false}
-                              />
+                              <DiscountDisplay originalPrice={product.price} discountPrice={product.discountPrice} promoExpired={product.promoExpired} compact={true} showExpiry={false} />
                             ) : col.key === "discountPrice" ? (
-                              product.discountPrice && 
-                              product.discountPrice > 0 && 
-                              product.discountPrice < product.price &&
-                              (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? (
+                              product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? (
                                 <div className="space-y-1">
                                   <Badge variant="destructive" className="text-xs">
                                     -{Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
                                   </Badge>
-                                  <div className="text-xs text-muted-foreground">
-                                    ${(product.price - product.discountPrice).toFixed(2)} saved
-                                  </div>
-                                  {product.promoExpired && (
-                                    <div className="text-xs text-orange-600">
-                                      Expires: {new Date(product.promoExpired).toLocaleDateString()}
-                                    </div>
-                                  )}
+                                  <div className="text-xs text-muted-foreground">${(product.price - product.discountPrice).toFixed(2)} saved</div>
+                                  {product.promoExpired && <div className="text-xs text-orange-600">Expires: {new Date(product.promoExpired).toLocaleDateString()}</div>}
                                 </div>
                               ) : (
                                 <span className="text-muted-foreground">No discount</span>
@@ -774,6 +765,13 @@ export default function AdminProductManagement() {
                         slug: editingProduct.slug || "",
                         metaTitle: editingProduct.metaTitle || "",
                         metaDescription: editingProduct.metaDescription || "",
+                        metaKeywords: editingProduct.metaKeywords || "",
+                        ogTitle: editingProduct.ogTitle || "",
+                        ogDescription: editingProduct.ogDescription || "",
+                        ogImageUrl: editingProduct.ogImageUrl || "",
+                        canonicalUrl: editingProduct.canonicalUrl || "",
+                        noindex: editingProduct.noindex || false,
+                        structuredData: editingProduct.structuredData || "",
                         discountPrice: editingProduct.discountPrice || null,
                         promoExpired: editingProduct.promoExpired || "",
                         gallery: editingProduct.gallery || [],

@@ -30,15 +30,31 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSystemSettingsWithFallback();
-  
+
   const faviconUrl = settings.logoUrl || generateSVGFavicon(settings.storeName.charAt(0).toUpperCase());
-  
+
+  const title = settings.defaultMetaTitle || `${settings.storeName} - Trusted Online Shopping Platform`;
+  const description = settings.defaultMetaDescription || `Find quality products at the best prices at ${settings.storeName}. ${settings.storeDescription}. Free shipping, secure payment, and 24/7 customer service.`;
+
   return {
-    title: `${settings.storeName} - Trusted Online Shopping Platform`,
-    description: `Find quality products at the best prices at ${settings.storeName}. ${settings.storeDescription}. Free shipping, secure payment, and 24/7 customer service.`,
+    title,
+    description,
     icons: {
       icon: faviconUrl,
       apple: faviconUrl,
+    },
+    robots: settings.enableIndexing === false ? { index: false, follow: false } : { index: true, follow: true },
+    openGraph: {
+      title,
+      description,
+      images: settings.defaultOgImageUrl ? [{ url: settings.defaultOgImageUrl }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: settings.defaultOgImageUrl ? [settings.defaultOgImageUrl] : undefined,
+      creator: settings.twitterHandle || undefined,
     },
   };
 }

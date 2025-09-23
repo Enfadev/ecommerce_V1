@@ -14,6 +14,8 @@ import Image from "next/image";
 import { Upload, X, AlertCircle, Package, Globe, DollarSign } from "lucide-react";
 import { CategoryInput } from "../ui/category-input";
 import { RichTextEditor } from "../ui/rich-text-editor";
+import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
 
 const productSchema = z.object({
   id: z.number().optional(),
@@ -28,6 +30,13 @@ const productSchema = z.object({
   slug: z.string().min(2, "Slug is required"),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
+  metaKeywords: z.string().optional(),
+  ogTitle: z.string().optional(),
+  ogDescription: z.string().optional(),
+  ogImageUrl: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  noindex: z.boolean().optional(),
+  structuredData: z.string().optional(),
   discountPrice: z.number().min(0).optional().nullable(),
   promoExpired: z.string().optional(),
   tags: z.array(z.string()).optional(),
@@ -293,12 +302,7 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
-                  <RichTextEditor 
-                    value={watch("description") || ""} 
-                    onChange={(value) => setValue("description", value)}
-                    placeholder="Describe your product..."
-                    className="min-h-32"
-                  />
+                  <RichTextEditor value={watch("description") || ""} onChange={(value) => setValue("description", value)} placeholder="Describe your product..." className="min-h-32" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -433,13 +437,45 @@ export function SimpleProductForm({ product, onSave, onCancel }: ProductFormProp
 
                   <div className="space-y-2">
                     <Label htmlFor="metaDescription">Meta Description</Label>
-                    <RichTextEditor 
-                      value={watch("metaDescription") || ""} 
-                      onChange={(value) => setValue("metaDescription", value)}
-                      placeholder="SEO description for search engines"
-                      className="min-h-24"
-                    />
+                    <RichTextEditor value={watch("metaDescription") || ""} onChange={(value) => setValue("metaDescription", value)} placeholder="SEO description for search engines" className="min-h-24" />
                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <Label htmlFor="metaKeywords">Meta Keywords</Label>
+                    <Input id="metaKeywords" {...register("metaKeywords")} placeholder="keyword1, keyword2, keyword3" className="h-12" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="canonicalUrl">Canonical URL</Label>
+                    <Input id="canonicalUrl" {...register("canonicalUrl")} placeholder="https://www.example.com/product-slug" className="h-12" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="space-y-2">
+                    <Label htmlFor="ogTitle">OG Title</Label>
+                    <Input id="ogTitle" {...register("ogTitle")} placeholder="Open Graph title (optional)" className="h-12" />
+                  </div>
+                  <div className="space-y-2 lg:col-span-2">
+                    <Label htmlFor="ogDescription">OG Description</Label>
+                    <Textarea id="ogDescription" {...register("ogDescription")} placeholder="Open Graph description (optional)" rows={3} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ogImageUrl">OG Image URL</Label>
+                  <Input id="ogImageUrl" {...register("ogImageUrl")} placeholder="/uploads/og-image.jpg or https://..." className="h-12" />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Checkbox id="noindex" checked={!!watch("noindex")} onCheckedChange={(val) => setValue("noindex", Boolean(val))} />
+                  <Label htmlFor="noindex">Noindex (exclude this product from search engines)</Label>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="structuredData">Structured Data (JSON-LD)</Label>
+                  <Textarea id="structuredData" {...register("structuredData")} placeholder='{"@context":"https://schema.org","@type":"Product",...}' rows={6} />
                 </div>
               </CardContent>
             </Card>

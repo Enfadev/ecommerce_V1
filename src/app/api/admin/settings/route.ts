@@ -59,6 +59,15 @@ export async function GET(request: NextRequest) {
         enableTwoFactor: settingsData?.enableTwoFactor || false,
         sessionTimeout: settingsData?.sessionTimeout || 24,
         version: settingsData?.version || "1.0.0",
+        // SEO defaults
+        defaultMetaTitle: settingsData?.defaultMetaTitle || null,
+        defaultMetaDescription: settingsData?.defaultMetaDescription || null,
+        defaultMetaKeywords: settingsData?.defaultMetaKeywords || null,
+        defaultOgImageUrl: settingsData?.defaultOgImageUrl || null,
+        twitterHandle: settingsData?.twitterHandle || null,
+        facebookPage: settingsData?.facebookPage || null,
+        canonicalBaseUrl: settingsData?.canonicalBaseUrl || null,
+        enableIndexing: settingsData?.enableIndexing ?? true,
       },
     });
   } catch (error) {
@@ -95,15 +104,23 @@ export async function PUT(request: NextRequest) {
             officeAddress = ${body.officeAddress || settingsData.officeAddress},
             timezone = ${body.timezone || settingsData.timezone},
             logoUrl = ${body.logoUrl !== undefined ? body.logoUrl : settingsData.logoUrl},
+            defaultMetaTitle = ${body.defaultMetaTitle !== undefined ? body.defaultMetaTitle : settingsData.defaultMetaTitle},
+            defaultMetaDescription = ${body.defaultMetaDescription !== undefined ? body.defaultMetaDescription : settingsData.defaultMetaDescription},
+            defaultMetaKeywords = ${body.defaultMetaKeywords !== undefined ? body.defaultMetaKeywords : settingsData.defaultMetaKeywords},
+            defaultOgImageUrl = ${body.defaultOgImageUrl !== undefined ? body.defaultOgImageUrl : settingsData.defaultOgImageUrl},
+            twitterHandle = ${body.twitterHandle !== undefined ? body.twitterHandle : settingsData.twitterHandle},
+            facebookPage = ${body.facebookPage !== undefined ? body.facebookPage : settingsData.facebookPage},
+            canonicalBaseUrl = ${body.canonicalBaseUrl !== undefined ? body.canonicalBaseUrl : settingsData.canonicalBaseUrl},
+            enableIndexing = ${body.enableIndexing !== undefined ? body.enableIndexing : settingsData.enableIndexing},
             updatedAt = NOW()
         WHERE id = ${settingsData.id}
       `;
     } else {
       await prisma.$executeRaw`
         INSERT INTO system_settings (storeName, storeDescription, contactEmail, phoneNumber, officeAddress, timezone, logoUrl, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES (${body.storeName || "E-Commerce Store"}, ${body.storeDescription || "Trusted online store"}, ${body.contactEmail || "contact@store.com"}, ${body.phoneNumber || ""}, ${body.officeAddress || ""}, ${body.timezone || "Asia/Jakarta"}, ${
-        body.logoUrl || null
-      }, false, 24, '1.0.0', NOW(), NOW())
+        VALUES (${body.storeName || "E-Commerce Store"}, ${body.storeDescription || "Trusted online store"}, ${body.contactEmail || "contact@store.com"}, ${body.phoneNumber || ""}, ${body.officeAddress || ""}, ${
+        body.timezone || "Asia/Jakarta"
+      }, ${body.logoUrl || null}, false, 24, '1.0.0', NOW(), NOW())
       `;
     }
 
@@ -124,6 +141,14 @@ export async function PUT(request: NextRequest) {
         enableTwoFactor: updatedSettings?.enableTwoFactor || false,
         sessionTimeout: updatedSettings?.sessionTimeout || 24,
         version: updatedSettings?.version || "1.0.0",
+        defaultMetaTitle: updatedSettings?.defaultMetaTitle || null,
+        defaultMetaDescription: updatedSettings?.defaultMetaDescription || null,
+        defaultMetaKeywords: updatedSettings?.defaultMetaKeywords || null,
+        defaultOgImageUrl: updatedSettings?.defaultOgImageUrl || null,
+        twitterHandle: updatedSettings?.twitterHandle || null,
+        facebookPage: updatedSettings?.facebookPage || null,
+        canonicalBaseUrl: updatedSettings?.canonicalBaseUrl || null,
+        enableIndexing: updatedSettings?.enableIndexing ?? true,
       },
     });
   } catch (error) {

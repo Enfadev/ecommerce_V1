@@ -38,6 +38,7 @@ export async function DELETE(req: Request) {
 }
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export async function GET(req: Request) {
   try {
@@ -61,6 +62,13 @@ export async function GET(req: Request) {
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,
         metaTitle: p.metaTitle,
+        metaKeywords: p.metaKeywords,
+        ogTitle: p.ogTitle,
+        ogDescription: p.ogDescription,
+        ogImageUrl: p.ogImageUrl,
+        canonicalUrl: p.canonicalUrl,
+        noindex: p.noindex,
+        structuredData: p.structuredData,
         promoExpired: p.promoExpired,
         sku: p.sku,
         slug: p.slug,
@@ -124,6 +132,13 @@ export async function GET(req: Request) {
         discountPrice: p.discountPrice,
         metaDescription: p.metaDescription,
         metaTitle: p.metaTitle,
+        metaKeywords: p.metaKeywords,
+        ogTitle: p.ogTitle,
+        ogDescription: p.ogDescription,
+        ogImageUrl: p.ogImageUrl,
+        canonicalUrl: p.canonicalUrl,
+        noindex: p.noindex,
+        structuredData: p.structuredData,
         promoExpired: p.promoExpired,
         sku: p.sku,
         slug: p.slug,
@@ -141,7 +156,31 @@ export async function GET(req: Request) {
 }
 export async function PUT(req: Request) {
   try {
-    const { id, name, description, price, imageUrl, category, stock, status, sku, brand, slug, metaTitle, metaDescription, discountPrice, promoExpired, gallery } = await req.json();
+    const {
+      id,
+      name,
+      description,
+      price,
+      imageUrl,
+      category,
+      stock,
+      status,
+      sku,
+      brand,
+      slug,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
+      ogTitle,
+      ogDescription,
+      ogImageUrl,
+      canonicalUrl,
+      noindex,
+      structuredData,
+      discountPrice,
+      promoExpired,
+      gallery,
+    } = await req.json();
 
     if (!id || !name || !price) {
       return NextResponse.json({ error: "ID, name, and price are required" }, { status: 400 });
@@ -157,7 +196,7 @@ export async function PUT(req: Request) {
       categoryData = { categoryId: categoryRecord.id };
     }
 
-    const updateData: Record<string, unknown> = {
+    const updateData: { [key: string]: unknown } = {
       name,
       description,
       price: parseFloat(price),
@@ -169,6 +208,13 @@ export async function PUT(req: Request) {
       slug,
       metaTitle,
       metaDescription,
+      metaKeywords,
+      ogTitle,
+      ogDescription,
+      ogImageUrl,
+      canonicalUrl,
+      noindex: typeof noindex === "boolean" ? noindex : undefined,
+      structuredData,
       discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
       promoExpired: promoExpired ? new Date(promoExpired) : null,
     };
@@ -204,6 +250,7 @@ export async function PUT(req: Request) {
       include: { category: true, images: true },
     });
 
+    const u = updatedProduct as unknown as { [key: string]: unknown };
     const result = {
       id: updatedProduct!.id,
       name: updatedProduct!.name,
@@ -216,6 +263,13 @@ export async function PUT(req: Request) {
       discountPrice: updatedProduct!.discountPrice,
       metaDescription: updatedProduct!.metaDescription,
       metaTitle: updatedProduct!.metaTitle,
+      metaKeywords: u.metaKeywords,
+      ogTitle: u.ogTitle,
+      ogDescription: u.ogDescription,
+      ogImageUrl: u.ogImageUrl,
+      canonicalUrl: u.canonicalUrl,
+      noindex: u.noindex,
+      structuredData: u.structuredData,
       promoExpired: updatedProduct!.promoExpired,
       sku: updatedProduct!.sku,
       slug: updatedProduct!.slug,
@@ -235,39 +289,82 @@ export async function PUT(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { name, description, price, imageUrl, discountPrice, category, stock, status, sku, brand, slug, metaTitle, metaDescription, promoExpired, gallery } = await req.json();
+    const {
+      name,
+      description,
+      price,
+      imageUrl,
+      discountPrice,
+      category,
+      stock,
+      status,
+      sku,
+      brand,
+      slug,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
+      ogTitle,
+      ogDescription,
+      ogImageUrl,
+      canonicalUrl,
+      noindex,
+      structuredData,
+      promoExpired,
+      gallery,
+    } = await req.json();
 
     if (!name || !price) {
       return NextResponse.json({ error: "Name and price are required" }, { status: 400 });
     }
 
-    let categoryData = {};
+    let categoryIdVal: number | undefined;
     if (category) {
       const categoryRecord = await prisma.category.upsert({
         where: { name: category },
         update: {},
         create: { name: category },
       });
-      categoryData = { categoryId: categoryRecord.id };
+      categoryIdVal = categoryRecord.id;
+    }
+
+    const data: Record<string, unknown> = {
+      name,
+      price: parseFloat(price),
+      stock: stock ? Number(stock) : 0,
+      status: status || "active",
+    };
+
+    if (description !== undefined) data.description = description;
+    if (imageUrl !== undefined) data.imageUrl = imageUrl;
+    if (categoryIdVal !== undefined) data.categoryId = categoryIdVal;
+    if (sku !== undefined) data.sku = sku;
+    if (brand !== undefined) data.brand = brand;
+    if (slug !== undefined) data.slug = slug;
+    if (metaTitle !== undefined) data.metaTitle = metaTitle;
+    if (metaDescription !== undefined) data.metaDescription = metaDescription;
+    if (metaKeywords !== undefined) data.metaKeywords = metaKeywords;
+    if (ogTitle !== undefined) data.ogTitle = ogTitle;
+    if (ogDescription !== undefined) data.ogDescription = ogDescription;
+    if (ogImageUrl !== undefined) data.ogImageUrl = ogImageUrl;
+    if (canonicalUrl !== undefined) data.canonicalUrl = canonicalUrl;
+    if (typeof noindex === "boolean") data.noindex = noindex;
+    if (discountPrice !== undefined && discountPrice !== null && discountPrice !== "") {
+      data.discountPrice = parseFloat(discountPrice);
+    } else if (discountPrice === null) {
+      data.discountPrice = null;
+    }
+    if (promoExpired) data.promoExpired = new Date(promoExpired);
+    if (structuredData !== undefined && structuredData !== null) {
+      try {
+        data.structuredData = typeof structuredData === "string" ? JSON.parse(structuredData) : structuredData;
+      } catch {
+        data.structuredData = structuredData as unknown;
+      }
     }
 
     const product = await prisma.product.create({
-      data: {
-        name,
-        description,
-        price: parseFloat(price),
-        imageUrl,
-        discountPrice: discountPrice === undefined || discountPrice === null || discountPrice === "" ? null : parseFloat(discountPrice),
-        ...categoryData,
-        stock: stock ? Number(stock) : 0,
-        status: status || "active",
-        sku,
-        brand,
-        slug,
-        metaTitle,
-        metaDescription,
-        promoExpired: promoExpired ? new Date(promoExpired) : null,
-      },
+      data: data as unknown as Prisma.ProductCreateArgs["data"],
       include: { category: true, images: true },
     });
 
@@ -285,6 +382,7 @@ export async function POST(req: Request) {
       include: { category: true, images: true },
     });
 
+    const p = productWithImages as unknown as { [key: string]: unknown };
     const result = {
       id: productWithImages!.id,
       name: productWithImages!.name,
@@ -297,6 +395,13 @@ export async function POST(req: Request) {
       discountPrice: productWithImages!.discountPrice,
       metaDescription: productWithImages!.metaDescription,
       metaTitle: productWithImages!.metaTitle,
+      metaKeywords: p.metaKeywords,
+      ogTitle: p.ogTitle,
+      ogDescription: p.ogDescription,
+      ogImageUrl: p.ogImageUrl,
+      canonicalUrl: p.canonicalUrl,
+      noindex: p.noindex,
+      structuredData: p.structuredData,
       promoExpired: productWithImages!.promoExpired,
       sku: productWithImages!.sku,
       slug: productWithImages!.slug,
