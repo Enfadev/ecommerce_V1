@@ -40,19 +40,62 @@ Ini adalah project e-commerce berbasis [Next.js](https://nextjs.org) dengan dark
 
 ## Cara Menjalankan
 
+### Option 1: Docker (Recommended)
+
+Cara termudah untuk menjalankan aplikasi lengkap dengan database:
+
+1. Pastikan Docker Desktop sudah terinstall dan berjalan
+2. Copy environment variables:
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+3. Edit file `.env` sesuai kebutuhan
+4. Jalankan dengan Docker Compose:
+
+   ```powershell
+   # Development mode dengan watch (hot reload)
+   .\docker.ps1 dev:watch
+
+   # Atau development biasa (background)
+   .\docker.ps1 dev:up
+
+   # Atau development (foreground dengan logs)
+   docker compose up --build
+   ```
+
+5. Akses aplikasi di [http://localhost:3000](http://localhost:3000)
+
+**Docker Commands:**
+
+```powershell
+.\docker.ps1 dev:up      # Start development (background)
+.\docker.ps1 dev:watch   # Start dengan hot reload
+.\docker.ps1 stop        # Stop containers
+.\docker.ps1 logs        # Show logs
+.\docker.ps1 migrate     # Run migrations
+.\docker.ps1 seed        # Seed database
+.\docker.ps1 studio      # Open Prisma Studio
+.\docker.ps1 help        # Show all commands
+```
+
+Dokumentasi lengkap Docker: [DOCKER_SETUP.md](./DOCKER_SETUP.md)
+
+### Option 2: Local Development
+
 1. Install dependencies:
    ```bash
    npm install
    # atau
    yarn install
    ```
-2. Jalankan development server:
+2. Setup database (lihat bagian "Database & Prisma" di bawah)
+3. Jalankan development server:
    ```bash
    npm run dev
    # atau
    yarn dev
    ```
-3. Buka [http://localhost:3000](http://localhost:3000) di browser.
+4. Buka [http://localhost:3000](http://localhost:3000) di browser.
 
 ## Database & Prisma (MySQL)
 

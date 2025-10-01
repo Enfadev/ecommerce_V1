@@ -15,7 +15,12 @@
     "prisma:migrate:status": "prisma migrate status",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:reset": "prisma migrate reset --force && npm run seed"
+    "prisma:reset": "prisma migrate reset --force && npm run seed",
+    "docker:dev": "docker compose up --build",
+    "docker:dev:watch": "docker compose watch",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d --build",
+    "docker:stop": "docker compose down",
+    "docker:logs": "docker compose logs -f"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
