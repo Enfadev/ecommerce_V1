@@ -50,35 +50,39 @@ Cara termudah untuk menjalankan aplikasi lengkap dengan database:
    Copy-Item .env.example .env
    ```
 3. Edit file `.env` sesuai kebutuhan
-4. Jalankan dengan Docker Compose:
+4. Jalankan dengan npm scripts:
 
-   ```powershell
+   ```bash
    # Development mode dengan watch (hot reload)
-   .\docker.ps1 dev:watch
+   npm run docker:dev:watch
 
    # Atau development biasa (background)
-   .\docker.ps1 dev:up
+   npm run docker:dev:up
 
    # Atau development (foreground dengan logs)
-   docker compose up --build
+   npm run docker:dev
    ```
 
 5. Akses aplikasi di [http://localhost:3000](http://localhost:3000)
 
 **Docker Commands:**
 
-```powershell
-.\docker.ps1 dev:up      # Start development (background)
-.\docker.ps1 dev:watch   # Start dengan hot reload
-.\docker.ps1 stop        # Stop containers
-.\docker.ps1 logs        # Show logs
-.\docker.ps1 migrate     # Run migrations
-.\docker.ps1 seed        # Seed database
-.\docker.ps1 studio      # Open Prisma Studio
-.\docker.ps1 help        # Show all commands
+```bash
+npm run docker:dev          # Start development (foreground)
+npm run docker:dev:up       # Start development (background)
+npm run docker:dev:watch    # Start dengan hot reload
+npm run docker:stop         # Stop containers
+npm run docker:logs         # Show all logs
+npm run docker:logs:app     # Show app logs only
+npm run docker:migrate      # Run migrations
+npm run docker:seed         # Seed database
+npm run docker:studio       # Open Prisma Studio
+npm run docker:status       # Show container status
+npm run docker:restart      # Restart containers
+npm run docker:exec:app     # Shell into app container
 ```
 
-Dokumentasi lengkap Docker: [DOCKER_SETUP.md](./DOCKER_SETUP.md)
+Dokumentasi lengkap: [NPM_SCRIPTS_DOCUMENTATION.md](./documentations/NPM_SCRIPTS_DOCUMENTATION.md) | [DOCKER_SETUP.md](./documentations/DOCKER_SETUP.md)
 
 ### Option 2: Local Development
 
@@ -191,11 +195,36 @@ npm run prisma:studio
 - `src/data/` - Data dummy produk
 - `src/hooks/` - Custom hooks
 - `src/lib/` - Utility functions
+- `documentations/` - Semua dokumentasi project
+
+## 📚 Documentation
+
+Semua dokumentasi project tersedia di folder **[documentations/](./documentations/)**
+
+### Quick Links:
+
+- **[Documentation Index](./documentations/INDEX.md)** - Katalog lengkap semua dokumentasi
+- **[Docker Quick Start](./documentations/DOCKER_QUICK_START.md)** - Panduan cepat Docker setup
+- **[Docker Setup Guide](./documentations/DOCKER_SETUP.md)** - Panduan lengkap Docker
+- **[Feature Documentation](./documentations/)** - Dokumentasi fitur-fitur
+
+### Categories:
+
+- 🐳 **Docker** - Complete Docker documentation (10 files)
+- 🛒 **E-commerce Features** - Product, cart, checkout docs
+- 💬 **Chat System** - Chat and messaging documentation
+- 🔐 **Admin & Security** - Admin panel and security docs
+- 📊 **Analytics** - Analytics and monitoring
+- 🔧 **Integration** - OAuth, PayPal, SEO guides
+- 🧪 **Testing** - Test documentation and reports
+
+[**→ Browse All Documentation**](./documentations/INDEX.md)
 
 ## Catatan
 
 - Semua tampilan default dark mode.
-- Silakan cek file `FITUR_FRONTEND_NEXT.md` untuk daftar fitur yang sedang/akan dikembangkan.
+- Dokumentasi lengkap tersedia di folder `documentations/`
+- Untuk Docker setup, lihat [DOCKER_QUICK_START.md](./documentations/DOCKER_QUICK_START.md)
 
 ---
 
