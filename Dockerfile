@@ -77,5 +77,5 @@ RUN mkdir -p ./public/uploads && chmod 777 ./public/uploads
 
 EXPOSE 3000
 
-# Run migrations in dev mode and start dev server
-CMD npx prisma migrate dev --skip-seed && npm run dev
+# Run migrations in dev mode and start dev server with hot reload
+CMD npx prisma migrate dev --skip-seed && npm run dev:docker -- --hostname 0.0.0.0

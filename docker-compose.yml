@@ -48,30 +48,15 @@ services:
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
     volumes:
-      # Source code - hot reload enabled
-      - ./src:/app/src
-      # Public files (exclude uploads to avoid conflict)
-      - ./public/file.svg:/app/public/file.svg
-      - ./public/globe.svg:/app/public/globe.svg
-      - ./public/logo.svg:/app/public/logo.svg
-      - ./public/next.svg:/app/public/next.svg
-      - ./public/placeholder-image.svg:/app/public/placeholder-image.svg
-      - ./public/placeholder-product.svg:/app/public/placeholder-product.svg
-      - ./public/vercel.svg:/app/public/vercel.svg
-      - ./public/window.svg:/app/public/window.svg
-      # Uploads - persistent volume (no conflict)
+      # Bind mount source code for hot reload
+      - ./src:/app/src:cached
+      - ./prisma:/app/prisma:cached
+      - ./public:/app/public:cached
+      - ./middleware.ts:/app/middleware.ts:cached
+      - ./next.config.ts:/app/next.config.ts:cached
+      - ./tsconfig.json:/app/tsconfig.json:cached
+      # Uploads - persistent volume
       - uploads_data:/app/public/uploads
-      # Prisma schema
-      - ./prisma:/app/prisma
-      # Config files
-      - ./package.json:/app/package.json
-      - ./package-lock.json:/app/package-lock.json
-      - ./next.config.ts:/app/next.config.ts
-      - ./tsconfig.json:/app/tsconfig.json
-      - ./components.json:/app/components.json
-      - ./middleware.ts:/app/middleware.ts
-      - ./postcss.config.mjs:/app/postcss.config.mjs
-      - ./eslint.config.mjs:/app/eslint.config.mjs
       # Exclude build artifacts and dependencies
       - /app/node_modules
       - /app/.next
@@ -86,33 +71,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    develop:
-      watch:
-        # Sync all source code changes
-        - action: sync
-          path: ./src
-          target: /app/src
-          ignore:
-            - node_modules/
-            - "**/*.test.ts"
-            - "**/*.test.tsx"
-            - "**/*.spec.ts"
-            - "**/*.spec.tsx"
-        # Sync Prisma schema changes
-        - action: sync+restart
-          path: ./prisma/schema.prisma
-          target: /app/prisma/schema.prisma
-        # Sync middleware changes
-        - action: sync
-          path: ./middleware.ts
-          target: /app/middleware.ts
-        # Rebuild on config changes
-        - action: rebuild
-          path: ./package.json
-        - action: rebuild
-          path: ./next.config.ts
-        - action: rebuild
-          path: ./tsconfig.json
 
 volumes:
   db_data:
