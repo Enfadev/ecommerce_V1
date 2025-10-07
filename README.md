@@ -182,6 +182,38 @@ npm run prisma:studio
 - Error koneksi (ECONNREFUSED/ER_ACCESS_DENIED_ERROR): cek host/port/user/password MySQL, dan pastikan database ada.
 - Hak akses membuat skema/tabel: gunakan user MySQL dengan hak CREATE/ALTER/TABLE.
 
+### Troubleshooting Docker Issues
+
+**Error: Permission Denied (P1010, P3018)**
+
+Jika Anda mendapat error database permission:
+
+```
+Error: P1010 - User was denied access
+Error: P3018 - ALTER command denied
+```
+
+**Quick Fix:**
+
+```powershell
+# Grant permissions
+npm run docker:grant
+
+# Reset database
+npx prisma migrate reset --force
+
+# Restart containers
+docker compose restart
+```
+
+📖 **Panduan Lengkap**: Lihat [QUICK_FIX_DOCKER.md](./QUICK_FIX_DOCKER.md) untuk troubleshooting lengkap.
+
+**Other Docker Issues:**
+
+- Container restart loop → Cek logs: `docker compose logs app`
+- Database connection error → Verifikasi `.env` configuration
+- Migration fails → Lihat [PRISMA_SHADOW_DB_FIX.md](./documentations/PRISMA_SHADOW_DB_FIX.md)
+
 ### Catatan Production
 
 - Gunakan `npm run prisma:migrate:deploy` di lingkungan production/CI.

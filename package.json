@@ -28,6 +28,7 @@
     "docker:logs:db": "docker compose logs -f db",
     "docker:exec:app": "docker compose exec app sh",
     "docker:exec:db": "docker compose exec db mysql -u root -p$MYSQL_ROOT_PASSWORD ecommerce",
+    "docker:grant": "docker compose exec db mysql -u root -prootpassword -e \"GRANT ALL PRIVILEGES ON *.* TO 'ecommerce_user'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES; SHOW GRANTS FOR 'ecommerce_user'@'%';\"",
     "docker:migrate": "docker compose exec app npx prisma migrate deploy",
     "docker:seed": "docker compose exec app npm run seed",
     "docker:studio": "docker compose exec app npm run prisma:studio",

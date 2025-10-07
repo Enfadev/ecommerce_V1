@@ -1,5 +1,5 @@
 -- AlterTable
-ALTER TABLE `aboutpage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
+ALTER TABLE `AboutPage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `metaDescription` VARCHAR(191) NULL,
     ADD COLUMN `metaKeywords` VARCHAR(191) NULL,
     ADD COLUMN `metaTitle` VARCHAR(191) NULL,
@@ -10,7 +10,7 @@ ALTER TABLE `aboutpage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `seoExtras` JSON NULL;
 
 -- AlterTable
-ALTER TABLE `category` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
+ALTER TABLE `Category` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `metaDescription` VARCHAR(191) NULL,
     ADD COLUMN `metaKeywords` VARCHAR(191) NULL,
     ADD COLUMN `metaTitle` VARCHAR(191) NULL,
@@ -19,18 +19,7 @@ ALTER TABLE `category` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `seoExtras` JSON NULL;
 
 -- AlterTable
-ALTER TABLE `contactpage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
-    ADD COLUMN `metaDescription` VARCHAR(191) NULL,
-    ADD COLUMN `metaKeywords` VARCHAR(191) NULL,
-    ADD COLUMN `metaTitle` VARCHAR(191) NULL,
-    ADD COLUMN `noindex` BOOLEAN NOT NULL DEFAULT false,
-    ADD COLUMN `ogDescription` VARCHAR(191) NULL,
-    ADD COLUMN `ogImageUrl` VARCHAR(191) NULL,
-    ADD COLUMN `ogTitle` VARCHAR(191) NULL,
-    ADD COLUMN `seoExtras` JSON NULL;
-
--- AlterTable
-ALTER TABLE `homepage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
+ALTER TABLE `ContactPage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `metaDescription` VARCHAR(191) NULL,
     ADD COLUMN `metaKeywords` VARCHAR(191) NULL,
     ADD COLUMN `metaTitle` VARCHAR(191) NULL,
@@ -41,7 +30,18 @@ ALTER TABLE `homepage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `seoExtras` JSON NULL;
 
 -- AlterTable
-ALTER TABLE `product` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
+ALTER TABLE `HomePage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
+    ADD COLUMN `metaDescription` VARCHAR(191) NULL,
+    ADD COLUMN `metaKeywords` VARCHAR(191) NULL,
+    ADD COLUMN `metaTitle` VARCHAR(191) NULL,
+    ADD COLUMN `noindex` BOOLEAN NOT NULL DEFAULT false,
+    ADD COLUMN `ogDescription` VARCHAR(191) NULL,
+    ADD COLUMN `ogImageUrl` VARCHAR(191) NULL,
+    ADD COLUMN `ogTitle` VARCHAR(191) NULL,
+    ADD COLUMN `seoExtras` JSON NULL;
+
+-- AlterTable
+ALTER TABLE `Product` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `metaKeywords` VARCHAR(191) NULL,
     ADD COLUMN `noindex` BOOLEAN NOT NULL DEFAULT false,
     ADD COLUMN `ogDescription` VARCHAR(191) NULL,
@@ -50,7 +50,7 @@ ALTER TABLE `product` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `structuredData` JSON NULL;
 
 -- AlterTable
-ALTER TABLE `productpage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
+ALTER TABLE `ProductPage` ADD COLUMN `canonicalUrl` VARCHAR(191) NULL,
     ADD COLUMN `metaDescription` VARCHAR(191) NULL,
     ADD COLUMN `metaKeywords` VARCHAR(191) NULL,
     ADD COLUMN `metaTitle` VARCHAR(191) NULL,
