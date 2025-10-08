@@ -48,3 +48,6 @@ next-env.d.ts
 *.log
 .turbo
 docker-compose.override.yml
+
+# Dev Container
+.devcontainer/.env

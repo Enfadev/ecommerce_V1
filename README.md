@@ -40,7 +40,32 @@ Ini adalah project e-commerce berbasis [Next.js](https://nextjs.org) dengan dark
 
 ## Cara Menjalankan
 
-### Option 1: Docker (Recommended)
+### Option 1: Dev Containers (VS Code - Recommended) 🆕
+
+Cara paling modern untuk development dengan VS Code:
+
+1. **Prerequisites:**
+   - Install Docker Desktop
+   - Install VS Code extension: "Dev Containers"
+2. **Quick Start:**
+
+   - Buka project di VS Code
+   - Tekan `F1` → pilih "Dev Containers: Reopen in Container"
+   - Tunggu setup selesai (pertama kali ~5-10 menit)
+   - Jalankan `npm run dev:docker` di terminal
+
+3. **Fitur:**
+   - ✅ Environment konsisten untuk semua developer
+   - ✅ Extensions & settings auto-install
+   - ✅ Hot reload berfungsi sempurna
+   - ✅ Database & migrations auto-setup
+   - ✅ Integrated terminal & debugging
+
+**Dokumentasi lengkap:** [DEV_CONTAINERS_GUIDE.md](./documentations/DEV_CONTAINERS_GUIDE.md)
+
+---
+
+### Option 2: Docker Compose (CLI)
 
 Cara termudah untuk menjalankan aplikasi lengkap dengan database:
 
@@ -84,7 +109,9 @@ npm run docker:exec:app     # Shell into app container
 
 Dokumentasi lengkap: [NPM_SCRIPTS_DOCUMENTATION.md](./documentations/NPM_SCRIPTS_DOCUMENTATION.md) | [DOCKER_SETUP.md](./documentations/DOCKER_SETUP.md)
 
-### Option 2: Local Development
+---
+
+### Option 3: Local Development
 
 1. Install dependencies:
    ```bash

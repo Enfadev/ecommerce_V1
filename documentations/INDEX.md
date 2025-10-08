@@ -8,6 +8,10 @@ This folder contains all documentation files for the ecommerce project.
 
 ### 🐳 Docker Documentation
 
+- **[DEV_CONTAINERS_QUICK_REFERENCE.md](./DEV_CONTAINERS_QUICK_REFERENCE.md)** - 🆕 ⚡ **Quick cheatsheet for Dev Containers**
+- **[DEV_CONTAINERS_VS_DOCKER_COMPOSE.md](./DEV_CONTAINERS_VS_DOCKER_COMPOSE.md)** - 🆕 📊 **Visual comparison & decision guide**
+- **[DEV_CONTAINERS_GUIDE.md](./DEV_CONTAINERS_GUIDE.md)** - 🆕 🚀 **Complete Dev Containers setup guide** (VS Code integration)
+- **[DEV_CONTAINERS_MIGRATION_SUMMARY.md](./DEV_CONTAINERS_MIGRATION_SUMMARY.md)** - 🆕 📊 **Migration summary & comparison**
 - **[DOCKER_QUICK_START.md](./DOCKER_QUICK_START.md)** - ⚡ Quick start guide for Docker setup
 - **[NPM_SCRIPTS_DOCUMENTATION.md](./NPM_SCRIPTS_DOCUMENTATION.md)** - 📦 Complete npm scripts guide (replaces docker.sh/ps1)
 - **[MIGRATION_DOCKER_SCRIPTS_TO_NPM.md](./MIGRATION_DOCKER_SCRIPTS_TO_NPM.md)** - 🔄 Migration guide from docker.sh/ps1 to npm scripts
