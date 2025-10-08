@@ -10,6 +10,9 @@ import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo-utils";
 
+// Force dynamic rendering to avoid database requirement during build
+export const dynamic = "force-dynamic";
+
 interface HeroSlide {
   title: string;
   subtitle: string;

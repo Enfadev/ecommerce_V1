@@ -19,17 +19,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ products: [], hasMore: false });
     }
 
-    const products = await (prisma as any).product.findMany({
+    const products = await prisma.product.findMany({
       where: {
         AND: [
           { status: "active" },
           {
-            OR: [
-              { name: { contains: query } },
-              { description: { contains: query } },
-              { brand: { contains: query } },
-              { sku: { contains: query } },
-            ],
+            OR: [{ name: { contains: query } }, { description: { contains: query } }, { brand: { contains: query } }, { sku: { contains: query } }],
           },
         ],
       },
@@ -67,9 +62,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error searching products:", error);
-    return NextResponse.json(
-      { error: "Failed to search products" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to search products" }, { status: 500 });
   }
 }

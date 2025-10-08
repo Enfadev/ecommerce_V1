@@ -70,7 +70,6 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     let userId = request.headers.get("x-user-id");
-    let userEmail = request.headers.get("x-user-email");
 
     if (!userId) {
       const token = request.cookies.get("auth-token")?.value;
@@ -86,7 +85,6 @@ export async function PUT(request: NextRequest) {
       }
 
       userId = payload.id;
-      userEmail = payload.email;
     }
 
     const body = await request.json();

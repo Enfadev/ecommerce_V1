@@ -12,13 +12,42 @@ RUN npm ci
 
 # Builder stage
 FROM base AS builder
+
+# Build arguments for environment variables needed during build
+ARG JWT_SECRET
+ARG NEXTAUTH_SECRET
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_PAYPAL_CLIENT_ID
+ARG NEXT_PUBLIC_BASE_URL
+ARG STRIPE_SECRET_KEY
+ARG STRIPE_PUBLISHABLE_KEY
+ARG PAYPAL_CLIENT_ID
+ARG PAYPAL_CLIENT_SECRET
+ARG GOOGLE_CLIENT_ID
+ARG GOOGLE_CLIENT_SECRET
+# Note: DATABASE_URL is not needed as build arg, we use dummy value
+
+# Set environment variables from build args
+ENV JWT_SECRET=${JWT_SECRET}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+ENV NEXT_PUBLIC_PAYPAL_CLIENT_ID=${NEXT_PUBLIC_PAYPAL_CLIENT_ID}
+ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+ENV STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+ENV STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+ENV PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
+ENV PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
+ENV GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+ENV GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client
+# Generate Prisma Client with dummy DATABASE_URL for build
+ENV DATABASE_URL="mysql://user:password@localhost:3306/dummy"
 RUN npx prisma generate
 
-# Build Next.js app
+# Build Next.js app  
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
@@ -37,6 +66,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/scripts ./scripts
 
 # Create uploads directory with proper permissions
 RUN mkdir -p ./public/uploads && chmod 777 ./public/uploads
@@ -54,7 +84,7 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Run migrations and start server
-CMD npx prisma migrate deploy && node server.js
+CMD npx prisma migrate deploy && node scripts/seed-production.js && node server.js
 
 # Development stage
 FROM base AS development
