@@ -38,6 +38,31 @@ Ini adalah project e-commerce berbasis [Next.js](https://nextjs.org) dengan dark
 - Form: React Hook Form + Zod
 - Data dummy: `src/data/products.ts`
 
+## 🚀 Quick Start
+
+### Environment Setup (Wajib!)
+
+Sebelum menjalankan aplikasi, setup environment variables terlebih dahulu:
+
+```powershell
+# Windows PowerShell
+.\setup-env.ps1 local
+
+# Linux/Mac
+./setup-env.sh local
+```
+
+Atau manual:
+
+```bash
+# Copy file environment
+cp .env.local .env
+```
+
+**Dokumentasi lengkap:** [ENV_GUIDE.md](./ENV_GUIDE.md) | [Quick Reference](./ENV_QUICK_REF.md)
+
+---
+
 ## Cara Menjalankan
 
 ### Option 1: Dev Containers (VS Code - Recommended) 🆕

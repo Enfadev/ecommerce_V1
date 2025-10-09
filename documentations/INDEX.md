@@ -6,6 +6,27 @@ This folder contains all documentation files for the ecommerce project.
 
 ## 📋 Table of Contents
 
+### ⚙️ Environment Configuration (NEW!)
+
+- **[ENV_README.md](../ENV_README.md)** - 🆕 ⚡ **START HERE!** Quick overview & setup
+- **[ENV_QUICK_REF.md](../ENV_QUICK_REF.md)** - 🆕 📋 **Quick reference** cheat sheet
+- **[ENV_GUIDE.md](../ENV_GUIDE.md)** - 🆕 📖 **Complete guide** with troubleshooting
+- **[ENV_STRUCTURE.md](../ENV_STRUCTURE.md)** - 🆕 🗺️ **Visual diagrams** & structure
+- **[ENV_SETUP_SUMMARY.md](../ENV_SETUP_SUMMARY.md)** - 🆕 📊 **Implementation summary**
+- **[ENV_SELECTION_SYSTEM.md](../ENV_SELECTION_SYSTEM.md)** - 🆕 🔄 **How Docker knows which env to use**
+
+**Helper Scripts:**
+
+- `setup-env.ps1` - Windows PowerShell setup helper
+- `setup-env.sh` - Linux/Mac Bash setup helper
+
+**Config Files:**
+
+- `.env.local` - Local development (ready to use!)
+- `.env.prod` - Production template (needs editing)
+
+---
+
 ### 🐳 Docker Documentation
 
 - **[DEV_CONTAINERS_QUICK_REFERENCE.md](./DEV_CONTAINERS_QUICK_REFERENCE.md)** - 🆕 ⚡ **Quick cheatsheet for Dev Containers**

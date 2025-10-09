@@ -1,3 +1,7 @@
+# Docker Compose - Production Configuration
+# Uses: .env.production file
+# Run: docker-compose -f docker-compose.prod.yml --env-file .env.production up -d
+
 services:
   # MySQL Database
   db:
