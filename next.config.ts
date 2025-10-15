@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  transpilePackages: ["@react-email/render"],
   // Disable static page generation during build if database is unavailable
   experimental: {
     ...(process.env.SKIP_BUILD_STATIC_GENERATION === "1" && {
