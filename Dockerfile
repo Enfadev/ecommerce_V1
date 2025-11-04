@@ -2,8 +2,8 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Install necessary tools for healthcheck and database operations
-RUN apk add --no-cache curl
+# Install necessary tools for healthcheck, database operations, and network utilities
+RUN apk add --no-cache curl netcat-openbsd
 
 # Dependencies stage
 FROM base AS deps
@@ -71,9 +71,10 @@ COPY --from=builder /app/scripts ./scripts
 # Create uploads directory with proper permissions
 RUN mkdir -p ./public/uploads && chmod 777 ./public/uploads
 
-# Copy healthcheck script
+# Copy wait-for-db and healthcheck scripts
+COPY wait-for-db.sh ./
 COPY healthcheck.sh ./
-RUN chmod +x healthcheck.sh
+RUN chmod +x wait-for-db.sh healthcheck.sh
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
@@ -83,8 +84,8 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run migrations and start server
-CMD npx prisma migrate deploy && node scripts/seed-production.js && node server.js
+# Wait for database, run migrations, seed, then start server
+CMD ["/bin/sh", "-c", "./wait-for-db.sh && npx prisma migrate deploy && node scripts/seed-production.js && node server.js"]
 
 # Development stage
 FROM base AS development
@@ -105,7 +106,11 @@ RUN npx prisma generate
 # Create uploads directory with proper permissions
 RUN mkdir -p ./public/uploads && chmod 777 ./public/uploads
 
+# Copy and set permissions for wait-for-db script
+COPY wait-for-db.sh ./
+RUN chmod +x wait-for-db.sh
+
 EXPOSE 3000
 
-# Run migrations in dev mode and start dev server with hot reload
-CMD npx prisma migrate dev --skip-seed && npm run dev:docker -- --hostname 0.0.0.0
+# Wait for database, run migrations, then start dev server
+CMD ["/bin/sh", "-c", "./wait-for-db.sh && npx prisma migrate deploy && npm run dev:docker -- --hostname 0.0.0.0"]

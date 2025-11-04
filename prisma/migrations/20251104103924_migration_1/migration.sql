@@ -8,6 +8,15 @@ CREATE TABLE `ContactPage` (
     `officeLocations` JSON NOT NULL,
     `businessHours` JSON NOT NULL,
     `socialMedia` JSON NOT NULL,
+    `metaTitle` VARCHAR(191) NULL,
+    `metaDescription` VARCHAR(191) NULL,
+    `metaKeywords` VARCHAR(191) NULL,
+    `ogTitle` VARCHAR(191) NULL,
+    `ogDescription` VARCHAR(191) NULL,
+    `ogImageUrl` VARCHAR(191) NULL,
+    `canonicalUrl` VARCHAR(191) NULL,
+    `noindex` BOOLEAN NOT NULL DEFAULT false,
+    `seoExtras` JSON NULL,
     `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -24,6 +33,15 @@ CREATE TABLE `HomePage` (
     `statsData` JSON NOT NULL,
     `aboutPreview` JSON NOT NULL,
     `testimonialsData` JSON NOT NULL,
+    `metaTitle` VARCHAR(191) NULL,
+    `metaDescription` VARCHAR(191) NULL,
+    `metaKeywords` VARCHAR(191) NULL,
+    `ogTitle` VARCHAR(191) NULL,
+    `ogDescription` VARCHAR(191) NULL,
+    `ogImageUrl` VARCHAR(191) NULL,
+    `canonicalUrl` VARCHAR(191) NULL,
+    `noindex` BOOLEAN NOT NULL DEFAULT false,
+    `seoExtras` JSON NULL,
     `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -43,6 +61,15 @@ CREATE TABLE `AboutPage` (
     `features` JSON NOT NULL,
     `teamMembers` JSON NOT NULL,
     `timeline` JSON NOT NULL,
+    `metaTitle` VARCHAR(191) NULL,
+    `metaDescription` VARCHAR(191) NULL,
+    `metaKeywords` VARCHAR(191) NULL,
+    `ogTitle` VARCHAR(191) NULL,
+    `ogDescription` VARCHAR(191) NULL,
+    `ogImageUrl` VARCHAR(191) NULL,
+    `canonicalUrl` VARCHAR(191) NULL,
+    `noindex` BOOLEAN NOT NULL DEFAULT false,
+    `seoExtras` JSON NULL,
     `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -59,6 +86,15 @@ CREATE TABLE `ProductPage` (
     `filterOptions` JSON NOT NULL,
     `sortOptions` JSON NOT NULL,
     `seoContent` JSON NOT NULL,
+    `metaTitle` VARCHAR(191) NULL,
+    `metaDescription` VARCHAR(191) NULL,
+    `metaKeywords` VARCHAR(191) NULL,
+    `ogTitle` VARCHAR(191) NULL,
+    `ogDescription` VARCHAR(191) NULL,
+    `ogImageUrl` VARCHAR(191) NULL,
+    `canonicalUrl` VARCHAR(191) NULL,
+    `noindex` BOOLEAN NOT NULL DEFAULT false,
+    `seoExtras` JSON NULL,
     `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -78,6 +114,13 @@ CREATE TABLE `Product` (
     `slug` VARCHAR(191) NULL,
     `metaTitle` VARCHAR(191) NULL,
     `metaDescription` VARCHAR(191) NULL,
+    `metaKeywords` VARCHAR(191) NULL,
+    `ogTitle` VARCHAR(191) NULL,
+    `ogDescription` VARCHAR(191) NULL,
+    `ogImageUrl` VARCHAR(191) NULL,
+    `canonicalUrl` VARCHAR(191) NULL,
+    `noindex` BOOLEAN NOT NULL DEFAULT false,
+    `structuredData` JSON NULL,
     `discountPrice` DOUBLE NULL,
     `promoExpired` DATETIME(3) NULL,
     `categoryId` INTEGER NULL,
@@ -102,6 +145,13 @@ CREATE TABLE `ProductImage` (
 CREATE TABLE `Category` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `metaTitle` VARCHAR(191) NULL,
+    `metaDescription` VARCHAR(191) NULL,
+    `metaKeywords` VARCHAR(191) NULL,
+    `ogImageUrl` VARCHAR(191) NULL,
+    `canonicalUrl` VARCHAR(191) NULL,
+    `noindex` BOOLEAN NOT NULL DEFAULT false,
+    `seoExtras` JSON NULL,
 
     UNIQUE INDEX `Category_name_key`(`name`),
     PRIMARY KEY (`id`)
@@ -167,6 +217,20 @@ CREATE TABLE `VerificationToken` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `password_reset_tokens` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(191) NOT NULL,
+    `token` VARCHAR(191) NOT NULL,
+    `expires` DATETIME(3) NOT NULL,
+    `used` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `password_reset_tokens_token_key`(`token`),
+    INDEX `password_reset_tokens_email_idx`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Cart` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
@@ -188,6 +252,29 @@ CREATE TABLE `CartItem` (
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `CartItem_cartId_productId_key`(`cartId`, `productId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Wishlist` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `Wishlist_userId_key`(`userId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `WishlistItem` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `wishlistId` INTEGER NOT NULL,
+    `productId` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `WishlistItem_wishlistId_productId_key`(`wishlistId`, `productId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -236,6 +323,99 @@ CREATE TABLE `OrderItem` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `system_settings` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `storeName` VARCHAR(191) NOT NULL DEFAULT 'E-Commerce Store',
+    `storeDescription` VARCHAR(191) NOT NULL DEFAULT 'Trusted online store',
+    `contactEmail` VARCHAR(191) NOT NULL DEFAULT 'contact@store.com',
+    `currency` VARCHAR(191) NOT NULL DEFAULT 'USD',
+    `timezone` VARCHAR(191) NOT NULL DEFAULT 'Asia/Jakarta',
+    `language` VARCHAR(191) NOT NULL DEFAULT 'en',
+    `logoUrl` VARCHAR(191) NULL,
+    `defaultMetaTitle` VARCHAR(191) NULL,
+    `defaultMetaDescription` VARCHAR(191) NULL,
+    `defaultMetaKeywords` VARCHAR(191) NULL,
+    `defaultOgImageUrl` VARCHAR(191) NULL,
+    `twitterHandle` VARCHAR(191) NULL,
+    `facebookPage` VARCHAR(191) NULL,
+    `canonicalBaseUrl` VARCHAR(191) NULL,
+    `enableIndexing` BOOLEAN NOT NULL DEFAULT true,
+    `robotsRules` JSON NULL,
+    `phoneNumber` VARCHAR(191) NULL,
+    `officeAddress` TEXT NULL,
+    `enableTwoFactor` BOOLEAN NOT NULL DEFAULT false,
+    `sessionTimeout` INTEGER NOT NULL DEFAULT 24,
+    `version` VARCHAR(191) NOT NULL DEFAULT '1.0.0',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `security_logs` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NULL,
+    `action` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NOT NULL,
+    `ipAddress` VARCHAR(191) NULL,
+    `userAgent` TEXT NULL,
+    `status` ENUM('SUCCESS', 'FAILED', 'WARNING') NOT NULL DEFAULT 'SUCCESS',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `chat_rooms` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `adminId` INTEGER NULL,
+    `status` ENUM('OPEN', 'CLOSED', 'RESOLVED') NOT NULL DEFAULT 'OPEN',
+    `subject` VARCHAR(191) NULL,
+    `priority` ENUM('LOW', 'NORMAL', 'HIGH', 'URGENT') NOT NULL DEFAULT 'NORMAL',
+    `lastMessage` VARCHAR(191) NULL,
+    `lastActivity` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `isRead` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `chat_messages` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `chatRoomId` INTEGER NOT NULL,
+    `senderId` INTEGER NOT NULL,
+    `message` TEXT NOT NULL,
+    `messageType` ENUM('TEXT', 'IMAGE', 'FILE', 'PRODUCT') NOT NULL DEFAULT 'TEXT',
+    `isRead` BOOLEAN NOT NULL DEFAULT false,
+    `productId` INTEGER NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `product_reviews` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `productId` INTEGER NOT NULL,
+    `userId` INTEGER NOT NULL,
+    `orderId` INTEGER NOT NULL,
+    `rating` INTEGER NOT NULL,
+    `comment` TEXT NOT NULL,
+    `isAnonymous` BOOLEAN NOT NULL DEFAULT false,
+    `isVerified` BOOLEAN NOT NULL DEFAULT true,
+    `helpfulCount` INTEGER NOT NULL DEFAULT 0,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `product_reviews_userId_productId_orderId_key`(`userId`, `productId`, `orderId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Product` ADD CONSTRAINT `Product_categoryId_fkey` FOREIGN KEY (`categoryId`) REFERENCES `Category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -258,6 +438,15 @@ ALTER TABLE `CartItem` ADD CONSTRAINT `CartItem_cartId_fkey` FOREIGN KEY (`cartI
 ALTER TABLE `CartItem` ADD CONSTRAINT `CartItem_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Wishlist` ADD CONSTRAINT `Wishlist_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `WishlistItem` ADD CONSTRAINT `WishlistItem_wishlistId_fkey` FOREIGN KEY (`wishlistId`) REFERENCES `Wishlist`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `WishlistItem` ADD CONSTRAINT `WishlistItem_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `Order` ADD CONSTRAINT `Order_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -265,3 +454,30 @@ ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_orderId_fkey` FOREIGN KEY (`or
 
 -- AddForeignKey
 ALTER TABLE `OrderItem` ADD CONSTRAINT `OrderItem_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `security_logs` ADD CONSTRAINT `security_logs_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `chat_rooms` ADD CONSTRAINT `chat_rooms_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `chat_rooms` ADD CONSTRAINT `chat_rooms_adminId_fkey` FOREIGN KEY (`adminId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `chat_messages` ADD CONSTRAINT `chat_messages_chatRoomId_fkey` FOREIGN KEY (`chatRoomId`) REFERENCES `chat_rooms`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `chat_messages` ADD CONSTRAINT `chat_messages_senderId_fkey` FOREIGN KEY (`senderId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `chat_messages` ADD CONSTRAINT `chat_messages_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `product_reviews` ADD CONSTRAINT `product_reviews_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `product_reviews` ADD CONSTRAINT `product_reviews_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `product_reviews` ADD CONSTRAINT `product_reviews_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

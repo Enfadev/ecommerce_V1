@@ -1,6 +1,6 @@
-# Docker Compose - Development Configuration
+# Docker Compose - Development Configuration with develop.watch
 # Uses: .env.local or .env file
-# Run: npm run dev:docker or docker-compose up
+# Run: docker compose watch (recommended) or docker compose up
 
 services:
   # MySQL Database
@@ -26,7 +26,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Next.js App - Development
+  # Next.js App - Development with watch mode
   app:
     build:
       context: .
@@ -49,16 +49,7 @@ services:
       PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET}
       # Next.js & Turbopack optimizations
       TURBO_TELEMETRY_DISABLED: 1
-      WATCHPACK_POLLING: "true"
-      CHOKIDAR_USEPOLLING: "true"
     volumes:
-      # Bind mount source code for hot reload
-      - ./src:/app/src:cached
-      - ./prisma:/app/prisma:cached
-      - ./public:/app/public:cached
-      - ./middleware.ts:/app/middleware.ts:cached
-      - ./next.config.ts:/app/next.config.ts:cached
-      - ./tsconfig.json:/app/tsconfig.json:cached
       # Uploads - persistent volume
       - uploads_data:/app/public/uploads
       # Exclude build artifacts and dependencies
@@ -75,6 +66,45 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    develop:
+      watch:
+        # Sync source code changes
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules/
+
+        # Sync Prisma schema changes
+        - action: sync
+          path: ./prisma
+          target: /app/prisma
+          ignore:
+            - migrations/
+
+        # Sync public files (excluding uploads)
+        - action: sync
+          path: ./public
+          target: /app/public
+          ignore:
+            - uploads/
+
+        # Sync config files and restart on change
+        - action: sync+restart
+          path: ./middleware.ts
+          target: /app/middleware.ts
+
+        - action: sync+restart
+          path: ./next.config.ts
+          target: /app/next.config.ts
+
+        - action: sync+restart
+          path: ./tsconfig.json
+          target: /app/tsconfig.json
+
+        # Rebuild on package.json changes
+        - action: rebuild
+          path: ./package.json
 
 volumes:
   db_data:

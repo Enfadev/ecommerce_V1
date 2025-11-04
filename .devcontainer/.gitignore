@@ -1,4 +1,0 @@
-# Dev Container .gitignore
-.env
-*.log
-.DS_Store
