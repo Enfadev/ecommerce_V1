@@ -4,52 +4,13 @@ on:
   push:
     branches: [main, develop, testing-docker]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Create .env file
-        run: |
-          cp .env.example .env
-          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> .env
-          echo "DATABASE_URL=mysql://ecommerce_user:ecommerce_password@db:3306/ecommerce" >> .env
-
-      - name: Build Docker images
-        run: docker compose build
-
-      - name: Start services
-        run: docker compose up -d
-
-      - name: Wait for services to be healthy
-        run: |
-          echo "Waiting for services to be ready..."
-          sleep 30
-
-      - name: Check service health
-        run: |
-          docker compose ps
-          docker compose logs app
-          curl -f http://localhost:3000/api/health || exit 1
-
-      - name: Run migrations
-        run: docker compose exec -T app npx prisma migrate deploy
-
-      - name: Stop services
-        if: always()
-        run: docker compose down -v
-
+  # Lint Job - Quick feedback
   lint:
+    name: Lint Code
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -63,5 +24,152 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linter
+      - name: Run ESLint
         run: npm run lint
+
+  # Docker Build and Test Job
+  docker-build:
+    name: Docker Build & Test
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          # Database Configuration
+          DATABASE_URL=mysql://ecommerce_user:ecommerce_password@db:3306/ecommerce
+          DB_ROOT_PASSWORD=rootpassword
+          DB_NAME=ecommerce
+          DB_USER=ecommerce_user
+          DB_PASSWORD=ecommerce_password
+          DB_PORT=3306
+
+          # Application Configuration
+          APP_PORT=3000
+          NODE_ENV=development
+
+          # NextAuth Configuration
+          NEXTAUTH_URL=http://localhost:3000
+          NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET || 'test-secret-key-for-ci-cd-only-32chars' }}
+
+          # Google OAuth (Optional for CI)
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID || 'test-google-client-id' }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET || 'test-google-client-secret' }}
+
+          # Stripe Configuration (Optional for CI)
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY || 'sk_test_dummy' }}
+          STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY || 'pk_test_dummy' }}
+
+          # PayPal Configuration (Optional for CI)
+          PAYPAL_CLIENT_ID=${{ secrets.PAYPAL_CLIENT_ID || 'test-paypal-client-id' }}
+          PAYPAL_CLIENT_SECRET=${{ secrets.PAYPAL_CLIENT_SECRET || 'test-paypal-client-secret' }}
+
+          # Email Configuration (Optional for CI)
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY || 'test-resend-api-key' }}
+          EMAIL_FROM=noreply@test.com
+          EOF
+
+      - name: Build Docker images
+        run: docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
+
+      - name: Start services
+        run: docker compose up -d
+
+      - name: Wait for database to be ready
+        run: |
+          echo "Waiting for database to be ready..."
+          timeout 60 bash -c 'until docker compose exec -T db mysqladmin ping -h localhost -u root -prootpassword --silent; do sleep 2; done'
+
+      - name: Wait for app to be ready
+        run: |
+          echo "Waiting for app to be ready..."
+          timeout 90 bash -c 'until curl -f http://localhost:3000/api/health; do sleep 3; done'
+
+      - name: Check service status
+        run: |
+          echo "=== Docker Compose Services ==="
+          docker compose ps
+          echo ""
+          echo "=== Database Logs ==="
+          docker compose logs db | tail -20
+          echo ""
+          echo "=== App Logs ==="
+          docker compose logs app | tail -30
+
+      - name: Verify migrations
+        run: |
+          echo "Checking migration status..."
+          docker compose exec -T app npx prisma migrate status
+
+      - name: Test database connection
+        run: |
+          echo "Testing database connection..."
+          docker compose exec -T db mysql -u ecommerce_user -pecommerce_password -e "SELECT 1 FROM User LIMIT 1;" ecommerce || echo "No data yet (expected for fresh database)"
+
+      - name: Test health endpoint
+        run: |
+          echo "Testing health endpoint..."
+          response=$(curl -s http://localhost:3000/api/health)
+          echo "Health check response: $response"
+          if echo "$response" | grep -q "ok"; then
+            echo "✅ Health check passed"
+          else
+            echo "❌ Health check failed"
+            exit 1
+          fi
+
+      - name: Test homepage
+        run: |
+          echo "Testing homepage..."
+          curl -f -I http://localhost:3000 || exit 1
+          echo "✅ Homepage is accessible"
+
+      - name: Run seed (optional)
+        continue-on-error: true
+        run: |
+          echo "Running database seed..."
+          docker compose exec -T app npm run seed
+
+      - name: Show final logs
+        if: always()
+        run: |
+          echo "=== Final App Logs ==="
+          docker compose logs app --tail=50
+
+      - name: Clean up
+        if: always()
+        run: |
+          docker compose down -v
+          docker system prune -f
+
+  # Security Scan (Optional but recommended)
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: lint
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "trivy-results.sarif"
