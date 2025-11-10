@@ -29,12 +29,6 @@ interface Feature {
   bgColor: string;
 }
 
-interface StatData {
-  label: string;
-  value: string;
-  icon: string;
-}
-
 interface TestimonialData {
   name: string;
   role: string;
@@ -50,7 +44,6 @@ interface HomePageData {
   heroDescription: string;
   heroSlides: HeroSlide[];
   features: Feature[];
-  statsData: StatData[];
   aboutPreview: object;
   testimonialsData: TestimonialData[];
   // SEO fields
@@ -72,7 +65,6 @@ export default function AdminHomePageEditor() {
     heroDescription: "Discover amazing products at great prices",
     heroSlides: [],
     features: [],
-    statsData: [],
     aboutPreview: {},
     testimonialsData: [],
     // SEO fields
@@ -191,26 +183,6 @@ export default function AdminHomePageEditor() {
     const newFeatures = [...data.features];
     newFeatures[index] = { ...newFeatures[index], [field]: value };
     setData({ ...data, features: newFeatures });
-  };
-
-  const addStat = () => {
-    const newStat: StatData = {
-      label: "New Stat",
-      value: "100+",
-      icon: "Users",
-    };
-    setData({ ...data, statsData: [...data.statsData, newStat] });
-  };
-
-  const removeStat = (index: number) => {
-    const newStats = data.statsData.filter((_, i) => i !== index);
-    setData({ ...data, statsData: newStats });
-  };
-
-  const updateStat = (index: number, field: keyof StatData, value: string) => {
-    const newStats = [...data.statsData];
-    newStats[index] = { ...newStats[index], [field]: value };
-    setData({ ...data, statsData: newStats });
   };
 
   const handleSeoChange = (field: keyof HomePageData, value: string | boolean) => {
@@ -334,38 +306,6 @@ export default function AdminHomePageEditor() {
                     <div className="md:col-span-3">
                       <Textarea placeholder="Feature description" value={feature.description} onChange={(e) => updateFeature(index, "description", e.target.value)} rows={2} />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Statistics Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>Statistics Section</CardTitle>
-                <Button onClick={addStat}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Statistic
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {data.statsData.map((stat, index) => (
-                <Card key={index} className="border-l-4 border-yellow-500">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium">Statistic {index + 1}</h4>
-                      <Button variant="outline" size="sm" onClick={() => removeStat(index)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input placeholder="Statistic label" value={stat.label} onChange={(e) => updateStat(index, "label", e.target.value)} />
-                    <Input placeholder="Statistic value" value={stat.value} onChange={(e) => updateStat(index, "value", e.target.value)} />
-                    <Input placeholder="Icon name" value={stat.icon} onChange={(e) => updateStat(index, "icon", e.target.value)} />
                   </CardContent>
                 </Card>
               ))}
