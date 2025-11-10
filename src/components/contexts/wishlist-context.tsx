@@ -1,16 +1,17 @@
 "use client";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { toast } from "sonner";
 import { useAuth } from "./auth-context";
 import type { Product } from "@/data/products";
 
 interface WishlistContextType {
   wishlist: Product[];
-  addToWishlist: (product: Product) => void;
-  removeFromWishlist: (id: number) => void;
+  addToWishlist: (product: Product) => Promise<void>;
+  removeFromWishlist: (id: number) => Promise<void>;
   isInWishlist: (id: number) => boolean;
-  clearWishlist: () => void;
+  clearWishlist: () => Promise<void>;
   getWishlistCount: () => number;
+  refreshWishlist: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -27,8 +28,34 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const refreshWishlist = useCallback(async () => {
+    if (!isAuthenticated || user?.role === "ADMIN") {
+      setWishlist([]);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/wishlist", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setWishlist(data.data || []);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, user?.role]);
+
   useEffect(() => {
-    const fetchWishlist = async () => {
+    const initWishlist = async () => {
       if (!isAuthenticated || user?.role === "ADMIN") {
         setWishlist([]);
         return;
@@ -58,26 +85,16 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
           }
         }
 
-        const response = await fetch("/api/wishlist", {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setWishlist(data.data || []);
-          }
-        }
+        await refreshWishlist();
       } catch (error) {
-        console.error("Error fetching wishlist:", error);
+        console.error("Error initializing wishlist:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchWishlist();
-  }, [isAuthenticated, user?.role]);
+    initWishlist();
+  }, [isAuthenticated, user?.role, refreshWishlist]);
 
   async function addToWishlist(product: Product) {
     if (user?.role === "ADMIN") {
@@ -108,8 +125,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setWishlist((prev) => [...prev, product]);
         toast.success(`${product.name} added to wishlist! ❤️`);
+        await refreshWishlist();
       } else {
         toast.error(data.message || "Failed to add item to wishlist");
       }
@@ -131,7 +148,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
 
     const product = wishlist.find((p) => p.id === id);
-    
+
     try {
       const response = await fetch("/api/wishlist", {
         method: "DELETE",
@@ -145,10 +162,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        setWishlist((prev) => prev.filter((p) => p.id !== id));
         if (product) {
           toast.success(`${product.name} removed from wishlist!`);
         }
+        await refreshWishlist();
       } else {
         toast.error(data.message || "Failed to remove item from wishlist");
       }
@@ -206,6 +223,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         isInWishlist,
         clearWishlist,
         getWishlistCount,
+        refreshWishlist,
         isLoading,
       }}
     >

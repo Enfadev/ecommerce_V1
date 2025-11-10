@@ -5,6 +5,7 @@ import Image from "next/image";
 import ProductReviewSection from "@/components/product/ProductReviewSection";
 import ProductRecommendation from "@/components/product/ProductRecommendation";
 import { useCart } from "@/components/contexts/cart-context";
+import { useWishlist } from "@/components/contexts/wishlist-context";
 import RichTextDisplay from "@/components/ui/RichTextDisplay";
 import { Heart, Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,10 +25,10 @@ interface ProductDetail {
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [product, setProduct] = React.useState<ProductDetail | undefined>(undefined);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
-  const [isInWishlist, setIsInWishlist] = React.useState(false);
   const [wishlistLoading, setWishlistLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -50,19 +51,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         };
         if (isMounted) setProduct(mappedProduct);
 
-        // Check if product is in wishlist
-        try {
-          const wishlistRes = await fetch("/api/wishlist");
-          if (wishlistRes.ok) {
-            const wishlistData = await wishlistRes.json();
-            if (wishlistData.success && wishlistData.data) {
-              const isInList = wishlistData.data.some((item: { id: number }) => item.id === data.id);
-              if (isMounted) setIsInWishlist(isInList);
-            }
-          }
-        } catch (err) {
-          console.error("Failed to check wishlist:", err);
-        }
+        // Wishlist status will be checked from context
       } catch (err: unknown) {
         if (isMounted) setError(err instanceof Error ? err.message : "Failed to fetch product");
       }
@@ -76,54 +65,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const handleAddToWishlist = async () => {
     if (!product || wishlistLoading) return;
 
-    if (isInWishlist) {
-      // Remove from wishlist
-      setWishlistLoading(true);
-      try {
-        const response = await fetch("/api/wishlist", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId: product.id }),
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          setIsInWishlist(false);
-          toast.success(data.message || "Removed from wishlist!");
-        } else {
-          toast.error(data.message || "Failed to remove from wishlist");
-        }
-      } catch (err) {
-        console.error("Wishlist error:", err);
-        toast.error("Failed to remove from wishlist");
-      } finally {
-        setWishlistLoading(false);
+    setWishlistLoading(true);
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await addToWishlist(product as any);
       }
-    } else {
-      // Add to wishlist
-      setWishlistLoading(true);
-      try {
-        const response = await fetch("/api/wishlist", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId: product.id }),
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          setIsInWishlist(true);
-          toast.success(data.message || "Added to wishlist!");
-        } else {
-          toast.error(data.message || "Failed to add to wishlist");
-        }
-      } catch (err) {
-        console.error("Wishlist error:", err);
-        toast.error("Failed to add to wishlist");
-      } finally {
-        setWishlistLoading(false);
-      }
+    } catch (err) {
+      console.error("Wishlist error:", err);
+    } finally {
+      setWishlistLoading(false);
     }
   };
 
@@ -151,35 +104,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       }
     }
   };
-
-  React.useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      const _params = await params;
-      setLoading(true);
-      setError("");
-      try {
-        const res = await fetch(`/api/product?id=${_params.id}`);
-        if (!res.ok) throw new Error("Product not found");
-        const data = await res.json();
-        const mappedProduct: ProductDetail = {
-          id: data.id,
-          name: data.name,
-          price: data.price,
-          image: data.imageUrl || data.image || "/placeholder-image.svg",
-          category: data.category || "General",
-          description: data.description,
-        };
-        if (isMounted) setProduct(mappedProduct);
-      } catch (err: unknown) {
-        if (isMounted) setError(err instanceof Error ? err.message : "Failed to fetch product");
-      }
-      if (isMounted) setLoading(false);
-    })();
-    return () => {
-      isMounted = false;
-    };
-  }, [params]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
   if (error || !product) return notFound();
@@ -256,8 +180,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </button>
 
               <div className="flex gap-3">
-                <button onClick={handleAddToWishlist} className="flex-1 border border-border rounded-2xl p-3 flex items-center justify-center text-foreground hover:bg-muted/50 transition-colors group" title="Add to Wishlist">
-                  <Heart className={`w-6 h-6 transition-all ${isInWishlist ? "fill-red-500 text-red-500" : "group-hover:fill-red-500 group-hover:text-red-500"}`} />
+                <button
+                  onClick={handleAddToWishlist}
+                  disabled={wishlistLoading}
+                  className="flex-1 border border-border rounded-2xl p-3 flex items-center justify-center text-foreground hover:bg-muted/50 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  <Heart className={`w-6 h-6 transition-all ${isInWishlist(product.id) ? "fill-red-500 text-red-500" : "group-hover:fill-red-500 group-hover:text-red-500"}`} />
                 </button>
                 <button onClick={handleShare} className="flex-1 border border-border rounded-2xl p-3 flex items-center justify-center text-foreground hover:bg-muted/50 transition-colors" title="Share">
                   <Share2 className="w-6 h-6" />
