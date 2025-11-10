@@ -112,5 +112,5 @@ RUN chmod +x wait-for-db.sh
 
 EXPOSE 3000
 
-# Wait for database, run migrations, then start dev server
-CMD ["/bin/sh", "-c", "./wait-for-db.sh && npx prisma migrate deploy && npm run dev:docker -- --hostname 0.0.0.0"]
+# Wait for database, run migrations, seed, then start dev server
+CMD ["/bin/sh", "-c", "./wait-for-db.sh && npx prisma migrate deploy && npm run seed && npm run dev -- --hostname 0.0.0.0"]
