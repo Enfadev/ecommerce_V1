@@ -4,7 +4,6 @@ import { prisma } from "../../lib/prisma";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../components/ui/carousel";
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import { Badge } from "../../components/ui/badge";
 import NextLink from "next/link";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 import { Metadata } from "next";
@@ -14,12 +13,8 @@ import { generatePageMetadata } from "@/lib/seo-utils";
 export const dynamic = "force-dynamic";
 
 interface HeroSlide {
-  title: string;
-  subtitle: string;
-  description: string;
-  image?: string;
-  buttonText: string;
-  buttonLink: string;
+  imageUrl: string;
+  alt?: string;
 }
 
 interface Feature {
@@ -156,12 +151,8 @@ export default async function Home() {
     heroDescription: "Discover amazing products at great prices",
     heroSlides: [
       {
-        title: "Flash Sale",
-        subtitle: "Up to 70% Off",
-        description: "Get the best products at the best prices. Limited time offer!",
-        image: "/hero1.jpg",
-        buttonText: "Shop Now",
-        buttonLink: "/products",
+        imageUrl: "/hero1.jpg",
+        alt: "Hero carousel image 1",
       },
     ],
     features: [
@@ -192,55 +183,34 @@ export default async function Home() {
           <CarouselContent>
             {(heroSlides as HeroSlide[]).map((slide: HeroSlide, index: number) => (
               <CarouselItem key={index}>
-                <div className="relative h-[60vh] min-h-[500px] flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 overflow-hidden">
-                  {/* Background Pattern */}
-                  <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-20 right-20 w-48 h-48 bg-white rounded-full blur-3xl"></div>
-                    <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-white rounded-full blur-2xl"></div>
-                  </div>
-
-                  {/* Content Container */}
-                  <div className="container mx-auto px-4 relative z-10">
-                    <div className="flex items-center justify-center min-h-[400px]">
-                      {/* Center Content */}
-                      <div className="text-center space-y-6 max-w-4xl">
-                        <div className="space-y-2">
-                          <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30 transition-colors">{slide.subtitle}</Badge>
-                          <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">{slide.title}</h1>
-                        </div>
-
-                        <p className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">{slide.description}</p>
-
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                          <Button size="lg" className="bg-white text-blue-600 hover:bg-white/90 font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg" asChild>
-                            <NextLink href={slide.buttonLink}>
-                              {slide.buttonText}
-                              <ArrowRight className="ml-2 h-5 w-5" />
-                            </NextLink>
-                          </Button>
-                          <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3 rounded-full transition-all duration-300" asChild>
-                            <NextLink href="/about">Learn More</NextLink>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden rounded-2xl">
+                  <img
+                    src={slide.imageUrl}
+                    alt={slide.alt || `Hero carousel image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.jpg";
+                    }}
+                  />
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
 
           {/* Navigation Arrows */}
-          <CarouselPrevious className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
-          <CarouselNext className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
+          {heroSlides.length > 1 && (
+            <>
+              <CarouselPrevious className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
+              <CarouselNext className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
 
-          {/* Dot Indicators */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
-            {(heroSlides as HeroSlide[]).map((_, index) => (
-              <button key={index} className="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300" aria-label={`Go to slide ${index + 1}`} />
-            ))}
-          </div>
+              {/* Dot Indicators */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+                {(heroSlides as HeroSlide[]).map((_, index) => (
+                  <button key={index} className="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300" aria-label={`Go to slide ${index + 1}`} />
+                ))}
+              </div>
+            </>
+          )}
         </Carousel>
       </section>
       {/* Features Section */}

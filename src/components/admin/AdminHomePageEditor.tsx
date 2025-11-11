@@ -7,19 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, Save, Plus, Trash2, Globe, Home } from "lucide-react";
+import { Loader2, Save, Plus, Trash2, Globe, Home, X } from "lucide-react";
 import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
 
 interface HeroSlide {
-  title: string;
-  subtitle: string;
-  description: string;
-  buttonText: string;
-  buttonLink: string;
-  badgeText: string;
-  badgeIcon: string;
-  bgGradient: string;
-  rightIcon: string;
+  imageUrl: string;
+  alt?: string;
 }
 
 interface Feature {
@@ -79,6 +72,7 @@ export default function AdminHomePageEditor() {
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   useEffect(() => {
     fetchHomePageData();
@@ -114,13 +108,26 @@ export default function AdminHomePageEditor() {
   };
 
   const handleSave = async () => {
+    // Validate: at least one carousel image must have imageUrl
+    const validSlides = data.heroSlides.filter((slide) => slide.imageUrl && slide.imageUrl.trim() !== "");
+    if (validSlides.length === 0) {
+      toast.error("At least one carousel image is required");
+      return;
+    }
+
+    // Remove slides without images before saving
+    const dataToSave = {
+      ...data,
+      heroSlides: validSlides,
+    };
+
     setSaving(true);
     try {
-      const method = data.id ? "PUT" : "POST";
+      const method = dataToSave.id ? "PUT" : "POST";
       const res = await fetch("/api/home-page", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(dataToSave),
       });
 
       if (res.ok) {
@@ -140,20 +147,17 @@ export default function AdminHomePageEditor() {
 
   const addHeroSlide = () => {
     const newSlide: HeroSlide = {
-      title: "New Slide",
-      subtitle: "Subtitle",
-      description: "Description",
-      buttonText: "Action Button",
-      buttonLink: "#",
-      badgeText: "Badge",
-      badgeIcon: "🔥",
-      bgGradient: "from-blue-600 to-purple-600",
-      rightIcon: "Gift",
+      imageUrl: "",
+      alt: "Hero slide image",
     };
     setData({ ...data, heroSlides: [...data.heroSlides, newSlide] });
   };
 
   const removeHeroSlide = (index: number) => {
+    if (data.heroSlides.length === 1) {
+      toast.error("At least one carousel image is required");
+      return;
+    }
     const newSlides = data.heroSlides.filter((_, i) => i !== index);
     setData({ ...data, heroSlides: newSlides });
   };
@@ -162,6 +166,76 @@ export default function AdminHomePageEditor() {
     const newSlides = [...data.heroSlides];
     newSlides[index] = { ...newSlides[index], [field]: value };
     setData({ ...data, heroSlides: newSlides });
+  };
+
+  const handleImageUpload = async (index: number, file: File) => {
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Invalid file type. Only JPEG, PNG, and WebP are allowed.");
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setUploadingIndex(index);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload-carousel", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const { url } = await res.json();
+        updateHeroSlide(index, "imageUrl", url);
+        toast.success("Image uploaded successfully!");
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Failed to upload image");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
+
+  const handleDeleteImage = async (index: number, imageUrl: string) => {
+    if (!imageUrl.startsWith("/uploads/carousel/")) {
+      // If not uploaded image, just remove from state
+      updateHeroSlide(index, "imageUrl", "");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/upload-carousel", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl }),
+      });
+
+      if (res.ok) {
+        updateHeroSlide(index, "imageUrl", "");
+        toast.success("Image deleted successfully!");
+      } else {
+        toast.error("Failed to delete image");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete image");
+    }
   };
 
   const addFeature = () => {
@@ -263,14 +337,56 @@ export default function AdminHomePageEditor() {
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input placeholder="Slide title" value={slide.title} onChange={(e) => updateHeroSlide(index, "title", e.target.value)} />
-                    <Input placeholder="Slide subtitle" value={slide.subtitle} onChange={(e) => updateHeroSlide(index, "subtitle", e.target.value)} />
-                    <Input placeholder="Badge text" value={slide.badgeText} onChange={(e) => updateHeroSlide(index, "badgeText", e.target.value)} />
-                    <Input placeholder="Background gradient (e.g., from-blue-600 to-purple-600)" value={slide.bgGradient} onChange={(e) => updateHeroSlide(index, "bgGradient", e.target.value)} />
-                    <div className="md:col-span-2">
-                      <Textarea placeholder="Slide description" value={slide.description} onChange={(e) => updateHeroSlide(index, "description", e.target.value)} rows={2} />
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Upload Image</label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleImageUpload(index, file);
+                            }
+                          }}
+                          disabled={uploadingIndex === index}
+                          className="flex-1"
+                        />
+                        {uploadingIndex === index && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Uploading...
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">Max 5MB. Recommended: 1920x1080px (16:9). Supported: JPG, PNG, WebP</p>
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Alt Text (Optional)</label>
+                      <Input placeholder="Description of the image" value={slide.alt || ""} onChange={(e) => updateHeroSlide(index, "alt", e.target.value)} />
+                    </div>
+                    {slide.imageUrl && (
+                      <div className="mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-sm font-medium">Preview</label>
+                          <Button variant="outline" size="sm" onClick={() => handleDeleteImage(index, slide.imageUrl)} className="text-red-600 hover:text-red-700">
+                            <X className="h-4 w-4 mr-1" />
+                            Remove Image
+                          </Button>
+                        </div>
+                        <div className="relative w-full h-48 rounded-lg overflow-hidden bg-gray-100">
+                          <img
+                            src={slide.imageUrl}
+                            alt={slide.alt || `Hero slide ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "/placeholder.jpg";
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
