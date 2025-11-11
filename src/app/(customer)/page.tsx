@@ -8,6 +8,7 @@ import NextLink from "next/link";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo-utils";
+import { HeroCarouselImage } from "@/components/ui/hero-carousel-image";
 
 // Force dynamic rendering to avoid database requirement during build
 export const dynamic = "force-dynamic";
@@ -184,14 +185,7 @@ export default async function Home() {
             {(heroSlides as HeroSlide[]).map((slide: HeroSlide, index: number) => (
               <CarouselItem key={index}>
                 <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden rounded-2xl">
-                  <img
-                    src={slide.imageUrl}
-                    alt={slide.alt || `Hero carousel image ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "/placeholder.jpg";
-                    }}
-                  />
+                  <HeroCarouselImage src={slide.imageUrl} alt={slide.alt || `Hero carousel image ${index + 1}`} className="w-full h-full object-cover" />
                 </div>
               </CarouselItem>
             ))}
