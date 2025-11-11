@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+
 interface HeroCarouselImageProps {
   src: string;
   alt: string;
@@ -7,9 +10,7 @@ interface HeroCarouselImageProps {
 }
 
 export function HeroCarouselImage({ src, alt, className }: HeroCarouselImageProps) {
-  const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.src = "/placeholder.jpg";
-  };
+  const [imgSrc, setImgSrc] = useState(src);
 
-  return <img src={src} alt={alt} className={className} onError={handleError} />;
+  return <Image src={imgSrc} alt={alt} fill className={className} onError={() => setImgSrc("/placeholder.jpg")} priority sizes="100vw" style={{ objectFit: "cover" }} />;
 }
