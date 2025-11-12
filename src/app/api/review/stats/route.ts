@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Valid productId required" }, { status: 400 });
     }
 
-    // Get review statistics
     const reviewStats = await prisma.productReview.aggregate({
       where: {
         productId: Number(productId),
@@ -23,7 +22,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Get rating distribution
     const ratingDistribution = await prisma.productReview.groupBy({
       by: ['rating'],
       where: {
@@ -37,13 +35,11 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Format rating distribution
     const distributionMap = ratingDistribution.reduce((acc: Record<number, number>, item: { rating: number; _count: { rating: number } }) => {
       acc[item.rating] = item._count.rating;
       return acc;
     }, {} as Record<number, number>);
 
-    // Ensure all ratings 1-5 are represented
     const fullDistribution = [5, 4, 3, 2, 1].map(rating => ({
       rating,
       count: distributionMap[rating] || 0,

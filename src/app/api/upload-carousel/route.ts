@@ -5,7 +5,7 @@ import sharp from "sharp";
 import { existsSync } from "fs";
 
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
 
 function sanitizeFilename(filename: string): string {
@@ -55,7 +55,6 @@ export async function POST(req: Request) {
     const uploadDir = path.join(process.cwd(), "public", "uploads", "carousel");
     await mkdir(uploadDir, { recursive: true });
 
-    // Optimize for carousel (wider aspect ratio)
     const webpBuffer = await sharp(buffer)
       .webp({ quality: 85 })
       .resize(1920, 1080, {

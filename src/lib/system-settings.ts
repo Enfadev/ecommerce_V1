@@ -17,7 +17,6 @@ export interface SystemSettings {
   version: string;
   createdAt: Date;
   updatedAt: Date;
-  // SEO defaults
   defaultMetaTitle?: string | null;
   defaultMetaDescription?: string | null;
   defaultMetaKeywords?: string | null;
@@ -70,7 +69,6 @@ export async function getSystemSettingsWithFallback(): Promise<SystemSettings> {
   const fallbackDesc = "Shop quality products at Brandify with secure payment and fast shipping.";
   const fallbackKeywords = "ecommerce, shop, online store, brandify";
 
-  // Gabungkan nilai dari DB dengan fallback apabila null/undefined
   const merged: SystemSettings = {
     id: settings?.id ?? 0,
     storeName: settings?.storeName ?? "Brandify",
@@ -87,7 +85,6 @@ export async function getSystemSettingsWithFallback(): Promise<SystemSettings> {
     version: settings?.version ?? "1.0.0",
     createdAt: settings?.createdAt ?? new Date(),
     updatedAt: settings?.updatedAt ?? new Date(),
-    // SEO defaults dengan fallback bila null/undefined
     defaultMetaTitle: settings?.defaultMetaTitle ?? fallbackTitle,
     defaultMetaDescription: settings?.defaultMetaDescription ?? fallbackDesc,
     defaultMetaKeywords: settings?.defaultMetaKeywords ?? fallbackKeywords,

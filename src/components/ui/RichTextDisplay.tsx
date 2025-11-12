@@ -7,7 +7,6 @@ interface RichTextDisplayProps {
 
 export const RichTextDisplay: React.FC<RichTextDisplayProps> = ({ content, className = '' }) => {
   useEffect(() => {
-    // Inject styles untuk rich text content jika belum ada
     if (typeof document !== 'undefined' && !document.getElementById('rich-text-styles')) {
       const styleSheet = document.createElement('style');
       styleSheet.id = 'rich-text-styles';

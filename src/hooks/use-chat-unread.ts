@@ -19,9 +19,9 @@ export function useChatUnreadCount() {
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const fallbackPollingRef = useRef<NodeJS.Timeout | null>(null);
   const maxReconnectAttempts = 5;
-  const baseReconnectDelay = 1000; // 1 second
-  const heartbeatInterval = 30000; // 30 seconds
-  const fallbackPollingInterval = 15000; // 15 seconds fallback
+  const baseReconnectDelay = 1000;
+  const heartbeatInterval = 30000;
+  const fallbackPollingInterval = 15000;
 
   const fetchUnreadCount = useCallback(async () => {
     if (!user || user.role !== "ADMIN") return;
@@ -53,12 +53,10 @@ export function useChatUnreadCount() {
       }
 
       const connectSSE = () => {
-        // Close existing connection
         if (eventSourceRef.current) {
           eventSourceRef.current.close();
         }
 
-        // Clear existing reconnect timeout
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
           reconnectTimeoutRef.current = null;
@@ -67,24 +65,19 @@ export function useChatUnreadCount() {
         const globalEventSource = new EventSource('/api/chat/sse?global=true');
         
         globalEventSource.onopen = () => {
-          // Reset reconnect attempts on successful connection
           reconnectAttemptsRef.current = 0;
           
-          // Clear fallback polling if SSE reconnects successfully
           if (fallbackPollingRef.current) {
             clearInterval(fallbackPollingRef.current);
             fallbackPollingRef.current = null;
           }
           
-          // Start heartbeat to keep connection alive
           if (heartbeatIntervalRef.current) {
             clearInterval(heartbeatIntervalRef.current);
           }
           
           heartbeatIntervalRef.current = setInterval(() => {
-            // Check if connection is still alive and working
             if (globalEventSource.readyState !== EventSource.OPEN) {
-              // Connection lost, clear interval and attempt reconnect
               if (heartbeatIntervalRef.current) {
                 clearInterval(heartbeatIntervalRef.current);
                 heartbeatIntervalRef.current = null;
@@ -100,9 +93,7 @@ export function useChatUnreadCount() {
           try {
             const data = JSON.parse(event.data);
             
-            // Handle heartbeat messages
             if (data.type === 'heartbeat') {
-              // Just acknowledge heartbeat, no action needed
               return;
             }
             
@@ -117,31 +108,24 @@ export function useChatUnreadCount() {
         };
 
         globalEventSource.onerror = (error) => {
-          // Only log meaningful errors, not connection timeout/idle errors
         const isConnectionTimeout = globalEventSource.readyState === EventSource.CLOSED;
-        // Silent handling for connection timeout - ini adalah behavior normal
         if (!isConnectionTimeout) {
-          // Log hanya untuk development debugging
           if (process.env.NODE_ENV === 'development') {
             console.warn('SSE connection error (non-timeout):', error);
           }
-        }          // Clear heartbeat
+        }
           if (heartbeatIntervalRef.current) {
             clearInterval(heartbeatIntervalRef.current);
             heartbeatIntervalRef.current = null;
           }
           
-          // Close the current connection gracefully
           try {
             if (globalEventSource.readyState !== EventSource.CLOSED) {
               globalEventSource.close();
             }
           } catch {
-            // Ignore close errors - connection might already be closed
           }
           
-          // Only attempt to reconnect if we're still in an active admin session
-          // and the connection wasn't closed intentionally
           if (user && user.role === "ADMIN" && 
               document.visibilityState === 'visible' && 
               reconnectAttemptsRef.current < maxReconnectAttempts) {
@@ -150,7 +134,6 @@ export function useChatUnreadCount() {
             reconnectAttemptsRef.current += 1;
             
             reconnectTimeoutRef.current = setTimeout(() => {
-              // Double-check we're still in an active admin session before reconnecting
               if (user && user.role === "ADMIN" && document.visibilityState === 'visible') {
                 connectSSE();
               }
@@ -158,7 +141,6 @@ export function useChatUnreadCount() {
           } else if (reconnectAttemptsRef.current >= maxReconnectAttempts && 
                      user && user.role === "ADMIN" && 
                      document.visibilityState === 'visible') {
-            // SSE failed multiple times, fallback to polling only if page is visible
             fallbackPollingRef.current = setInterval(() => {
               if (user && user.role === "ADMIN" && document.visibilityState === 'visible') {
                 fetchUnreadCount();
@@ -197,25 +179,19 @@ export function useChatUnreadCount() {
     }
   }, [user, fetchUnreadCount]);
 
-  // Handle page visibility changes
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (user && user.role === "ADMIN") {
         if (document.visibilityState === 'visible') {
-          // Page is visible again, ensure SSE connection is active
           if (!eventSourceRef.current || eventSourceRef.current.readyState === EventSource.CLOSED) {
-            // Reset reconnect attempts when page becomes visible again
             reconnectAttemptsRef.current = 0;
-            // Refresh count and potentially reconnect SSE
             fetchUnreadCount();
           }
         } else {
-          // Page is hidden, stop reconnection attempts to prevent errors
           if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = null;
           }
-          // Clear fallback polling when page is hidden
           if (fallbackPollingRef.current) {
             clearInterval(fallbackPollingRef.current);
             fallbackPollingRef.current = null;

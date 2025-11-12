@@ -49,12 +49,10 @@ export async function GET(request: NextRequest) {
           })}\n\n`
         );
 
-        // For global connections, send periodic heartbeat to prevent timeout
         let heartbeatInterval: NodeJS.Timeout | null = null;
         if (isGlobal) {
           heartbeatInterval = setInterval(() => {
             try {
-              // Check if controller is still usable
               if (global.sseConnections.has(connectionId)) {
                 controller.enqueue(
                   `data: ${JSON.stringify({
@@ -63,23 +61,20 @@ export async function GET(request: NextRequest) {
                   })}\n\n`
                 );
               } else {
-                // Connection was already cleaned up
                 if (heartbeatInterval) {
                   clearInterval(heartbeatInterval);
                 }
               }
             } catch {
-              // Connection closed or error occurred, clean up
               if (heartbeatInterval) {
                 clearInterval(heartbeatInterval);
                 heartbeatInterval = null;
               }
               global.sseConnections.delete(connectionId);
             }
-          }, 25000); // Send heartbeat every 25 seconds
+          }, 25000);
         }
 
-        // Handle connection cleanup
         const cleanup = () => {
           if (heartbeatInterval) {
             clearInterval(heartbeatInterval);
@@ -89,22 +84,18 @@ export async function GET(request: NextRequest) {
           try {
             controller.close();
           } catch {
-            // Ignore close errors - connection might already be closed
           }
         };
 
-        // Listen for abort signal (client disconnect)
         request.signal.addEventListener("abort", cleanup);
 
-        // Additional cleanup listener for error scenarios
         if (typeof window === "undefined") {
-          // Server-side: Add timeout cleanup as safety net
           const timeoutCleanup = setTimeout(() => {
             if (global.sseConnections.has(connectionId)) {
               console.log(`Cleaning up stale SSE connection: ${connectionId}`);
               cleanup();
             }
-          }, 300000); // 5 minutes timeout
+          }, 300000);
 
           request.signal.addEventListener("abort", () => {
             clearTimeout(timeoutCleanup);

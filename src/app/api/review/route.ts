@@ -57,7 +57,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Try NextAuth first
     const session = await getServerSession(authOptions);
     let user = null;
     let userEmail = null;
@@ -65,7 +64,6 @@ export async function POST(request: NextRequest) {
     if (session?.user?.email) {
       userEmail = session.user.email;
     } else {
-      // Try custom JWT auth
       const token = request.cookies.get("auth-token")?.value;
       if (token) {
         try {
@@ -104,7 +102,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Order ID required" }, { status: 400 });
     }
 
-    // Get user
     user = await prisma.user.findUnique({
       where: { email: userEmail },
     });
@@ -113,7 +110,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Only allow regular users (not admins) to write reviews
     if (String(user.role) === "ADMIN") {
       return NextResponse.json(
         { error: "Administrators cannot write product reviews. Only customers who have purchased the product can write reviews." },
@@ -121,12 +117,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify that the user has purchased this product in the specified order
     const order = await prisma.order.findFirst({
       where: {
         id: Number(orderId),
         userId: user.id,
-        status: "DELIVERED", // Only allow reviews for delivered orders
+        status: "DELIVERED",
       },
       include: {
         items: {
@@ -144,7 +139,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user has already reviewed this product for this order
     const existingReview = await prisma.productReview.findFirst({
       where: {
         userId: user.id,
@@ -160,7 +154,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the review
     const review = await prisma.productReview.create({
       data: {
         productId: Number(productId),

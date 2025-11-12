@@ -133,7 +133,7 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
       setComment("");
       setIsAnonymous(false);
       setSelectedOrderId("");
-      fetchEligibleOrders(); // Refresh eligible orders
+      fetchEligibleOrders();
       onSubmitted();
     } catch (error) {
       setError((error as Error).message || "An error occurred while submitting your review.");

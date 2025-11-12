@@ -54,7 +54,6 @@ interface AboutPageData {
   features: Feature[];
   teamMembers: TeamMember[];
   timeline: TimelineEvent[];
-  // SEO fields
   metaTitle?: string;
   metaDescription?: string;
   metaKeywords?: string;
@@ -79,7 +78,6 @@ export default function AdminAboutPageEditor() {
     features: [],
     teamMembers: [],
     timeline: [],
-    // SEO fields
     metaTitle: "",
     metaDescription: "",
     metaKeywords: "",
@@ -105,7 +103,6 @@ export default function AdminAboutPageEditor() {
         if (pageData) {
           setData({
             ...pageData,
-            // Ensure SEO fields have default values if null
             metaTitle: pageData.metaTitle || "",
             metaDescription: pageData.metaDescription || "",
             metaKeywords: pageData.metaKeywords || "",

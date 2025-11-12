@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2, Save, Plus, Trash2, Globe, Home, X } from "lucide-react";
 import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
+import { IconSelect } from "@/components/admin/IconSelect";
 
 interface HeroSlide {
   imageUrl: string;
@@ -39,7 +40,6 @@ interface HomePageData {
   features: Feature[];
   aboutPreview: object;
   testimonialsData: TestimonialData[];
-  // SEO fields
   metaTitle?: string;
   metaDescription?: string;
   metaKeywords?: string;
@@ -60,7 +60,6 @@ export default function AdminHomePageEditor() {
     features: [],
     aboutPreview: {},
     testimonialsData: [],
-    // SEO fields
     metaTitle: "",
     metaDescription: "",
     metaKeywords: "",
@@ -87,7 +86,6 @@ export default function AdminHomePageEditor() {
         if (pageData) {
           setData({
             ...pageData,
-            // Ensure SEO fields have default values if null
             metaTitle: pageData.metaTitle || "",
             metaDescription: pageData.metaDescription || "",
             metaKeywords: pageData.metaKeywords || "",
@@ -108,14 +106,12 @@ export default function AdminHomePageEditor() {
   };
 
   const handleSave = async () => {
-    // Validate: at least one carousel image must have imageUrl
     const validSlides = data.heroSlides.filter((slide) => slide.imageUrl && slide.imageUrl.trim() !== "");
     if (validSlides.length === 0) {
       toast.error("At least one carousel image is required");
       return;
     }
 
-    // Remove slides without images before saving
     const dataToSave = {
       ...data,
       heroSlides: validSlides,
@@ -171,14 +167,12 @@ export default function AdminHomePageEditor() {
   const handleImageUpload = async (index: number, file: File) => {
     if (!file) return;
 
-    // Validate file type
     const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) {
       toast.error("Invalid file type. Only JPEG, PNG, and WebP are allowed.");
       return;
     }
 
-    // Validate file size (5MB max)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error("File too large. Maximum size is 5MB.");
@@ -214,7 +208,6 @@ export default function AdminHomePageEditor() {
 
   const handleDeleteImage = async (index: number, imageUrl: string) => {
     if (!imageUrl.startsWith("/uploads/carousel/")) {
-      // If not uploaded image, just remove from state
       updateHeroSlide(index, "imageUrl", "");
       return;
     }
@@ -415,11 +408,21 @@ export default function AdminHomePageEditor() {
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input placeholder="Icon name (e.g., Shield, Truck)" value={feature.icon} onChange={(e) => updateFeature(index, "icon", e.target.value)} />
-                    <Input placeholder="Feature title" value={feature.title} onChange={(e) => updateFeature(index, "title", e.target.value)} />
-                    <Input placeholder="Background color class" value={feature.bgColor} onChange={(e) => updateFeature(index, "bgColor", e.target.value)} />
-                    <div className="md:col-span-3">
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Icon</label>
+                      <IconSelect value={feature.icon} onChange={(value) => updateFeature(index, "icon", value)} placeholder="Select an icon" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Feature Title</label>
+                      <Input placeholder="Feature title" value={feature.title} onChange={(e) => updateFeature(index, "title", e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Background Color Class</label>
+                      <Input placeholder="e.g., bg-blue-100" value={feature.bgColor} onChange={(e) => updateFeature(index, "bgColor", e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Feature Description</label>
                       <Textarea placeholder="Feature description" value={feature.description} onChange={(e) => updateFeature(index, "description", e.target.value)} rows={2} />
                     </div>
                   </CardContent>

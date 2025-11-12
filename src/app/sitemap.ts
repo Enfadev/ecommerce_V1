@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { getSystemSettingsWithFallback } from "@/lib/system-settings";
 
-// Force dynamic rendering to avoid database requirement during build
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

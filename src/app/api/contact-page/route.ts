@@ -24,7 +24,6 @@ export async function POST(req: Request) {
         officeLocations: body.officeLocations || [],
         businessHours: body.businessHours || [],
         socialMedia: body.socialMedia || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,
@@ -57,7 +56,6 @@ export async function PUT(req: Request) {
         officeLocations: body.officeLocations || [],
         businessHours: body.businessHours || [],
         socialMedia: body.socialMedia || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,

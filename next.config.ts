@@ -3,21 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@react-email/render"],
-  // Disable static page generation during build if database is unavailable
   experimental: {
     ...(process.env.SKIP_BUILD_STATIC_GENERATION === "1" && {
       isrFlushToDisk: false,
     }),
   },
-  // Enable webpack polling for Docker hot reload
-  webpack: (config, { isServer }) => {
-    if (process.env.NODE_ENV === "development" && !isServer) {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-      };
-    }
-    return config;
+  turbopack: {
+    root: process.env.TURBOPACK_ROOT || undefined,
   },
   images: {
     remotePatterns: [

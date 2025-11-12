@@ -22,7 +22,6 @@ export async function generatePageMetadata({ pageData, fallbackTitle = "Page", d
   try {
     const settings = await prisma.systemSettings.findFirst();
 
-    // Use page-specific SEO if available, otherwise fall back to defaults
     const title = pageData?.metaTitle || settings?.defaultMetaTitle || fallbackTitle;
     const description = pageData?.metaDescription || settings?.defaultMetaDescription || "";
     const keywords = pageData?.metaKeywords || settings?.defaultMetaKeywords || "";
@@ -62,7 +61,6 @@ export async function generatePageMetadata({ pageData, fallbackTitle = "Page", d
   }
 }
 
-// Get system settings for SEO defaults
 export async function getSystemSettings() {
   try {
     return await prisma.systemSettings.findFirst();

@@ -219,7 +219,6 @@ export async function PUT(req: Request) {
       promoExpired: promoExpired ? new Date(promoExpired) : null,
     };
 
-    // Only update imageUrl if it's explicitly provided
     if (imageUrl !== undefined) {
       updateData.imageUrl = imageUrl;
     }

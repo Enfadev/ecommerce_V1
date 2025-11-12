@@ -10,7 +10,6 @@ import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo-utils";
 import { HeroCarouselImage } from "@/components/ui/hero-carousel-image";
 
-// Force dynamic rendering to avoid database requirement during build
 export const dynamic = "force-dynamic";
 
 interface HeroSlide {
@@ -24,7 +23,6 @@ interface Feature {
   description: string;
 }
 
-// Generate dynamic metadata for home page
 export async function generateMetadata(): Promise<Metadata> {
   const homePage = await prisma.homePage.findFirst();
   return generatePageMetadata({

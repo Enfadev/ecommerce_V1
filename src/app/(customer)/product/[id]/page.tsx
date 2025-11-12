@@ -51,7 +51,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         };
         if (isMounted) setProduct(mappedProduct);
 
-        // Wishlist status will be checked from context
       } catch (err: unknown) {
         if (isMounted) setError(err instanceof Error ? err.message : "Failed to fetch product");
       }

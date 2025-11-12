@@ -13,9 +13,6 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ r
     const roomId = parseInt(resolvedParams.roomId);
     const { status, priority, adminId } = await request.json();
 
-    // Use any here because Prisma's generated Update types can be strict about
-    // relation vs scalar fields (adminId). Using `any` keeps the update simple
-    // and avoids complex union types in this handler.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
 

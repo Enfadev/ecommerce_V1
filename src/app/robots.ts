@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getSystemSettingsWithFallback } from "@/lib/system-settings";
 
-// Force dynamic rendering to avoid database requirement during build
 export const dynamic = "force-dynamic";
 
 export default async function robots(): Promise<MetadataRoute.Robots> {

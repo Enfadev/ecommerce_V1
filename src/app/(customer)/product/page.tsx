@@ -42,11 +42,10 @@ function ProductPageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Debounce logic
   useEffect(() => {
     const handler = setTimeout(() => {
       setLocalSearch(inputSearch);
-    }, 400); // 400ms debounce
+    }, 400);
     return () => clearTimeout(handler);
   }, [inputSearch]);
 

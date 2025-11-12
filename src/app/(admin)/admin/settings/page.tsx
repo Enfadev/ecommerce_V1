@@ -67,7 +67,6 @@ export default function AdminSettingsPage() {
     officeAddress: "",
     timezone: "Asia/Jakarta",
     logoUrl: null as string | null,
-    // SEO defaults
     defaultMetaTitle: "",
     defaultMetaDescription: "",
     defaultMetaKeywords: "",
