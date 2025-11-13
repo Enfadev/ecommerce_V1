@@ -9,9 +9,9 @@ async function seedSettings() {
     // Create default system settings
     const defaultSettings = await prisma.systemSettings.create({
       data: {
-        storeName: 'Modern E-Commerce',
-        storeDescription: 'Your trusted online shopping destination with premium products and exceptional service',
-        contactEmail: 'admin@modernecommerce.com',
+        storeName: 'Brandify',
+        storeDescription: 'A trusted online shopping platform',
+        contactEmail: 'contact@brandify.com',
         currency: 'USD',
         timezone: 'Asia/Jakarta',
         language: 'en',
