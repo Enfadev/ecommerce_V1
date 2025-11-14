@@ -5,6 +5,7 @@ export interface Product {
   image: string;
   category: string;
   stock: number;
+  slug?: string;
   discountPrice?: number;
   promoExpired?: Date | string;
 }

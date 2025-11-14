@@ -4,9 +4,9 @@ import { getSystemSettingsWithFallback } from "@/lib/system-settings";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  const product = await prisma.product.findUnique({ where: { id: Number(id) } });
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await prisma.product.findUnique({ where: { slug } });
   const global = await getSystemSettingsWithFallback();
 
   if (!product) {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const description = (p.metaDescription as string) || global.defaultMetaDescription || global.storeDescription;
   const ogImage = (p.ogImageUrl as string) || product.imageUrl || global.defaultOgImageUrl || global.logoUrl || undefined;
   const canonicalBase = global.canonicalBaseUrl?.replace(/\/$/, "");
-  const canonical = (p.canonicalUrl as string) || (canonicalBase ? `${canonicalBase}/product/${product.id}` : undefined);
+  const canonical = (p.canonicalUrl as string) || (canonicalBase ? `${canonicalBase}/product/${product.slug}` : undefined);
 
   return {
     title,

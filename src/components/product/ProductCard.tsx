@@ -65,7 +65,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
       <div className="group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800">
         <div className="p-6">
           <div className="flex gap-6">
-            <Link href={`/product/${product.id}`} className="flex-shrink-0">
+            <Link href={`/product/${product.slug || product.id}`} className="flex-shrink-0">
               <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-xl flex items-center justify-center overflow-hidden relative">
                 {/* Sale Badge for List View */}
                 {hasValidDiscount() && (
@@ -83,7 +83,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
 
             <div className="flex-1 min-w-0">
               <div className="flex justify-between items-start mb-3">
-                <Link href={`/product/${product.id}`}>
+                <Link href={`/product/${product.slug || product.id}`}>
                   <h3 className="font-medium text-lg text-gray-900 dark:text-white hover:text-primary transition-colors">{product.name}</h3>
                 </Link>
                 {!admin && (
@@ -184,7 +184,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
           </button>
         )}
 
-        <Link href={`/product/${product.id}`} className="block">
+        <Link href={`/product/${product.slug || product.id}`} className="block">
           <div className="relative overflow-hidden h-64">
             {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
               <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
@@ -206,7 +206,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
           </div>
         </div>
 
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${product.slug || product.id}`}>
           <h3 className="font-medium text-gray-900 dark:text-white hover:text-primary transition-colors line-clamp-2 mb-3">{product.name}</h3>
         </Link>
 

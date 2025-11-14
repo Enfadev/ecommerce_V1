@@ -40,13 +40,48 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
+}
+
+async function generateUniqueSlug(name: string, excludeId?: number): Promise<string> {
+  let slug = slugify(name);
+  let counter = 1;
+
+  while (true) {
+    const testSlug = counter === 1 ? slug : `${slug}-${counter}`;
+    const existing = await prisma.product.findFirst({
+      where: {
+        slug: testSlug,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
+    });
+
+    if (!existing) {
+      return testSlug;
+    }
+    counter++;
+  }
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-    if (id) {
+    const slug = searchParams.get("slug");
+
+    if (id || slug) {
+      const where = id ? { id: Number(id) } : { slug: slug as string };
       const p = await prisma.product.findUnique({
-        where: { id: Number(id) },
+        where,
         include: { category: true, images: true },
       });
       if (!p) return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -167,7 +202,7 @@ export async function PUT(req: Request) {
       status,
       sku,
       brand,
-      slug,
+      slug: providedSlug,
       metaTitle,
       metaDescription,
       metaKeywords,
@@ -184,6 +219,14 @@ export async function PUT(req: Request) {
 
     if (!id || !name || !price) {
       return NextResponse.json({ error: "ID, name, and price are required" }, { status: 400 });
+    }
+
+    // Generate slug from name if not provided or if name changed
+    const currentProduct = await prisma.product.findUnique({ where: { id: Number(id) } });
+    let slug = providedSlug;
+
+    if (!slug || (currentProduct && currentProduct.name !== name)) {
+      slug = await generateUniqueSlug(name, Number(id));
     }
 
     let categoryData = {};
@@ -299,7 +342,7 @@ export async function POST(req: Request) {
       status,
       sku,
       brand,
-      slug,
+      slug: providedSlug,
       metaTitle,
       metaDescription,
       metaKeywords,
@@ -317,6 +360,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name and price are required" }, { status: 400 });
     }
 
+    // Generate slug from name if not provided
+    const slug = providedSlug || (await generateUniqueSlug(name));
+
     let categoryIdVal: number | undefined;
     if (category) {
       const categoryRecord = await prisma.category.upsert({
@@ -332,6 +378,7 @@ export async function POST(req: Request) {
       price: parseFloat(price),
       stock: stock ? Number(stock) : 0,
       status: status || "active",
+      slug,
     };
 
     if (description !== undefined) data.description = description;
@@ -339,7 +386,6 @@ export async function POST(req: Request) {
     if (categoryIdVal !== undefined) data.categoryId = categoryIdVal;
     if (sku !== undefined) data.sku = sku;
     if (brand !== undefined) data.brand = brand;
-    if (slug !== undefined) data.slug = slug;
     if (metaTitle !== undefined) data.metaTitle = metaTitle;
     if (metaDescription !== undefined) data.metaDescription = metaDescription;
     if (metaKeywords !== undefined) data.metaKeywords = metaKeywords;

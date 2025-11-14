@@ -15,12 +15,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    type ProductLite = { id: number; updatedAt: Date; status: string; noindex?: boolean };
-    const products = await prisma.product.findMany({ select: { id: true, updatedAt: true, status: true } });
+    type ProductLite = { slug: string; updatedAt: Date; status: string; noindex?: boolean };
+    const products = await prisma.product.findMany({ select: { slug: true, updatedAt: true, status: true } });
     const extended = products as unknown as ProductLite[];
     for (const prod of extended) {
       if (prod.status !== "active" || prod.noindex) continue;
-      urls.push({ url: base ? `${base}/product/${prod.id}` : `/product/${prod.id}`, lastModified: prod.updatedAt, changeFrequency: "weekly", priority: 0.8 });
+      urls.push({ url: base ? `${base}/product/${prod.slug}` : `/product/${prod.slug}`, lastModified: prod.updatedAt, changeFrequency: "weekly", priority: 0.8 });
     }
   } catch {}
 

@@ -23,7 +23,7 @@ interface ProductDetail {
   promoExpired?: Date | string;
 }
 
-export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { addToCart } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [product, setProduct] = React.useState<ProductDetail | undefined>(undefined);
@@ -38,7 +38,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`/api/product?id=${_params.id}`);
+        const res = await fetch(`/api/product?slug=${_params.slug}`);
         if (!res.ok) throw new Error("Product not found");
         const data = await res.json();
         const mappedProduct: ProductDetail = {
@@ -69,7 +69,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       if (isInWishlist(product.id)) {
         await removeFromWishlist(product.id);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await addToWishlist(product as any);
       }
     } catch (err) {
@@ -110,9 +109,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Main Product Section */}
         <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Product Image */}
           <div className="group">
             <div className="relative w-full aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10 shadow-lg border border-border/50 hover:shadow-xl transition-all duration-300">
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-white/50 backdrop-blur-sm">
@@ -127,12 +124,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
 
-          {/* Product Info */}
           <div className="flex flex-col justify-center space-y-8">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
                 <span className="px-4 py-2 bg-foreground/5 text-foreground text-sm font-medium rounded-full border border-border/30">{product.category}</span>
-                {/* Sale Badge */}
                 {product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()) && (
                   <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">-{Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF</span>
                 )}
@@ -140,7 +135,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
               <h1 className="text-4xl lg:text-5xl font-light text-foreground leading-tight">{product.name}</h1>
 
-              {/* Price Display with Discount Logic */}
               <div className="space-y-2">
                 {product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? (
                   <>
@@ -195,7 +189,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        {/* Product Description Section */}
         {product.description && (
           <div className="bg-card rounded-2xl shadow-sm border p-6 mb-8">
             <h2 className="text-xl font-semibold text-foreground mb-4">Description</h2>
@@ -203,7 +196,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
         )}
 
-        {/* Reviews and Recommendations */}
         <div className="space-y-8">
           <React.Suspense
             fallback={

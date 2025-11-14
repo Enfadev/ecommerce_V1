@@ -66,12 +66,7 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist,
                   {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
                     <Image src={product.image} alt={product.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" />
                   ) : (
-                    <Image
-                      src="/placeholder-product.svg"
-                      alt="No image available"
-                      fill
-                      className="object-contain p-1"
-                    />
+                    <Image src="/placeholder-product.svg" alt="No image available" fill className="object-contain p-1" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
@@ -92,7 +87,7 @@ const ProductRecommendation: React.FC<ProductRecommendationProps> = ({ wishlist,
                     </div>
 
                     <Button size="sm" className="rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors duration-200" asChild>
-                      <Link href={`/products/${product.id}`}>View</Link>
+                      <Link href={`/product/${product.id}`}>View</Link>
                     </Button>
                   </div>
                 </div>

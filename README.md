@@ -6,7 +6,7 @@ Ini adalah project e-commerce berbasis [Next.js](https://nextjs.org) dengan dark
 
 - [Beranda](https://localhost:3000/) (`/`)
 - [Produk](https://localhost:3000/product) (`/product`)
-- [Detail Produk](https://localhost:3000/product/[id]) (`/product/[id]`)
+- [Detail Produk](https://localhost:3000/product/[slug]) (`/product/[slug]`)
 - [Wishlist](https://localhost:3000/wishlist) (`/wishlist`)
 - [Keranjang & Checkout](https://localhost:3000/checkout) (`/checkout`)
 - [Riwayat Pesanan](https://localhost:3000/order-history) (`/order-history`)
@@ -73,7 +73,6 @@ Cara paling modern untuk development dengan VS Code:
    - Install Docker Desktop
    - Install VS Code extension: "Dev Containers"
 2. **Quick Start:**
-
    - Buka project di VS Code
    - Tekan `F1` → pilih "Dev Containers: Reopen in Container"
    - Tunggu setup selesai (pertama kali ~5-10 menit)

@@ -112,7 +112,7 @@ model Product {
   status          String          @default("active")
   sku             String?         @unique
   brand           String?
-  slug            String?         @unique
+  slug            String          @unique
   metaTitle       String?
   metaDescription String?
   metaKeywords    String?
@@ -222,12 +222,12 @@ model VerificationToken {
 }
 
 model PasswordResetToken {
-  id         Int      @id @default(autoincrement())
-  email      String
-  token      String   @unique
-  expires    DateTime
-  used       Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   @@index([email])
   @@map("password_reset_tokens")

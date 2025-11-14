@@ -22,6 +22,7 @@ interface APIProduct {
   description: string | null;
   category?: string;
   stock?: number;
+  slug?: string;
   discountPrice?: number;
   promoExpired?: string | Date;
 }
@@ -31,7 +32,6 @@ function ProductPageContent() {
   const search = searchParams.get("q") || "";
   const category = searchParams.get("category") || "All";
   const price = searchParams.get("price") || "all";
-
 
   const [inputSearch, setInputSearch] = useState(search);
   const [localSearch, setLocalSearch] = useState(search);
@@ -62,6 +62,7 @@ function ProductPageContent() {
             image: product.imageUrl || "/placeholder-image.svg",
             category: product.category || "General",
             stock: product.stock ?? Math.floor(Math.random() * 50) + 1,
+            slug: product.slug,
             discountPrice: product.discountPrice,
             promoExpired: product.promoExpired,
           }));
