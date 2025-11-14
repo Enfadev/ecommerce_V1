@@ -149,13 +149,32 @@ export default function AdminHomePageEditor() {
     setData({ ...data, heroSlides: [...data.heroSlides, newSlide] });
   };
 
-  const removeHeroSlide = (index: number) => {
+  const removeHeroSlide = async (index: number) => {
     if (data.heroSlides.length === 1) {
       toast.error("At least one carousel image is required");
       return;
     }
+
+    const slideToRemove = data.heroSlides[index];
+    if (slideToRemove.imageUrl && slideToRemove.imageUrl.startsWith("/uploads/carousel/")) {
+      try {
+        const res = await fetch("/api/upload-carousel", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl: slideToRemove.imageUrl }),
+        });
+
+        if (!res.ok) {
+          console.error("Failed to delete image file");
+        }
+      } catch (error) {
+        console.error("Error deleting image file:", error);
+      }
+    }
+
     const newSlides = data.heroSlides.filter((_, i) => i !== index);
     setData({ ...data, heroSlides: newSlides });
+    toast.success("Slide removed successfully!");
   };
 
   const updateHeroSlide = (index: number, field: keyof HeroSlide, value: string) => {
@@ -179,6 +198,8 @@ export default function AdminHomePageEditor() {
       return;
     }
 
+    const oldImageUrl = data.heroSlides[index]?.imageUrl;
+
     setUploadingIndex(index);
 
     try {
@@ -193,6 +214,19 @@ export default function AdminHomePageEditor() {
       if (res.ok) {
         const { url } = await res.json();
         updateHeroSlide(index, "imageUrl", url);
+
+        if (oldImageUrl && oldImageUrl.startsWith("/uploads/carousel/")) {
+          try {
+            await fetch("/api/upload-carousel", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ imageUrl: oldImageUrl }),
+            });
+          } catch (deleteError) {
+            console.error("Failed to delete old image:", deleteError);
+          }
+        }
+
         toast.success("Image uploaded successfully!");
       } else {
         const error = await res.json();
