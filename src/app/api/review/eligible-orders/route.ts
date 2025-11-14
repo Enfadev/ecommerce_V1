@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Valid productId required" }, { status: 400 });
     }
 
-    // Try NextAuth first
     const session = await getServerSession(authOptions);
     let user = null;
     let userEmail = null;
@@ -21,7 +20,6 @@ export async function GET(request: NextRequest) {
     if (session?.user?.email) {
       userEmail = session.user.email;
     } else {
-      // Try custom JWT auth
       const token = request.cookies.get("auth-token")?.value;
       if (token) {
         try {
@@ -39,7 +37,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    // Get user from database
     user = await prisma.user.findUnique({
       where: { email: userEmail },
     });
@@ -48,7 +45,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Only allow regular users (not admins) to access eligible orders for reviews
     if (user.role === "ADMIN") {
       return NextResponse.json(
         { error: "Administrators cannot write product reviews. Only customers who have purchased the product can write reviews." },
@@ -56,7 +52,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get orders that contain this product and are delivered
     const eligibleOrders = await prisma.order.findMany({
       where: {
         userId: user.id,
@@ -87,7 +82,6 @@ export async function GET(request: NextRequest) {
       },
     });
     
-    // Get existing reviews for this product by this user
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const existingReviews = await (prisma as any).productReview.findMany({
       where: {
@@ -101,7 +95,6 @@ export async function GET(request: NextRequest) {
 
     const reviewedOrderIds = existingReviews.map((review: { orderId: number }) => review.orderId);
 
-    // Filter out orders that already have reviews for this product
     const ordersWithoutReview = eligibleOrders.filter(order => !reviewedOrderIds.includes(order.id));
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -110,7 +103,7 @@ export async function GET(request: NextRequest) {
       orderNumber: order.orderNumber,
       createdAt: order.createdAt.toISOString(),
       totalAmount: order.totalAmount,
-      productInfo: order.items[0], // Since we're filtering by product, there should be exactly one item for this product
+      productInfo: order.items[0],
     }));
 
     return NextResponse.json(formattedOrders);

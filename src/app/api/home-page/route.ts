@@ -25,7 +25,6 @@ export async function POST(req: Request) {
         statsData: body.statsData || [],
         aboutPreview: body.aboutPreview || {},
         testimonialsData: body.testimonialsData || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,
@@ -59,7 +58,6 @@ export async function PUT(req: Request) {
         statsData: body.statsData || [],
         aboutPreview: body.aboutPreview || {},
         testimonialsData: body.testimonialsData || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,

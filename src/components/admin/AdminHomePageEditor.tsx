@@ -7,19 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, Save, Plus, Trash2, Globe, Home } from "lucide-react";
+import { Loader2, Save, Plus, Trash2, Globe, Home, X } from "lucide-react";
 import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
+import { IconSelect } from "@/components/admin/IconSelect";
 
 interface HeroSlide {
-  title: string;
-  subtitle: string;
-  description: string;
-  buttonText: string;
-  buttonLink: string;
-  badgeText: string;
-  badgeIcon: string;
-  bgGradient: string;
-  rightIcon: string;
+  imageUrl: string;
+  alt?: string;
 }
 
 interface Feature {
@@ -27,12 +21,6 @@ interface Feature {
   title: string;
   description: string;
   bgColor: string;
-}
-
-interface StatData {
-  label: string;
-  value: string;
-  icon: string;
 }
 
 interface TestimonialData {
@@ -50,10 +38,8 @@ interface HomePageData {
   heroDescription: string;
   heroSlides: HeroSlide[];
   features: Feature[];
-  statsData: StatData[];
   aboutPreview: object;
   testimonialsData: TestimonialData[];
-  // SEO fields
   metaTitle?: string;
   metaDescription?: string;
   metaKeywords?: string;
@@ -72,10 +58,8 @@ export default function AdminHomePageEditor() {
     heroDescription: "Discover amazing products at great prices",
     heroSlides: [],
     features: [],
-    statsData: [],
     aboutPreview: {},
     testimonialsData: [],
-    // SEO fields
     metaTitle: "",
     metaDescription: "",
     metaKeywords: "",
@@ -87,6 +71,7 @@ export default function AdminHomePageEditor() {
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   useEffect(() => {
     fetchHomePageData();
@@ -101,7 +86,6 @@ export default function AdminHomePageEditor() {
         if (pageData) {
           setData({
             ...pageData,
-            // Ensure SEO fields have default values if null
             metaTitle: pageData.metaTitle || "",
             metaDescription: pageData.metaDescription || "",
             metaKeywords: pageData.metaKeywords || "",
@@ -122,13 +106,24 @@ export default function AdminHomePageEditor() {
   };
 
   const handleSave = async () => {
+    const validSlides = data.heroSlides.filter((slide) => slide.imageUrl && slide.imageUrl.trim() !== "");
+    if (validSlides.length === 0) {
+      toast.error("At least one carousel image is required");
+      return;
+    }
+
+    const dataToSave = {
+      ...data,
+      heroSlides: validSlides,
+    };
+
     setSaving(true);
     try {
-      const method = data.id ? "PUT" : "POST";
+      const method = dataToSave.id ? "PUT" : "POST";
       const res = await fetch("/api/home-page", {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(dataToSave),
       });
 
       if (res.ok) {
@@ -148,28 +143,126 @@ export default function AdminHomePageEditor() {
 
   const addHeroSlide = () => {
     const newSlide: HeroSlide = {
-      title: "New Slide",
-      subtitle: "Subtitle",
-      description: "Description",
-      buttonText: "Action Button",
-      buttonLink: "#",
-      badgeText: "Badge",
-      badgeIcon: "🔥",
-      bgGradient: "from-blue-600 to-purple-600",
-      rightIcon: "Gift",
+      imageUrl: "",
+      alt: "Hero slide image",
     };
     setData({ ...data, heroSlides: [...data.heroSlides, newSlide] });
   };
 
-  const removeHeroSlide = (index: number) => {
+  const removeHeroSlide = async (index: number) => {
+    if (data.heroSlides.length === 1) {
+      toast.error("At least one carousel image is required");
+      return;
+    }
+
+    const slideToRemove = data.heroSlides[index];
+    if (slideToRemove.imageUrl && slideToRemove.imageUrl.startsWith("/uploads/carousel/")) {
+      try {
+        const res = await fetch("/api/upload-carousel", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl: slideToRemove.imageUrl }),
+        });
+
+        if (!res.ok) {
+          console.error("Failed to delete image file");
+        }
+      } catch (error) {
+        console.error("Error deleting image file:", error);
+      }
+    }
+
     const newSlides = data.heroSlides.filter((_, i) => i !== index);
     setData({ ...data, heroSlides: newSlides });
+    toast.success("Slide removed successfully!");
   };
 
   const updateHeroSlide = (index: number, field: keyof HeroSlide, value: string) => {
     const newSlides = [...data.heroSlides];
     newSlides[index] = { ...newSlides[index], [field]: value };
     setData({ ...data, heroSlides: newSlides });
+  };
+
+  const handleImageUpload = async (index: number, file: File) => {
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("Invalid file type. Only JPEG, PNG, and WebP are allowed.");
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File too large. Maximum size is 5MB.");
+      return;
+    }
+
+    const oldImageUrl = data.heroSlides[index]?.imageUrl;
+
+    setUploadingIndex(index);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload-carousel", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const { url } = await res.json();
+        updateHeroSlide(index, "imageUrl", url);
+
+        if (oldImageUrl && oldImageUrl.startsWith("/uploads/carousel/")) {
+          try {
+            await fetch("/api/upload-carousel", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ imageUrl: oldImageUrl }),
+            });
+          } catch (deleteError) {
+            console.error("Failed to delete old image:", deleteError);
+          }
+        }
+
+        toast.success("Image uploaded successfully!");
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Failed to upload image");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
+
+  const handleDeleteImage = async (index: number, imageUrl: string) => {
+    if (!imageUrl.startsWith("/uploads/carousel/")) {
+      updateHeroSlide(index, "imageUrl", "");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/upload-carousel", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl }),
+      });
+
+      if (res.ok) {
+        updateHeroSlide(index, "imageUrl", "");
+        toast.success("Image deleted successfully!");
+      } else {
+        toast.error("Failed to delete image");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete image");
+    }
   };
 
   const addFeature = () => {
@@ -191,26 +284,6 @@ export default function AdminHomePageEditor() {
     const newFeatures = [...data.features];
     newFeatures[index] = { ...newFeatures[index], [field]: value };
     setData({ ...data, features: newFeatures });
-  };
-
-  const addStat = () => {
-    const newStat: StatData = {
-      label: "New Stat",
-      value: "100+",
-      icon: "Users",
-    };
-    setData({ ...data, statsData: [...data.statsData, newStat] });
-  };
-
-  const removeStat = (index: number) => {
-    const newStats = data.statsData.filter((_, i) => i !== index);
-    setData({ ...data, statsData: newStats });
-  };
-
-  const updateStat = (index: number, field: keyof StatData, value: string) => {
-    const newStats = [...data.statsData];
-    newStats[index] = { ...newStats[index], [field]: value };
-    setData({ ...data, statsData: newStats });
   };
 
   const handleSeoChange = (field: keyof HomePageData, value: string | boolean) => {
@@ -291,14 +364,56 @@ export default function AdminHomePageEditor() {
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input placeholder="Slide title" value={slide.title} onChange={(e) => updateHeroSlide(index, "title", e.target.value)} />
-                    <Input placeholder="Slide subtitle" value={slide.subtitle} onChange={(e) => updateHeroSlide(index, "subtitle", e.target.value)} />
-                    <Input placeholder="Badge text" value={slide.badgeText} onChange={(e) => updateHeroSlide(index, "badgeText", e.target.value)} />
-                    <Input placeholder="Background gradient (e.g., from-blue-600 to-purple-600)" value={slide.bgGradient} onChange={(e) => updateHeroSlide(index, "bgGradient", e.target.value)} />
-                    <div className="md:col-span-2">
-                      <Textarea placeholder="Slide description" value={slide.description} onChange={(e) => updateHeroSlide(index, "description", e.target.value)} rows={2} />
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Upload Image</label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleImageUpload(index, file);
+                            }
+                          }}
+                          disabled={uploadingIndex === index}
+                          className="flex-1"
+                        />
+                        {uploadingIndex === index && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Uploading...
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">Max 5MB. Recommended: 1920x1080px (16:9). Supported: JPG, PNG, WebP</p>
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Alt Text (Optional)</label>
+                      <Input placeholder="Description of the image" value={slide.alt || ""} onChange={(e) => updateHeroSlide(index, "alt", e.target.value)} />
+                    </div>
+                    {slide.imageUrl && (
+                      <div className="mt-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-sm font-medium">Preview</label>
+                          <Button variant="outline" size="sm" onClick={() => handleDeleteImage(index, slide.imageUrl)} className="text-red-600 hover:text-red-700">
+                            <X className="h-4 w-4 mr-1" />
+                            Remove Image
+                          </Button>
+                        </div>
+                        <div className="relative w-full h-48 rounded-lg overflow-hidden bg-gray-100">
+                          <img
+                            src={slide.imageUrl}
+                            alt={slide.alt || `Hero slide ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "/placeholder.jpg";
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -327,45 +442,23 @@ export default function AdminHomePageEditor() {
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input placeholder="Icon name (e.g., Shield, Truck)" value={feature.icon} onChange={(e) => updateFeature(index, "icon", e.target.value)} />
-                    <Input placeholder="Feature title" value={feature.title} onChange={(e) => updateFeature(index, "title", e.target.value)} />
-                    <Input placeholder="Background color class" value={feature.bgColor} onChange={(e) => updateFeature(index, "bgColor", e.target.value)} />
-                    <div className="md:col-span-3">
+                  <CardContent className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Icon</label>
+                      <IconSelect value={feature.icon} onChange={(value) => updateFeature(index, "icon", value)} placeholder="Select an icon" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Feature Title</label>
+                      <Input placeholder="Feature title" value={feature.title} onChange={(e) => updateFeature(index, "title", e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Background Color Class</label>
+                      <Input placeholder="e.g., bg-blue-100" value={feature.bgColor} onChange={(e) => updateFeature(index, "bgColor", e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Feature Description</label>
                       <Textarea placeholder="Feature description" value={feature.description} onChange={(e) => updateFeature(index, "description", e.target.value)} rows={2} />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Statistics Section */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>Statistics Section</CardTitle>
-                <Button onClick={addStat}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Statistic
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {data.statsData.map((stat, index) => (
-                <Card key={index} className="border-l-4 border-yellow-500">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-medium">Statistic {index + 1}</h4>
-                      <Button variant="outline" size="sm" onClick={() => removeStat(index)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input placeholder="Statistic label" value={stat.label} onChange={(e) => updateStat(index, "label", e.target.value)} />
-                    <Input placeholder="Statistic value" value={stat.value} onChange={(e) => updateStat(index, "value", e.target.value)} />
-                    <Input placeholder="Icon name" value={stat.icon} onChange={(e) => updateStat(index, "icon", e.target.value)} />
                   </CardContent>
                 </Card>
               ))}

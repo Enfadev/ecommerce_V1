@@ -59,7 +59,6 @@ export async function GET(request: NextRequest) {
         enableTwoFactor: settingsData?.enableTwoFactor || false,
         sessionTimeout: settingsData?.sessionTimeout || 24,
         version: settingsData?.version || "1.0.0",
-        // SEO defaults
         defaultMetaTitle: settingsData?.defaultMetaTitle || null,
         defaultMetaDescription: settingsData?.defaultMetaDescription || null,
         defaultMetaKeywords: settingsData?.defaultMetaKeywords || null,

@@ -49,7 +49,6 @@ interface ContactPageData {
   officeLocations: OfficeLocation[];
   businessHours: BusinessHour[];
   socialMedia: SocialMedia[];
-  // SEO fields
   metaTitle?: string;
   metaDescription?: string;
   metaKeywords?: string;
@@ -70,7 +69,6 @@ export default function AdminContactPageEditor() {
     officeLocations: [],
     businessHours: [],
     socialMedia: [],
-    // SEO fields
     metaTitle: "",
     metaDescription: "",
     metaKeywords: "",
@@ -102,7 +100,6 @@ export default function AdminContactPageEditor() {
             officeLocations: data.officeLocations || [],
             businessHours: data.businessHours || [],
             socialMedia: data.socialMedia || [],
-            // SEO fields
             metaTitle: data.metaTitle || "",
             metaDescription: data.metaDescription || "",
             metaKeywords: data.metaKeywords || "",

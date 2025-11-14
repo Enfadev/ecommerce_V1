@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { generatePageMetadata } from "@/lib/seo-utils";
 
-// Generate dynamic metadata for product page
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   const productPage = await prisma.productPage.findFirst();
   return generatePageMetadata({

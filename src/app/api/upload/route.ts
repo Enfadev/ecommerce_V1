@@ -3,11 +3,7 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const maxDuration = 60;
 
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;

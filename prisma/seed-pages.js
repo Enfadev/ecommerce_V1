@@ -1,10 +1,9 @@
-
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function seedPageData() {
-  console.log('Seeding page data...');
+  console.log("Seeding page data...");
 
   // Home Page Data
   const homePageData = {
@@ -13,84 +12,63 @@ async function seedPageData() {
     heroDescription: "Discover amazing products with the best deals and fast shipping across Indonesia",
     heroSlides: [
       {
-        title: "Up to 70% Off",
-        subtitle: "FLASH SALE",
-        description: "Get the best products at the best prices. Limited time offer!",
-        buttonText: "Shop Now",
-        buttonLink: "/products",
-        badgeText: "🔥 FLASH SALE",
-        badgeIcon: "🔥",
-        bgGradient: "from-blue-600 via-purple-600 to-blue-800",
-        rightIcon: "Gift"
+        imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&h=1080&fit=crop",
+        alt: "Flash sale up to 70% off",
       },
       {
-        title: "Free Shipping Across Indonesia",
-        subtitle: "FREE SHIPPING",
-        description: "Minimum purchase of Rp 250,000. Applies to all products.",
-        buttonText: "View Terms & Conditions",
-        buttonLink: "/shipping-info",
-        badgeText: "📦 FREE SHIPPING",
-        badgeIcon: "📦",
-        bgGradient: "from-emerald-600 via-teal-600 to-emerald-800",
-        rightIcon: "Truck"
+        imageUrl: "https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=1920&h=1080&fit=crop",
+        alt: "Free shipping across Indonesia",
       },
       {
-        title: "20% Cashback for New Members",
-        subtitle: "NEW MEMBER",
-        description: "Register now and enjoy cashback on your first purchase.",
-        buttonText: "Register Now",
-        buttonLink: "/register",
-        badgeText: "⭐ NEW MEMBER",
-        badgeIcon: "⭐",
-        bgGradient: "from-pink-600 via-rose-600 to-pink-800",
-        rightIcon: "Star"
-      }
+        imageUrl: "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1920&h=1080&fit=crop",
+        alt: "Special cashback for new members",
+      },
     ],
     features: [
       {
         icon: "Truck",
         title: "Free Shipping",
         description: "Free shipping for orders above Rp 250,000",
-        bgColor: "bg-blue-100"
+        bgColor: "bg-blue-100",
       },
       {
         icon: "Shield",
         title: "Secure Payment",
         description: "100% secure payment system",
-        bgColor: "bg-green-100"
+        bgColor: "bg-green-100",
       },
       {
         icon: "Headphones",
         title: "24/7 Support",
         description: "Customer service available 24/7",
-        bgColor: "bg-purple-100"
-      }
+        bgColor: "bg-purple-100",
+      },
     ],
     statsData: [
       {
         label: "Happy Customers",
         value: "50K+",
-        icon: "Users"
+        icon: "Users",
       },
       {
         label: "Products Available",
         value: "10K+",
-        icon: "Package"
+        icon: "Package",
       },
       {
         label: "Cities Reached",
         value: "100+",
-        icon: "MapPin"
+        icon: "MapPin",
       },
       {
         label: "Satisfaction Rate",
         value: "4.8/5",
-        icon: "Star"
-      }
+        icon: "Star",
+      },
     ],
     aboutPreview: {
       title: "About Our Company",
-      description: "We are committed to providing the best shopping experience"
+      description: "We are committed to providing the best shopping experience",
     },
     testimonialsData: [
       {
@@ -98,16 +76,16 @@ async function seedPageData() {
         role: "Verified Buyer",
         content: "Great service and fast delivery. Highly recommended!",
         rating: 5,
-        avatar: "/testimonial1.jpg"
+        avatar: "/testimonial1.jpg",
       },
       {
         name: "Mike Chen",
         role: "Regular Customer",
         content: "Quality products at affordable prices. Love shopping here!",
         rating: 5,
-        avatar: "/testimonial2.jpg"
-      }
-    ]
+        avatar: "/testimonial2.jpg",
+      },
+    ],
   };
 
   // About Page Data
@@ -115,122 +93,123 @@ async function seedPageData() {
     heroTitle: "About Brandify",
     heroSubtitle: "Your Trusted E-Commerce Partner",
     heroDescription: "Learn more about our journey, mission, and the dedicated team behind Brandify",
-    companyStory: "Brandify was founded in 2020 with a simple mission: to make quality products accessible to everyone across Indonesia. What started as a small online store has grown into one of the most trusted e-commerce platforms in the country.",
+    companyStory:
+      "Brandify was founded in 2020 with a simple mission: to make quality products accessible to everyone across Indonesia. What started as a small online store has grown into one of the most trusted e-commerce platforms in the country.",
     mission: "To provide the best shopping experience by offering quality products, competitive prices, and excellent customer service to customers throughout Indonesia.",
     vision: "To become the leading e-commerce platform in Southeast Asia, connecting millions of customers with their favorite brands and products.",
     values: [
       {
         icon: "Heart",
         title: "Customer First",
-        description: "We always prioritize customer satisfaction in every decision we make"
+        description: "We always prioritize customer satisfaction in every decision we make",
       },
       {
         icon: "Shield",
         title: "Trust & Security",
-        description: "We guarantee the security of every transaction and customer data"
+        description: "We guarantee the security of every transaction and customer data",
       },
       {
         icon: "Target",
         title: "Innovation",
-        description: "We continuously innovate to provide the best shopping experience"
+        description: "We continuously innovate to provide the best shopping experience",
       },
       {
         icon: "Users",
         title: "Teamwork",
-        description: "We work together as a solid team to achieve common goals"
-      }
+        description: "We work together as a solid team to achieve common goals",
+      },
     ],
     statistics: [
       {
         label: "Happy Customers",
         value: "50K+",
-        icon: "Users"
+        icon: "Users",
       },
       {
         label: "Quality Products",
         value: "10K+",
-        icon: "Award"
+        icon: "Award",
       },
       {
         label: "Satisfaction Rating",
         value: "4.8",
-        icon: "Star"
+        icon: "Star",
       },
       {
         label: "Cities Reached",
         value: "100+",
-        icon: "MapPin"
-      }
+        icon: "MapPin",
+      },
     ],
     features: [
       {
         icon: "Shield",
         title: "Secure Shopping",
-        description: "Multi-layered security system and customer data protection"
+        description: "Multi-layered security system and customer data protection",
       },
       {
         icon: "Truck",
         title: "Fast Delivery",
-        description: "Free shipping across Indonesia with express delivery"
+        description: "Free shipping across Indonesia with express delivery",
       },
       {
         icon: "Clock",
         title: "24/7 Support",
-        description: "Customer service ready to help you anytime"
+        description: "Customer service ready to help you anytime",
       },
       {
         icon: "Heart",
         title: "Quality Products",
-        description: "Only selling original products with official warranty"
-      }
+        description: "Only selling original products with official warranty",
+      },
     ],
     teamMembers: [
       {
         name: "Ahmad Rizki",
         role: "CEO & Founder",
         image: "/team1.jpg",
-        description: "Visioner behind Brandify with 10+ years experience in e-commerce"
+        description: "Visioner behind Brandify with 10+ years experience in e-commerce",
       },
       {
         name: "Sari Indah",
         role: "Head of Operations",
         image: "/team2.jpg",
-        description: "Ensures every operation runs smoothly and efficiently"
+        description: "Ensures every operation runs smoothly and efficiently",
       },
       {
         name: "Budi Santoso",
         role: "Head of Technology",
         image: "/team3.jpg",
-        description: "Technology expert responsible for platform innovation"
-      }
+        description: "Technology expert responsible for platform innovation",
+      },
     ],
     timeline: [
       {
         year: "2020",
         title: "Company Founded",
-        description: "Brandify was established with a small team of 5 people"
+        description: "Brandify was established with a small team of 5 people",
       },
       {
         year: "2021",
         title: "First 1,000 Customers",
-        description: "Reached our first milestone of 1,000 satisfied customers"
+        description: "Reached our first milestone of 1,000 satisfied customers",
       },
       {
         year: "2022",
         title: "Nationwide Expansion",
-        description: "Expanded shipping services to all provinces in Indonesia"
+        description: "Expanded shipping services to all provinces in Indonesia",
       },
       {
         year: "2023",
         title: "50,000 Products",
-        description: "Reached 50,000 products from 1,000+ trusted brands"
+        description: "Reached 50,000 products from 1,000+ trusted brands",
       },
       {
         year: "2024",
         title: "Mobile App Launch",
-        description: "Launched mobile app for better shopping experience"
-      }
-    ]
+        description: "Launched mobile app for better shopping experience",
+      },
+    ],
   };
 
   // Event Page Data
@@ -249,7 +228,7 @@ async function seedPageData() {
         icon: "Crown",
         prize: "Up to 70% Off",
         participants: "15.2K",
-        bgGradient: "from-yellow-500 to-orange-500"
+        bgGradient: "from-yellow-500 to-orange-500",
       },
       {
         id: 2,
@@ -261,8 +240,8 @@ async function seedPageData() {
         icon: "Camera",
         prize: "$30 Voucher",
         participants: "892",
-        bgGradient: "from-purple-500 to-pink-500"
-      }
+        bgGradient: "from-purple-500 to-pink-500",
+      },
     ],
     upcomingEvents: [
       {
@@ -275,8 +254,8 @@ async function seedPageData() {
         icon: "Zap",
         prize: "Various Prizes",
         participants: "0",
-        bgGradient: "from-blue-500 to-cyan-500"
-      }
+        bgGradient: "from-blue-500 to-cyan-500",
+      },
     ],
     pastEvents: [
       {
@@ -289,29 +268,29 @@ async function seedPageData() {
         icon: "Flag",
         prize: "50% Off",
         participants: "25K",
-        bgGradient: "from-red-500 to-red-600"
-      }
+        bgGradient: "from-red-500 to-red-600",
+      },
     ],
     eventCategories: [
       {
         name: "Flash Sales",
         icon: "Zap",
         color: "yellow",
-        description: "Limited time offers with huge discounts"
+        description: "Limited time offers with huge discounts",
       },
       {
         name: "Contests",
         icon: "Trophy",
         color: "purple",
-        description: "Creative contests with exciting prizes"
+        description: "Creative contests with exciting prizes",
       },
       {
         name: "Seasonal Events",
         icon: "Calendar",
         color: "green",
-        description: "Special events for holidays and seasons"
-      }
-    ]
+        description: "Special events for holidays and seasons",
+      },
+    ],
   };
 
   // Product Page Data
@@ -325,22 +304,22 @@ async function seedPageData() {
         description: "Latest gadgets and electronics",
         image: "/category-electronics.jpg",
         link: "/products/electronics",
-        bgColor: "bg-blue-100"
+        bgColor: "bg-blue-100",
       },
       {
         name: "Fashion",
         description: "Trendy clothing and accessories",
         image: "/category-fashion.jpg",
         link: "/products/fashion",
-        bgColor: "bg-pink-100"
+        bgColor: "bg-pink-100",
       },
       {
         name: "Home & Garden",
         description: "Everything for your home",
         image: "/category-home.jpg",
         link: "/products/home-garden",
-        bgColor: "bg-green-100"
-      }
+        bgColor: "bg-green-100",
+      },
     ],
     promotionalBanner: {
       title: "Special Offer",
@@ -348,59 +327,59 @@ async function seedPageData() {
       buttonText: "Shop Now",
       buttonLink: "/products/sale",
       bgColor: "bg-gradient-to-r from-purple-500 to-pink-500",
-      isActive: true
+      isActive: true,
     },
     filterOptions: [
       {
         type: "category",
         label: "Category",
-        options: ["Electronics", "Fashion", "Home & Garden", "Sports", "Books"]
+        options: ["Electronics", "Fashion", "Home & Garden", "Sports", "Books"],
       },
       {
         type: "price",
         label: "Price Range",
-        options: ["Under Rp 100,000", "Rp 100,000 - 500,000", "Rp 500,000 - 1,000,000", "Above Rp 1,000,000"]
+        options: ["Under Rp 100,000", "Rp 100,000 - 500,000", "Rp 500,000 - 1,000,000", "Above Rp 1,000,000"],
       },
       {
         type: "brand",
         label: "Brand",
-        options: ["Samsung", "Apple", "Nike", "Adidas", "Uniqlo"]
-      }
+        options: ["Samsung", "Apple", "Nike", "Adidas", "Uniqlo"],
+      },
     ],
     sortOptions: [
       {
         value: "newest",
-        label: "Newest"
+        label: "Newest",
       },
       {
         value: "price_low",
-        label: "Price: Low to High"
+        label: "Price: Low to High",
       },
       {
         value: "price_high",
-        label: "Price: High to Low"
+        label: "Price: High to Low",
       },
       {
         value: "popular",
-        label: "Most Popular"
+        label: "Most Popular",
       },
       {
         value: "rating",
-        label: "Highest Rated"
-      }
+        label: "Highest Rated",
+      },
     ],
     seoContent: [
       {
         title: "Why Shop With Us",
         content: "We offer the best selection of products with guaranteed quality and competitive prices. Our customer service team is always ready to help you find the perfect product.",
-        type: "text"
+        type: "text",
       },
       {
         title: "Quality Guarantee",
         content: "All products come with manufacturer warranty and our quality guarantee. Shop with confidence knowing that your purchase is protected.",
-        type: "text"
-      }
-    ]
+        type: "text",
+      },
+    ],
   };
 
   try {
@@ -409,14 +388,14 @@ async function seedPageData() {
     if (existingHomePage) {
       await prisma.homePage.update({
         where: { id: existingHomePage.id },
-        data: homePageData
+        data: homePageData,
       });
-      console.log('✅ Home page data updated');
+      console.log("✅ Home page data updated");
     } else {
       await prisma.homePage.create({
-        data: homePageData
+        data: homePageData,
       });
-      console.log('✅ Home page data created');
+      console.log("✅ Home page data created");
     }
 
     // Create or update about page
@@ -424,14 +403,14 @@ async function seedPageData() {
     if (existingAboutPage) {
       await prisma.aboutPage.update({
         where: { id: existingAboutPage.id },
-        data: aboutPageData
+        data: aboutPageData,
       });
-      console.log('✅ About page data updated');
+      console.log("✅ About page data updated");
     } else {
       await prisma.aboutPage.create({
-        data: aboutPageData
+        data: aboutPageData,
       });
-      console.log('✅ About page data created');
+      console.log("✅ About page data created");
     }
 
     // Create or update event page
@@ -439,14 +418,14 @@ async function seedPageData() {
     if (existingEventPage) {
       await prisma.eventPage.update({
         where: { id: existingEventPage.id },
-        data: eventPageData
+        data: eventPageData,
       });
-      console.log('✅ Event page data updated');
+      console.log("✅ Event page data updated");
     } else {
       await prisma.eventPage.create({
-        data: eventPageData
+        data: eventPageData,
       });
-      console.log('✅ Event page data created');
+      console.log("✅ Event page data created");
     }
 
     // Create or update product page
@@ -454,20 +433,19 @@ async function seedPageData() {
     if (existingProductPage) {
       await prisma.productPage.update({
         where: { id: existingProductPage.id },
-        data: productPageData
+        data: productPageData,
       });
-      console.log('✅ Product page data updated');
+      console.log("✅ Product page data updated");
     } else {
       await prisma.productPage.create({
-        data: productPageData
+        data: productPageData,
       });
-      console.log('✅ Product page data created');
+      console.log("✅ Product page data created");
     }
 
-    console.log('🎉 Page data seeding completed successfully!');
-    
+    console.log("🎉 Page data seeding completed successfully!");
   } catch (error) {
-    console.error('❌ Error seeding page data:', error);
+    console.error("❌ Error seeding page data:", error);
     throw error;
   }
 }
@@ -476,13 +454,12 @@ async function main() {
   try {
     await seedPageData();
   } catch (error) {
-    console.error('Error in main seeding process:', error);
+    console.error("Error in main seeding process:", error);
     process.exit(1);
   } finally {
     await prisma.$disconnect();
   }
 }
-
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   main();

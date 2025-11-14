@@ -19,7 +19,6 @@ export function useAuth(): AuthState {
   const [customAuth, setCustomAuth] = useState<CustomUser | null>(null);
   const [customLoading, setCustomLoading] = useState(true);
 
-  // Check custom auth (JWT)
   useEffect(() => {
     const checkCustomAuth = async () => {
       try {
@@ -40,14 +39,12 @@ export function useAuth(): AuthState {
     checkCustomAuth();
   }, []);
 
-  // Determine which auth system is active
   const isNextAuthLoading = nextAuthStatus === "loading";
   const hasNextAuthSession = !!session?.user;
   const hasCustomAuth = !!customAuth;
 
   const loading = isNextAuthLoading || customLoading;
   
-  // Prioritize NextAuth if available, otherwise use custom auth
   const user = hasNextAuthSession 
     ? {
         id: session.user.id || '',

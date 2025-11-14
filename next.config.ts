@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  transpilePackages: ["@react-email/render"],
+  experimental: {
+    ...(process.env.SKIP_BUILD_STATIC_GENERATION === "1" && {
+      isrFlushToDisk: false,
+    }),
+  },
+  turbopack: {
+    root: process.env.TURBOPACK_ROOT || undefined,
+  },
   images: {
     remotePatterns: [
       {

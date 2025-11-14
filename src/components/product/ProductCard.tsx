@@ -6,7 +6,7 @@ import { useCart } from "../contexts/cart-context";
 import type { Product } from "../../data/products";
 import Link from "next/link";
 import { useWishlist } from "../contexts/wishlist-context";
-import { Heart, ShoppingCart, Star, Clock } from "lucide-react";
+import { Heart, ShoppingCart, Star } from "lucide-react";
 
 export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid" }: { product: Product; admin?: boolean; onEdit?: () => void; onDelete?: () => void; viewMode?: "grid" | "list" }) {
   const { addToCart } = useCart();
@@ -14,10 +14,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
   const fav = isInWishlist(product.id);
 
   const hasValidDiscount = () => {
-    return product.discountPrice && 
-           product.discountPrice > 0 && 
-           product.discountPrice < product.price &&
-           (!product.promoExpired || new Date(product.promoExpired) > new Date());
+    return product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date());
   };
 
   const getDiscountPercentage = () => {
@@ -26,32 +23,24 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
   };
 
   const getFinalPrice = () => {
-    return hasValidDiscount() ? (product.discountPrice || product.price) : product.price;
+    return hasValidDiscount() ? product.discountPrice || product.price : product.price;
   };
 
   const renderPriceSection = () => {
     if (hasValidDiscount()) {
       return (
         <div className="h-14 flex flex-col justify-center">
-          <div className="text-sm text-gray-900 dark:text-gray-200 line-through mb-1">
-            {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-          </div>
+          <div className="text-sm text-gray-900 dark:text-gray-200 line-through mb-1">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</div>
           <div className="flex items-baseline gap-2">
-            <span className="text-xl font-semibold text-red-600 dark:text-red-400">
-              {(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
-            </span>
-            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full whitespace-nowrap">
-              -{getDiscountPercentage()}%
-            </span>
+            <span className="text-xl font-semibold text-red-600 dark:text-red-400">{(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
+            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full whitespace-nowrap">-{getDiscountPercentage()}%</span>
           </div>
         </div>
       );
     }
     return (
       <div className="h-14 flex items-center">
-        <p className="text-xl font-semibold text-gray-900 dark:text-white">
-          {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-        </p>
+        <p className="text-xl font-semibold text-gray-900 dark:text-white">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>
       </div>
     );
   };
@@ -61,24 +50,14 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
       return (
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-semibold text-red-600 dark:text-red-400">
-              {(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}
-            </span>
-            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
-              -{getDiscountPercentage()}%
-            </span>
+            <span className="text-lg font-semibold text-red-600 dark:text-red-400">{(product.discountPrice || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
+            <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">-{getDiscountPercentage()}%</span>
           </div>
-          <span className="text-sm text-gray-900 dark:text-gray-200 line-through">
-            {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-          </span>
+          <span className="text-sm text-gray-900 dark:text-gray-200 line-through">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</span>
         </div>
       );
     }
-    return (
-      <p className="text-lg font-semibold text-gray-900 dark:text-white">
-        {product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}
-      </p>
-    );
+    return <p className="text-lg font-semibold text-gray-900 dark:text-white">{product.price.toLocaleString("en-US", { style: "currency", currency: "USD" })}</p>;
   };
 
   if (viewMode === "list") {
@@ -91,21 +70,13 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 {/* Sale Badge for List View */}
                 {hasValidDiscount() && (
                   <div className="absolute -top-1 -right-1 z-10">
-                    <div className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold border border-white">
-                      -{getDiscountPercentage()}%
-                    </div>
+                    <div className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold border border-white">-{getDiscountPercentage()}%</div>
                   </div>
                 )}
                 {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="80px" />
                 ) : (
-                  <Image
-                    src="/placeholder-product.svg"
-                    alt="No image available"
-                    fill
-                    className="object-contain p-0"
-                    sizes="96px"
-                  />
+                  <Image src="/placeholder-product.svg" alt="No image available" fill className="object-contain p-0" sizes="96px" />
                 )}
               </div>
             </Link>
@@ -138,7 +109,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
                 <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">{product.category}</span>
                 <div className="flex items-center gap-1">
                   <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-          <span className="text-xs text-gray-900 dark:text-gray-200">4.5</span>
+                  <span className="text-xs text-gray-900 dark:text-gray-200">4.5</span>
                 </div>
               </div>
 
@@ -191,9 +162,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         {/* Sale Badge for Grid View */}
         {hasValidDiscount() && (
           <div className="absolute top-3 left-3 z-20">
-            <div className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white">
-              -{getDiscountPercentage()}% OFF
-            </div>
+            <div className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white">-{getDiscountPercentage()}% OFF</div>
           </div>
         )}
 
@@ -220,15 +189,9 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
             {product.image && product.image.trim() !== "" && product.image !== "/placeholder-image.svg" ? (
               <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             ) : (
-                <div className="w-full h-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-                  <Image
-                    src="/placeholder-product.svg"
-                    alt="No image available"
-                    fill
-                    className="object-contain p-1"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                </div>
+              <div className="w-full h-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
+                <Image src="/placeholder-product.svg" alt="No image available" fill className="object-contain p-1" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+              </div>
             )}
           </div>
         </Link>
@@ -239,7 +202,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
           <span className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs rounded-full">{product.category}</span>
           <div className="flex items-center gap-1">
             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-          <span className="text-xs text-gray-900 dark:text-gray-200">4.5</span>
+            <span className="text-xs text-gray-900 dark:text-gray-200">4.5</span>
           </div>
         </div>
 
@@ -250,7 +213,7 @@ export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid
         <div className="flex items-center justify-between mb-4">
           <div>
             {renderPriceSection()}
-                  <p className="text-xs text-gray-900 dark:text-gray-200 mt-1">Stock: {product.stock}</p>
+            <p className="text-xs text-gray-900 dark:text-gray-200 mt-1">Stock: {product.stock}</p>
           </div>
         </div>
 

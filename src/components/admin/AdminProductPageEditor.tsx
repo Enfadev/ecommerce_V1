@@ -63,7 +63,6 @@ interface ProductPageData {
   filterOptions: FilterOption[];
   sortOptions: SortOption[];
   seoContent: SeoContentBlock[];
-  // SEO fields
   metaTitle?: string;
   metaDescription?: string;
   metaKeywords?: string;
@@ -92,7 +91,6 @@ export default function AdminProductPageEditor() {
     filterOptions: [],
     sortOptions: [],
     seoContent: [],
-    // SEO fields
     metaTitle: "",
     metaDescription: "",
     metaKeywords: "",

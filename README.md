@@ -38,7 +38,105 @@ Ini adalah project e-commerce berbasis [Next.js](https://nextjs.org) dengan dark
 - Form: React Hook Form + Zod
 - Data dummy: `src/data/products.ts`
 
+## 🚀 Quick Start
+
+### Environment Setup (Wajib!)
+
+Sebelum menjalankan aplikasi, setup environment variables terlebih dahulu:
+
+```powershell
+# Windows PowerShell
+.\setup-env.ps1 local
+
+# Linux/Mac
+./setup-env.sh local
+```
+
+Atau manual:
+
+```bash
+# Copy file environment
+cp .env.local .env
+```
+
+**Dokumentasi lengkap:** [ENV_GUIDE.md](./ENV_GUIDE.md) | [Quick Reference](./ENV_QUICK_REF.md)
+
+---
+
 ## Cara Menjalankan
+
+### Option 1: Dev Containers (VS Code - Recommended) 🆕
+
+Cara paling modern untuk development dengan VS Code:
+
+1. **Prerequisites:**
+   - Install Docker Desktop
+   - Install VS Code extension: "Dev Containers"
+2. **Quick Start:**
+
+   - Buka project di VS Code
+   - Tekan `F1` → pilih "Dev Containers: Reopen in Container"
+   - Tunggu setup selesai (pertama kali ~5-10 menit)
+   - Jalankan `npm run dev:docker` di terminal
+
+3. **Fitur:**
+   - ✅ Environment konsisten untuk semua developer
+   - ✅ Extensions & settings auto-install
+   - ✅ Hot reload berfungsi sempurna
+   - ✅ Database & migrations auto-setup
+   - ✅ Integrated terminal & debugging
+
+**Dokumentasi lengkap:** [DEV_CONTAINERS_GUIDE.md](./documentations/DEV_CONTAINERS_GUIDE.md)
+
+---
+
+### Option 2: Docker Compose (CLI)
+
+Cara termudah untuk menjalankan aplikasi lengkap dengan database:
+
+1. Pastikan Docker Desktop sudah terinstall dan berjalan
+2. Copy environment variables:
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+3. Edit file `.env` sesuai kebutuhan
+4. Jalankan dengan npm scripts:
+
+   ```bash
+   # Development mode dengan watch (hot reload)
+   npm run docker:dev:watch
+
+   # Atau development biasa (background)
+   npm run docker:dev:up
+
+   # Atau development (foreground dengan logs)
+   npm run docker:dev
+   ```
+
+5. Akses aplikasi di [http://localhost:3000](http://localhost:3000)
+
+**Docker Commands:**
+
+```bash
+npm run docker:dev          # Start development (foreground)
+npm run docker:dev:up       # Start development (background)
+npm run docker:dev:watch    # Start dengan hot reload
+npm run docker:stop         # Stop containers
+npm run docker:logs         # Show all logs
+npm run docker:logs:app     # Show app logs only
+npm run docker:migrate      # Run migrations
+npm run docker:seed         # Seed database
+npm run docker:studio       # Open Prisma Studio
+npm run docker:status       # Show container status
+npm run docker:restart      # Restart containers
+npm run docker:exec:app     # Shell into app container
+```
+
+Dokumentasi lengkap: [NPM_SCRIPTS_DOCUMENTATION.md](./documentations/NPM_SCRIPTS_DOCUMENTATION.md) | [DOCKER_SETUP.md](./documentations/DOCKER_SETUP.md)
+
+---
+
+### Option 3: Local Development
 
 1. Install dependencies:
    ```bash
@@ -46,13 +144,14 @@ Ini adalah project e-commerce berbasis [Next.js](https://nextjs.org) dengan dark
    # atau
    yarn install
    ```
-2. Jalankan development server:
+2. Setup database (lihat bagian "Database & Prisma" di bawah)
+3. Jalankan development server:
    ```bash
    npm run dev
    # atau
    yarn dev
    ```
-3. Buka [http://localhost:3000](http://localhost:3000) di browser.
+4. Buka [http://localhost:3000](http://localhost:3000) di browser.
 
 ## Database & Prisma (MySQL)
 
@@ -135,6 +234,38 @@ npm run prisma:studio
 - Error koneksi (ECONNREFUSED/ER_ACCESS_DENIED_ERROR): cek host/port/user/password MySQL, dan pastikan database ada.
 - Hak akses membuat skema/tabel: gunakan user MySQL dengan hak CREATE/ALTER/TABLE.
 
+### Troubleshooting Docker Issues
+
+**Error: Permission Denied (P1010, P3018)**
+
+Jika Anda mendapat error database permission:
+
+```
+Error: P1010 - User was denied access
+Error: P3018 - ALTER command denied
+```
+
+**Quick Fix:**
+
+```powershell
+# Grant permissions
+npm run docker:grant
+
+# Reset database
+npx prisma migrate reset --force
+
+# Restart containers
+docker compose restart
+```
+
+📖 **Panduan Lengkap**: Lihat [QUICK_FIX_DOCKER.md](./QUICK_FIX_DOCKER.md) untuk troubleshooting lengkap.
+
+**Other Docker Issues:**
+
+- Container restart loop → Cek logs: `docker compose logs app`
+- Database connection error → Verifikasi `.env` configuration
+- Migration fails → Lihat [PRISMA_SHADOW_DB_FIX.md](./documentations/PRISMA_SHADOW_DB_FIX.md)
+
 ### Catatan Production
 
 - Gunakan `npm run prisma:migrate:deploy` di lingkungan production/CI.
@@ -148,11 +279,36 @@ npm run prisma:studio
 - `src/data/` - Data dummy produk
 - `src/hooks/` - Custom hooks
 - `src/lib/` - Utility functions
+- `documentations/` - Semua dokumentasi project
+
+## 📚 Documentation
+
+Semua dokumentasi project tersedia di folder **[documentations/](./documentations/)**
+
+### Quick Links:
+
+- **[Documentation Index](./documentations/INDEX.md)** - Katalog lengkap semua dokumentasi
+- **[Docker Quick Start](./documentations/DOCKER_QUICK_START.md)** - Panduan cepat Docker setup
+- **[Docker Setup Guide](./documentations/DOCKER_SETUP.md)** - Panduan lengkap Docker
+- **[Feature Documentation](./documentations/)** - Dokumentasi fitur-fitur
+
+### Categories:
+
+- 🐳 **Docker** - Complete Docker documentation (10 files)
+- 🛒 **E-commerce Features** - Product, cart, checkout docs
+- 💬 **Chat System** - Chat and messaging documentation
+- 🔐 **Admin & Security** - Admin panel and security docs
+- 📊 **Analytics** - Analytics and monitoring
+- 🔧 **Integration** - OAuth, PayPal, SEO guides
+- 🧪 **Testing** - Test documentation and reports
+
+[**→ Browse All Documentation**](./documentations/INDEX.md)
 
 ## Catatan
 
 - Semua tampilan default dark mode.
-- Silakan cek file `FITUR_FRONTEND_NEXT.md` untuk daftar fitur yang sedang/akan dikembangkan.
+- Dokumentasi lengkap tersedia di folder `documentations/`
+- Untuk Docker setup, lihat [DOCKER_QUICK_START.md](./documentations/DOCKER_QUICK_START.md)
 
 ---
 

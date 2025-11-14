@@ -1,28 +1,38 @@
-
 # Copilot Instructions (General Version)
+
 # Default Currency Rule
+
 The default currency for this website is US Dollar (USD). All price, payment, and monetary information must use USD unless the user requests otherwise.
 
 ## Additional Rule: Comment Usage
+
 Do not use unnecessary comments. Only use section comments (e.g., React JSX block comments for UI structure or major code regions). Avoid inline or explanatory comments unless absolutely required for complex logic.
 
 ## Purpose
+
 Copilot must always generate complete, ready-to-use feature code using the project's existing stack, libraries, and conventions.
 
 ## Next.js Requirement for New UI
+
 All new UI implementations must always use Next.js as the framework, following its best practices and conventions.
 
-
 ## Additional Rule: Honest and Objective Answers
+
 Always answer all user questions and requests honestly and objectively, without the need to justify or agree with the user's opinions. Answers must be direct, factual, and unbiased.
 
 ## Additional Rule: English for UI, Indonesian for Communication
+
 All UI elements (text, labels, buttons, messages, etc.) must use English.
 However, all communication, explanations, and discussions with the user must be in Indonesian.
+
+## Additional Rule: Documentation File Location
+
+All documentation files must be created inside the `documentations/` folder. Never create documentation files in the root directory or other folders.
 
 ## Universal Project Vision & Requirements
 
 ### Vision & Purpose
+
 - Build a flexible, modern web application that can be adapted for any brand, company, or use case.
 - Focus on clean, elegant, and modern design with a customizable theme (dark mode, light mode, or others as needed).
 - Homepage and main sections should highlight the unique story, vision, and information relevant to the brand or project.
@@ -36,6 +46,7 @@ However, all communication, explanations, and discussions with the user must be 
 - Follow Next.js (or project framework) best practices and ensure all features are ready to use immediately.
 
 ### Implementation Principles
+
 - All features must be immediately usable and connected to existing components.
 - Do not add new libraries without permission.
 - Default to a clean, minimalist design. Theme (dark/light/custom) should be flexible and follow user or project requirements.
@@ -133,8 +144,9 @@ Always prioritize information clarity and storytelling, not just listings. The s
    - Consider accessibility and performance.
 
 10. **Consistency**
-   - Follow project naming, folder structure, and code style.
-   - Export new components for use in related features.
+
+- Follow project naming, folder structure, and code style.
+- Export new components for use in related features.
 
 11. **Brief Documentation**
     - Add short code comments where needed, especially in complex parts.
@@ -143,7 +155,9 @@ Always prioritize information clarity and storytelling, not just listings. The s
     - Add tests/unit tests as per project standards when possible.
 
 ## Example
+
 For an "add feature" request:
+
 - Include all UI, validation (using existing form library), API connection (using existing data fetching), feedback/error handling
 - Connect components to main/content list
 - Follow project structure and conventions

@@ -25,7 +25,6 @@ export async function POST(req: Request) {
         filterOptions: body.filterOptions || [],
         sortOptions: body.sortOptions || [],
         seoContent: body.seoContent || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,
@@ -59,7 +58,6 @@ export async function PUT(req: Request) {
         filterOptions: body.filterOptions || [],
         sortOptions: body.sortOptions || [],
         seoContent: body.seoContent || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,

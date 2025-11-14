@@ -263,7 +263,6 @@ export default function AdminProductManagement() {
           galleryUrls = productData.gallery || [];
         }
 
-        // Prepare update data - only include imageUrl if there's a new image uploaded
         const updatePayload: Record<string, unknown> = {
           id: editingProduct.id,
           name: productData.name,
@@ -289,7 +288,6 @@ export default function AdminProductManagement() {
           gallery: galleryUrls,
         };
 
-        // Only include imageUrl if there's a new image uploaded
         if (hasNewImage) {
           updatePayload.imageUrl = imageUrl;
         }

@@ -1,18 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  Search, 
-  Package, 
-  Loader2,
-  MessageCircle
-} from "lucide-react";
+import { Search, Package, Loader2, MessageCircle } from "lucide-react";
 
 interface Product {
   id: number;
@@ -60,8 +55,8 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
   const loadFeaturedProducts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/chat/products?page=1&limit=10');
-      
+      const response = await fetch("/api/chat/products?page=1&limit=10");
+
       if (response.ok) {
         const data = await response.json();
         setProducts(data.products || []);
@@ -80,19 +75,17 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `/api/chat/products/search?q=${encodeURIComponent(query)}&page=${page}&limit=10`
-      );
-      
+      const response = await fetch(`/api/chat/products/search?q=${encodeURIComponent(query)}&page=${page}&limit=10`);
+
       if (response.ok) {
         const data = await response.json();
-        
+
         if (page === 1) {
           setProducts(data.products);
         } else {
-          setProducts(prev => [...prev, ...data.products]);
+          setProducts((prev) => [...prev, ...data.products]);
         }
-        
+
         setHasMore(data.hasMore);
         setCurrentPage(data.currentPage);
       }
@@ -141,12 +134,7 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
           {/* Search Input */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search products by name, brand, or SKU..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+            <Input placeholder="Search products by name, brand, or SKU..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
           </div>
 
           {/* Loading */}
@@ -161,20 +149,12 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
           {products.length > 0 && (
             <div className="max-h-96 overflow-y-auto space-y-3">
               {products.map((product) => (
-                <Card 
-                  key={product.id} 
-                  className="cursor-pointer hover:bg-muted/30 transition-colors border-muted-foreground/20"
-                  onClick={() => handleSelectProduct(product)}
-                >
+                <Card key={product.id} className="cursor-pointer hover:bg-muted/30 transition-colors border-muted-foreground/20" onClick={() => handleSelectProduct(product)}>
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
                       {/* Product Image */}
                       <Avatar className="h-16 w-16 rounded-md">
-                        <AvatarImage 
-                          src={product.imageUrl || "/placeholder-product.svg"} 
-                          alt={product.name}
-                          className="object-cover"
-                        />
+                        <AvatarImage src={product.imageUrl || "/placeholder-product.svg"} alt={product.name} className="object-cover" />
                         <AvatarFallback className="rounded-md bg-muted">
                           <Package className="h-8 w-8 text-muted-foreground" />
                         </AvatarFallback>
@@ -182,40 +162,24 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
 
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-foreground truncate">
-                          {product.name}
-                        </h3>
-                        
-                        {product.brand && (
-                          <p className="text-sm text-muted-foreground mb-1">
-                            by {product.brand}
-                          </p>
-                        )}
+                        <h3 className="font-medium text-foreground truncate">{product.name}</h3>
 
-                        {product.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                            {product.description}
-                          </p>
-                        )}
+                        {product.brand && <p className="text-sm text-muted-foreground mb-1">by {product.brand}</p>}
+
+                        {product.description && <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{product.description}</p>}
 
                         {/* Price */}
                         <div className="flex items-center space-x-2 mb-2">
                           {product.discountPrice ? (
                             <>
-                              <span className="text-lg font-bold text-red-600 dark:text-red-400">
-                                {formatPrice(product.discountPrice)}
-                              </span>
-                              <span className="text-sm text-muted-foreground line-through">
-                                {formatPrice(product.price)}
-                              </span>
+                              <span className="text-lg font-bold text-red-600 dark:text-red-400">{formatPrice(product.discountPrice)}</span>
+                              <span className="text-sm text-muted-foreground line-through">{formatPrice(product.price)}</span>
                               <Badge variant="secondary" className="bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
                                 -{getDiscountPercentage(product.price, product.discountPrice)}% OFF
                               </Badge>
                             </>
                           ) : (
-                            <span className="text-lg font-bold text-foreground">
-                              {formatPrice(product.price)}
-                            </span>
+                            <span className="text-lg font-bold text-foreground">{formatPrice(product.price)}</span>
                           )}
                         </div>
 
@@ -227,19 +191,11 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
                                 {product.category.name}
                               </Badge>
                             )}
-                            
-                            <span className={`text-xs ${
-                              product.stock > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                            }`}>
-                              {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
-                            </span>
+
+                            <span className={`text-xs ${product.stock > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>{product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}</span>
                           </div>
 
-                          {product.sku && (
-                            <span className="text-xs text-muted-foreground">
-                              SKU: {product.sku}
-                            </span>
-                          )}
+                          {product.sku && <span className="text-xs text-muted-foreground">SKU: {product.sku}</span>}
                         </div>
                       </div>
 
@@ -263,11 +219,7 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
               {/* Load More Button */}
               {hasMore && (
                 <div className="flex justify-center pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={loadMore}
-                    disabled={isLoading}
-                  >
+                  <Button variant="outline" onClick={loadMore} disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -286,12 +238,8 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
           {searchQuery.trim() && !isLoading && products.length === 0 && (
             <div className="text-center py-8">
               <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">
-                No products found
-              </h3>
-              <p className="text-muted-foreground">
-                Try searching with different keywords
-              </p>
+              <h3 className="text-lg font-medium text-foreground mb-2">No products found</h3>
+              <p className="text-muted-foreground">Try searching with different keywords</p>
             </div>
           )}
 
@@ -299,12 +247,8 @@ export function ProductSearchDialog({ isOpen, onClose, onSelectProduct }: Produc
           {!searchQuery.trim() && !isLoading && products.length === 0 && (
             <div className="text-center py-8">
               <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">
-                Browse Products
-              </h3>
-              <p className="text-muted-foreground">
-                Select a product to share in your conversation, or use the search above
-              </p>
+              <h3 className="text-lg font-medium text-foreground mb-2">Browse Products</h3>
+              <p className="text-muted-foreground">Select a product to share in your conversation, or use the search above</p>
             </div>
           )}
         </div>

@@ -103,7 +103,6 @@ export const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>
       document.execCommand(command, false, value);
       editorRef.current?.focus();
       
-      // Trigger onChange
       if (onChange && editorRef.current) {
         onChange(editorRef.current.innerHTML);
       }

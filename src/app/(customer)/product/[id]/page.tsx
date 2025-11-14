@@ -5,7 +5,10 @@ import Image from "next/image";
 import ProductReviewSection from "@/components/product/ProductReviewSection";
 import ProductRecommendation from "@/components/product/ProductRecommendation";
 import { useCart } from "@/components/contexts/cart-context";
+import { useWishlist } from "@/components/contexts/wishlist-context";
 import RichTextDisplay from "@/components/ui/RichTextDisplay";
+import { Heart, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import * as React from "react";
 
 interface ProductDetail {
@@ -22,9 +25,11 @@ interface ProductDetail {
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { addToCart } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [product, setProduct] = React.useState<ProductDetail | undefined>(undefined);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
+  const [wishlistLoading, setWishlistLoading] = React.useState(false);
 
   React.useEffect(() => {
     let isMounted = true;
@@ -45,6 +50,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           description: data.description,
         };
         if (isMounted) setProduct(mappedProduct);
+
       } catch (err: unknown) {
         if (isMounted) setError(err instanceof Error ? err.message : "Failed to fetch product");
       }
@@ -54,6 +60,49 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       isMounted = false;
     };
   }, [params]);
+
+  const handleAddToWishlist = async () => {
+    if (!product || wishlistLoading) return;
+
+    setWishlistLoading(true);
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await addToWishlist(product as any);
+      }
+    } catch (err) {
+      console.error("Wishlist error:", err);
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!product) return;
+
+    const shareData = {
+      title: product.name,
+      text: `Check out ${product.name} - $${product.price}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        toast.success("Shared successfully!");
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!");
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        console.error("Share error:", err);
+        toast.error("Failed to share");
+      }
+    }
+  };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
   if (error || !product) return notFound();
@@ -71,12 +120,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-                    <Image 
-                      src="/placeholder-product.svg" 
-                      alt="No image available" 
-                      fill 
-                      className="object-contain p-8" 
-                    />
+                    <Image src="/placeholder-product.svg" alt="No image available" fill className="object-contain p-8" />
                   </div>
                 )}
               </div>
@@ -89,13 +133,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <div className="flex items-center gap-3">
                 <span className="px-4 py-2 bg-foreground/5 text-foreground text-sm font-medium rounded-full border border-border/30">{product.category}</span>
                 {/* Sale Badge */}
-                {product.discountPrice && 
-                 product.discountPrice > 0 && 
-                 product.discountPrice < product.price &&
-                 (!product.promoExpired || new Date(product.promoExpired) > new Date()) && (
-                  <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">
-                    -{Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
-                  </span>
+                {product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()) && (
+                  <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full">-{Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF</span>
                 )}
               </div>
 
@@ -103,10 +142,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
               {/* Price Display with Discount Logic */}
               <div className="space-y-2">
-                {product.discountPrice && 
-                 product.discountPrice > 0 && 
-                 product.discountPrice < product.price &&
-                 (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? (
+                {product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? (
                   <>
                     <div className="flex items-baseline gap-3">
                       <span className="text-4xl font-semibold text-red-600">${product.discountPrice.toLocaleString()}</span>
@@ -114,15 +150,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xl text-muted-foreground line-through">${product.price.toLocaleString()}</span>
-                      <span className="text-sm text-red-600 font-medium">
-                        Save ${(product.price - product.discountPrice).toLocaleString()}
-                      </span>
+                      <span className="text-sm text-red-600 font-medium">Save ${(product.price - product.discountPrice).toLocaleString()}</span>
                     </div>
-                    {product.promoExpired && (
-                      <p className="text-sm text-orange-600 font-medium">
-                        🔥 Sale ends: {new Date(product.promoExpired).toLocaleDateString()}
-                      </p>
-                    )}
+                    {product.promoExpired && <p className="text-sm text-orange-600 font-medium">🔥 Sale ends: {new Date(product.promoExpired).toLocaleDateString()}</p>}
                   </>
                 ) : (
                   <div className="flex items-baseline gap-2">
@@ -140,12 +170,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                   addToCart({
                     id: product.id,
                     name: product.name,
-                    price: product.discountPrice && 
-                           product.discountPrice > 0 && 
-                           product.discountPrice < product.price &&
-                           (!product.promoExpired || new Date(product.promoExpired) > new Date()) 
-                           ? product.discountPrice 
-                           : product.price,
+                    price: product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()) ? product.discountPrice : product.price,
                     image: product.image,
                   })
                 }
@@ -154,8 +179,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               </button>
 
               <div className="flex gap-3">
-                <button className="flex-1 border border-border rounded-2xl px-6 py-3 font-medium text-foreground hover:bg-muted/50 transition-colors">Add to Wishlist</button>
-                <button className="flex-1 border border-border rounded-2xl px-6 py-3 font-medium text-foreground hover:bg-muted/50 transition-colors">Share</button>
+                <button
+                  onClick={handleAddToWishlist}
+                  disabled={wishlistLoading}
+                  className="flex-1 border border-border rounded-2xl p-3 flex items-center justify-center text-foreground hover:bg-muted/50 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  <Heart className={`w-6 h-6 transition-all ${isInWishlist(product.id) ? "fill-red-500 text-red-500" : "group-hover:fill-red-500 group-hover:text-red-500"}`} />
+                </button>
+                <button onClick={handleShare} className="flex-1 border border-border rounded-2xl p-3 flex items-center justify-center text-foreground hover:bg-muted/50 transition-colors" title="Share">
+                  <Share2 className="w-6 h-6" />
+                </button>
               </div>
             </div>
           </div>
@@ -165,10 +199,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         {product.description && (
           <div className="bg-card rounded-2xl shadow-sm border p-6 mb-8">
             <h2 className="text-xl font-semibold text-foreground mb-4">Description</h2>
-            <RichTextDisplay 
-              content={product.description} 
-              className="text-muted-foreground leading-relaxed"
-            />
+            <RichTextDisplay content={product.description} className="text-muted-foreground leading-relaxed" />
           </div>
         )}
 

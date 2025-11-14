@@ -28,7 +28,6 @@ export async function POST(req: Request) {
         features: body.features || [],
         teamMembers: body.teamMembers || [],
         timeline: body.timeline || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,
@@ -65,7 +64,6 @@ export async function PUT(req: Request) {
         features: body.features || [],
         teamMembers: body.teamMembers || [],
         timeline: body.timeline || [],
-        // SEO fields
         metaTitle: body.metaTitle || null,
         metaDescription: body.metaDescription || null,
         metaKeywords: body.metaKeywords || null,

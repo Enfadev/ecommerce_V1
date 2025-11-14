@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     let chatRooms;
 
     if (user.role === "ADMIN") {
-      chatRooms = await (prisma as any).chatRoom.findMany({
+      chatRooms = await prisma.chatRoom.findMany({
         include: {
           user: {
             select: {
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         orderBy: { lastActivity: "desc" },
       });
     } else {
-      chatRooms = await (prisma as any).chatRoom.findMany({
+      chatRooms = await prisma.chatRoom.findMany({
         where: { userId: user.id },
         include: {
           admin: {
@@ -107,10 +107,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ chatRooms: formattedChatRooms });
   } catch (error) {
     console.error("Error fetching chat rooms:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch chat rooms" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch chat rooms" }, { status: 500 });
   }
 }
 
@@ -124,14 +121,10 @@ export async function POST(request: NextRequest) {
     const { subject, message, priority = "NORMAL" } = await request.json();
 
     if (!message) {
-      return NextResponse.json(
-        { error: "Message is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const existingRoom = await (prisma as any).chatRoom.findFirst({
+    const existingRoom = await prisma.chatRoom.findFirst({
       where: {
         userId: user.id,
         status: "OPEN",
@@ -139,8 +132,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingRoom) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const newMessage = await (prisma as any).chatMessage.create({
+      const newMessage = await prisma.chatMessage.create({
         data: {
           chatRoomId: existingRoom.id,
           senderId: user.id,
@@ -158,8 +150,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (prisma as any).chatRoom.update({
+      await prisma.chatRoom.update({
         where: { id: existingRoom.id },
         data: {
           lastMessage: message,
@@ -175,8 +166,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const chatRoom = await (prisma as any).chatRoom.create({
+    const chatRoom = await prisma.chatRoom.create({
       data: {
         userId: user.id,
         subject: subject || "Customer Support",
@@ -214,15 +204,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       chatRoom,
       success: true,
     });
   } catch (error) {
     console.error("Error creating chat room:", error);
-    return NextResponse.json(
-      { error: "Failed to create chat room" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to create chat room" }, { status: 500 });
   }
 }

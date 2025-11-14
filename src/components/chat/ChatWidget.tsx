@@ -165,7 +165,6 @@ export function ChatWidget() {
       const eventSource = new EventSource(`/api/chat/sse?roomId=${chatRoom.id}`);
       
       eventSource.onopen = () => {
-        // Reset reconnect attempts on successful connection
         setSseReconnectAttempts(0);
       };
       
@@ -218,15 +217,13 @@ export function ChatWidget() {
         console.warn('SSE connection failed:', error);
         eventSource.close();
         
-        // Auto-reconnect with limited attempts
         if (sseReconnectAttempts < maxSseReconnectAttempts) {
           setSseReconnectAttempts(prev => prev + 1);
           setTimeout(() => {
             if (chatRoom && user) {
-              // Force re-render to trigger useEffect again
               setChatRoom(prevRoom => ({ ...prevRoom! }));
             }
-          }, 3000 * (sseReconnectAttempts + 1)); // Exponential backoff
+          }, 3000 * (sseReconnectAttempts + 1));
         }
       };
 

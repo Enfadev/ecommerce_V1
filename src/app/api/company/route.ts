@@ -7,9 +7,8 @@ export async function GET(request: Request) {
     
     const host = request.headers.get('host') || 'localhost:3000';
     const proto = request.headers.get('x-forwarded-proto') || request.headers.get('x-forwarded-protocol') || 'http';
-    const origin = `${proto}://${host}`;
+    const origin = `${proto}:
     
-    // Build absolute logo URL if settings.logoUrl exists and is relative
     const rawLogo = settings.logoUrl || null;
     const logoUrl = rawLogo
       ? (rawLogo.startsWith('http') ? rawLogo : `${origin}${rawLogo.startsWith('/') ? '' : '/'}${rawLogo}`)
@@ -30,7 +29,7 @@ export async function GET(request: Request) {
     
     const host = request.headers.get('host') || 'localhost:3000';
     const proto = request.headers.get('x-forwarded-proto') || request.headers.get('x-forwarded-protocol') || 'http';
-    const origin = `${proto}://${host}`;
+    const origin = `${proto}:
 
     return NextResponse.json({
       name: "E-Commerce Store",
