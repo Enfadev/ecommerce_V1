@@ -1,5 +1,19 @@
-import { OrderManagementClient } from "@/components/admin/orders/OrderManagementClient";
+import { Suspense } from "react";
+import { OrderManagementWrapper } from "@/components/admin/orders/OrderManagementWrapper";
+import { getInitialOrdersData } from "@/lib/orders-server";
+import Loading from "./loading";
 
-export default function AdminOrderManagement() {
-  return <OrderManagementClient />;
+export const metadata = {
+  title: "Order Management - Admin",
+  description: "Manage all customer orders and track their status",
+};
+
+export default async function AdminOrderManagement() {
+  const initialData = await getInitialOrdersData();
+
+  return (
+    <Suspense fallback={<Loading />}>
+      <OrderManagementWrapper initialData={initialData} />
+    </Suspense>
+  );
 }

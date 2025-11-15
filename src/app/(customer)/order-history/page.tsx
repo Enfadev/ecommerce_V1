@@ -67,7 +67,19 @@ export default function OrderHistoryPage() {
 
   const handlePrintInvoice = async (order: Order) => {
     try {
-      await printInvoice(order);
+      const orderData = {
+        ...order,
+        id: order.orderNumber,
+        customer: {
+          name: order.customerName,
+          email: order.customerEmail,
+          phone: order.customerPhone,
+        },
+        total: order.totalAmount,
+        status: order.status.toLowerCase() as "pending" | "processing" | "shipped" | "delivered" | "cancelled",
+        paymentStatus: order.paymentStatus.toLowerCase() as "pending" | "paid" | "failed",
+      };
+      await printInvoice(orderData as unknown as Parameters<typeof printInvoice>[0]);
       toast.success("Invoice printed successfully!");
     } catch (error) {
       console.error("Error printing invoice:", error);
