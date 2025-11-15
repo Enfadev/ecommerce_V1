@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { Order } from '@/hooks/use-orders';
+import { useCallback, useState } from "react";
+import type { Order } from "@/types/order";
 
 interface CompanyInfo {
   name: string;
@@ -15,32 +15,28 @@ export const usePrintInvoice = () => {
 
   const printInvoice = useCallback(async (order: Order, companyInfo?: CompanyInfo) => {
     setIsLoading(true);
-    
+
     try {
       let company = companyInfo;
       if (!company) {
         try {
-          const response = await fetch('/api/company');
+          const response = await fetch("/api/company");
           if (response.ok) {
             company = await response.json();
           }
         } catch (error) {
-          console.warn('Failed to fetch company info, using defaults:', error);
+          console.warn("Failed to fetch company info, using defaults:", error);
         }
       }
 
-      const currentDomain = typeof window !== 'undefined' 
-        ? window.location.host 
-        : 'localhost:3000';
+      const currentDomain = typeof window !== "undefined" ? window.location.host : "localhost:3000";
 
-      const origin = typeof window !== 'undefined'
-        ? window.location.origin
-        : 'http://localhost:3000';
+      const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
 
-      const printWindow = window.open('', '_blank', 'width=800,height=600');
-      
+      const printWindow = window.open("", "_blank", "width=800,height=600");
+
       if (!printWindow) {
-        throw new Error('Unable to open print window. Please check your popup blocker settings.');
+        throw new Error("Unable to open print window. Please check your popup blocker settings.");
       }
 
       const defaultCompanyInfo = {
@@ -48,7 +44,7 @@ export const usePrintInvoice = () => {
         address: "123 Business Street, New York, NY 10001",
         phone: "+1 (555) 123-4567",
         email: "info@ecommerce.com",
-        website: currentDomain
+        website: currentDomain,
       };
 
       company = company || defaultCompanyInfo;
@@ -56,19 +52,17 @@ export const usePrintInvoice = () => {
       company.website = currentDomain;
 
       const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
-      
+
       const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
+        return new Date(dateString).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         });
       };
 
       const logoUrlFromCompany = company && (company as CompanyInfo).logoUrl;
-      const logoSrc = logoUrlFromCompany
-        ? (logoUrlFromCompany.startsWith('http') ? logoUrlFromCompany : `${origin}${logoUrlFromCompany.startsWith('/') ? '' : '/'}${logoUrlFromCompany}`)
-        : `${origin}/logo.svg`;
+      const logoSrc = logoUrlFromCompany ? (logoUrlFromCompany.startsWith("http") ? logoUrlFromCompany : `${origin}${logoUrlFromCompany.startsWith("/") ? "" : "/"}${logoUrlFromCompany}`) : `${origin}/logo.svg`;
 
       const invoiceHTML = `
         <!DOCTYPE html>
@@ -339,7 +333,7 @@ export const usePrintInvoice = () => {
                   <div>${company.address}</div>
                   <div>${company.phone}</div>
                   <div>${company.email}</div>
-                  ${company.website ? `<div>${company.website}</div>` : ''}
+                  ${company.website ? `<div>${company.website}</div>` : ""}
                 </div>
               </div>
             </div>
@@ -354,7 +348,7 @@ export const usePrintInvoice = () => {
                     <div>${order.customerEmail}</div>
                     <div>${order.customerPhone}</div>
                     <div style="margin-top: 5px;">${order.shippingAddress}</div>
-                    ${order.postalCode ? `<div>${order.postalCode}</div>` : ''}
+                    ${order.postalCode ? `<div>${order.postalCode}</div>` : ""}
                   </div>
                 </div>
               </div>
@@ -376,12 +370,16 @@ export const usePrintInvoice = () => {
                   <span class="detail-label">Payment Status:</span>
                   <span class="detail-value" style="text-transform: capitalize;">${order.paymentStatus.toLowerCase()}</span>
                 </div>
-                ${order.trackingNumber ? `
+                ${
+                  order.trackingNumber
+                    ? `
                   <div class="detail-item">
                     <span class="detail-label">Tracking Number:</span>
                     <span class="detail-value">${order.trackingNumber}</span>
                   </div>
-                ` : ''}
+                `
+                    : ""
+                }
               </div>
             </div>
 
@@ -398,7 +396,9 @@ export const usePrintInvoice = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  ${order.items.map(item => `
+                  ${order.items
+                    .map(
+                      (item) => `
                     <tr>
                       <td class="text-left">
                         <div style="font-weight: 500;">${item.productName}</div>
@@ -409,7 +409,9 @@ export const usePrintInvoice = () => {
                         ${formatCurrency(item.productPrice * item.quantity)}
                       </td>
                     </tr>
-                  `).join('')}
+                  `
+                    )
+                    .join("")}
                 </tbody>
               </table>
             </div>
@@ -430,12 +432,16 @@ export const usePrintInvoice = () => {
                   <span>Tax:</span>
                   <span>${formatCurrency(order.tax)}</span>
                 </div>
-                ${order.discount > 0 ? `
+                ${
+                  order.discount > 0
+                    ? `
                   <div class="summary-item">
                     <span>Discount:</span>
                     <span class="discount">-${formatCurrency(order.discount)}</span>
                   </div>
-                ` : ''}
+                `
+                    : ""
+                }
                 <div class="summary-total">
                   <span class="total-label">Total Amount:</span>
                   <span class="total-amount">${formatCurrency(order.totalAmount)}</span>
@@ -443,13 +449,17 @@ export const usePrintInvoice = () => {
               </div>
             </div>
 
-            ${order.notes ? `
+            ${
+              order.notes
+                ? `
               <!-- Notes -->
               <div class="notes-section">
                 <h3 class="notes-title">Notes:</h3>
                 <p>${order.notes}</p>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
 
             <!-- Footer -->
             <div class="footer">
@@ -474,13 +484,12 @@ export const usePrintInvoice = () => {
 
       printWindow.document.write(invoiceHTML);
       printWindow.document.close();
-      
+
       printWindow.onafterprint = () => {
         printWindow.close();
       };
-
     } catch (error) {
-      console.error('Error printing invoice:', error);
+      console.error("Error printing invoice:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -489,6 +498,6 @@ export const usePrintInvoice = () => {
 
   return {
     printInvoice,
-    isLoading
+    isLoading,
   };
 };
