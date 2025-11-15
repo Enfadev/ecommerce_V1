@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Users, Search, Trash2, Shield, ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 
 interface User {
   id: number;
@@ -56,11 +57,7 @@ export default function UserManagementTable() {
     newRole: string;
   }>({ open: false, user: null, newRole: "" });
 
-  useEffect(() => {
-    loadUsers();
-  }, [pagination.page, roleFilter]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -82,7 +79,11 @@ export default function UserManagementTable() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, search, roleFilter]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
 
   const handleSearch = () => {
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -105,15 +106,15 @@ export default function UserManagementTable() {
       const data = await response.json();
 
       if (data.success) {
-        alert("User role updated successfully");
+        toast.success("User role updated successfully");
         setRoleDialog({ open: false, user: null, newRole: "" });
         loadUsers();
       } else {
-        alert(data.message || "Failed to update user role");
+        toast.error(data.message || "Failed to update user role");
       }
     } catch (error) {
       console.error("Update role error:", error);
-      alert("Failed to update user role");
+      toast.error("Failed to update user role");
     }
   };
 
@@ -128,15 +129,15 @@ export default function UserManagementTable() {
       const data = await response.json();
 
       if (data.success) {
-        alert("User deleted successfully");
+        toast.success("User deleted successfully");
         setDeleteDialog({ open: false, user: null });
         loadUsers();
       } else {
-        alert(data.message || "Failed to delete user");
+        toast.error(data.message || "Failed to delete user");
       }
     } catch (error) {
       console.error("Delete user error:", error);
-      alert("Failed to delete user");
+      toast.error("Failed to delete user");
     }
   };
 

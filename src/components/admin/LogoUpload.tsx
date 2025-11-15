@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Upload, X, Image as ImageIcon, CheckCircle, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface LogoUploadProps {
   currentLogoUrl?: string;
@@ -23,13 +24,13 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
     if (!allowedTypes.includes(file.type)) {
-      alert("Please select a valid image file (JPEG, PNG, WebP, or SVG)");
+      toast.error("Please select a valid image file (JPEG, PNG, WebP, or SVG)");
       return;
     }
 
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
-      alert("File size must be less than 2MB");
+      toast.error("File size must be less than 2MB");
       return;
     }
 
@@ -63,7 +64,7 @@ export function LogoUpload({ currentLogoUrl, onLogoChange, disabled }: LogoUploa
       }
     } catch (error) {
       console.error("Logo upload error:", error);
-      alert("Failed to upload logo. Please try again.");
+      toast.error("Failed to upload logo. Please try again.");
     } finally {
       setUploading(false);
     }

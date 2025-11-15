@@ -1,18 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GeneralSettingsForm } from "@/components/admin/settings/GeneralSettingsForm";
-import type { GeneralSettings } from "@/types/settings";
+import { SEOSettingsForm } from "@/components/admin/settings/SEOSettingsForm";
 
-export default function GeneralSettingsPage() {
-  const [settings, setSettings] = useState<GeneralSettings>({
-    storeName: "",
-    storeDescription: "",
-    contactEmail: "",
-    phoneNumber: "",
-    officeAddress: "",
-    timezone: "Asia/Jakarta",
-    logoUrl: null,
+export default function SEOSettingsPage() {
+  const [settings, setSettings] = useState({
     defaultMetaTitle: "",
     defaultMetaDescription: "",
     defaultMetaKeywords: "",
@@ -34,13 +26,6 @@ export default function GeneralSettingsPage() {
         const data = await response.json();
         if (data.success) {
           setSettings({
-            storeName: data.settings.storeName || "",
-            storeDescription: data.settings.storeDescription || "",
-            contactEmail: data.settings.contactEmail || "",
-            phoneNumber: data.settings.phoneNumber || "",
-            officeAddress: data.settings.officeAddress || "",
-            timezone: data.settings.timezone || "Asia/Jakarta",
-            logoUrl: data.settings.logoUrl || null,
             defaultMetaTitle: data.settings.defaultMetaTitle || "",
             defaultMetaDescription: data.settings.defaultMetaDescription || "",
             defaultMetaKeywords: data.settings.defaultMetaKeywords || "",
@@ -57,5 +42,5 @@ export default function GeneralSettingsPage() {
     }
   };
 
-  return <GeneralSettingsForm initialSettings={settings} />;
+  return <SEOSettingsForm initialSettings={settings} />;
 }

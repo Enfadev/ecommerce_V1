@@ -6,7 +6,8 @@ import path from "path";
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const cookieStore = await request.cookies;
+    const token = cookieStore.get("auth-token")?.value;
 
     if (!token) {
       return NextResponse.json({ success: false, message: "No auth token provided" }, { status: 401 });
@@ -77,7 +78,8 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const cookieStore = await request.cookies;
+    const token = cookieStore.get("auth-token")?.value;
 
     if (!token) {
       return NextResponse.json({ success: false, message: "No auth token provided" }, { status: 401 });
@@ -118,8 +120,8 @@ export async function PUT(request: NextRequest) {
       await prisma.$executeRaw`
         INSERT INTO system_settings (storeName, storeDescription, contactEmail, phoneNumber, officeAddress, timezone, logoUrl, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
         VALUES (${body.storeName || "E-Commerce Store"}, ${body.storeDescription || "Trusted online store"}, ${body.contactEmail || "contact@store.com"}, ${body.phoneNumber || ""}, ${body.officeAddress || ""}, ${
-        body.timezone || "Asia/Jakarta"
-      }, ${body.logoUrl || null}, false, 24, '1.0.0', NOW(), NOW())
+          body.timezone || "Asia/Jakarta"
+        }, ${body.logoUrl || null}, false, 24, '1.0.0', NOW(), NOW())
       `;
     }
 

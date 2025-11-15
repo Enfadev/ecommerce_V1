@@ -6,7 +6,7 @@ interface SecurityLog {
   id: number;
   action: string;
   description: string;
-  user?: { name: string | null; email: string; } | null;
+  user?: { name: string | null; email: string } | null;
   ipAddress?: string | null;
   status: string;
   createdAt: Date;
@@ -14,85 +14,80 @@ interface SecurityLog {
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const cookieStore = await request.cookies;
+    const token = cookieStore.get("auth-token")?.value;
 
     if (!token) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
     const decoded = await verifyJWT(token);
     if (!decoded || decoded.role !== "ADMIN") {
-      return NextResponse.json(
-        { success: false, message: "Admin access required" },
-        { status: 403 }
-      );
+      return NextResponse.json({ success: false, message: "Admin access required" }, { status: 403 });
     }
 
     const totalUsers = await prisma.user.count();
     const totalAdmins = await prisma.user.count({
-      where: { role: "ADMIN" }
+      where: { role: "ADMIN" },
     });
     const totalCustomers = await prisma.user.count({
-      where: { role: "USER" }
+      where: { role: "USER" },
     });
 
     const totalOrders = await prisma.order.count();
     const totalRevenue = await prisma.order.aggregate({
       where: { paymentStatus: "PAID" },
-      _sum: { totalAmount: true }
+      _sum: { totalAmount: true },
     });
 
     const ordersByStatus = await prisma.order.groupBy({
       by: ["status"],
       _count: {
-        status: true
-      }
+        status: true,
+      },
     });
 
     const securityLogsData = await prisma.securityLog.findMany({
       take: 10,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: {
         user: {
-          select: { name: true, email: true }
-        }
-      }
+          select: { name: true, email: true },
+        },
+      },
     });
 
-    const recentSecurityLogs: SecurityLog[] = securityLogsData.map(log => ({
+    const recentSecurityLogs: SecurityLog[] = securityLogsData.map((log) => ({
       id: log.id,
       action: log.action,
       description: log.description,
-      user: log.user ? { name: log.user.name || 'Unknown', email: log.user.email } : null,
-      ipAddress: log.ipAddress || 'Unknown',
+      user: log.user ? { name: log.user.name || "Unknown", email: log.user.email } : null,
+      ipAddress: log.ipAddress || "Unknown",
       status: log.status,
-      createdAt: log.createdAt
+      createdAt: log.createdAt,
     }));
 
     const totalProducts = await prisma.product.count();
     const lowStockProducts = await prisma.product.count({
-      where: { stock: { lt: 10 } }
+      where: { stock: { lt: 10 } },
     });
 
     const systemHealth = {
       database: true,
       apiServices: true,
       fileStorage: true,
-      cacheSystem: false
+      cacheSystem: false,
     };
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
+
     const newUsersThisMonth = await prisma.user.count({
       where: {
         createdAt: {
-          gte: thirtyDaysAgo
-        }
-      }
+          gte: thirtyDaysAgo,
+        },
+      },
     });
 
     return NextResponse.json({
@@ -102,7 +97,7 @@ export async function GET(request: NextRequest) {
           total: totalUsers,
           admins: totalAdmins,
           customers: totalCustomers,
-          newThisMonth: newUsersThisMonth
+          newThisMonth: newUsersThisMonth,
         },
         orders: {
           total: totalOrders,
@@ -110,36 +105,33 @@ export async function GET(request: NextRequest) {
           byStatus: ordersByStatus.reduce((acc: Record<string, number>, curr) => {
             acc[curr.status] = curr._count.status;
             return acc;
-          }, {})
+          }, {}),
         },
         products: {
           total: totalProducts,
-          lowStock: lowStockProducts
+          lowStock: lowStockProducts,
         },
         security: {
-          recentLogs: recentSecurityLogs.map(log => ({
+          recentLogs: recentSecurityLogs.map((log) => ({
             id: log.id,
             action: log.action,
             description: log.description,
             user: log.user?.name || "System",
             ipAddress: log.ipAddress,
             status: log.status,
-            createdAt: log.createdAt
-          }))
+            createdAt: log.createdAt,
+          })),
         },
         system: {
           health: systemHealth,
           version: "1.0.0",
           database: "MySQL",
-          storage: "Local"
-        }
-      }
+          storage: "Local",
+        },
+      },
     });
   } catch (error) {
     console.error("Get system stats error:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to get system statistics" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: "Failed to get system statistics" }, { status: 500 });
   }
 }
