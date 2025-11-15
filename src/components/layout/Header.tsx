@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Brand } from "@/components/ui/Brand";
+import { Brand } from "@/components/shared/Brand";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

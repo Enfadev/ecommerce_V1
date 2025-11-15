@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { AdminBlocker } from "@/components/ui/AdminBlocker";
+import { AdminBlocker } from "@/components/shared/AdminBlocker";
 import { Package, Search, Filter, Calendar, MapPin, CreditCard, Eye, ArrowLeft, Loader2, ShoppingBag, Clock, FileText, Printer } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,7 +47,7 @@ const statusLabels = {
 const paymentStatusLabels = {
   PENDING: "Pending",
   PAID: "Paid",
-  FAILED: "Failed", 
+  FAILED: "Failed",
   REFUNDED: "Refunded",
 };
 
@@ -70,7 +70,7 @@ export default function OrderHistoryPage() {
       await printInvoice(order);
       toast.success("Invoice printed successfully!");
     } catch (error) {
-      console.error('Error printing invoice:', error);
+      console.error("Error printing invoice:", error);
       toast.error("Failed to print invoice. Please try again.");
     }
   };
@@ -122,13 +122,7 @@ export default function OrderHistoryPage() {
                       <Badge className={paymentStatusStyles[selectedOrder.paymentStatus]}>{paymentStatusLabels[selectedOrder.paymentStatus]}</Badge>
                     </div>
                     <div className="text-2xl font-bold text-primary mt-2">{formatCurrency(selectedOrder.totalAmount)}</div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handlePrintInvoice(selectedOrder)}
-                      disabled={isPrinting}
-                      className="mt-2"
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handlePrintInvoice(selectedOrder)} disabled={isPrinting} className="mt-2">
                       {isPrinting ? (
                         <>
                           <Loader2 className="w-3 h-3 mr-1 animate-spin" />
@@ -250,9 +244,7 @@ export default function OrderHistoryPage() {
                     </div>
                     <div className="flex justify-between">
                       <span>Payment Status</span>
-                      <Badge className={paymentStatusStyles[selectedOrder.paymentStatus]}>
-                        {paymentStatusLabels[selectedOrder.paymentStatus]}
-                      </Badge>
+                      <Badge className={paymentStatusStyles[selectedOrder.paymentStatus]}>{paymentStatusLabels[selectedOrder.paymentStatus]}</Badge>
                     </div>
                     <div className="flex justify-between">
                       <span>Payment Date</span>
@@ -279,12 +271,7 @@ export default function OrderHistoryPage() {
             <Card>
               <CardContent className="pt-6">
                 <div className="flex gap-4 justify-center">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handlePrintInvoice(selectedOrder)}
-                    disabled={isPrinting}
-                    className="flex-1 max-w-xs"
-                  >
+                  <Button variant="outline" onClick={() => handlePrintInvoice(selectedOrder)} disabled={isPrinting} className="flex-1 max-w-xs">
                     {isPrinting ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -313,12 +300,7 @@ export default function OrderHistoryPage() {
   }
 
   if (user?.role === "ADMIN") {
-    return (
-      <AdminBlocker 
-        title="Order History Access Restricted"
-        message="Order history is for customers to track their purchases. As an admin, you can view and manage all orders through the admin panel's order management section."
-      />
-    );
+    return <AdminBlocker title="Order History Access Restricted" message="Order history is for customers to track their purchases. As an admin, you can view and manage all orders through the admin panel's order management section." />;
   }
 
   return (
@@ -429,12 +411,7 @@ export default function OrderHistoryPage() {
                       {order.items.length} item{order.items.length > 1 ? "s" : ""} • {order.paymentMethod} • {paymentStatusLabels[order.paymentStatus]}
                     </div>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handlePrintInvoice(order)}
-                        disabled={isPrinting}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => handlePrintInvoice(order)} disabled={isPrinting}>
                         {isPrinting ? (
                           <>
                             <Loader2 className="h-3 w-3 mr-1 animate-spin" />

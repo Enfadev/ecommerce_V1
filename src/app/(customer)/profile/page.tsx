@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ProfileAvatar } from "@/components/ui/profile-avatar";
+import { ProfileAvatar } from "@/components/shared/profile-avatar";
 import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Edit3, Crown, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/contexts/auth-context";
 import { Toast } from "@/components/ui/toast";
@@ -48,21 +48,24 @@ export default function ProfilePage() {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=200`;
   }, []);
 
-  const getValidImageSrc = useCallback((avatar?: string | null, name?: string) => {
-    if (!avatar || avatar === 'null' || avatar === 'undefined' || avatar.trim() === '') {
-      return generateAvatarUrl(name || 'User');
-    }
-    
-    if (avatar.startsWith('http') || avatar.startsWith('/uploads/')) {
-      return avatar;
-    }
-    
-    if (avatar.includes('ui-avatars.com')) {
-      return avatar;
-    }
-    
-    return generateAvatarUrl(name || 'User');
-  }, [generateAvatarUrl]);
+  const getValidImageSrc = useCallback(
+    (avatar?: string | null, name?: string) => {
+      if (!avatar || avatar === "null" || avatar === "undefined" || avatar.trim() === "") {
+        return generateAvatarUrl(name || "User");
+      }
+
+      if (avatar.startsWith("http") || avatar.startsWith("/uploads/")) {
+        return avatar;
+      }
+
+      if (avatar.includes("ui-avatars.com")) {
+        return avatar;
+      }
+
+      return generateAvatarUrl(name || "User");
+    },
+    [generateAvatarUrl]
+  );
 
   const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
     show: false,
@@ -243,7 +246,7 @@ export default function ProfilePage() {
   };
 
   const updateAvatar = () => {
-    const fileInput = document.getElementById('avatar-upload') as HTMLInputElement;
+    const fileInput = document.getElementById("avatar-upload") as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
@@ -326,7 +329,7 @@ export default function ProfilePage() {
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="relative">
-                <ProfileAvatar 
+                <ProfileAvatar
                   src={imagePreview || user.avatar}
                   alt="User avatar"
                   name={user.name}
@@ -337,14 +340,7 @@ export default function ProfilePage() {
                   }}
                 />
                 {/* Hidden file input for avatar upload */}
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  aria-label="Upload avatar image"
-                />
+                <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" aria-label="Upload avatar image" />
                 <div className="absolute bottom-2 right-2 flex gap-1">
                   <Button size="sm" variant="secondary" className="rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
                     <Camera className="h-4 w-4" aria-label="Upload avatar" />
@@ -509,7 +505,9 @@ export default function ProfilePage() {
                               className="bg-gray-700/50 border border-gray-600 text-white rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
                               aria-label="Upload avatar image"
                             />
-                            <label htmlFor="avatar-upload-form" className="sr-only">Upload avatar image</label>
+                            <label htmlFor="avatar-upload-form" className="sr-only">
+                              Upload avatar image
+                            </label>
                             <Button type="button" variant="outline" size="sm" onClick={generateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
                               Generate Avatar
                             </Button>
@@ -608,10 +606,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-
-
-          </div>
+          <div className="space-y-6"></div>
         </div>
 
         {/* Product Recommendations */}

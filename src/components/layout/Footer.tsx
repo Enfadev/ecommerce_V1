@@ -2,7 +2,7 @@
 
 import NextLink from "next/link";
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
-import { Brand } from "@/components/ui/Brand";
+import { Brand } from "@/components/shared/Brand";
 import { useEffect, useState } from "react";
 
 interface SystemSettings {
@@ -26,7 +26,7 @@ export default function Footer() {
   useEffect(() => {
     async function fetchSettings() {
       try {
-        const response = await fetch('/api/settings/public');
+        const response = await fetch("/api/settings/public");
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.settings) {
@@ -42,12 +42,12 @@ export default function Footer() {
               sessionTimeout: 24,
               version: "1.0.0",
               createdAt: new Date(),
-              updatedAt: new Date()
+              updatedAt: new Date(),
             });
           }
         }
       } catch (error) {
-        console.error('Failed to fetch settings:', error);
+        console.error("Failed to fetch settings:", error);
         setSettings({
           id: 0,
           storeName: "Brandify",
@@ -60,7 +60,7 @@ export default function Footer() {
           sessionTimeout: 24,
           version: "1.0.0",
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         });
       }
     }
@@ -85,9 +85,7 @@ export default function Footer() {
           {/* Brand & Description */}
           <div className="space-y-4">
             <Brand as="h3" size="lg" />
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {settings.storeDescription} with a wide selection of quality products, attractive promos, and the best customer service for your satisfaction.
-            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{settings.storeDescription} with a wide selection of quality products, attractive promos, and the best customer service for your satisfaction.</p>
             <div className="flex space-x-4">
               <a href="#" className="p-2 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors" aria-label="Facebook">
                 <Facebook className="h-4 w-4 text-primary" />

@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NextAuthProvider } from "../components/auth/NextAuthProvider";
 import { AuthProvider } from "@/components/contexts/auth-context";
-import { DynamicFavicon } from "@/components/ui/DynamicFavicon";
+import { DynamicFavicon } from "@/components/shared/DynamicFavicon";
 import { getSystemSettingsWithFallback } from "@/lib/system-settings";
 
 function generateSVGFavicon(initial: string): string {

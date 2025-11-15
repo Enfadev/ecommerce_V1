@@ -6,7 +6,7 @@ import ProductReviewSection from "@/components/product/ProductReviewSection";
 import ProductRecommendation from "@/components/product/ProductRecommendation";
 import { useCart } from "@/components/contexts/cart-context";
 import { useWishlist } from "@/components/contexts/wishlist-context";
-import RichTextDisplay from "@/components/ui/RichTextDisplay";
+import RichTextDisplay from "@/components/forms/RichTextDisplay";
 import { Heart, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import * as React from "react";

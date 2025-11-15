@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AdminBlocker } from "@/components/ui/AdminBlocker";
+import { AdminBlocker } from "@/components/shared/AdminBlocker";
 import { Heart, ShoppingCart, Trash2, Filter, Grid3X3, List, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -121,7 +121,7 @@ export default function WishlistPage() {
 
   if (user?.role === "ADMIN") {
     return (
-      <AdminBlocker 
+      <AdminBlocker
         title="Wishlist Access Restricted"
         message="The wishlist feature is designed for customers to save their favorite products. As an admin, you can focus on managing products, orders, and settings through the admin panel."
       />

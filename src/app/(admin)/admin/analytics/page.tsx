@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { subDays } from "date-fns";
 import { Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { OverviewCards } from "@/components/analytics/OverviewCards";
-import { AnalyticsHeader } from "@/components/analytics/AnalyticsHeader";
-import { AnalyticsTabs } from "@/components/analytics/AnalyticsTabs";
+import { OverviewCards } from "@/components/admin/analytics/OverviewCards";
+import { AnalyticsHeader } from "@/components/admin/analytics/AnalyticsHeader";
+import { AnalyticsTabs } from "@/components/admin/analytics/AnalyticsTabs";
 import type { AnalyticsData, DatePeriod } from "@/types/analytics";
 
 export default function AdminAnalytics() {

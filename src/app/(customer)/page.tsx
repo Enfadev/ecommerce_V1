@@ -8,7 +8,7 @@ import NextLink from "next/link";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/seo-utils";
-import { HeroCarouselImage } from "@/components/ui/hero-carousel-image";
+import { HeroCarouselImage } from "@/components/media/hero-carousel-image";
 
 export const dynamic = "force-dynamic";
 
