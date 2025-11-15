@@ -29,6 +29,16 @@ However, all communication, explanations, and discussions with the user must be 
 
 All documentation files must be created inside the `documentations/` folder. Never create documentation files in the root directory or other folders.
 
+## Additional Rule: Check package.json First
+
+Before implementing any feature or suggesting any library/dependency, always check `package.json` first to:
+
+- Know what dependencies and their versions are already installed in the project
+- Avoid suggesting libraries that are already available
+- Use the correct version of existing libraries
+- Prevent adding duplicate or conflicting dependencies
+- Ensure compatibility with the current tech stack
+
 ## Universal Project Vision & Requirements
 
 ### Vision & Purpose
