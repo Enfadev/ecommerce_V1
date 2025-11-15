@@ -53,7 +53,7 @@ function slugify(text: string): string {
 }
 
 async function generateUniqueSlug(name: string, excludeId?: number): Promise<string> {
-  let slug = slugify(name);
+  const slug = slugify(name);
   let counter = 1;
 
   while (true) {

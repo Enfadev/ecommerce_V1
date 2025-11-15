@@ -50,7 +50,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           description: data.description,
         };
         if (isMounted) setProduct(mappedProduct);
-
       } catch (err: unknown) {
         if (isMounted) setError(err instanceof Error ? err.message : "Failed to fetch product");
       }
@@ -69,7 +68,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
       if (isInWishlist(product.id)) {
         await removeFromWishlist(product.id);
       } else {
-        await addToWishlist(product as any);
+        await addToWishlist(product as unknown as { id: number; name: string; price: number; image: string; category: string; stock: number });
       }
     } catch (err) {
       console.error("Wishlist error:", err);

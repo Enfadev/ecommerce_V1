@@ -1,5 +1,5 @@
 import React from "react";
-import { products } from "../../data/products";
+import { products } from "@/lib/constants/products";
 import { Card } from "../ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
 import { Badge } from "../ui/badge";

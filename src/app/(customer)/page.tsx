@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/product/ProductCard";
-import { DiscountedProducts } from "@/components/product/DiscountedProducts";
+import { DiscountedProducts } from "@/components/product/DiscountedProducts-home";
 import { prisma } from "../../lib/prisma";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../components/ui/carousel";
 import { Card, CardContent } from "../../components/ui/card";

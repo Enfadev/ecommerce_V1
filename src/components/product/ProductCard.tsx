@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useCart } from "../contexts/cart-context";
-import type { Product } from "../../data/products";
+import type { Product } from "@/lib/constants/products";
 import Link from "next/link";
 import { useWishlist } from "../contexts/wishlist-context";
 import { Heart, ShoppingCart, Star } from "lucide-react";

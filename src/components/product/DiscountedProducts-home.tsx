@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ProductCard } from "./product/ProductCard";
-import type { Product } from "../data/products";
+import { ProductCard } from "./ProductCard";
+import type { Product } from "@/lib/constants/products";
 
 interface APIProduct {
   id: number;
@@ -43,12 +43,7 @@ export function DiscountedProducts({ maxItems = 8, title = "🔥 Special Offers"
               promoExpired: product.promoExpired,
             }))
             .filter((product) => {
-              return (
-                product.discountPrice &&
-                product.discountPrice > 0 &&
-                product.discountPrice < product.price &&
-                (!product.promoExpired || new Date(product.promoExpired) > new Date())
-              );
+              return product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date());
             })
             .slice(0, maxItems);
 
@@ -89,11 +84,9 @@ export function DiscountedProducts({ maxItems = 8, title = "🔥 Special Offers"
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">{title}</h2>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Limited time offers on our best products. Don&apos;t miss out on these amazing deals!
-          </p>
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Limited time offers on our best products. Don&apos;t miss out on these amazing deals!</p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <div key={product.id} className="transform hover:scale-105 transition-transform duration-200">
@@ -104,10 +97,7 @@ export function DiscountedProducts({ maxItems = 8, title = "🔥 Special Offers"
 
         {products.length >= maxItems && (
           <div className="text-center mt-8">
-            <Link
-              href="/product"
-              className="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-full transition-colors duration-200"
-            >
+            <Link href="/product" className="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-full transition-colors duration-200">
               View All Deals
               <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />

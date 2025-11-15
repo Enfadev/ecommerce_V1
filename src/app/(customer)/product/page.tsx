@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductCard } from "@/components/product/ProductCard";
-import type { Product } from "@/data/products";
+import type { Product } from "@/lib/constants/products";
 import { useSearchParams } from "next/navigation";
 import { ProductFilter } from "@/components/product/ProductFilter";
 import { Badge } from "@/components/ui/badge";

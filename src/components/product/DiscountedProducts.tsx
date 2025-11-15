@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ProductCard } from "./ProductCard";
-import type { Product } from "../../data/products";
+import type { Product } from "@/lib/constants/products";
 
 interface APIProduct {
   id: number;
@@ -32,12 +32,7 @@ export function DiscountedProducts({ title = "🔥 Limited Time Offers", maxItem
       .then((data) => {
         if (Array.isArray(data)) {
           const discountedProducts = data
-            .filter((product: APIProduct) => 
-              product.discountPrice && 
-              product.discountPrice > 0 && 
-              product.discountPrice < product.price &&
-              (!product.promoExpired || new Date(product.promoExpired) > new Date())
-            )
+            .filter((product: APIProduct) => product.discountPrice && product.discountPrice > 0 && product.discountPrice < product.price && (!product.promoExpired || new Date(product.promoExpired) > new Date()))
             .map((product: APIProduct) => ({
               id: product.id,
               name: product.name,
@@ -111,9 +106,7 @@ export function DiscountedProducts({ title = "🔥 Limited Time Offers", maxItem
     <div className="space-y-8">
       <div className="text-center space-y-4">
         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Don&apos;t miss out on these amazing deals! Limited time offers with incredible savings.
-        </p>
+        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Don&apos;t miss out on these amazing deals! Limited time offers with incredible savings.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

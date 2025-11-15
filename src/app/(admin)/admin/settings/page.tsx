@@ -13,6 +13,7 @@ import AdminHomePageEditor from "@/components/admin/AdminHomePageEditor";
 import AdminAboutPageEditor from "@/components/admin/AdminAboutPageEditor";
 import AdminProductPageEditor from "@/components/admin/AdminProductPageEditor";
 import { LogoUpload } from "@/components/admin/LogoUpload";
+import UserManagementTable from "@/components/admin/UserManagementTable";
 
 interface SystemStats {
   users: {
@@ -346,60 +347,7 @@ export default function AdminSettingsPage() {
 
         {/* User Management */}
         <TabsContent value="users" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                User Management
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Total Admins</h4>
-                      <p className="text-2xl font-bold">{stats?.users.admins ?? "Loading..."}</p>
-                    </div>
-                    <Badge variant="default">Active</Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Total Customers</h4>
-                      <p className="text-2xl font-bold">{stats?.users.customers ?? "Loading..."}</p>
-                    </div>
-                    <Badge variant="secondary">Registered</Badge>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">New This Month</h4>
-                      <p className="text-2xl font-bold">{stats?.users.newThisMonth ?? "Loading..."}</p>
-                    </div>
-                    <Badge variant="outline">Recent</Badge>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <Button className="w-full">
-                    <Users className="w-4 h-4 mr-2" />
-                    Manage Users
-                  </Button>
-
-                  <Button variant="outline" className="w-full">
-                    <Key className="w-4 h-4 mr-2" />
-                    Reset User Passwords
-                  </Button>
-
-                  <Button variant="outline" className="w-full">
-                    <Eye className="w-4 h-4 mr-2" />
-                    View User Activity
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <UserManagementTable />
         </TabsContent>
 
         {/* Security */}
