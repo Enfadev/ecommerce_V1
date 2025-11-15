@@ -1,6 +1,5 @@
-import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Loader2 } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { AdminExportButton } from "@/components/admin/AdminExportButton";
 import { CustomerStatsCards } from "@/components/admin/customers/CustomerStatsCards";
 import { CustomerFilters } from "@/components/admin/customers/CustomerFilters";
@@ -21,57 +20,23 @@ interface PageProps {
   }>;
 }
 
-async function CustomerContent({ searchParams }: { searchParams: Awaited<PageProps["searchParams"]> }) {
+export default async function AdminCustomerManagement({ searchParams }: PageProps) {
+  const awaitedSearchParams = await searchParams;
+
   const filters = {
-    search: searchParams.search,
-    status: searchParams.status,
-    page: searchParams.page ? parseInt(searchParams.page) : 1,
+    search: awaitedSearchParams.search,
+    status: awaitedSearchParams.status,
+    page: awaitedSearchParams.page ? parseInt(awaitedSearchParams.page) : 1,
   };
 
   const result = await getCustomers(filters);
 
   if (!result.success) {
-    return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <div className="text-center">
-          <p className="text-lg text-red-500 mb-4">{result.error}</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
-        </div>
-      </div>
-    );
+    throw new Error(result.error || "Failed to load customer data");
   }
 
   const { customers, stats } = result;
   const totalRevenue = customers.reduce((sum, customer) => sum + customer.totalSpent, 0);
-
-  return (
-    <>
-      <CustomerStatsCards stats={stats} />
-
-      <CustomerFilters initialSearch={filters.search} initialStatus={filters.status || "all"} totalResults={customers.length} totalRevenue={totalRevenue} />
-
-      <CustomerTableWrapper customers={customers} totalCustomers={stats.total} />
-    </>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className="flex items-center justify-center min-h-[500px]">
-      <div className="flex items-center gap-3">
-        <Loader2 className="w-6 h-6 animate-spin" />
-        <p className="text-lg">Loading customer data...</p>
-      </div>
-    </div>
-  );
-}
-
-export default async function AdminCustomerManagement({ searchParams }: PageProps) {
-  const awaitedSearchParams = await searchParams;
-  const customers = await getCustomers({
-    search: awaitedSearchParams.search,
-    status: awaitedSearchParams.status,
-  });
 
   return (
     <div className="space-y-6">
@@ -82,7 +47,7 @@ export default async function AdminCustomerManagement({ searchParams }: PageProp
         </div>
         <div className="flex gap-3">
           <AdminExportButton
-            data={customers.customers.map((c) => ({
+            data={customers.map((c) => ({
               id: c.id,
               name: c.name,
               email: c.email,
@@ -103,9 +68,11 @@ export default async function AdminCustomerManagement({ searchParams }: PageProp
         </div>
       </div>
 
-      <Suspense fallback={<LoadingState />}>
-        <CustomerContent searchParams={awaitedSearchParams} />
-      </Suspense>
+      <CustomerStatsCards stats={stats} />
+
+      <CustomerFilters initialSearch={filters.search} initialStatus={filters.status || "all"} totalResults={customers.length} totalRevenue={totalRevenue} />
+
+      <CustomerTableWrapper customers={customers} totalCustomers={stats.total} />
     </div>
   );
 }
