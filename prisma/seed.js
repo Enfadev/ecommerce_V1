@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
-import { seedSettings } from "./seed-settings.js";
-import { seedOrders } from "./seed-orders.js";
+import { seedSettings } from "./seeds/seed-settings.js";
+import { seedOrders } from "./seeds/seed-orders.js";
 import { clearDatabase } from "./clear-database.js";
 
 const prisma = new PrismaClient();

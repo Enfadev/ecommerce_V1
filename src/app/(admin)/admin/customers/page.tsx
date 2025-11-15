@@ -4,7 +4,7 @@ import { AdminExportButton } from "@/components/admin/AdminExportButton";
 import { CustomerStatsCards } from "@/components/admin/customers/CustomerStatsCards";
 import { CustomerFilters } from "@/components/admin/customers/CustomerFilters";
 import { CustomerTableWrapper } from "@/components/admin/customers/CustomerTableWrapper";
-import { getCustomers } from "@/actions/admin/customers";
+import { getCustomers } from "@/lib/actions";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
-import adminLogger, { createAdminAccessLog } from "@/lib/admin-security-logger";
+import { verifyJWT } from "@/lib/auth";
+import { adminLogger, createAdminAccessLog } from "@/lib/security";
 
 const PROTECTED_PATHS = ["/admin", "/profile", "/order-history", "/wishlist", "/checkout"];
 
@@ -10,13 +10,13 @@ const PROTECTED_API_ROUTES = ["/api/admin", "/api/profile", "/api/orders", "/api
 
 const ADMIN_RESTRICTED_API_ROUTES = ["/api/cart", "/api/wishlist", "/api/checkout", "/api/orders"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("🛡️ Middleware executing for:", pathname);
+  console.log("🛡️ Proxy executing for:", pathname);
 
   if (pathname.startsWith("/_next") || pathname.startsWith("/api/auth") || pathname.startsWith("/api/upload") || pathname.startsWith("/static") || pathname.includes(".") || pathname === "/api/test" || pathname === "/jwt-test") {
-    console.log("⏭️ Skipping middleware for:", pathname);
+    console.log("⏭️ Skipping proxy for:", pathname);
     const response = NextResponse.next();
     response.headers.set(
       "Content-Security-Policy",
@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
         if (pathname.startsWith("/admin")) {
           return new NextResponse(null, { status: 404 });
         }
-        
+
         const loginUrl = new URL("/signin", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);
@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
         if (pathname.startsWith("/admin")) {
           return new NextResponse(null, { status: 404 });
         }
-        
+
         const loginUrl = new URL("/signin", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         return NextResponse.redirect(loginUrl);

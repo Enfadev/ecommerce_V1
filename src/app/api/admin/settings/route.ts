@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
-import { prisma } from "@/lib/prisma";
+import { verifyJWT } from "@/lib/auth";
+import { prisma } from '@/lib/database';
 import fs from "fs";
 import path from "path";
 

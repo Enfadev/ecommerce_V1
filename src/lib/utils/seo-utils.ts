@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/database';
 
 interface SeoData {
   metaTitle?: string | null;

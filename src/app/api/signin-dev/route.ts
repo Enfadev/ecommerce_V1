@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { compare, hash } from 'bcryptjs';
-import { signJWT, setAuthCookie } from '@/lib/jwt';
+import { signJWT, setAuthCookie } from '@/lib/auth';
 
 const users = new Map([
   ['admin@test.com', {

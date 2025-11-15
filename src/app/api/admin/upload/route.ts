@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
+import { verifyJWT } from "@/lib/auth";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 import { optimize } from "svgo";
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/database';
 
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/svg+xml"];
 const MAX_FILE_SIZE = 2 * 1024 * 1024;

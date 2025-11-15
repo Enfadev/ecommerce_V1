@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { validatePassword } from "./password-validation";
+import { validatePassword } from "../auth/password-validation";
 
 const passwordValidator = z.string().refine(
   (password: string) => {

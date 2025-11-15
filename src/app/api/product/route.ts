@@ -37,7 +37,7 @@ export async function DELETE(req: Request) {
   }
 }
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/database';
 import type { Prisma } from "@prisma/client";
 
 function slugify(text: string): string {

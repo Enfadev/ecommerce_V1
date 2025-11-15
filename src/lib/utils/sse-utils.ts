@@ -2,12 +2,17 @@ declare global {
   var sseConnections: Map<string, ReadableStreamDefaultController>;
 }
 
-if (!global.sseConnections) {
-  global.sseConnections = new Map<string, ReadableStreamDefaultController>();
+// Use globalThis instead of global for better compatibility
+if (typeof globalThis !== "undefined") {
+  if (!globalThis.sseConnections) {
+    globalThis.sseConnections = new Map<string, ReadableStreamDefaultController>();
+  }
 }
 
 export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
-  const connections = global.sseConnections;
+  const connections = globalThis.sseConnections;
+  if (!connections) return 0;
+
   console.log(`📡 Broadcasting to room ${roomId}:`, data);
   let broadcasted = 0;
   let globalBroadcasted = 0;
@@ -44,19 +49,21 @@ export function broadcastToRoom(roomId: string, data: Record<string, unknown>) {
 }
 
 export function broadcastTyping(roomId: number, userId: number, isTyping: boolean) {
+  if (!globalThis.sseConnections) return;
+
   const typingData = `data: ${JSON.stringify({
     type: "typing",
     data: { userId, isTyping },
     timestamp: new Date().toISOString(),
   })}\n\n`;
 
-  global.sseConnections.forEach((controller: ReadableStreamDefaultController, connectionId: string) => {
+  globalThis.sseConnections.forEach((controller: ReadableStreamDefaultController, connectionId: string) => {
     if (connectionId.endsWith(`-${roomId}`) && !connectionId.startsWith(`${userId}-`)) {
       try {
         controller.enqueue(typingData);
       } catch (error) {
         console.log("Failed to send typing indicator:", connectionId, error);
-        global.sseConnections.delete(connectionId);
+        globalThis.sseConnections.delete(connectionId);
       }
     }
   });

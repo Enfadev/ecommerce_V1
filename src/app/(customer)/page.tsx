@@ -1,13 +1,13 @@
 import { ProductCard } from "@/components/product/ProductCard";
 import { DiscountedProducts } from "@/components/product/DiscountedProducts-home";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "@/lib/database";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../components/ui/carousel";
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import NextLink from "next/link";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 import { Metadata } from "next";
-import { generatePageMetadata } from "@/lib/seo-utils";
+import { generatePageMetadata } from "@/lib/utils";
 import { HeroCarouselImage } from "@/components/media/hero-carousel-image";
 
 export const dynamic = "force-dynamic";

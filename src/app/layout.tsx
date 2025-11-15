@@ -4,7 +4,7 @@ import "./globals.css";
 import { NextAuthProvider } from "../components/auth/NextAuthProvider";
 import { AuthProvider } from "@/components/contexts/auth-context";
 import { DynamicFavicon } from "@/components/shared/DynamicFavicon";
-import { getSystemSettingsWithFallback } from "@/lib/system-settings";
+import { getSystemSettingsWithFallback } from "@/lib/settings";
 
 function generateSVGFavicon(initial: string): string {
   const svg = `

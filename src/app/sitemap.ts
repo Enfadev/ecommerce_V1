@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
-import { getSystemSettingsWithFallback } from "@/lib/system-settings";
+import { prisma } from '@/lib/database';
+import { getSystemSettingsWithFallback } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 

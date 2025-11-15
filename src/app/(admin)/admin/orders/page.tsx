@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { OrderManagementWrapper } from "@/components/admin/orders/OrderManagementWrapper";
-import { getInitialOrdersData } from "@/lib/orders-server";
+import { getInitialOrdersData } from "@/lib/actions";
 import Loading from "./loading";
 
 export const metadata = {

@@ -7,7 +7,7 @@ import { Eye, Package, MoreHorizontal, Loader2, ChevronLeft, ChevronRight, Print
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Order, OrderStatus, PaymentStatus, OrderPagination } from "@/types/order";
-import { getStatusColor, getStatusIcon, getStatusText, getPaymentStatusColor, getPaymentStatusText, getPaymentStatusDotColor, formatOrderDate, formatOrderTime, formatCurrency, getCustomerInitials } from "@/lib/order-utils";
+import { getStatusColor, getStatusIcon, getStatusText, getPaymentStatusColor, getPaymentStatusText, getPaymentStatusDotColor, formatOrderDate, formatOrderTime, formatCurrency, getCustomerInitials } from "@/lib/utils";
 
 interface OrderTableProps {
   orders: Order[];

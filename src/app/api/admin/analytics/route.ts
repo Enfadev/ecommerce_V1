@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { subDays, startOfDay, endOfDay, format } from "date-fns";
-import { prisma } from "@/lib/prisma";
-import { isAdminRequest } from "@/lib/jwt";
+import { prisma } from "@/lib/database";
+import { isAdminRequest } from "@/lib/auth";
 import type { AnalyticsData } from "@/types/analytics";
 
 export const dynamic = "force-dynamic";

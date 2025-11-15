@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getUserFromRequest } from "@/lib/auth-utils";
+import { prisma } from '@/lib/database';
+import { getUserFromRequest } from "@/lib/auth";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ roomId: string }> }) {
   try {

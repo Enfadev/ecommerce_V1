@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getUserIdFromRequest } from "@/lib/auth-utils";
-import { isAdminRequest } from "@/lib/jwt";
+import { prisma } from '@/lib/database';
+import { getUserIdFromRequest } from "@/lib/auth";
+import { isAdminRequest } from "@/lib/auth";
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {

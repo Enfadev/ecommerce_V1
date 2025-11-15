@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
-import { verifyJWT } from "@/lib/jwt";
+import { verifyJWT } from "@/lib/auth";
 import sharp from "sharp";
 
 export async function POST(request: NextRequest) {

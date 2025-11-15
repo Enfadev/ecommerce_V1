@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, ArrowUpDown } from "lucide-react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Customer } from "@/types/customer";
-import { updateCustomerStatus, deleteCustomer } from "@/actions/admin/customers";
+import { updateCustomerStatus, deleteCustomer } from "@/lib/actions";
 import { toast } from "sonner";
 import { CustomerTableRow } from "./CustomerTableRow";
 import { CustomerTablePagination } from "./CustomerTablePagination";

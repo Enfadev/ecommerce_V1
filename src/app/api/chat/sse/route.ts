@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserFromRequest } from "@/lib/auth-utils";
-import { prisma } from "@/lib/prisma";
-import { broadcastToRoom } from "@/lib/sse-utils";
+import { getUserFromRequest } from "@/lib/auth";
+import { prisma } from '@/lib/database';
+import { broadcastToRoom } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   try {

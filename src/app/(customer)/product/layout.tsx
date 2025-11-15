@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
-import { generatePageMetadata } from "@/lib/seo-utils";
+import { prisma } from "@/lib/database";
+import { generatePageMetadata } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 

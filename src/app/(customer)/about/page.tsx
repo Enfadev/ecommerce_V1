@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Users, Target, Award, Heart, Shield, Truck, Clock, Star, MapPin, Phone, Mail, Globe } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database";
 import { Metadata } from "next";
-import { generatePageMetadata } from "@/lib/seo-utils";
+import { generatePageMetadata } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 

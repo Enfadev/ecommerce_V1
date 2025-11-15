@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
+import { verifyJWT } from "./jwt";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
 
@@ -44,7 +44,7 @@ export async function getUserFromRequest(request: NextRequest): Promise<{ id: nu
     if (session?.user?.id) {
       return {
         id: Number(session.user.id),
-        role: (session.user as SessionUserWithRole).role || "USER"
+        role: (session.user as SessionUserWithRole).role || "USER",
       };
     }
   } catch (error) {
@@ -58,7 +58,7 @@ export async function getUserFromRequest(request: NextRequest): Promise<{ id: nu
       if (payload?.id) {
         return {
           id: Number(payload.id),
-          role: payload.role || "USER"
+          role: payload.role || "USER",
         };
       }
     }

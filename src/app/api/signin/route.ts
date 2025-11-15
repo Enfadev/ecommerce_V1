@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from '@/lib/database';
 import { compare } from "bcryptjs";
-import { signJWT, setAuthCookie } from "@/lib/jwt";
+import { signJWT, setAuthCookie } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {

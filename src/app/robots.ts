@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getSystemSettingsWithFallback } from "@/lib/system-settings";
+import { getSystemSettingsWithFallback } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 

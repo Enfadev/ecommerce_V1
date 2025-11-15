@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { unlink } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
-import { verifyJWT } from "@/lib/jwt";
-import { prisma } from "@/lib/prisma";
+import { verifyJWT } from "@/lib/auth";
+import { prisma } from '@/lib/database';
 
 export async function DELETE(request: NextRequest) {
   try {

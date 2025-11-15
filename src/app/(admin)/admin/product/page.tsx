@@ -10,7 +10,7 @@ import { ProductFilters } from "@/components/admin/products/ProductFilters";
 import { ProductTable } from "@/components/admin/products/ProductTable";
 import { ProductFormDialog } from "@/components/admin/products/ProductFormDialog";
 import { useProducts, type Product } from "@/hooks/useProducts";
-import { saveProduct } from "@/lib/product-actions";
+import { saveProduct } from "@/lib/actions";
 import { toast } from "sonner";
 import { PRODUCT_TABLE_COLUMNS, DEFAULT_VISIBLE_COLUMNS } from "@/types/product";
 import type { ProductFormData } from "@/types/product";

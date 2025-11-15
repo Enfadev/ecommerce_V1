@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
-import adminLogger from "@/lib/admin-security-logger";
+import { verifyJWT } from "@/lib/auth";
+import { adminLogger } from "@/lib/security";
 
 export async function GET(request: NextRequest) {
   try {

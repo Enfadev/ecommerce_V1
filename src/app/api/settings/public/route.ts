@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSystemSettingsWithFallback } from "@/lib/system-settings";
+import { getSystemSettingsWithFallback } from "@/lib/settings";
 
 export async function GET() {
   try {

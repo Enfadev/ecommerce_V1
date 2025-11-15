@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Package, Truck, FileText, Printer, Loader2 } from "lucide-react";
 import type { Order } from "@/types/order";
-import { getStatusColor, getStatusText, getPaymentStatusColor, getPaymentStatusText, formatOrderDateTime, formatOrderTime, formatCurrency, getCustomerInitials } from "@/lib/order-utils";
+import { getStatusColor, getStatusText, getPaymentStatusColor, getPaymentStatusText, formatOrderDateTime, formatOrderTime, formatCurrency, getCustomerInitials } from "@/lib/utils";
 
 interface OrderDetailDialogProps {
   order: Order | null;

@@ -10,7 +10,7 @@ import { OrderTable } from "@/components/admin/orders/OrderTable";
 import { OrderDetailDialog } from "@/components/admin/orders/OrderDetailDialog";
 import { usePrintInvoice } from "@/hooks/use-print-invoice";
 import type { Order, OrderStatus, PaymentStatus } from "@/types/order";
-import type { InitialOrdersData } from "@/lib/orders-server";
+import type { InitialOrdersData } from "@/lib/actions";
 import { toast } from "sonner";
 
 interface OrderManagementWrapperProps {
