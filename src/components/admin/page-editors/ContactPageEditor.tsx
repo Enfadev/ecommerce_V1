@@ -3,13 +3,13 @@
 import { Loader2, MessageCircle, Globe, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroSectionEditor } from "./page-editor/HeroSectionEditor";
-import { SaveButton } from "./page-editor/SaveButton";
-import { ContactMethodsSection } from "./contact-page/ContactMethodsSection";
-import { OfficeLocationsSection } from "./contact-page/OfficeLocationsSection";
-import { BusinessHoursSection } from "./contact-page/BusinessHoursSection";
-import { SocialMediaSection } from "./contact-page/SocialMediaSection";
-import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
+import { HeroSectionEditor } from "../page-editor/HeroSectionEditor";
+import { SaveButton } from "../page-editor/SaveButton";
+import { ContactMethodsSection } from "../contact-page/ContactMethodsSection";
+import { OfficeLocationsSection } from "../contact-page/OfficeLocationsSection";
+import { BusinessHoursSection } from "../contact-page/BusinessHoursSection";
+import { SocialMediaSection } from "../contact-page/SocialMediaSection";
+import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
 import { usePageEditor } from "@/hooks/usePageEditor";
 
 interface ContactMethod {

@@ -8,10 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Palette, Home, Info, Package, MessageCircle } from "lucide-react";
-import AdminContactPageEditor from "./AdminContactPageEditor";
-import AdminHomePageEditor from "./AdminHomePageEditor";
-import AdminAboutPageEditor from "./AdminAboutPageEditor";
-import AdminProductPageEditor from "./AdminProductPageEditor";
+import AdminContactPageEditor from "../page-editors/ContactPageEditor";
+import AdminHomePageEditor from "../page-editors/HomePageEditor";
+import AdminAboutPageEditor from "../page-editors/AboutPageEditor";
+import AdminProductPageEditor from "../page-editors/ProductPageEditor";
 
 export default function AdminSettingsPage() {
   const [generalSettings, setGeneralSettings] = useState({
@@ -37,7 +37,7 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/admin/settings');
+        const response = await fetch("/api/admin/settings");
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.settings) {
@@ -64,10 +64,10 @@ export default function AdminSettingsPage() {
   const handleSaveGeneral = async () => {
     setSaving(true);
     try {
-      const response = await fetch('/api/admin/settings', {
-        method: 'PUT',
+      const response = await fetch("/api/admin/settings", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(generalSettings),
       });
@@ -75,16 +75,16 @@ export default function AdminSettingsPage() {
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          alert('Pengaturan berhasil disimpan!');
+          alert("Pengaturan berhasil disimpan!");
         } else {
-          alert('Gagal menyimpan pengaturan: ' + data.message);
+          alert("Gagal menyimpan pengaturan: " + data.message);
         }
       } else {
-        alert('Gagal menyimpan pengaturan');
+        alert("Gagal menyimpan pengaturan");
       }
     } catch (error) {
       console.error("Save error:", error);
-      alert('Gagal menyimpan pengaturan');
+      alert("Gagal menyimpan pengaturan");
     } finally {
       setSaving(false);
     }
@@ -92,7 +92,7 @@ export default function AdminSettingsPage() {
 
   const handleSaveTheme = async () => {
     console.log("Saving theme settings:", themeSettings);
-    alert('Fitur tema akan segera tersedia!');
+    alert("Fitur tema akan segera tersedia!");
   };
 
   return (
@@ -151,49 +151,26 @@ export default function AdminSettingsPage() {
                 <>
                   <div>
                     <label className="block text-sm font-medium mb-2">Store Name</label>
-                    <Input 
-                      value={generalSettings.storeName} 
-                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} 
-                      placeholder="Enter store name"
-                      disabled={saving}
-                    />
+                    <Input value={generalSettings.storeName} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeName: e.target.value }))} placeholder="Enter store name" disabled={saving} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Description</label>
-                    <Textarea 
-                      value={generalSettings.storeDescription} 
-                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} 
-                      placeholder="Enter store description" 
-                      rows={3}
-                      disabled={saving}
-                    />
+                    <Textarea value={generalSettings.storeDescription} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, storeDescription: e.target.value }))} placeholder="Enter store description" rows={3} disabled={saving} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Contact Email</label>
-                    <Input 
-                      type="email" 
-                      value={generalSettings.contactEmail} 
-                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} 
-                      placeholder="contact@store.com"
-                      disabled={saving}
-                    />
+                    <Input type="email" value={generalSettings.contactEmail} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, contactEmail: e.target.value }))} placeholder="contact@store.com" disabled={saving} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Phone Number</label>
-                    <Input 
-                      type="tel" 
-                      value={generalSettings.phoneNumber} 
-                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, phoneNumber: e.target.value }))} 
-                      placeholder="+1 (555) 123-4567"
-                      disabled={saving}
-                    />
+                    <Input type="tel" value={generalSettings.phoneNumber} onChange={(e) => setGeneralSettings((prev) => ({ ...prev, phoneNumber: e.target.value }))} placeholder="+1 (555) 123-4567" disabled={saving} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">Office Address</label>
-                    <textarea 
+                    <textarea
                       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px] resize-none"
-                      value={generalSettings.officeAddress} 
-                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, officeAddress: e.target.value }))} 
+                      value={generalSettings.officeAddress}
+                      onChange={(e) => setGeneralSettings((prev) => ({ ...prev, officeAddress: e.target.value }))}
                       placeholder="123 Business Street, Suite 100, City, State, Country"
                       disabled={saving}
                     />

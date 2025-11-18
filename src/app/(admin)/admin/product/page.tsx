@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2, RefreshCw } from "lucide-react";
-import { AdminExportButton } from "@/components/admin/AdminExportButton";
-import { ExpiringPromoAlert } from "@/components/admin/ExpiringPromoAlert";
+import { AdminExportButton } from "@/components/admin/shared/ExportButton";
+import { ExpiringPromoAlert } from "@/components/admin/shared/ExpiringPromoAlert";
 import { ProductStats } from "@/components/admin/products/ProductStats";
 import { ProductFilters } from "@/components/admin/products/ProductFilters";
 import { ProductTable } from "@/components/admin/products/ProductTable";

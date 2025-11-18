@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
-import { AdminExportButton } from "@/components/admin/AdminExportButton";
+import { AdminExportButton } from "@/components/admin/shared/ExportButton";
 import { OrderStats } from "@/components/admin/orders/OrderStats";
 import { OrderFilters } from "@/components/admin/orders/OrderFilters";
 import { OrderTable } from "@/components/admin/orders/OrderTable";

@@ -4,7 +4,7 @@ import { ReactNode, useEffect } from "react";
 import { useAuth } from "@/components/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
-import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminSidebar from "@/components/admin/layout/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 interface AdminLayoutProps {

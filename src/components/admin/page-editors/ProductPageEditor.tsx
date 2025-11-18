@@ -2,14 +2,14 @@
 
 import { Loader2, Package, Globe } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroSectionEditor } from "./page-editor/HeroSectionEditor";
-import { SaveButton } from "./page-editor/SaveButton";
-import { PromotionalBannerSection } from "./product-page/PromotionalBannerSection";
-import { FeaturedCategoriesSection } from "./product-page/FeaturedCategoriesSection";
-import { FilterOptionsSection } from "./product-page/FilterOptionsSection";
-import { SortOptionsSection } from "./product-page/SortOptionsSection";
-import { SeoContentSection } from "./product-page/SeoContentSection";
-import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
+import { HeroSectionEditor } from "../page-editor/HeroSectionEditor";
+import { SaveButton } from "../page-editor/SaveButton";
+import { PromotionalBannerSection } from "../product-page/PromotionalBannerSection";
+import { FeaturedCategoriesSection } from "../product-page/FeaturedCategoriesSection";
+import { FilterOptionsSection } from "../product-page/FilterOptionsSection";
+import { SortOptionsSection } from "../product-page/SortOptionsSection";
+import { SeoContentSection } from "../product-page/SeoContentSection";
+import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
 import { usePageEditor } from "@/hooks/usePageEditor";
 
 interface FeaturedCategory {

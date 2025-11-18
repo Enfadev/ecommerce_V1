@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
-import { AdminExportButton } from "@/components/admin/AdminExportButton";
+import { AdminExportButton } from "@/components/admin/shared/ExportButton";
 import { CustomerStatsCards } from "@/components/admin/customers/CustomerStatsCards";
 import { CustomerFilters } from "@/components/admin/customers/CustomerFilters";
 import { CustomerTableWrapper } from "@/components/admin/customers/CustomerTableWrapper";

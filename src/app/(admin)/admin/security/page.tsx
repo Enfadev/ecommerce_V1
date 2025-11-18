@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Shield, AlertTriangle, CheckCircle, Lock, Key, Eye, Settings } from "lucide-react";
-import AdminSecurityLogs from "@/components/admin/AdminSecurityLogs";
+import AdminSecurityLogs from "@/components/admin/security/SecurityLogs";
 
 export default function AdminSecurityPage() {
   const [activeTab, setActiveTab] = useState("overview");

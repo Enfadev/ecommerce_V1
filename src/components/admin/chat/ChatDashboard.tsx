@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { MessageSquare } from "lucide-react";
 import { useChatSSE } from "@/hooks/admin/useChatSSE";
-import { ChatStatsCards } from "./chat/ChatStatsCards";
-import { ChatRoomsList } from "./chat/ChatRoomsList";
-import { MessageThread } from "./chat/MessageThread";
+import { ChatStatsCards } from "./ChatStatsCards";
+import { ChatRoomsList } from "./ChatRoomsList";
+import { MessageThread } from "./MessageThread";
 
 interface ChatRoom {
   id: number;

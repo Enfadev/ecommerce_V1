@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import { useUserManagement, type User } from "@/hooks/admin/useUserManagement";
-import { UserFilters } from "./users/UserFilters";
-import { UsersTable } from "./users/UsersTable";
-import { UserRoleDialog } from "./users/UserRoleDialog";
-import { UserDeleteDialog } from "./users/UserDeleteDialog";
+import { UserFilters } from "./UserFilters";
+import { UsersTable } from "./UsersTable";
+import { UserRoleDialog } from "./UserRoleDialog";
+import { UserDeleteDialog } from "./UserDeleteDialog";
 
 export default function UserManagementTable() {
   const { users, loading, search, setSearch, roleFilter, setRoleFilter, pagination, handleSearch, updateUserRole, deleteUser, nextPage, previousPage } = useUserManagement();

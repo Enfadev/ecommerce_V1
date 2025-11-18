@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format, subDays } from "date-fns";
-import { AdminExportButton } from "@/components/admin/AdminExportButton";
+import { AdminExportButton } from "@/components/admin/shared/ExportButton";
 import type { DatePeriod, TimeSeriesData } from "@/types/analytics";
 
 interface AnalyticsHeaderProps {

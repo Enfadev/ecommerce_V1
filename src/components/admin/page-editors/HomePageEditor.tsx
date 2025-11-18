@@ -2,11 +2,11 @@
 
 import { Loader2, Home, Globe } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeroSectionEditor } from "./page-editor/HeroSectionEditor";
-import { SaveButton } from "./page-editor/SaveButton";
-import { HeroSlidesSection } from "./home-page/HeroSlidesSection";
-import { HomeFeaturesSection } from "./home-page/HomeFeaturesSection";
-import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
+import { HeroSectionEditor } from "../page-editor/HeroSectionEditor";
+import { SaveButton } from "../page-editor/SaveButton";
+import { HeroSlidesSection } from "../home-page/HeroSlidesSection";
+import { HomeFeaturesSection } from "../home-page/HomeFeaturesSection";
+import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
 import { usePageEditor } from "@/hooks/usePageEditor";
 import { toast } from "sonner";
 

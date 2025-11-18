@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { SectionCard } from "../page-editor/SectionCard";
 import { ItemCard } from "../page-editor/ItemCard";
-import { IconSelect } from "@/components/admin/IconSelect";
+import { IconSelect } from "@/components/admin/shared/IconSelect";
 
 interface CompanyValue {
   icon: string;

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Save, Settings } from "lucide-react";
-import { LogoUpload } from "@/components/admin/LogoUpload";
+import { LogoUpload } from "@/components/admin/shared/LogoUpload";
 import { toast } from "sonner";
 import type { GeneralSettings } from "@/types/settings";
 

@@ -4,14 +4,14 @@ import { Loader2, Info, Globe } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { HeroSectionEditor } from "./page-editor/HeroSectionEditor";
-import { SaveButton } from "./page-editor/SaveButton";
-import { ValuesSection } from "./about-page/ValuesSection";
-import { StatisticsSection } from "./about-page/StatisticsSection";
-import { FeaturesSection } from "./about-page/FeaturesSection";
-import { TeamSection } from "./about-page/TeamSection";
-import { TimelineSection } from "./about-page/TimelineSection";
-import SeoSettingsCard from "@/components/admin/SeoSettingsCard";
+import { HeroSectionEditor } from "../page-editor/HeroSectionEditor";
+import { SaveButton } from "../page-editor/SaveButton";
+import { ValuesSection } from "../about-page/ValuesSection";
+import { StatisticsSection } from "../about-page/StatisticsSection";
+import { FeaturesSection } from "../about-page/FeaturesSection";
+import { TeamSection } from "../about-page/TeamSection";
+import { TimelineSection } from "../about-page/TimelineSection";
+import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
 import { usePageEditor } from "@/hooks/usePageEditor";
 
 interface CompanyValue {

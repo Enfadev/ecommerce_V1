@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-const UserManagementTable = dynamic(() => import("@/components/admin/UserManagementTable"), {
+const UserManagementTable = dynamic(() => import("@/components/admin/users/UserManagementTable"), {
   loading: () => <div className="p-8 text-center text-muted-foreground">Loading users...</div>,
   ssr: false,
 });

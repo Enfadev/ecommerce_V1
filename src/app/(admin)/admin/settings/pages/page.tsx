@@ -6,19 +6,19 @@ import { Home, Info, Package, MessageCircle } from "lucide-react";
 import dynamic from "next/dynamic";
 
 // Dynamic imports for page editors
-const AdminHomePageEditor = dynamic(() => import("@/components/admin/AdminHomePageEditor"), {
+const AdminHomePageEditor = dynamic(() => import("@/components/admin/page-editors/HomePageEditor"), {
   loading: () => <div className="p-8 text-center text-muted-foreground">Loading editor...</div>,
 });
 
-const AdminAboutPageEditor = dynamic(() => import("@/components/admin/AdminAboutPageEditor"), {
+const AdminAboutPageEditor = dynamic(() => import("@/components/admin/page-editors/AboutPageEditor"), {
   loading: () => <div className="p-8 text-center text-muted-foreground">Loading editor...</div>,
 });
 
-const AdminProductPageEditor = dynamic(() => import("@/components/admin/AdminProductPageEditor"), {
+const AdminProductPageEditor = dynamic(() => import("@/components/admin/page-editors/ProductPageEditor"), {
   loading: () => <div className="p-8 text-center text-muted-foreground">Loading editor...</div>,
 });
 
-const AdminContactPageEditor = dynamic(() => import("@/components/admin/AdminContactPageEditor"), {
+const AdminContactPageEditor = dynamic(() => import("@/components/admin/page-editors/ContactPageEditor"), {
   loading: () => <div className="p-8 text-center text-muted-foreground">Loading editor...</div>,
 });
 
