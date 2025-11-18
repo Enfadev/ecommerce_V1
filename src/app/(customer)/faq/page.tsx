@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+export const metadata: Metadata = {
+  title: "FAQ | Frequently Asked Questions",
+  description: "Find answers to frequently asked questions about ordering, payments, shipping, returns, and customer service",
+  openGraph: {
+    title: "FAQ | Frequently Asked Questions",
+    description: "Get quick answers to common questions about our products and services",
+  },
+};
 
 export default function FAQ() {
   return (
