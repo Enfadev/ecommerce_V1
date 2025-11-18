@@ -1,15 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
+import { LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Users, RefreshCw, Star, Clock, DollarSign, Activity, TrendingUp, TrendingDown, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { RevenueTrendChart } from "./RevenueTrendChart";
-import { CategoryDistributionChart } from "./CategoryDistributionChart";
+import { ChartSkeleton } from "@/components/admin/common/ChartSkeleton";
 import { TopProductsList } from "./TopProductsList";
 import type { AnalyticsData } from "@/types/analytics";
+
+// Dynamic imports for heavy custom chart components only
+const RevenueTrendChart = dynamic(() => import("./RevenueTrendChart").then((mod) => ({ default: mod.RevenueTrendChart })), { loading: () => <ChartSkeleton />, ssr: false });
+
+const CategoryDistributionChart = dynamic(() => import("./CategoryDistributionChart").then((mod) => ({ default: mod.CategoryDistributionChart })), { loading: () => <ChartSkeleton />, ssr: false });
 
 interface AnalyticsTabsProps {
   data: AnalyticsData;

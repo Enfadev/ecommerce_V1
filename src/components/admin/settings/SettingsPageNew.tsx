@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,10 +9,47 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Globe, Shield, Users, Database, Bell, Eye, Save, Key, Palette, Home, Info, Package, MessageCircle } from "lucide-react";
-import AdminContactPageEditor from "../page-editors/ContactPageEditor";
-import AdminHomePageEditor from "../page-editors/HomePageEditor";
-import AdminAboutPageEditor from "../page-editors/AboutPageEditor";
-import AdminProductPageEditor from "../page-editors/ProductPageEditor";
+
+// Lazy load heavy page editor components
+const AdminContactPageEditor = dynamic(() => import("../page-editors/ContactPageEditor"), {
+  loading: () => (
+    <div className="flex items-center justify-center py-12">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <span className="ml-3">Loading editor...</span>
+    </div>
+  ),
+  ssr: false,
+});
+
+const AdminHomePageEditor = dynamic(() => import("../page-editors/HomePageEditor"), {
+  loading: () => (
+    <div className="flex items-center justify-center py-12">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <span className="ml-3">Loading editor...</span>
+    </div>
+  ),
+  ssr: false,
+});
+
+const AdminAboutPageEditor = dynamic(() => import("../page-editors/AboutPageEditor"), {
+  loading: () => (
+    <div className="flex items-center justify-center py-12">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <span className="ml-3">Loading editor...</span>
+    </div>
+  ),
+  ssr: false,
+});
+
+const AdminProductPageEditor = dynamic(() => import("../page-editors/ProductPageEditor"), {
+  loading: () => (
+    <div className="flex items-center justify-center py-12">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <span className="ml-3">Loading editor...</span>
+    </div>
+  ),
+  ssr: false,
+});
 
 export default function AdminSettingsPage() {
   const [generalSettings, setGeneralSettings] = useState({
