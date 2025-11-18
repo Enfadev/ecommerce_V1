@@ -67,7 +67,6 @@ export function processCategoryData(categoryData: any[], totalCategoryRevenue: n
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function calculateTotalCategoryRevenue(categoryData: any[]): number {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return categoryData.reduce((sum, category) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const categoryRevenue = category.products.reduce((catSum: number, product: any) => {

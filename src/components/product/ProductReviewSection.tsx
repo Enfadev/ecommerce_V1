@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,11 +69,11 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
 
   const fetchEligibleOrders = useCallback(async () => {
     if (!user) return;
-    
+
     setLoadingOrders(true);
     try {
       const response = await fetch(`/api/review/eligible-orders?productId=${productId}`);
-      
+
       if (response.ok) {
         const orders = await response.json();
         setEligibleOrders(orders);
@@ -116,11 +118,11 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
       const res = await fetch(`/api/review?productId=${productId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          rating, 
+        body: JSON.stringify({
+          rating,
           comment,
           isAnonymous,
-          orderId: selectedOrderId
+          orderId: selectedOrderId,
         }),
       });
 
@@ -189,8 +191,7 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
                       <span className="text-xs text-gray-400 flex items-center gap-2">
                         <Calendar className="w-3 h-3" />
                         {new Date(order.createdAt).toLocaleDateString()}
-                        <DollarSign className="w-3 h-3" />
-                        ${order.totalAmount}
+                        <DollarSign className="w-3 h-3" />${order.totalAmount}
                       </span>
                     </div>
                   </div>
@@ -222,26 +223,17 @@ function ReviewForm({ productId, onSubmitted }: ReviewFormProps) {
         </div>
 
         <div className="flex items-center space-x-2">
-          <Checkbox
-            id="anonymous"
-            checked={isAnonymous}
-            onCheckedChange={(checked) => setIsAnonymous(checked as boolean)}
-            className="border-gray-600 text-blue-600"
-          />
+          <Checkbox id="anonymous" checked={isAnonymous} onCheckedChange={(checked) => setIsAnonymous(checked as boolean)} className="border-gray-600 text-blue-600" />
           <Label htmlFor="anonymous" className="text-sm text-gray-300 cursor-pointer">
             Post this review anonymously
           </Label>
         </div>
 
-        {error && (
-          <div className="bg-red-900/50 border border-red-700 text-red-300 text-sm p-3 rounded-xl">
-            {error}
-          </div>
-        )}
+        {error && <div className="bg-red-900/50 border border-red-700 text-red-300 text-sm p-3 rounded-xl">{error}</div>}
 
-        <Button 
-          type="submit" 
-          disabled={loading || rating < 1 || !selectedOrderId} 
+        <Button
+          type="submit"
+          disabled={loading || rating < 1 || !selectedOrderId}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
@@ -343,20 +335,14 @@ function ReviewList({ productId }: ReviewListProps) {
         <div key={review.id} className="bg-gray-900 border border-gray-700 rounded-2xl p-6 shadow-lg hover:bg-gray-800/70 transition-all duration-200">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="font-semibold text-gray-200 text-sm">
-                {review.user.charAt(0).toUpperCase()}
-              </span>
+              <span className="font-semibold text-gray-200 text-sm">{review.user.charAt(0).toUpperCase()}</span>
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <div className="flex items-center gap-2">
                   <h4 className="font-medium text-gray-100 truncate">{review.user}</h4>
-                  {review.isVerified && (
-                    <span className="bg-green-900/50 text-green-300 text-xs px-2 py-1 rounded-full border border-green-700">
-                      ✓ Verified Purchase
-                    </span>
-                  )}
+                  {review.isVerified && <span className="bg-green-900/50 text-green-300 text-xs px-2 py-1 rounded-full border border-green-700">✓ Verified Purchase</span>}
                 </div>
                 <StarRating rating={review.rating} setRating={() => {}} readOnly />
               </div>
@@ -373,10 +359,8 @@ function ReviewList({ productId }: ReviewListProps) {
                     minute: "2-digit",
                   })}
                 </time>
-                
-                <div className="text-xs text-gray-500">
-                  Order #{review.orderNumber}
-                </div>
+
+                <div className="text-xs text-gray-500">Order #{review.orderNumber}</div>
               </div>
             </div>
           </div>
@@ -392,7 +376,7 @@ interface ProductReviewSectionProps {
 
 export default function ProductReviewSection({ productId }: ProductReviewSectionProps) {
   const [refresh, setRefresh] = useState(0);
-  
+
   return (
     <section className="mx-auto p-6">
       <div className="text-center mb-8">
@@ -412,7 +396,6 @@ export default function ProductReviewSection({ productId }: ProductReviewSection
 
       {/* Review List */}
       <div className="space-y-6">
-
         <ReviewList productId={productId} key={refresh} />
       </div>
     </section>

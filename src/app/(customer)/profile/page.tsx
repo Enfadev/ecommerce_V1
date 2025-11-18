@@ -1,73 +1,24 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { ProfileAvatar } from "@/components/shared/ProfileAvatar";
-import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Edit3, Crown, Trash2 } from "lucide-react";
+import { User, Shield } from "lucide-react";
 import { useAuth } from "@/components/contexts/AuthContext";
 import { Toast } from "@/components/ui/toast";
-
-const profileSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  phoneNumber: z.string().optional(),
-  address: z.string().optional(),
-  dateOfBirth: z.string().optional(),
-});
-
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(6, { message: "Current password must be at least 6 characters" }),
-    newPassword: z.string().min(8, { message: "New password must be at least 8 characters" }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Password confirmation doesn't match",
-    path: ["confirmPassword"],
-  });
-
-type ProfileValues = z.infer<typeof profileSchema>;
-type PasswordValues = z.infer<typeof passwordSchema>;
+import { ProfileHeader } from "./components/ProfileHeader";
+import { ProfileInfoForm } from "./components/ProfileInfoForm";
+import { PasswordForm } from "./components/PasswordForm";
+import { profileSchema, passwordSchema, ProfileValues, PasswordValues, ToastState } from "./types";
+import { getValidImageSrc, generateAvatarUrl, validateImageFile, fileToDataUrl, uploadAvatar, deleteAvatar } from "./utils";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, updateProfile, signOut, isLoading, isAuthenticated, refreshUser } = useAuth();
 
-  const generateAvatarUrl = useCallback((name: string) => {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6366f1&color=fff&size=200`;
-  }, []);
-
-  const getValidImageSrc = useCallback(
-    (avatar?: string | null, name?: string) => {
-      if (!avatar || avatar === "null" || avatar === "undefined" || avatar.trim() === "") {
-        return generateAvatarUrl(name || "User");
-      }
-
-      if (avatar.startsWith("http") || avatar.startsWith("/uploads/")) {
-        return avatar;
-      }
-
-      if (avatar.includes("ui-avatars.com")) {
-        return avatar;
-      }
-
-      return generateAvatarUrl(name || "User");
-    },
-    [generateAvatarUrl]
-  );
-
-  const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error" }>({
+  const [toast, setToast] = useState<ToastState>({
     show: false,
     message: "",
     type: "success",
@@ -112,7 +63,7 @@ export default function ProfilePage() {
       });
       setImagePreview(getValidImageSrc(user.avatar, user.name));
     }
-  }, [user, profileForm, getValidImageSrc]);
+  }, [user, profileForm]);
 
   async function onProfileSubmit(values: ProfileValues) {
     try {
@@ -120,27 +71,18 @@ export default function ProfilePage() {
 
       if (selectedImage) {
         console.log("📤 Uploading image:", selectedImage.name);
-        const formData = new FormData();
-        formData.append("image", selectedImage);
+        const result = await uploadAvatar(selectedImage);
 
-        const uploadResponse = await fetch("/api/upload-avatar", {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        });
-
-        if (uploadResponse.ok) {
-          const uploadData = await uploadResponse.json();
-          avatarUrl = uploadData.url;
-        } else {
-          const errorData = await uploadResponse.json();
+        if (result.error) {
           setToast({
             show: true,
-            message: errorData.error || "Failed to upload image. Please try again.",
+            message: result.error,
             type: "error",
           });
           return;
         }
+
+        avatarUrl = result.url;
       }
 
       const profileData = { ...values, avatar: avatarUrl };
@@ -212,47 +154,34 @@ export default function ProfilePage() {
     router.push("/");
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
-      if (!allowedTypes.includes(file.type)) {
-        setToast({
-          show: true,
-          message: "Please select a valid image file (JPEG, PNG, or WebP)",
-          type: "error",
-        });
-        return;
-      }
+    if (!file) return;
 
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        setToast({
-          show: true,
-          message: "Image size must be less than 5MB",
-          type: "error",
-        });
-        return;
-      }
-
-      setSelectedImage(file);
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    const validation = validateImageFile(file);
+    if (!validation.valid) {
+      setToast({
+        show: true,
+        message: validation.error!,
+        type: "error",
+      });
+      return;
     }
+
+    setSelectedImage(file);
+
+    const dataUrl = await fileToDataUrl(file);
+    setImagePreview(dataUrl);
   };
 
-  const updateAvatar = () => {
+  const updateAvatarClick = () => {
     const fileInput = document.getElementById("avatar-upload") as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
   };
 
-  const generateAvatar = () => {
+  const generateAvatarClick = () => {
     if (user?.name) {
       const newAvatarUrl = generateAvatarUrl(user.name);
       setImagePreview(newAvatarUrl);
@@ -260,24 +189,17 @@ export default function ProfilePage() {
     }
   };
 
-  const deleteAvatar = async () => {
+  const deleteAvatarClick = async () => {
     if (!user) return;
 
     try {
       console.log("🗑️ Deleting avatar...");
+      const result = await deleteAvatar();
 
-      const response = await fetch("/api/delete-avatar", {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        await response.json();
-
+      if (result.success) {
         const defaultAvatarUrl = generateAvatarUrl(user.name);
         setImagePreview(defaultAvatarUrl);
         setSelectedImage(null);
-
         await refreshUser();
 
         setToast({
@@ -286,11 +208,10 @@ export default function ProfilePage() {
           type: "success",
         });
       } else {
-        const errorData = await response.json();
-        console.error("❌ Failed to delete avatar:", errorData);
+        console.error("❌ Failed to delete avatar:", result.error);
         setToast({
           show: true,
-          message: errorData.error || "Failed to delete avatar. Please try again.",
+          message: result.error!,
           type: "error",
         });
       }
@@ -325,71 +246,7 @@ export default function ProfilePage() {
 
       <div>
         {/* Header Profile */}
-        <Card className="mb-8 bg-gray-800/80 backdrop-blur-sm border-gray-700 shadow-2xl">
-          <CardContent className="p-8">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              <div className="relative">
-                <ProfileAvatar
-                  src={imagePreview || user.avatar}
-                  alt="User avatar"
-                  name={user.name}
-                  size={128}
-                  className="w-32 h-32 rounded-full border-4 border-gray-600 shadow-xl"
-                  onError={() => {
-                    console.log("Avatar load error, using fallback");
-                  }}
-                />
-                {/* Hidden file input for avatar upload */}
-                <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" aria-label="Upload avatar image" />
-                <div className="absolute bottom-2 right-2 flex gap-1">
-                  <Button size="sm" variant="secondary" className="rounded-full p-2 bg-gray-700 hover:bg-gray-600 border-gray-600" onClick={updateAvatar}>
-                    <Camera className="h-4 w-4" aria-label="Upload avatar" />
-                    <span className="sr-only">Upload avatar</span>
-                  </Button>
-                  {user.avatar && user.avatar.startsWith("/uploads/") && (
-                    <Button size="sm" variant="destructive" className="rounded-full p-2" onClick={deleteAvatar}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
-                  <h1 className="text-3xl font-bold text-white">{user.name}</h1>
-                  {user.role === "ADMIN" && (
-                    <Badge variant="secondary" className="bg-blue-600 text-white">
-                      <Crown className="h-3 w-3 mr-1" />
-                      Admin
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-gray-400 text-lg mb-4">{user.email}</p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                  {user.phoneNumber && (
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Phone className="h-4 w-4" />
-                      <span>{user.phoneNumber}</span>
-                    </div>
-                  )}
-                  {user.address && (
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <MapPin className="h-4 w-4" />
-                      <span>{user.address}</span>
-                    </div>
-                  )}
-                  {user.createdAt && (
-                    <div className="flex items-center gap-2 text-gray-300">
-                      <Calendar className="h-4 w-4" />
-                      <span>Joined {new Date(user.createdAt).getFullYear()}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <ProfileHeader user={user} imagePreview={imagePreview} onUpdateAvatar={updateAvatarClick} onDeleteAvatar={deleteAvatarClick} onImageUpload={handleImageUpload} />
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -409,198 +266,20 @@ export default function ProfilePage() {
 
               {/* Profile Tab */}
               <TabsContent value="profile">
-                <Card className="bg-gray-800/80 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Edit3 className="h-5 w-5" />
-                      Edit Profile
-                    </CardTitle>
-                    <CardDescription className="text-gray-400">Update your profile information</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Form {...profileForm}>
-                      <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={profileForm.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Full Name</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Full name" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={profileForm.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Email</FormLabel>
-                                <FormControl>
-                                  <Input type="email" placeholder="email@example.com" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={profileForm.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Phone Number</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="+1 234 567 8900" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={profileForm.control}
-                            name="dateOfBirth"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Date of Birth</FormLabel>
-                                <FormControl>
-                                  <Input type="date" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <FormField
-                          control={profileForm.control}
-                          name="address"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">Address</FormLabel>
-                              <FormControl>
-                                <Textarea placeholder="Your complete address" className="bg-gray-700/50 border-gray-600 text-white resize-none" rows={3} {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className="space-y-2">
-                          <label className="text-gray-200 text-sm font-medium">Avatar Image</label>
-                          <div className="flex items-center gap-4">
-                            <input
-                              id="avatar-upload-form"
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                              className="bg-gray-700/50 border border-gray-600 text-white rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
-                              aria-label="Upload avatar image"
-                            />
-                            <label htmlFor="avatar-upload-form" className="sr-only">
-                              Upload avatar image
-                            </label>
-                            <Button type="button" variant="outline" size="sm" onClick={generateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                              Generate Avatar
-                            </Button>
-                            {user.avatar && user.avatar.startsWith("/uploads/") && (
-                              <Button type="button" variant="destructive" size="sm" onClick={deleteAvatar}>
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete Avatar
-                              </Button>
-                            )}
-                          </div>
-                          <p className="text-gray-400 text-xs">Upload an image, generate an avatar based on your name, or delete current uploaded image</p>
-                        </div>
-
-                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-                          <Save className="h-4 w-4 mr-2 text-white" />
-                          <span className="text-white font-medium">Save Changes</span>
-                        </Button>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
+                <ProfileInfoForm
+                  form={profileForm}
+                  isLoading={isLoading}
+                  hasUploadedAvatar={!!user.avatar && user.avatar.startsWith("/uploads/")}
+                  onSubmit={onProfileSubmit}
+                  onImageUpload={handleImageUpload}
+                  onGenerateAvatar={generateAvatarClick}
+                  onDeleteAvatar={deleteAvatarClick}
+                />
               </TabsContent>
 
               {/* Security Tab */}
               <TabsContent value="security">
-                <Card className="bg-gray-800/80 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Shield className="h-5 w-5" />
-                      Account Security
-                    </CardTitle>
-                    <CardDescription className="text-gray-400">Manage your password and account security</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Form {...passwordForm}>
-                      <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
-                        <FormField
-                          control={passwordForm.control}
-                          name="currentPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">Current Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={passwordForm.control}
-                          name="newPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">New Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={passwordForm.control}
-                          name="confirmPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">Confirm New Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-                          <Shield className="h-4 w-4 mr-2" />
-                          Change Password
-                        </Button>
-
-                        <Separator className="bg-gray-600" />
-
-                        <Button variant="destructive" className="w-full" onClick={handleSignOut}>
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Sign Out
-                        </Button>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
+                <PasswordForm form={passwordForm} onSubmit={onPasswordSubmit} onSignOut={handleSignOut} />
               </TabsContent>
             </Tabs>
           </div>
@@ -608,9 +287,6 @@ export default function ProfilePage() {
           {/* Sidebar */}
           <div className="space-y-6"></div>
         </div>
-
-        {/* Product Recommendations */}
-        {/* <ProductRecommendation maxItems={4} /> */}
       </div>
     </div>
   );

@@ -1,285 +1,151 @@
-"use client";
+import { Suspense } from "react";
+import { prisma } from "@/lib/database";
+import SearchBar from "./components/SearchBar";
+import SortControl from "./components/SortControl";
+import ViewModeToggle from "./components/ViewModeToggle";
+import ProductFilters from "./components/ProductFilters";
+import ProductGrid from "./components/ProductGrid";
+import { sortProducts, filterBySearch, filterByCategory, filterByPrice } from "./constants";
+import type { Product, SortOption, FilterOptions } from "./constants";
 
-import { ProductCard } from "@/components/product/ProductCard";
-import type { Product } from "@/lib/constants/products";
-import { useSearchParams } from "next/navigation";
-import { ProductFilter } from "@/components/product/ProductFilter";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useState, useMemo, useEffect, Suspense } from "react";
-import { Search, Grid, List, Filter, SortAsc, SortDesc } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+/**
+ * Product Listing Page - Server Component
+ * Fetches products and filter options server-side for SEO and performance
+ * Handles filtering, sorting, and search with Next.js 16 async searchParams
+ */
 
-type SortOption = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "newest";
-type ViewMode = "grid" | "list";
-
-interface APIProduct {
-  id: number;
-  name: string;
-  price: number;
-  imageUrl: string | null;
-  description: string | null;
-  category?: string;
-  stock?: number;
-  slug?: string;
-  discountPrice?: number;
-  promoExpired?: string | Date;
-}
-
-function ProductPageContent() {
-  const searchParams = useSearchParams();
-  const search = searchParams.get("q") || "";
-  const category = searchParams.get("category") || "All";
-  const price = searchParams.get("price") || "all";
-
-  const [inputSearch, setInputSearch] = useState(search);
-  const [localSearch, setLocalSearch] = useState(search);
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
-
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setLocalSearch(inputSearch);
-    }, 400);
-    return () => clearTimeout(handler);
-  }, [inputSearch]);
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("/api/product")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          const mappedProducts: Product[] = data.map((product: APIProduct) => ({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.imageUrl || "/placeholder-image.svg",
-            category: product.category || "General",
-            stock: product.stock ?? Math.floor(Math.random() * 50) + 1,
-            slug: product.slug,
-            discountPrice: product.discountPrice,
-            promoExpired: product.promoExpired,
-          }));
-          setProducts(mappedProducts);
-          setError("");
-        } else {
-          setError(data.error || "Failed to fetch products");
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to fetch products");
-        setLoading(false);
-      });
-  }, []);
-
-  const filteredAndSortedProducts = useMemo(() => {
-    let filtered = products.filter((p) => p.name.toLowerCase().includes(localSearch.toLowerCase()));
-
-    if (category !== "All") {
-      filtered = filtered.filter((p) => p.category && p.category.toLowerCase() === category.toLowerCase());
-    }
-
-    if (price !== "all") {
-      filtered = filtered.filter((p) => {
-        if (price.startsWith("lt")) {
-          const max = Number(price.replace("lt", ""));
-          return p.price < max;
-        }
-        if (price.startsWith("gt")) {
-          const min = Number(price.replace("gt", ""));
-          return p.price > min;
-        }
-        if (price.includes("-")) {
-          const [min, max] = price.split("-").map(Number);
-          return p.price >= min && p.price <= max;
-        }
-        return true;
-      });
-    }
-
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "name-asc":
-          return a.name.localeCompare(b.name);
-        case "name-desc":
-          return b.name.localeCompare(a.name);
-        case "price-asc":
-          return a.price - b.price;
-        case "price-desc":
-          return b.price - a.price;
-        case "newest":
-        default:
-          return b.id - a.id;
-      }
+async function getProducts(): Promise<Product[]> {
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        status: "active",
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+      orderBy: {
+        id: "desc",
+      },
     });
 
-    return filtered;
-  }, [products, localSearch, category, price, sortBy]);
+    return products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.imageUrl || "/placeholder-product.svg",
+      category: product.category?.name || "General",
+      stock: product.stock,
+      slug: product.slug || undefined,
+      discountPrice: product.discountPrice || undefined,
+      promoExpired: product.promoExpired || undefined,
+    }));
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+}
 
-  const getSortIcon = () => {
-    if (sortBy.includes("asc")) return <SortAsc className="w-4 h-4" />;
-    if (sortBy.includes("desc")) return <SortDesc className="w-4 h-4" />;
-    return <Filter className="w-4 h-4" />;
-  };
+async function getFilterOptions(): Promise<FilterOptions> {
+  try {
+    // Get unique categories
+    const categories = await prisma.category.findMany({
+      select: { name: true },
+      orderBy: { name: "asc" },
+    });
+
+    // Get price ranges based on actual product prices
+    const priceStats = await prisma.product.aggregate({
+      _min: { price: true },
+      _max: { price: true },
+    });
+
+    const maxPrice = priceStats._max.price || 1000;
+
+    const priceRanges = [
+      { label: "All", value: "all", min: null, max: null },
+      { label: `Under $${Math.floor(maxPrice * 0.25)}`, value: `lt${Math.floor(maxPrice * 0.25)}`, min: null, max: Math.floor(maxPrice * 0.25) },
+      { label: `$${Math.floor(maxPrice * 0.25)} - $${Math.floor(maxPrice * 0.5)}`, value: `${Math.floor(maxPrice * 0.25)}-${Math.floor(maxPrice * 0.5)}`, min: Math.floor(maxPrice * 0.25), max: Math.floor(maxPrice * 0.5) },
+      { label: `$${Math.floor(maxPrice * 0.5)} - $${Math.floor(maxPrice * 0.75)}`, value: `${Math.floor(maxPrice * 0.5)}-${Math.floor(maxPrice * 0.75)}`, min: Math.floor(maxPrice * 0.5), max: Math.floor(maxPrice * 0.75) },
+      { label: `Over $${Math.floor(maxPrice * 0.75)}`, value: `gt${Math.floor(maxPrice * 0.75)}`, min: Math.floor(maxPrice * 0.75), max: null },
+    ];
+
+    return {
+      categories: ["All", ...categories.map((c) => c.name)],
+      priceRanges,
+    };
+  } catch (error) {
+    console.error("Error fetching filter options:", error);
+    return {
+      categories: ["All"],
+      priceRanges: [{ label: "All", value: "all", min: null, max: null }],
+    };
+  }
+}
+
+export default async function ProductPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  // Next.js 16: searchParams must be awaited
+  const params = await searchParams;
+
+  const search = typeof params.q === "string" ? params.q : "";
+  const category = typeof params.category === "string" ? params.category : "All";
+  const price = typeof params.price === "string" ? params.price : "all";
+  const sort = (typeof params.sort === "string" ? params.sort : "newest") as SortOption;
+
+  // Fetch data server-side
+  const [allProducts, filterOptions] = await Promise.all([getProducts(), getFilterOptions()]);
+
+  // Apply filters and sorting
+  let filteredProducts = allProducts;
+  filteredProducts = filterBySearch(filteredProducts, search);
+  filteredProducts = filterByCategory(filteredProducts, category);
+  filteredProducts = filterByPrice(filteredProducts, price);
+  filteredProducts = sortProducts(filteredProducts, sort);
 
   return (
     <div>
-      <div>
-        {/* Hero Section */}
-        <div className="text-center py-12 mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">Complete Product Collection</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Discover the best selected products with premium quality and competitive prices</p>
+      {/* Hero Section */}
+      <div className="text-center py-12 mb-8">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">Complete Product Collection</h1>
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Discover the best selected products with premium quality and competitive prices</p>
+      </div>
+
+      {/* Search & Controls */}
+      <div className="flex flex-col lg:flex-row gap-4 mb-8">
+        <div className="flex-1">
+          <Suspense fallback={<div className="h-14 bg-muted animate-pulse rounded-2xl"></div>}>
+            <SearchBar initialSearch={search} />
+          </Suspense>
         </div>
 
-        {/* Search & Filter Section */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8">
-          <div className="flex-1">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 w-5 h-5 group-focus-within:text-primary transition-colors duration-200 z-10 pointer-events-none" />
-              <Input
-                placeholder="Search for products you want..."
-                value={inputSearch}
-                onChange={(e) => setInputSearch(e.target.value)}
-                className="pl-12 pr-4 h-14 text-base bg-background/50 backdrop-blur-sm border-0 rounded-2xl shadow-sm focus:shadow-lg focus:bg-background transition-all duration-300 placeholder:text-muted-foreground/50 relative"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            {/* Sort Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="lg" className="h-14 px-6 gap-3 bg-background/50 backdrop-blur-sm border-0 rounded-2xl shadow-sm hover:shadow-lg hover:bg-background transition-all duration-300">
-                  {getSortIcon()}
-                  <span className="font-medium">Sort</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="rounded-xl border-0 shadow-xl backdrop-blur-sm bg-background/95 p-2">
-                <DropdownMenuItem onClick={() => setSortBy("newest")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
-                  Newest First
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-asc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
-                  Name A-Z
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("name-desc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
-                  Name Z-A
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-asc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
-                  Lowest Price
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("price-desc")} className="rounded-lg px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors">
-                  Highest Price
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* View Mode Toggle */}
-            <div className="flex bg-background/50 backdrop-blur-sm rounded-2xl shadow-sm p-1">
-              <Button
-                variant={viewMode === "grid" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                className={`h-12 w-12 rounded-xl transition-all duration-200 ${viewMode === "grid" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 text-muted-foreground"}`}
-                aria-label="Grid view"
-              >
-                <Grid className="w-5 h-5" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-                className={`h-12 w-12 rounded-xl transition-all duration-200 ${viewMode === "list" ? "bg-primary text-primary-foreground shadow-sm" : "hover:bg-muted/50 text-muted-foreground"}`}
-                aria-label="List view"
-              >
-                <List className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
+        <div className="flex gap-3">
+          <Suspense fallback={<div className="h-14 w-32 bg-muted animate-pulse rounded-2xl"></div>}>
+            <SortControl currentSort={sort} />
+          </Suspense>
+          <Suspense fallback={<div className="h-14 w-28 bg-muted animate-pulse rounded-2xl"></div>}>
+            <ViewModeToggle />
+          </Suspense>
         </div>
+      </div>
 
-        {/* Filter Component */}
-        <div className="mb-8">
-          <ProductFilter />
-        </div>
+      {/* Filters */}
+      <div className="mb-8">
+        <Suspense fallback={<div className="h-64 bg-muted animate-pulse rounded-3xl"></div>}>
+          <ProductFilters filterOptions={filterOptions} selectedCategory={category} selectedPrice={price} />
+        </Suspense>
+      </div>
 
-        {/* Results Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-semibold">{localSearch ? `Search results "${localSearch}"` : "All Products"}</h2>
-            <Badge variant="secondary" className="text-sm">
-              {filteredAndSortedProducts.length} products
-            </Badge>
-          </div>
-        </div>
-
-        {/* Products Grid/List */}
-        {loading ? (
+      {/* Product Grid */}
+      <Suspense
+        fallback={
           <div className="text-center py-20">
-            <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center animate-pulse">
-              <Search className="w-12 h-12 text-muted-foreground" />
-            </div>
+            <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center animate-pulse"></div>
             <h2 className="text-xl font-semibold mb-2">Loading products...</h2>
           </div>
-        ) : error ? (
-          <div className="text-center py-20">
-            <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
-              <Search className="w-12 h-12 text-muted-foreground" />
-            </div>
-            <h2 className="text-xl font-semibold mb-2">{error}</h2>
-            <Button variant="outline" onClick={() => window.location.reload()}>
-              Retry
-            </Button>
-          </div>
-        ) : filteredAndSortedProducts.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-32 h-32 mx-auto mb-6 bg-muted rounded-full flex items-center justify-center">
-              <Search className="w-12 h-12 text-muted-foreground" />
-            </div>
-            <h2 className="text-xl font-semibold mb-2">Product not found</h2>
-            <p className="text-muted-foreground mb-6">Try changing your search keyword or filter</p>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setInputSearch("");
-                setLocalSearch("");
-                setSortBy("newest");
-              }}
-            >
-              Reset Search
-            </Button>
-          </div>
-        ) : (
-          <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "flex flex-col gap-4"}>
-            {filteredAndSortedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} viewMode={viewMode} />
-            ))}
-          </div>
-        )}
-
-        {/* Load More Button (for future pagination) */}
-        {filteredAndSortedProducts.length > 12 && (
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg">
-              Load More
-            </Button>
-          </div>
-        )}
-      </div>
+        }
+      >
+        <ProductGrid products={filteredProducts} searchTerm={search} />
+      </Suspense>
     </div>
-  );
-}
-
-export default function ProductPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProductPageContent />
-    </Suspense>
   );
 }

@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+"use client";
+
+import React, { useEffect } from "react";
 
 interface RichTextDisplayProps {
   content: string;
   className?: string;
 }
 
-export const RichTextDisplay: React.FC<RichTextDisplayProps> = ({ content, className = '' }) => {
+export const RichTextDisplay: React.FC<RichTextDisplayProps> = ({ content, className = "" }) => {
   useEffect(() => {
-    if (typeof document !== 'undefined' && !document.getElementById('rich-text-styles')) {
-      const styleSheet = document.createElement('style');
-      styleSheet.id = 'rich-text-styles';
+    if (typeof document !== "undefined" && !document.getElementById("rich-text-styles")) {
+      const styleSheet = document.createElement("style");
+      styleSheet.id = "rich-text-styles";
       styleSheet.innerHTML = `
         .rich-text-display {
           word-wrap: break-word;
@@ -114,11 +116,11 @@ export const RichTextDisplay: React.FC<RichTextDisplayProps> = ({ content, class
   }, []);
 
   return (
-    <div 
+    <div
       className={`rich-text-display ${className}`}
       dangerouslySetInnerHTML={{ __html: content }}
       style={{
-        lineHeight: '1.7',
+        lineHeight: "1.7",
       }}
     />
   );
