@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from '@/lib/database';
+import { prisma } from "@/lib/database";
 import { getUserIdFromRequest } from "@/lib/auth";
 import { isAdminRequest } from "@/lib/auth";
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     }
 
     const userId = await getUserIdFromRequest(request);
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -76,64 +76,84 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = await getUserIdFromRequest(request);
-    
+
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    
-    const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, paymentStatus, items, subtotal, shippingFee, tax, discount, totalAmount } = body;
+
+    const { customerName, customerEmail, customerPhone, shippingAddress, postalCode, notes, paymentMethod, paymentStatus, items, shippingFee, discount } = body;
 
     const missingFields = [];
-    
-    if (!customerName || customerName.trim() === '') missingFields.push('customerName');
-    if (!customerEmail || customerEmail.trim() === '') missingFields.push('customerEmail');
-    if (!customerPhone || customerPhone.trim() === '') missingFields.push('customerPhone');
-    if (!shippingAddress || shippingAddress.trim() === '') missingFields.push('shippingAddress');
-    if (!paymentMethod || paymentMethod.trim() === '') missingFields.push('paymentMethod');
-    if (!items || !Array.isArray(items) || items.length === 0) missingFields.push('items');
-    if (subtotal === undefined || subtotal === null || isNaN(subtotal)) missingFields.push('subtotal');
-    if (totalAmount === undefined || totalAmount === null || isNaN(totalAmount)) missingFields.push('totalAmount');
+
+    if (!customerName || customerName.trim() === "") missingFields.push("customerName");
+    if (!customerEmail || customerEmail.trim() === "") missingFields.push("customerEmail");
+    if (!customerPhone || customerPhone.trim() === "") missingFields.push("customerPhone");
+    if (!shippingAddress || shippingAddress.trim() === "") missingFields.push("shippingAddress");
+    if (!paymentMethod || paymentMethod.trim() === "") missingFields.push("paymentMethod");
+    if (!items || !Array.isArray(items) || items.length === 0) missingFields.push("items");
 
     if (missingFields.length > 0) {
-      console.error('Missing or invalid required fields:', {
+      console.error("Missing or invalid required fields:", {
         missingFields,
         receivedData: {
-          customerName: customerName ? '✓' : '✗',
-          customerEmail: customerEmail ? '✓' : '✗',
-          customerPhone: customerPhone ? '✓' : '✗',
-          shippingAddress: shippingAddress ? '✓' : '✗',
-          paymentMethod: paymentMethod ? '✓' : '✗',
-          items: items && Array.isArray(items) && items.length > 0 ? `✓ (${items.length} items)` : '✗',
-          subtotal: !isNaN(subtotal) ? `✓ ($${subtotal})` : '✗',
-          totalAmount: !isNaN(totalAmount) ? `✓ ($${totalAmount})` : '✗',
-        }
+          customerName: customerName ? "✓" : "✗",
+          customerEmail: customerEmail ? "✓" : "✗",
+          customerPhone: customerPhone ? "✓" : "✗",
+          shippingAddress: shippingAddress ? "✓" : "✗",
+          paymentMethod: paymentMethod ? "✓" : "✗",
+          items: items && Array.isArray(items) && items.length > 0 ? `✓ (${items.length} items)` : "✗",
+        },
       });
-      return NextResponse.json({ 
-        error: "Missing required fields", 
-        missingFields,
-        details: "Please ensure all required fields are provided: customerName, customerEmail, customerPhone, shippingAddress, paymentMethod, items, subtotal, totalAmount"
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "Missing required fields",
+          missingFields,
+          details: "Please ensure all required fields are provided: customerName, customerEmail, customerPhone, shippingAddress, paymentMethod, items",
+        },
+        { status: 400 }
+      );
     }
 
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
     const order = await prisma.$transaction(async (tx) => {
+      // Validate all products exist and calculate server-side prices
+      let calculatedSubtotal = 0;
+      const validatedItems = [];
+
       for (const item of items) {
         const product = await tx.product.findUnique({
           where: { id: item.productId },
-          select: { id: true, stock: true, name: true, price: true, imageUrl: true },
+          select: { id: true, stock: true, name: true, price: true, discountPrice: true, imageUrl: true },
         });
 
         if (!product) {
-          throw new Error(`Product with ID ${item.productId} not found`);
+          throw new Error(`Product not found`);
         }
 
         if (product.stock < item.quantity) {
-          throw new Error(`Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`);
+          throw new Error(`Insufficient stock for ${product.name}. Available: ${product.stock}`);
         }
+
+        // Use server-side price - never trust client
+        const actualPrice = product.discountPrice || product.price;
+        const itemTotal = actualPrice * item.quantity;
+        calculatedSubtotal += itemTotal;
+
+        validatedItems.push({
+          ...item,
+          actualPrice,
+          product,
+        });
       }
+
+      // Calculate server-side totals
+      const calculatedShippingFee = shippingFee || 0;
+      const calculatedDiscount = discount || 0;
+      const calculatedTax = calculatedSubtotal * 0.1; // 10% tax rate
+      const calculatedTotalAmount = calculatedSubtotal + calculatedShippingFee + calculatedTax - calculatedDiscount;
 
       const newOrder = await tx.order.create({
         data: {
@@ -147,40 +167,44 @@ export async function POST(request: NextRequest) {
           notes,
           paymentMethod: paymentMethod || "Bank Transfer",
           paymentStatus: paymentStatus || "PENDING",
-          subtotal,
-          shippingFee: shippingFee || 0,
-          tax: tax || 0,
-          discount: discount || 0,
-          totalAmount,
+          subtotal: calculatedSubtotal,
+          shippingFee: calculatedShippingFee,
+          tax: calculatedTax,
+          discount: calculatedDiscount,
+          totalAmount: calculatedTotalAmount,
           estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         },
       });
 
-      for (const item of items) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
+      // Create order items and decrement stock atomically
+      for (const item of validatedItems) {
+        await tx.orderItem.create({
+          data: {
+            orderId: newOrder.id,
+            productId: item.productId,
+            productName: item.product.name,
+            productPrice: item.actualPrice,
+            productImage: item.product.imageUrl,
+            quantity: item.quantity,
+          },
         });
 
-        if (product) {
-          await tx.orderItem.create({
-            data: {
-              orderId: newOrder.id,
-              productId: item.productId,
-              productName: product.name,
-              productPrice: product.discountPrice || product.price,
-              productImage: product.imageUrl,
-              quantity: item.quantity,
+        // Use atomic decrement with optimistic concurrency
+        const updatedProduct = await tx.product.updateMany({
+          where: {
+            id: item.productId,
+            stock: { gte: item.quantity }, // Only decrement if stock is sufficient
+          },
+          data: {
+            stock: {
+              decrement: item.quantity,
             },
-          });
+          },
+        });
 
-          await tx.product.update({
-            where: { id: item.productId },
-            data: {
-              stock: {
-                decrement: item.quantity,
-              },
-            },
-          });
+        // If update affected 0 rows, stock was depleted by another transaction
+        if (updatedProduct.count === 0) {
+          throw new Error(`Stock was depleted for ${item.product.name} during checkout`);
         }
       }
 
@@ -222,9 +246,21 @@ export async function POST(request: NextRequest) {
     console.error("Create order error:", error);
 
     if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      // Log detailed error server-side
+      console.error("Order creation failed:", {
+        message: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Return generic message to client for security
+      if (error.message.includes("not found") || error.message.includes("Insufficient stock") || error.message.includes("depleted")) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+
+      return NextResponse.json({ error: "Failed to create order. Please try again." }, { status: 400 });
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 });
   }
 }

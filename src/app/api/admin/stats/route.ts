@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from '@/lib/database';
+import { prisma } from "@/lib/database";
 import { verifyJWT } from "@/lib/auth";
 
 interface SecurityLog {
@@ -14,8 +14,7 @@ interface SecurityLog {
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await request.cookies;
-    const token = cookieStore.get("auth-token")?.value;
+    const token = request.cookies.get("auth-token")?.value;
 
     if (!token) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });

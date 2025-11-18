@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJWT } from "@/lib/auth";
-import { prisma } from '@/lib/database';
+import { prisma } from "@/lib/database";
 import fs from "fs";
 import path from "path";
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await request.cookies;
-    const token = cookieStore.get("auth-token")?.value;
+    const token = request.cookies.get("auth-token")?.value;
 
     if (!token) {
       return NextResponse.json({ success: false, message: "No auth token provided" }, { status: 401 });
@@ -18,31 +17,37 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Unauthorized access" }, { status: 403 });
     }
 
-    let settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
+    let settings = await prisma.systemSettings.findFirst();
 
-    if (!settings || (Array.isArray(settings) && settings.length === 0)) {
-      await prisma.$executeRaw`
-        INSERT INTO system_settings (storeName, storeDescription, contactEmail, phoneNumber, officeAddress, timezone, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES ('E-Commerce Store', 'Trusted online store', 'contact@store.com', '', '', 'Asia/Jakarta', false, 24, '1.0.0', NOW(), NOW())
-      `;
-
-      settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
+    if (!settings) {
+      settings = await prisma.systemSettings.create({
+        data: {
+          storeName: "E-Commerce Store",
+          storeDescription: "Trusted online store",
+          contactEmail: "contact@store.com",
+          phoneNumber: "",
+          officeAddress: "",
+          timezone: "Asia/Jakarta",
+          enableTwoFactor: false,
+          sessionTimeout: 24,
+          version: "1.0.0",
+        },
+      });
     }
 
-    const settingsData = Array.isArray(settings) ? settings[0] : settings;
-
-    let logoUrl = settingsData?.logoUrl;
+    let logoUrl = settings.logoUrl;
     if (logoUrl) {
       const logoPath = logoUrl.startsWith("/") ? logoUrl.substring(1) : logoUrl;
       const fullPath = path.join(process.cwd(), "public", logoPath);
 
       if (!fs.existsSync(fullPath)) {
-        await prisma.$executeRaw`
-          UPDATE system_settings 
-          SET logoUrl = NULL,
-              updatedAt = NOW()
-          WHERE id = ${settingsData.id}
-        `;
+        settings = await prisma.systemSettings.update({
+          where: { id: settings.id },
+          data: {
+            logoUrl: null,
+            updatedAt: new Date(),
+          },
+        });
         logoUrl = null;
       }
     }
@@ -50,24 +55,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       settings: {
-        storeName: settingsData?.storeName || "E-Commerce Store",
-        storeDescription: settingsData?.storeDescription || "Trusted online store",
-        contactEmail: settingsData?.contactEmail || "contact@store.com",
-        phoneNumber: settingsData?.phoneNumber || "",
-        officeAddress: settingsData?.officeAddress || "",
-        timezone: settingsData?.timezone || "Asia/Jakarta",
+        storeName: settings?.storeName || "E-Commerce Store",
+        storeDescription: settings?.storeDescription || "Trusted online store",
+        contactEmail: settings?.contactEmail || "contact@store.com",
+        phoneNumber: settings?.phoneNumber || "",
+        officeAddress: settings?.officeAddress || "",
+        timezone: settings?.timezone || "Asia/Jakarta",
         logoUrl: logoUrl,
-        enableTwoFactor: settingsData?.enableTwoFactor || false,
-        sessionTimeout: settingsData?.sessionTimeout || 24,
-        version: settingsData?.version || "1.0.0",
-        defaultMetaTitle: settingsData?.defaultMetaTitle || null,
-        defaultMetaDescription: settingsData?.defaultMetaDescription || null,
-        defaultMetaKeywords: settingsData?.defaultMetaKeywords || null,
-        defaultOgImageUrl: settingsData?.defaultOgImageUrl || null,
-        twitterHandle: settingsData?.twitterHandle || null,
-        facebookPage: settingsData?.facebookPage || null,
-        canonicalBaseUrl: settingsData?.canonicalBaseUrl || null,
-        enableIndexing: settingsData?.enableIndexing ?? true,
+        enableTwoFactor: settings?.enableTwoFactor || false,
+        sessionTimeout: settings?.sessionTimeout || 24,
+        version: settings?.version || "1.0.0",
+        defaultMetaTitle: settings?.defaultMetaTitle || null,
+        defaultMetaDescription: settings?.defaultMetaDescription || null,
+        defaultMetaKeywords: settings?.defaultMetaKeywords || null,
+        defaultOgImageUrl: settings?.defaultOgImageUrl || null,
+        twitterHandle: settings?.twitterHandle || null,
+        facebookPage: settings?.facebookPage || null,
+        canonicalBaseUrl: settings?.canonicalBaseUrl || null,
+        enableIndexing: settings?.enableIndexing ?? true,
       },
     });
   } catch (error) {
@@ -78,8 +83,7 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const cookieStore = await request.cookies;
-    const token = cookieStore.get("auth-token")?.value;
+    const token = request.cookies.get("auth-token")?.value;
 
     if (!token) {
       return NextResponse.json({ success: false, message: "No auth token provided" }, { status: 401 });
@@ -92,64 +96,69 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
 
-    let settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
-    const settingsData = Array.isArray(settings) ? settings[0] : settings;
+    let settings = await prisma.systemSettings.findFirst();
 
-    if (settingsData && settingsData.id) {
-      await prisma.$executeRaw`
-        UPDATE system_settings 
-        SET storeName = ${body.storeName || settingsData.storeName},
-            storeDescription = ${body.storeDescription || settingsData.storeDescription},
-            contactEmail = ${body.contactEmail || settingsData.contactEmail},
-            phoneNumber = ${body.phoneNumber || settingsData.phoneNumber},
-            officeAddress = ${body.officeAddress || settingsData.officeAddress},
-            timezone = ${body.timezone || settingsData.timezone},
-            logoUrl = ${body.logoUrl !== undefined ? body.logoUrl : settingsData.logoUrl},
-            defaultMetaTitle = ${body.defaultMetaTitle !== undefined ? body.defaultMetaTitle : settingsData.defaultMetaTitle},
-            defaultMetaDescription = ${body.defaultMetaDescription !== undefined ? body.defaultMetaDescription : settingsData.defaultMetaDescription},
-            defaultMetaKeywords = ${body.defaultMetaKeywords !== undefined ? body.defaultMetaKeywords : settingsData.defaultMetaKeywords},
-            defaultOgImageUrl = ${body.defaultOgImageUrl !== undefined ? body.defaultOgImageUrl : settingsData.defaultOgImageUrl},
-            twitterHandle = ${body.twitterHandle !== undefined ? body.twitterHandle : settingsData.twitterHandle},
-            facebookPage = ${body.facebookPage !== undefined ? body.facebookPage : settingsData.facebookPage},
-            canonicalBaseUrl = ${body.canonicalBaseUrl !== undefined ? body.canonicalBaseUrl : settingsData.canonicalBaseUrl},
-            enableIndexing = ${body.enableIndexing !== undefined ? body.enableIndexing : settingsData.enableIndexing},
-            updatedAt = NOW()
-        WHERE id = ${settingsData.id}
-      `;
+    if (settings) {
+      settings = await prisma.systemSettings.update({
+        where: { id: settings.id },
+        data: {
+          storeName: body.storeName !== undefined ? body.storeName : settings.storeName,
+          storeDescription: body.storeDescription !== undefined ? body.storeDescription : settings.storeDescription,
+          contactEmail: body.contactEmail !== undefined ? body.contactEmail : settings.contactEmail,
+          phoneNumber: body.phoneNumber !== undefined ? body.phoneNumber : settings.phoneNumber,
+          officeAddress: body.officeAddress !== undefined ? body.officeAddress : settings.officeAddress,
+          timezone: body.timezone !== undefined ? body.timezone : settings.timezone,
+          logoUrl: body.logoUrl !== undefined ? body.logoUrl : settings.logoUrl,
+          defaultMetaTitle: body.defaultMetaTitle !== undefined ? body.defaultMetaTitle : settings.defaultMetaTitle,
+          defaultMetaDescription: body.defaultMetaDescription !== undefined ? body.defaultMetaDescription : settings.defaultMetaDescription,
+          defaultMetaKeywords: body.defaultMetaKeywords !== undefined ? body.defaultMetaKeywords : settings.defaultMetaKeywords,
+          defaultOgImageUrl: body.defaultOgImageUrl !== undefined ? body.defaultOgImageUrl : settings.defaultOgImageUrl,
+          twitterHandle: body.twitterHandle !== undefined ? body.twitterHandle : settings.twitterHandle,
+          facebookPage: body.facebookPage !== undefined ? body.facebookPage : settings.facebookPage,
+          canonicalBaseUrl: body.canonicalBaseUrl !== undefined ? body.canonicalBaseUrl : settings.canonicalBaseUrl,
+          enableIndexing: body.enableIndexing !== undefined ? body.enableIndexing : settings.enableIndexing,
+          updatedAt: new Date(),
+        },
+      });
     } else {
-      await prisma.$executeRaw`
-        INSERT INTO system_settings (storeName, storeDescription, contactEmail, phoneNumber, officeAddress, timezone, logoUrl, enableTwoFactor, sessionTimeout, version, createdAt, updatedAt)
-        VALUES (${body.storeName || "E-Commerce Store"}, ${body.storeDescription || "Trusted online store"}, ${body.contactEmail || "contact@store.com"}, ${body.phoneNumber || ""}, ${body.officeAddress || ""}, ${
-          body.timezone || "Asia/Jakarta"
-        }, ${body.logoUrl || null}, false, 24, '1.0.0', NOW(), NOW())
-      `;
+      settings = await prisma.systemSettings.create({
+        data: {
+          storeName: body.storeName || "E-Commerce Store",
+          storeDescription: body.storeDescription || "Trusted online store",
+          contactEmail: body.contactEmail || "contact@store.com",
+          phoneNumber: body.phoneNumber || "",
+          officeAddress: body.officeAddress || "",
+          timezone: body.timezone || "Asia/Jakarta",
+          logoUrl: body.logoUrl || null,
+          enableTwoFactor: false,
+          sessionTimeout: 24,
+          version: "1.0.0",
+        },
+      });
     }
-
-    settings = await prisma.$queryRaw`SELECT * FROM system_settings LIMIT 1`;
-    const updatedSettings = Array.isArray(settings) ? settings[0] : settings;
 
     return NextResponse.json({
       success: true,
       message: "Settings updated successfully",
       settings: {
-        storeName: updatedSettings?.storeName || "E-Commerce Store",
-        storeDescription: updatedSettings?.storeDescription || "Trusted online store",
-        contactEmail: updatedSettings?.contactEmail || "contact@store.com",
-        phoneNumber: updatedSettings?.phoneNumber || "",
-        officeAddress: updatedSettings?.officeAddress || "",
-        timezone: updatedSettings?.timezone || "Asia/Jakarta",
-        logoUrl: updatedSettings?.logoUrl || null,
-        enableTwoFactor: updatedSettings?.enableTwoFactor || false,
-        sessionTimeout: updatedSettings?.sessionTimeout || 24,
-        version: updatedSettings?.version || "1.0.0",
-        defaultMetaTitle: updatedSettings?.defaultMetaTitle || null,
-        defaultMetaDescription: updatedSettings?.defaultMetaDescription || null,
-        defaultMetaKeywords: updatedSettings?.defaultMetaKeywords || null,
-        defaultOgImageUrl: updatedSettings?.defaultOgImageUrl || null,
-        twitterHandle: updatedSettings?.twitterHandle || null,
-        facebookPage: updatedSettings?.facebookPage || null,
-        canonicalBaseUrl: updatedSettings?.canonicalBaseUrl || null,
-        enableIndexing: updatedSettings?.enableIndexing ?? true,
+        storeName: settings?.storeName || "E-Commerce Store",
+        storeDescription: settings?.storeDescription || "Trusted online store",
+        contactEmail: settings?.contactEmail || "contact@store.com",
+        phoneNumber: settings?.phoneNumber || "",
+        officeAddress: settings?.officeAddress || "",
+        timezone: settings?.timezone || "Asia/Jakarta",
+        logoUrl: settings?.logoUrl || null,
+        enableTwoFactor: settings?.enableTwoFactor || false,
+        sessionTimeout: settings?.sessionTimeout || 24,
+        version: settings?.version || "1.0.0",
+        defaultMetaTitle: settings?.defaultMetaTitle || null,
+        defaultMetaDescription: settings?.defaultMetaDescription || null,
+        defaultMetaKeywords: settings?.defaultMetaKeywords || null,
+        defaultOgImageUrl: settings?.defaultOgImageUrl || null,
+        twitterHandle: settings?.twitterHandle || null,
+        facebookPage: settings?.facebookPage || null,
+        canonicalBaseUrl: settings?.canonicalBaseUrl || null,
+        enableIndexing: settings?.enableIndexing ?? true,
       },
     });
   } catch (error) {

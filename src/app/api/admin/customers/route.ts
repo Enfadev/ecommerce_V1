@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient, Role } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { Role } from "@prisma/client";
+import { prisma } from "@/lib/database";
 
 interface WhereClause {
   role: Role;
@@ -135,7 +134,6 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
     }
 
-
     return NextResponse.json({
       success: true,
       message: "Customer status updated successfully",
@@ -157,16 +155,21 @@ export async function DELETE(request: NextRequest) {
 
     const dbId = parseInt(customerId.replace("CUST-", ""));
 
-    const customer = await prisma.user.findUnique({
-      where: { id: dbId },
-    });
+    // Use transaction to ensure atomic deletion
+    await prisma.$transaction(async (tx) => {
+      const customer = await tx.user.findUnique({
+        where: { id: dbId },
+      });
 
-    if (!customer || customer.role !== "USER") {
-      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
-    }
+      if (!customer || customer.role !== "USER") {
+        throw new Error("Customer not found");
+      }
 
-    await prisma.user.delete({
-      where: { id: dbId },
+      // Delete related data first (if not using cascade)
+      // Note: If Prisma schema has onDelete: Cascade, this happens automatically
+      await tx.user.delete({
+        where: { id: dbId },
+      });
     });
 
     return NextResponse.json({
@@ -175,6 +178,11 @@ export async function DELETE(request: NextRequest) {
     });
   } catch (error) {
     console.error("Customer Delete Error:", error);
+
+    if (error instanceof Error && error.message === "Customer not found") {
+      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
+    }
+
     return NextResponse.json({ error: "Failed to delete customer" }, { status: 500 });
   }
 }
