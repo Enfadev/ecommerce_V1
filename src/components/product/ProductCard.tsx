@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useCart } from "../contexts/cart-context";
+import { useCart } from "../contexts/CartContext";
 import type { Product } from "@/lib/constants/products";
 import Link from "next/link";
-import { useWishlist } from "../contexts/wishlist-context";
+import { useWishlist } from "../contexts/WishlistContext";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 
 export function ProductCard({ product, admin, onEdit, onDelete, viewMode = "grid" }: { product: Product; admin?: boolean; onEdit?: () => void; onDelete?: () => void; viewMode?: "grid" | "list" }) {

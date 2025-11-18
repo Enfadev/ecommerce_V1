@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Package } from "lucide-react";
-import type { ProductStats as ProductStatsType } from "@/hooks/useProducts";
+import type { ProductStats as ProductStatsType } from "@/hooks/use-products";
 
 interface ProductStatsProps {
   stats: ProductStatsType;

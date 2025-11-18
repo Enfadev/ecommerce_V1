@@ -1,7 +1,7 @@
 "use client";
 
 import { Heart } from "lucide-react";
-import { useWishlist } from "../contexts/wishlist-context";
+import { useWishlist } from "../contexts/WishlistContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

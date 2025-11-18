@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SimpleProductForm } from "@/components/product/SimpleProductForm";
-import type { Product } from "@/hooks/useProducts";
+import type { Product } from "@/hooks/use-products";
 import type { ProductFormData } from "@/types/product";
 
 interface ProductFormDialogProps {

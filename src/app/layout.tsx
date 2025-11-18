@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NextAuthProvider } from "../components/auth/NextAuthProvider";
-import { AuthProvider } from "@/components/contexts/auth-context";
+import { AuthProvider } from "@/components/contexts/AuthContext";
 import { DynamicFavicon } from "@/components/shared/DynamicFavicon";
 import { getSystemSettingsWithFallback } from "@/lib/settings";
 

@@ -12,8 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import Image from "next/image";
 import { Upload, X, AlertCircle, Package, Globe, DollarSign } from "lucide-react";
-import { CategoryInput } from "../forms/category-input";
-import { RichTextEditor } from "../forms/rich-text-editor";
+import { CategoryInput } from "../forms/CategoryInput";
+import { RichTextEditor } from "../forms/RichTextEditor";
 import { Textarea } from "../ui/textarea";
 import { Checkbox } from "../ui/checkbox";
 

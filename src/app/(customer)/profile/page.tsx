@@ -13,9 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ProfileAvatar } from "@/components/shared/profile-avatar";
+import { ProfileAvatar } from "@/components/shared/ProfileAvatar";
 import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Edit3, Crown, Trash2 } from "lucide-react";
-import { useAuth } from "@/components/contexts/auth-context";
+import { useAuth } from "@/components/contexts/AuthContext";
 import { Toast } from "@/components/ui/toast";
 
 const profileSchema = z.object({

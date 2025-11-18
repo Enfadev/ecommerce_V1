@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, ShoppingBag, ArrowRight } from "lucide-react";
-import { useAuth } from "@/components/contexts/auth-context";
+import { useAuth } from "@/components/contexts/AuthContext";
 import { Toast } from "@/components/ui/toast";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 

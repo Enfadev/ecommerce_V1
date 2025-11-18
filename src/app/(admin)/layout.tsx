@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect } from "react";
-import { useAuth } from "@/components/contexts/auth-context";
+import { useAuth } from "@/components/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import AdminSidebar from "@/components/admin/layout/Sidebar";

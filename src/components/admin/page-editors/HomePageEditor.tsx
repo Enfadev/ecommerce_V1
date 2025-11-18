@@ -7,7 +7,7 @@ import { SaveButton } from "../page-editor/SaveButton";
 import { HeroSlidesSection } from "../home-page/HeroSlidesSection";
 import { HomeFeaturesSection } from "../home-page/HomeFeaturesSection";
 import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
-import { usePageEditor } from "@/hooks/usePageEditor";
+import { usePageEditor } from "@/hooks/use-page-editor";
 import { toast } from "sonner";
 
 interface HeroSlide {

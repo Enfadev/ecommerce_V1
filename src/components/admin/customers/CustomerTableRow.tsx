@@ -5,7 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Eye, Edit, Trash2, Mail, Phone, MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Customer } from "@/types/customer";
-import { getStatusText, getStatusColor, getInitials, formatCurrency, formatDate, getDaysSince } from "@/lib/utils/customer-helpers";
+import { getStatusText, getStatusColor, getInitials, formatCurrency, formatDate, getDaysSince } from "@/lib/utils/customer-utils";
 
 interface CustomerTableRowProps {
   customer: Customer;

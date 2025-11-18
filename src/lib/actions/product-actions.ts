@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import type { Product } from "@/hooks/useProducts";
+import type { Product } from "@/hooks/use-products";
 import type { ProductFormData } from "@/types/product";
 
 export async function saveProduct(productData: ProductFormData, editingProduct: Product | null, products: Product[], setProducts: (products: Product[]) => void) {

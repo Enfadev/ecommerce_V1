@@ -10,7 +10,7 @@ import { CartDrawer } from "../cart/CartDrawer";
 import { WishlistBadge } from "../wishlist/WishlistBadge";
 import { Search, Menu, Heart, User, ShoppingBag, LogOut, Settings, Crown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { useAuth } from "../contexts/auth-context";
+import { useAuth } from "../contexts/AuthContext";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 

@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { useWishlist } from "@/components/contexts/wishlist-context";
-import { useCart } from "@/components/contexts/cart-context";
-import { useAuth } from "@/components/contexts/auth-context";
+import { useWishlist } from "@/components/contexts/WishlistContext";
+import { useCart } from "@/components/contexts/CartContext";
+import { useAuth } from "@/components/contexts/AuthContext";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

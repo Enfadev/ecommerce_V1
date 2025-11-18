@@ -12,7 +12,7 @@ import { FeaturesSection } from "../about-page/FeaturesSection";
 import { TeamSection } from "../about-page/TeamSection";
 import { TimelineSection } from "../about-page/TimelineSection";
 import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
-import { usePageEditor } from "@/hooks/usePageEditor";
+import { usePageEditor } from "@/hooks/use-page-editor";
 
 interface CompanyValue {
   icon: string;

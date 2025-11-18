@@ -258,11 +258,7 @@ export function EnhancedProductForm({ product, onSave, onCancel }: ProductFormPr
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="categoryId">Category *</Label>
-                    <CategoryInput 
-                      value={watch("categoryId") || undefined}
-                      onValueChange={(categoryId: number) => setValue("categoryId", categoryId)}
-                      placeholder="Select or create category"
-                    />
+                    <CategoryInput value={watch("categoryId") || undefined} onValueChange={(categoryId: number) => setValue("categoryId", categoryId)} placeholder="Select or create category" />
                     {errors.categoryId && (
                       <p className="text-red-500 text-xs flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" />

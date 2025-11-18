@@ -8,7 +8,7 @@ import { OrderStats } from "@/components/admin/orders/OrderStats";
 import { OrderFilters } from "@/components/admin/orders/OrderFilters";
 import { OrderTable } from "@/components/admin/orders/OrderTable";
 import { OrderDetailDialog } from "@/components/admin/orders/OrderDetailDialog";
-import { useOrders } from "@/hooks/useOrders";
+import { useOrders } from "@/hooks/use-admin-orders";
 import { usePrintInvoice } from "@/hooks/use-print-invoice";
 import type { Order, OrderStatus, PaymentStatus } from "@/types/order";
 import { toast } from "sonner";

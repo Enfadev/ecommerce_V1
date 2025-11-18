@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useOrders, Order } from "@/hooks/use-orders";
-import { useAuth } from "@/components/contexts/auth-context";
+import { useAuth } from "@/components/contexts/AuthContext";
 import { usePrintInvoice } from "@/hooks/use-print-invoice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

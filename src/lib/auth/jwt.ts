@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
-import { getUserFromRequest as getUserFromRequestUtil } from "./auth-utils";
+import { getUserFromRequest as getUserFromRequestUtil } from "./authUtils";
 
 const getJWTSecret = () => {
   const jwtSecret = process.env.JWT_SECRET;

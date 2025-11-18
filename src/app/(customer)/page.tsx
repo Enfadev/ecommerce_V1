@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/product/ProductCard";
-import { DiscountedProducts } from "@/components/product/DiscountedProducts-home";
+import { DiscountedProducts } from "@/components/product/DiscountedProductsHome";
 import { prisma } from "@/lib/database";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../../components/ui/carousel";
 import { Card, CardContent } from "../../components/ui/card";
@@ -8,7 +8,7 @@ import NextLink from "next/link";
 import { ArrowRight, Truck, Shield, Headphones, Gift } from "lucide-react";
 import { Metadata } from "next";
 import { generatePageMetadata } from "@/lib/utils";
-import { HeroCarouselImage } from "@/components/media/hero-carousel-image";
+import { HeroCarouselImage } from "@/components/media/HeroCarouselImage";
 
 export const dynamic = "force-dynamic";
 

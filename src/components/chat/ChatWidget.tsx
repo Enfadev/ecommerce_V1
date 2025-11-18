@@ -14,7 +14,7 @@ import {
   Shield,
   CheckCheck
 } from "lucide-react";
-import { useAuth } from "@/components/contexts/auth-context";
+import { useAuth } from "@/components/contexts/AuthContext";
 import { ProductSearchDialog } from "./ProductSearchDialog";
 import { ProductMessage } from "./ProductMessage";
 

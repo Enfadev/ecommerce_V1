@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { useAuth } from "./auth-context";
+import { useAuth } from "./AuthContext";
 
 export type CartItem = {
   id: number;

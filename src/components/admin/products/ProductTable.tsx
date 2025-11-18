@@ -6,7 +6,7 @@ import { Eye, Edit, Trash2, Package, MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DiscountDisplay } from "@/components/admin/shared/DiscountDisplay";
-import type { Product } from "@/hooks/useProducts";
+import type { Product } from "@/hooks/use-products";
 
 interface ProductTableProps {
   products: Product[];

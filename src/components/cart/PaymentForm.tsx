@@ -11,7 +11,7 @@ interface PaymentFormProps {
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 import { useOrders } from "../../hooks/use-orders";
-import { useCart } from "../contexts/cart-context";
+import { useCart } from "../contexts/CartContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

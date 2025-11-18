@@ -13,7 +13,7 @@ import { saveProduct } from "@/lib/actions";
 import { toast } from "sonner";
 import { PRODUCT_TABLE_COLUMNS, DEFAULT_VISIBLE_COLUMNS } from "@/types/product";
 import type { ProductFormData } from "@/types/product";
-import type { Product, ProductStats as Stats } from "@/lib/actions/products-server";
+import type { Product, ProductStats as Stats } from "@/lib/actions/products";
 import { useRouter } from "next/navigation";
 
 interface ProductsWrapperProps {

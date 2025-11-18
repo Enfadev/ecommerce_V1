@@ -10,7 +10,7 @@ import { OfficeLocationsSection } from "../contact-page/OfficeLocationsSection";
 import { BusinessHoursSection } from "../contact-page/BusinessHoursSection";
 import { SocialMediaSection } from "../contact-page/SocialMediaSection";
 import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
-import { usePageEditor } from "@/hooks/usePageEditor";
+import { usePageEditor } from "@/hooks/use-page-editor";
 
 interface ContactMethod {
   icon: string;

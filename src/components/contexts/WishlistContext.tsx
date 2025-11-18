@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { toast } from "sonner";
-import { useAuth } from "./auth-context";
+import { useAuth } from "./AuthContext";
 import type { Product } from "@/lib/constants/products";
 
 interface WishlistContextType {

@@ -4,9 +4,9 @@ import Footer from "@/components/layout/Footer";
 import { ReactNode, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Toaster } from "@/components/ui/sonner";
-import { CartProvider } from "@/components/contexts/cart-context";
-import { WishlistProvider } from "@/components/contexts/wishlist-context";
-import { useAuth } from "@/components/contexts/auth-context";
+import { CartProvider } from "@/components/contexts/CartContext";
+import { WishlistProvider } from "@/components/contexts/WishlistContext";
+import { useAuth } from "@/components/contexts/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 

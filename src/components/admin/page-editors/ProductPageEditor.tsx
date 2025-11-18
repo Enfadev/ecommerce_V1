@@ -10,7 +10,7 @@ import { FilterOptionsSection } from "../product-page/FilterOptionsSection";
 import { SortOptionsSection } from "../product-page/SortOptionsSection";
 import { SeoContentSection } from "../product-page/SeoContentSection";
 import SeoSettingsCard from "@/components/admin/shared/SeoSettingsCard";
-import { usePageEditor } from "@/hooks/usePageEditor";
+import { usePageEditor } from "@/hooks/use-page-editor";
 
 interface FeaturedCategory {
   name: string;
