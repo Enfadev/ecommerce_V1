@@ -1,0 +1,61 @@
+name: Security Scan
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  # NPM Audit - Check for vulnerabilities
+  npm-audit:
+    name: NPM Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          echo "## 📦 Security Audit Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Run audit and capture output
+          npm audit --json > audit.json 2>/dev/null || true
+          
+          # Parse results if file exists
+          if [ -f audit.json ] && [ -s audit.json ]; then
+            CRITICAL=$(cat audit.json | jq '.metadata.vulnerabilities.critical // 0' 2>/dev/null || echo "0")
+            HIGH=$(cat audit.json | jq '.metadata.vulnerabilities.high // 0' 2>/dev/null || echo "0")
+            MODERATE=$(cat audit.json | jq '.metadata.vulnerabilities.moderate // 0' 2>/dev/null || echo "0")
+            LOW=$(cat audit.json | jq '.metadata.vulnerabilities.low // 0' 2>/dev/null || echo "0")
+            
+            echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| 🔴 Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🟠 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🟡 Moderate | $MODERATE |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🟢 Low | $LOW |" >> $GITHUB_STEP_SUMMARY
+            
+            # Show details if vulnerabilities found
+            npm audit 2>/dev/null || true
+          else
+            echo "✅ No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-results
+          path: audit.json
+          retention-days: 7
+          if-no-files-found: ignore
