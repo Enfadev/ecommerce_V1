@@ -165,7 +165,8 @@ Pilih salah satu:
   ```bash
   DATABASE_URL="mysql://root:@localhost:3306/ecommerce_db_v1"
   NODE_ENV="development"
-  JWT_SECRET="dev-secret-change-this"
+  BETTER_AUTH_SECRET="your-secret-min-32-chars-here"
+  BETTER_AUTH_URL="http://localhost:3000"
   ```
 
 - Atau set sementara di Windows (cmd) sebelum menjalankan perintah:
@@ -269,7 +270,7 @@ docker compose restart
 
 - Gunakan `npm run prisma:migrate:deploy` di lingkungan production/CI.
 - Simpan environment variables melalui platform hosting (bukan file `.env`).
-- Ganti `JWT_SECRET` dengan nilai kuat dan rahasiakan.
+- Ganti `BETTER_AUTH_SECRET` dengan nilai kuat dan rahasiakan.
 
 ## Struktur Folder Penting
 

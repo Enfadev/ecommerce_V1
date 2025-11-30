@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 interface SecurityLog {
   id: number;
@@ -14,17 +15,11 @@ interface SecurityLog {
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const decoded = await verifyJWT(token);
-    if (!decoded || decoded.role !== "ADMIN") {
+    if (!session?.user || session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, message: "Admin access required" },
         { status: 403 }

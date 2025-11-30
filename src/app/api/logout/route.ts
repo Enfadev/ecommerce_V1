@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
-import { clearAuthCookie } from '@/lib/jwt';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 export async function POST() {
   try {
-    const response = NextResponse.json({
-      message: 'Logout successful'
+    await auth.api.signOut({
+      headers: await headers(),
     });
 
-    clearAuthCookie(response);
-
-    return response;
+    return NextResponse.json({
+      message: 'Logout successful'
+    });
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.json({ error: 'Logout failed' }, { status: 500 });

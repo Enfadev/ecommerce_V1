@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest } from "@/lib/auth-utils";
-import { isAdminRequest } from "@/lib/jwt";
+import { isAdminRequest } from "@/lib/admin-utils";
 
 export async function GET(request: NextRequest) {
   try {

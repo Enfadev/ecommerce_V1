@@ -33,8 +33,8 @@ services:
       target: production
       args:
         # DATABASE_URL is not passed as build arg - dummy value used in Dockerfile
-        JWT_SECRET: ${JWT_SECRET}
         BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+        BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
         NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
         NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${NEXT_PUBLIC_PAYPAL_CLIENT_ID}
         NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
@@ -51,8 +51,7 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: mysql://${DB_USER:-ecommerce_user}:${DB_PASSWORD}@db:3306/${DB_NAME:-ecommerce}
-      JWT_SECRET: ${JWT_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}

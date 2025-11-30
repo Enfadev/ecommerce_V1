@@ -2,20 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
-import { verifyJWT } from "@/lib/jwt";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import sharp from "sharp";
 
 export async function POST(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized - No token" }, { status: 401 });
-    }
-
-    const decoded = await verifyJWT(token);
-    if (!decoded) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const formData = await request.formData();

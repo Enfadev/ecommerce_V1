@@ -1,27 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyJWT } from "@/lib/jwt";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function GET(request: NextRequest) {
   try {
     let userId = request.headers.get("x-user-id");
-    let userEmail = request.headers.get("x-user-email");
 
     if (!userId) {
-      const token = request.cookies.get("auth-token")?.value;
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
 
-      if (!token) {
+      if (!session?.user?.id) {
         return NextResponse.json({ error: "Authentication required" }, { status: 401 });
       }
-
-      const payload = await verifyJWT(token);
-
-      if (!payload) {
-        return NextResponse.json({ error: "Invalid authentication token" }, { status: 401 });
-      }
-
-      userId = payload.id;
-      userEmail = payload.email;
+      userId = session.user.id;
     }
 
     const user = await prisma.user.findUnique({
@@ -52,7 +46,6 @@ export async function GET(request: NextRequest) {
       debug: {
         fromMiddleware: !!request.headers.get("x-user-id"),
         userId: userId,
-        userEmail: userEmail,
       },
     });
   } catch (error) {
@@ -72,19 +65,14 @@ export async function PUT(request: NextRequest) {
     let userId = request.headers.get("x-user-id");
 
     if (!userId) {
-      const token = request.cookies.get("auth-token")?.value;
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
 
-      if (!token) {
+      if (!session?.user?.id) {
         return NextResponse.json({ error: "Authentication required" }, { status: 401 });
       }
-
-      const payload = await verifyJWT(token);
-
-      if (!payload) {
-        return NextResponse.json({ error: "Invalid authentication token" }, { status: 401 });
-      }
-
-      userId = payload.id;
+      userId = session.user.id;
     }
 
     const body = await request.json();

@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { hash } from "bcryptjs";
-import { signJWT, setAuthCookie } from "@/lib/jwt";
+import { NextResponse, NextRequest } from "next/server";
 import { validateInput, registerSchema } from "@/lib/validation";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const requestData = await req.json();
 
@@ -21,12 +20,18 @@ export async function POST(req: Request) {
 
     const { name, email, password } = validation.data!;
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
     if (existingUser) {
-      return NextResponse.json({ error: "Email is already registered" }, { status: 409 });
+      return NextResponse.json(
+        { error: "User with this email already exists" },
+        { status: 400 }
+      );
     }
 
-    const hashedPassword = await hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
       data: {
@@ -40,32 +45,16 @@ export async function POST(req: Request) {
         name: true,
         email: true,
         role: true,
-        createdAt: true,
+        image: true,
       },
     });
 
-    const token = await signJWT({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
-
-    const response = NextResponse.json({
-      user: {
-        ...user,
-        id: user.id,
-      },
+    return NextResponse.json({
+      user,
       message: "Registration successful",
     });
-
-    // Set httpOnly cookie
-    setAuthCookie(response, token);
-
-    return response;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Registration error:", error);
-    }
+    console.error("Registration error:", error);
     return NextResponse.json({ error: "Registration failed" }, { status: 500 });
   }
 }

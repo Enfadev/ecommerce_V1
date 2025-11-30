@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { compare } from "bcryptjs";
-import { signJWT, setAuthCookie } from "@/lib/jwt";
+import bcrypt from "bcryptjs";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
 
@@ -11,41 +10,35 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        role: true,
+        image: true,
+      },
+    });
+
     if (!user || !user.password) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const valid = await compare(password, user.password);
-    if (!valid) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const token = await signJWT({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const { password: _, ...userWithoutPassword } = user;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: userPassword, ...userData } = user;
-
-    const response = NextResponse.json({
-      user: {
-        ...userData,
-        id: userData.id,
-      },
+    return NextResponse.json({
+      user: userWithoutPassword,
       message: "Sign in successful",
     });
-
-    // Set httpOnly cookie
-    setAuthCookie(response, token);
-
-    return response;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Sign in error:", error);
-    }
-    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+    console.error("Sign in error:", error);
+    return NextResponse.json({ error: "Sign in failed" }, { status: 500 });
   }
 }

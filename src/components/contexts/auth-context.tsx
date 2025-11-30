@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react";
+import { signIn as betterAuthSignIn, signUp as betterAuthSignUp, signOut as betterAuthSignOut, useSession } from "@/lib/auth-client";
 
 interface User {
   id: string;
@@ -28,210 +29,204 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { data: session, isPending } = useSession();
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const refreshUser = async () => {
-    try {
-      setIsLoading(true);
-
-      const sessionCheck = await fetch("/api/auth/session", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
-
-      if (sessionCheck.ok) {
-        const sessionData = await sessionCheck.json();
-        if (sessionData.authenticated && sessionData.user) {
-          setUser({
-            id: sessionData.user.id,
-            name: sessionData.user.name,
-            email: sessionData.user.email,
-            role: sessionData.user.role,
-            phoneNumber: sessionData.user.phoneNumber,
-            address: sessionData.user.address,
-            dateOfBirth: sessionData.user.dateOfBirth,
-            avatar: sessionData.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(sessionData.user.name)}&background=6366f1&color=fff`,
-          });
-          return;
-        }
-      }
-
-      const authCheck = await fetch("/api/auth/check", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
-
-      if (!authCheck.ok) {
-        setUser(null);
-        return;
-      }
-
-      const authData = await authCheck.json();
-
-      if (!authData.authenticated) {
-        setUser(null);
-        return;
-      }
-
-      const res = await fetch("/api/profile", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Cache-Control": "no-cache",
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const userData = data.user;
-        setUser({
-          id: userData.id,
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          createdAt: userData.createdAt,
-          phoneNumber: userData.phoneNumber,
-          address: userData.address,
-          dateOfBirth: userData.dateOfBirth,
-          avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
-        });
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
-    const loadUser = async () => {
-      console.log("🔄 Loading user on mount...");
-      await refreshUser();
+    const loadUserData = async () => {
+      if (session?.user) {
+        try {
+          const response = await fetch("/api/profile", {
+            credentials: "include",
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setUser({
+              id: session.user.id,
+              name: session.user.name || "",
+              email: session.user.email || "",
+              role: (data.user?.role as "ADMIN" | "USER") || "USER",
+              phoneNumber: data.user?.phoneNumber,
+              address: data.user?.address,
+              dateOfBirth: data.user?.dateOfBirth,
+              avatar: session.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.name || "User")}&background=6366f1&color=fff`,
+            });
+          }
+        } catch (error) {
+          console.error("Error loading user data:", error);
+          setUser({
+            id: session.user.id,
+            name: session.user.name || "",
+            email: session.user.email || "",
+            role: "USER",
+            avatar: session.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.name || "User")}&background=6366f1&color=fff`,
+          });
+        }
+      } else {
+        setUser(null);
+      }
     };
+    
+    loadUserData();
+  }, [session?.user]);
 
-    loadUser();
-  }, []);
-
-  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    setIsLoading(true);
+  const refreshUser = useCallback(async () => {
     try {
-      const res = await fetch("/api/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch("/api/profile", {
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.user && session?.user) {
+          setUser({
+            id: session.user.id,
+            name: session.user.name || "",
+            email: session.user.email || "",
+            role: (data.user.role as "ADMIN" | "USER") || "USER",
+            phoneNumber: data.user.phoneNumber,
+            address: data.user.address,
+            dateOfBirth: data.user.dateOfBirth,
+            avatar: session.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.name || "User")}&background=6366f1&color=fff`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error refreshing user:", error);
+    }
+  }, [session?.user]);
+
+  const signIn = useCallback(async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const response = await betterAuthSignIn.email({
+        email,
+        password,
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const userData = data.user;
-        setUser({
-          id: userData.id,
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          createdAt: userData.createdAt,
-          phoneNumber: userData.phoneNumber,
-          address: userData.address,
-          dateOfBirth: userData.dateOfBirth,
-          avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
-        });
-        setIsLoading(false);
+      if (response.data?.user) {
+        try {
+          const profileResponse = await fetch("/api/profile", {
+            credentials: "include",
+          });
+          let role = "USER";
+          let phoneNumber, address, dateOfBirth;
+          
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            role = profileData.user?.role || "USER";
+            phoneNumber = profileData.user?.phoneNumber;
+            address = profileData.user?.address;
+            dateOfBirth = profileData.user?.dateOfBirth;
+          }
+
+          setUser({
+            id: response.data.user.id,
+            name: response.data.user.name || "",
+            email: response.data.user.email || "",
+            role: role as "ADMIN" | "USER",
+            phoneNumber,
+            address,
+            dateOfBirth,
+            avatar: response.data.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(response.data.user.name || "User")}&background=6366f1&color=fff`,
+          });
+        } catch (error) {
+          console.error("Error fetching user profile after sign in:", error);
+          setUser({
+            id: response.data.user.id,
+            name: response.data.user.name || "",
+            email: response.data.user.email || "",
+            role: "USER",
+            avatar: response.data.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(response.data.user.name || "User")}&background=6366f1&color=fff`,
+          });
+        }
         return { success: true };
       } else {
-        const errorData = await res.json();
-        setIsLoading(false);
         return {
           success: false,
-          error: errorData.error || `Sign in failed with status ${res.status}`,
+          error: response.error?.message || "Sign in failed",
         };
       }
     } catch (error) {
       console.error("Sign in error:", error);
-      setIsLoading(false);
       return {
         success: false,
-        error: "Network error occurred during sign in",
+        error: error instanceof Error ? error.message : "Network error occurred during sign in",
       };
     }
-  };
+  }, []);
 
-  const signUp = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    setIsLoading(true);
+  const signUp = useCallback(async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ name, email, password }),
+      const response = await betterAuthSignUp.email({
+        email,
+        password,
+        name,
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const userData = data.user;
-        setUser({
-          id: userData.id,
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          createdAt: userData.createdAt,
-          phoneNumber: userData.phoneNumber,
-          address: userData.address,
-          dateOfBirth: userData.dateOfBirth,
-          avatar: userData.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
-        });
-        setIsLoading(false);
+      if (response.data?.user) {
+        try {
+          const profileResponse = await fetch("/api/profile", {
+            credentials: "include",
+          });
+          let role = "USER";
+          let phoneNumber, address, dateOfBirth;
+          
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            role = profileData.user?.role || "USER";
+            phoneNumber = profileData.user?.phoneNumber;
+            address = profileData.user?.address;
+            dateOfBirth = profileData.user?.dateOfBirth;
+          }
+
+          setUser({
+            id: response.data.user.id,
+            name: response.data.user.name || "",
+            email: response.data.user.email || "",
+            role: role as "ADMIN" | "USER",
+            phoneNumber,
+            address,
+            dateOfBirth,
+            avatar: response.data.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(response.data.user.name || "User")}&background=6366f1&color=fff`,
+          });
+        } catch (error) {
+          console.error("Error fetching user profile after sign up:", error);
+          setUser({
+            id: response.data.user.id,
+            name: response.data.user.name || "",
+            email: response.data.user.email || "",
+            role: "USER",
+            avatar: response.data.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(response.data.user.name || "User")}&background=6366f1&color=fff`,
+          });
+        }
         return { success: true };
       } else {
-        const errorData = await res.json();
-        setIsLoading(false);
         return {
           success: false,
-          error: errorData.error || `Registration failed with status ${res.status}`,
+          error: response.error?.message || "Registration failed",
         };
       }
     } catch (error) {
       console.error("Sign up error:", error);
-      setIsLoading(false);
       return {
         success: false,
-        error: "Network error occurred during registration",
+        error: error instanceof Error ? error.message : "Network error occurred during registration",
       };
     }
-  };
+  }, []);
 
-  const signOut = async (): Promise<void> => {
+  const handleSignOut = useCallback(async (): Promise<void> => {
     try {
-      if (typeof window !== "undefined") {
-        const { signOut: betterAuthSignOut } = await import("@/lib/auth-client");
-        await betterAuthSignOut();
-      }
-
-      await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+      await betterAuthSignOut();
       setUser(null);
     } catch (error) {
       console.error("Sign out error:", error);
       setUser(null);
     }
-  };
+  }, []);
 
-  const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
+  const updateProfile = useCallback(async (userData: Partial<User>): Promise<boolean> => {
     if (!user) return false;
 
-    setIsLoading(true);
     try {
       const res = await fetch("/api/profile", {
         method: "PUT",
@@ -260,27 +255,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           avatar: updatedUserData.image,
           createdAt: updatedUserData.createdAt,
         });
-        setIsLoading(false);
         return true;
       } else {
-        setIsLoading(false);
         return false;
       }
     } catch (error) {
       console.error("Update profile error:", error);
-      setIsLoading(false);
       return false;
     }
-  };
+  }, [user]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isLoading,
+        isLoading: isPending,
         signIn,
         signUp,
-        signOut,
+        signOut: handleSignOut,
         updateProfile,
         isAuthenticated: !!user,
         refreshUser,

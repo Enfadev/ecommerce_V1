@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { verifyJWT } from "@/lib/jwt";
 
 export async function GET(request: NextRequest) {
   try {
@@ -60,28 +59,12 @@ export async function POST(request: NextRequest) {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-    let user = null;
-    let userEmail = null;
 
-    if (session?.user?.email) {
-      userEmail = session.user.email;
-    } else {
-      const token = request.cookies.get("auth-token")?.value;
-      if (token) {
-        try {
-          const payload = await verifyJWT(token);
-          if (payload && payload.email) {
-            userEmail = payload.email;
-          }
-        } catch (error) {
-          console.log(`JWT verification failed:`, error);
-        }
-      }
-    }
-
-    if (!userEmail) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
+
+    const userEmail = session.user.email;
 
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get("productId");
@@ -104,7 +87,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Order ID required" }, { status: 400 });
     }
 
-    user = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email: userEmail },
     });
 

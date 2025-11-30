@@ -10,15 +10,21 @@ async function clearDatabase() {
     await prisma.orderItem.deleteMany();
     await prisma.order.deleteMany();
     await prisma.cartItem.deleteMany();
+    await prisma.wishlistItem.deleteMany();
     await prisma.cart.deleteMany();
+    await prisma.wishlist.deleteMany();
+    await prisma.productReview.deleteMany();
+    await prisma.chatMessage.deleteMany();
+    await prisma.chatRoom.deleteMany();
     await prisma.securityLog.deleteMany();
     await prisma.systemSettings.deleteMany();
     await prisma.productImage.deleteMany();
     await prisma.product.deleteMany();
     await prisma.category.deleteMany();
+    await prisma.passwordResetToken.deleteMany();
+    await prisma.verification.deleteMany();
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
-    await prisma.verificationToken.deleteMany();
     
     // Page content
     await prisma.homePage.deleteMany();

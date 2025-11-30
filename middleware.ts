@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
+import { auth } from "@/lib/auth";
 import adminLogger, { createAdminAccessLog } from "@/lib/admin-security-logger";
 
 const PROTECTED_PATHS = ["/admin", "/profile", "/order-history", "/wishlist", "/checkout"];
@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
 
   console.log("🛡️ Middleware executing for:", pathname);
 
-  if (pathname.startsWith("/_next") || pathname.startsWith("/api/auth") || pathname.startsWith("/api/upload") || pathname.startsWith("/static") || pathname.includes(".") || pathname === "/api/test" || pathname === "/jwt-test") {
+  if (pathname.startsWith("/_next") || pathname.startsWith("/api/auth") || pathname.startsWith("/api/upload") || pathname.startsWith("/static") || pathname.includes(".") || pathname === "/api/test") {
     console.log("⏭️ Skipping middleware for:", pathname);
     const response = NextResponse.next();
     response.headers.set(
@@ -37,80 +37,85 @@ export async function middleware(request: NextRequest) {
   const isProtectedAPI = PROTECTED_API_ROUTES.some((path) => pathname.startsWith(path));
 
   if (isProtectedPath || isProtectedAPI) {
-    const token = request.cookies.get("auth-token")?.value;
+    try {
+      const session = await auth.api.getSession({
+        headers: request.headers,
+      });
 
-    if (!token) {
-      if (isProtectedAPI) {
-        return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-      } else {
-        if (pathname.startsWith("/admin")) {
-          return new NextResponse(null, { status: 404 });
-        }
-        
-        const loginUrl = new URL("/signin", request.url);
-        loginUrl.searchParams.set("redirect", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-    }
-
-    const payload = await verifyJWT(token);
-
-    if (!payload) {
-      if (isProtectedAPI) {
-        return NextResponse.json({ error: "Invalid authentication token" }, { status: 401 });
-      } else {
-        if (pathname.startsWith("/admin")) {
-          return new NextResponse(null, { status: 404 });
-        }
-        
-        const loginUrl = new URL("/signin", request.url);
-        loginUrl.searchParams.set("redirect", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-    }
-
-    if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
-      if (payload.role !== "ADMIN") {
-        adminLogger.log(createAdminAccessLog(payload.id, payload.email, payload.role, pathname, request, false, "Insufficient privileges - Admin role required"));
-
+      if (!session?.user) {
         if (isProtectedAPI) {
-          return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+          return NextResponse.json({ error: "Authentication required" }, { status: 401 });
         } else {
-          return new NextResponse(null, { status: 404 });
+          if (pathname.startsWith("/admin")) {
+            return new NextResponse(null, { status: 404 });
+          }
+          
+          const loginUrl = new URL("/signin", request.url);
+          loginUrl.searchParams.set("redirect", pathname);
+          return NextResponse.redirect(loginUrl);
         }
       }
 
-      adminLogger.log(createAdminAccessLog(payload.id, payload.email, payload.role, pathname, request, true));
-    }
+      const user = session.user;
+      const userRole = (user as any).role || "USER";
 
-    const isAdminRestrictedPath = ADMIN_RESTRICTED_PATHS.some((path) => pathname.startsWith(path));
-    const isAdminRestrictedAPI = ADMIN_RESTRICTED_API_ROUTES.some((path) => pathname.startsWith(path));
+      if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+        if (userRole !== "ADMIN") {
+          adminLogger.log(createAdminAccessLog(user.id, user.email || "", userRole, pathname, request, false, "Insufficient privileges - Admin role required"));
 
-    if ((isAdminRestrictedPath || isAdminRestrictedAPI) && payload.role === "ADMIN") {
-      if (isProtectedAPI || isAdminRestrictedAPI) {
-        return NextResponse.json({ error: "Customer access only - Admin cannot access this feature" }, { status: 403 });
+          if (isProtectedAPI) {
+            return NextResponse.json({ error: "Admin access required" }, { status: 403 });
+          } else {
+            return new NextResponse(null, { status: 404 });
+          }
+        }
+
+        adminLogger.log(createAdminAccessLog(user.id, user.email || "", userRole, pathname, request, true));
+      }
+
+      const isAdminRestrictedPath = ADMIN_RESTRICTED_PATHS.some((path) => pathname.startsWith(path));
+      const isAdminRestrictedAPI = ADMIN_RESTRICTED_API_ROUTES.some((path) => pathname.startsWith(path));
+
+      if ((isAdminRestrictedPath || isAdminRestrictedAPI) && userRole === "ADMIN") {
+        if (isProtectedAPI || isAdminRestrictedAPI) {
+          return NextResponse.json({ error: "Customer access only - Admin cannot access this feature" }, { status: 403 });
+        } else {
+          return NextResponse.redirect(new URL("/admin", request.url));
+        }
+      }
+
+      const response = NextResponse.next();
+      response.headers.set("x-user-id", user.id);
+      response.headers.set("x-user-email", user.email || "");
+      response.headers.set("x-user-role", userRole);
+      response.headers.set(
+        "Content-Security-Policy",
+        [
+          "default-src 'self'",
+          "script-src 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
+          "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
+          "frame-src https://js.stripe.com https://www.paypal.com",
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data: https://*.stripe.com https://www.paypal.com",
+          "connect-src 'self' https://api.stripe.com https://js.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://www.paypal.com",
+        ].join("; ") + ";"
+      );
+      return response;
+    } catch (error) {
+      console.error("Session verification error:", error);
+      
+      if (isProtectedAPI) {
+        return NextResponse.json({ error: "Authentication failed" }, { status: 401 });
       } else {
-        return NextResponse.redirect(new URL("/admin", request.url));
+        if (pathname.startsWith("/admin")) {
+          return new NextResponse(null, { status: 404 });
+        }
+        
+        const loginUrl = new URL("/signin", request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
       }
     }
-
-    const response = NextResponse.next();
-    response.headers.set("x-user-id", payload.id);
-    response.headers.set("x-user-email", payload.email);
-    response.headers.set("x-user-role", payload.role);
-    response.headers.set(
-      "Content-Security-Policy",
-      [
-        "default-src 'self'",
-        "script-src 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
-        "script-src-elem 'self' https://js.stripe.com https://www.paypal.com 'unsafe-inline'",
-        "frame-src https://js.stripe.com https://www.paypal.com",
-        "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: https://*.stripe.com https://www.paypal.com",
-        "connect-src 'self' https://api.stripe.com https://js.stripe.com https://api-m.sandbox.paypal.com https://api-m.paypal.com https://www.paypal.com",
-      ].join("; ") + ";"
-    );
-    return response;
   }
 
   return NextResponse.next();

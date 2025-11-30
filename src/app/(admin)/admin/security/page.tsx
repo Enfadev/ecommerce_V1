@@ -13,9 +13,9 @@ export default function AdminSecurityPage() {
 
   const securityFeatures = [
     {
-      name: "JWT Token Authentication",
+      name: "Better Auth Session",
       status: "active",
-      description: "Secure token-based authentication with HTTP-only cookies",
+      description: "Secure database-backed session authentication with HTTP-only cookies",
       icon: Key,
     },
     {
@@ -68,7 +68,7 @@ export default function AdminSecurityPage() {
     {
       name: "Session validation",
       checked: true,
-      description: "JWT tokens are validated on every protected request",
+      description: "Sessions are validated on every protected request via Better Auth",
     },
     {
       name: "Security monitoring",

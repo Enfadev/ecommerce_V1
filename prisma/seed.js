@@ -1,42 +1,89 @@
 import { PrismaClient } from "@prisma/client";
-import { hash } from "bcryptjs";
+import { scrypt } from "@noble/hashes/scrypt.js";
 import { seedSettings } from "./seed-settings.js";
 import { seedOrders } from "./seed-orders.js";
 import { clearDatabase } from "./clear-database.js";
 
 const prisma = new PrismaClient();
 
+function bytesToHex(bytes) {
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashPasswordForBetterAuth(password) {
+  const saltBytes = crypto.getRandomValues(new Uint8Array(16));
+  const salt = bytesToHex(saltBytes);
+  
+  const key = scrypt(password.normalize("NFKC"), salt, {
+    N: 16384,
+    r: 16,
+    p: 1,
+    dkLen: 64
+  });
+  
+  return `${salt}:${bytesToHex(key)}`;
+}
+
 async function main() {
   console.log("Starting database seeding...");
 
-  // Clear all existing data first
   await clearDatabase();
 
-  // Seed Users
   console.log("Seeding users...");
   const adminEmail = "admin@demo.com";
+  const adminPassword = "Admin1234";
+  const adminHashedPassword = await hashPasswordForBetterAuth(adminPassword);
+  
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {},
     create: {
       name: "Admin",
       email: adminEmail,
-      password: await hash("Admin1234", 10),
+      emailVerified: true,
       role: "ADMIN",
     },
   });
 
+  await prisma.account.upsert({
+    where: { providerId_accountId: { providerId: "credential", accountId: admin.id } },
+    update: { password: adminHashedPassword },
+    create: {
+      userId: admin.id,
+      accountId: admin.id,
+      providerId: "credential",
+      password: adminHashedPassword,
+    },
+  });
+
   const userEmail = "user@demo.com";
+  const userPassword = "User1234";
+  const userHashedPassword = await hashPasswordForBetterAuth(userPassword);
+  
   const user = await prisma.user.upsert({
     where: { email: userEmail },
     update: {},
     create: {
       name: "User",
       email: userEmail,
-      password: await hash("User1234", 10),
+      emailVerified: true,
       role: "USER",
     },
   });
+
+  await prisma.account.upsert({
+    where: { providerId_accountId: { providerId: "credential", accountId: user.id } },
+    update: { password: userHashedPassword },
+    create: {
+      userId: user.id,
+      accountId: user.id,
+      providerId: "credential",
+      password: userHashedPassword,
+    },
+  });
+  
+  console.log(`Admin password hash format: ${adminHashedPassword.substring(0, 40)}...`);
+  console.log(`User password hash format: ${userHashedPassword.substring(0, 40)}...`);
 
   // Seed categories
   console.log("Seeding categories...");

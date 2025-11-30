@@ -2,24 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { unlink } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
-import { verifyJWT } from "@/lib/jwt";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 
 export async function DELETE(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value;
+    let userId = request.headers.get("x-user-id");
 
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized - No token" }, { status: 401 });
-    }
+    if (!userId) {
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
 
-    const decoded = await verifyJWT(token);
-    if (!decoded) {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      if (!session?.user?.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      userId = session.user.id;
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: userId },
       select: { id: true, image: true, name: true },
     });
 

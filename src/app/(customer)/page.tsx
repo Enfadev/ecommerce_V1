@@ -125,8 +125,8 @@ export default async function Home() {
 
     homePageData = {
       heroTitle: "Welcome to Our Store",
-      heroSubtitle: "Testing JWT Implementation",
-      heroDescription: "This is a test environment for JWT authentication",
+      heroSubtitle: "Discover Quality Products",
+      heroDescription: "Find the best products at unbeatable prices",
       heroSlides: [],
       features: [],
       statsData: [],

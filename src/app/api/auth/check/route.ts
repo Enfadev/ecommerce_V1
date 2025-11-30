@@ -1,39 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function GET(request: NextRequest) {
   try {
-    const cookies = request.cookies.getAll();
-    const authToken = request.cookies.get("auth-token")?.value;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!authToken) {
+    if (!session?.user) {
       return NextResponse.json({
         authenticated: false,
-        error: "No auth token found",
-        cookies: cookies.map((c) => ({ name: c.name, hasValue: !!c.value })),
-      });
-    }
-
-    const payload = await verifyJWT(authToken);
-
-    if (!payload) {
-      return NextResponse.json({
-        authenticated: false,
-        error: "Invalid token",
-        tokenExists: true,
+        error: "No session found",
       });
     }
 
     return NextResponse.json({
       authenticated: true,
       user: {
-        id: payload.id,
-        email: payload.email,
-        role: payload.role,
-      },
-      tokenInfo: {
-        exp: payload.exp,
-        iat: payload.iat,
+        id: session.user.id,
+        email: session.user.email,
+        role: (session.user as any).role,
       },
     });
   } catch (error) {

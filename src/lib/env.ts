@@ -4,8 +4,8 @@
  */
 
 export interface EnvironmentConfig {
-  JWT_SECRET: string;
-  JWT_EXPIRES_IN: string;
+  BETTER_AUTH_SECRET: string;
+  BETTER_AUTH_URL: string;
   DATABASE_URL: string;
   NODE_ENV: string;
 }
@@ -17,25 +17,25 @@ function validateEnvironmentVariable(name: string, value: string | undefined): s
   return value;
 }
 
-function validateJWTSecret(secret: string): string {
+function validateAuthSecret(secret: string): string {
   if (secret.length < 32) {
-    throw new Error('JWT_SECRET must be at least 32 characters long');
+    throw new Error('BETTER_AUTH_SECRET must be at least 32 characters long');
   }
   return secret;
 }
 
 export const env: EnvironmentConfig = {
-  JWT_SECRET: validateJWTSecret(
-    validateEnvironmentVariable('JWT_SECRET', process.env.JWT_SECRET)
+  BETTER_AUTH_SECRET: validateAuthSecret(
+    validateEnvironmentVariable('BETTER_AUTH_SECRET', process.env.BETTER_AUTH_SECRET)
   ),
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+  BETTER_AUTH_URL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
   DATABASE_URL: validateEnvironmentVariable('DATABASE_URL', process.env.DATABASE_URL),
   NODE_ENV: process.env.NODE_ENV || 'development',
 };
 
 export const {
-  JWT_SECRET,
-  JWT_EXPIRES_IN,
+  BETTER_AUTH_SECRET,
+  BETTER_AUTH_URL,
   DATABASE_URL,
   NODE_ENV,
 } = env;

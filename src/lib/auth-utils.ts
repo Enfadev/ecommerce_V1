@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { verifyJWT } from "@/lib/jwt";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -23,18 +22,6 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<string
     console.log("Better Auth session check failed:", error);
   }
 
-  try {
-    const token = request.cookies.get("auth-token")?.value;
-    if (token) {
-      const payload = await verifyJWT(token);
-      if (payload?.id) {
-        return String(payload.id);
-      }
-    }
-  } catch (error) {
-    console.log("JWT verification failed:", error);
-  }
-
   return null;
 }
 
@@ -51,21 +38,6 @@ export async function getUserFromRequest(request: NextRequest): Promise<{ id: st
     }
   } catch (error) {
     console.log("Better Auth session check failed:", error);
-  }
-
-  try {
-    const token = request.cookies.get("auth-token")?.value;
-    if (token) {
-      const payload = await verifyJWT(token);
-      if (payload?.id) {
-        return {
-          id: String(payload.id),
-          role: payload.role || "USER"
-        };
-      }
-    }
-  } catch (error) {
-    console.log("JWT verification failed:", error);
   }
 
   return null;
