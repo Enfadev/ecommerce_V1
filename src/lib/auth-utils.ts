@@ -10,7 +10,7 @@ interface SessionUserWithRole {
   role?: "ADMIN" | "USER";
 }
 
-export async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
+export async function getUserIdFromRequest(_request: NextRequest): Promise<string | null> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -25,7 +25,7 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<string
   return null;
 }
 
-export async function getUserFromRequest(request: NextRequest): Promise<{ id: string; role: string } | null> {
+export async function getUserFromRequest(_request: NextRequest): Promise<{ id: string; role: string } | null> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

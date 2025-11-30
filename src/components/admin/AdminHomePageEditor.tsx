@@ -403,6 +403,7 @@ export default function AdminHomePageEditor() {
                           </Button>
                         </div>
                         <div className="relative w-full h-48 rounded-lg overflow-hidden bg-gray-100">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={slide.imageUrl}
                             alt={slide.alt || `Hero slide ${index + 1}`}

@@ -124,6 +124,7 @@ export function useChatUnreadCount() {
               globalEventSource.close();
             }
           } catch {
+            // Ignore close errors
           }
           
           if (user && user.role === "ADMIN" && 

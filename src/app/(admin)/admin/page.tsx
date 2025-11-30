@@ -168,7 +168,7 @@ export default function AdminPage() {
       let filename: string;
 
       switch (type) {
-        case "orders":
+        case "orders": {
           const ordersResponse = await fetch("/api/admin/orders?limit=1000");
           const ordersData = await ordersResponse.json();
           data =
@@ -184,7 +184,8 @@ export default function AdminPage() {
             })) || [];
           filename = "orders-report";
           break;
-        case "products":
+        }
+        case "products": {
           const productsResponse = await fetch("/api/admin/products?limit=1000");
           const productsData = await productsResponse.json();
           data =
@@ -202,7 +203,8 @@ export default function AdminPage() {
             })) || [];
           filename = "products-report";
           break;
-        case "customers":
+        }
+        case "customers": {
           const customersResponse = await fetch("/api/admin/customers?limit=1000");
           const customersData = await customersResponse.json();
           data =
@@ -218,7 +220,8 @@ export default function AdminPage() {
             })) || [];
           filename = "customers-report";
           break;
-        case "full-report":
+        }
+        case "full-report": {
           data = {
             generatedAt: new Date().toISOString(),
             dashboard: dashboardData,
@@ -231,6 +234,7 @@ export default function AdminPage() {
           };
           filename = "dashboard-full-report";
           break;
+        }
         default:
           return;
       }

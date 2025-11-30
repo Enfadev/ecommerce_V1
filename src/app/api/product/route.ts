@@ -27,7 +27,9 @@ export async function DELETE(req: Request) {
       const filePath = path.join(process.cwd(), "public", product.imageUrl);
       try {
         await unlink(filePath);
-      } catch {}
+      } catch {
+        // Ignore file deletion errors
+      }
     }
 
     return NextResponse.json({ success: true });
@@ -46,8 +48,8 @@ function slugify(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, "-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-")
     .replace(/^-+/, "")
     .replace(/-+$/, "");
 }

@@ -9,11 +9,10 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
-import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Edit3, Crown, Trash2 } from "lucide-react";
+import { User, Phone, MapPin, Calendar, LogOut, Camera, Save, Shield, Crown, Trash2 } from "lucide-react";
 import { useAuth } from "@/components/contexts/auth-context";
 import { Toast } from "@/components/ui/toast";
 

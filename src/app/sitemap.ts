@@ -22,7 +22,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (prod.status !== "active" || prod.noindex) continue;
       urls.push({ url: base ? `${base}/product/${prod.slug}` : `/product/${prod.slug}`, lastModified: prod.updatedAt, changeFrequency: "weekly", priority: 0.8 });
     }
-  } catch {}
+  } catch {
+    // Ignore database errors for sitemap generation
+  }
 
   return urls;
 }

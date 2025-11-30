@@ -29,7 +29,7 @@ const registerSchema = z
       .regex(/^(?=.*[a-z])/, { message: "Password must contain at least one lowercase letter" })
       .regex(/^(?=.*[A-Z])/, { message: "Password must contain at least one uppercase letter" })
       .regex(/^(?=.*\d)/, { message: "Password must contain at least one number" })
-      .regex(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?])/, {
+      .regex(/^(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?])/, {
         message: "Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)",
       }),
     confirmPassword: z.string(),
@@ -123,7 +123,7 @@ export default function RegisterPage() {
       },
       {
         label: "At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)",
-        valid: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?]/.test(password),
+        valid: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>?]/.test(password),
       },
     ];
     score = checks.filter((c) => c.valid).length;

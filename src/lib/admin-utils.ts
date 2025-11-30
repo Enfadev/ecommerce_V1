@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
-export async function isAdminRequest(request: NextRequest): Promise<boolean> {
+export async function isAdminRequest(_request: NextRequest): Promise<boolean> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

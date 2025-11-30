@@ -84,6 +84,7 @@ export async function GET(request: NextRequest) {
           try {
             controller.close();
           } catch {
+            // Ignore close errors
           }
         };
 
