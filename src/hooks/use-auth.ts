@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { useState, useEffect } from "react";
 
 interface CustomUser {
@@ -15,7 +15,7 @@ interface AuthState {
 }
 
 export function useAuth(): AuthState {
-  const { data: session, status: nextAuthStatus } = useSession();
+  const { data: session, isPending } = useSession();
   const [customAuth, setCustomAuth] = useState<CustomUser | null>(null);
   const [customLoading, setCustomLoading] = useState(true);
 
@@ -39,22 +39,22 @@ export function useAuth(): AuthState {
     checkCustomAuth();
   }, []);
 
-  const isNextAuthLoading = nextAuthStatus === "loading";
-  const hasNextAuthSession = !!session?.user;
+  const isBetterAuthLoading = isPending;
+  const hasBetterAuthSession = !!session?.user;
   const hasCustomAuth = !!customAuth;
 
-  const loading = isNextAuthLoading || customLoading;
+  const loading = isBetterAuthLoading || customLoading;
   
-  const user = hasNextAuthSession 
+  const user = hasBetterAuthSession 
     ? {
         id: session.user.id || '',
         email: session.user.email || '',
         name: session.user.name || '',
-        role: session.user.role || 'USER' as const
+        role: (session.user as CustomUser).role || 'USER' as const
       }
     : customAuth;
 
-  const isAuthenticated = hasNextAuthSession || hasCustomAuth;
+  const isAuthenticated = hasBetterAuthSession || hasCustomAuth;
 
   return {
     user,

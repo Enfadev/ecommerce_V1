@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       }
 
       return {
-        id: `CUST-${String(customer.id).padStart(3, "0")}`,
+        id: customer.id,
         dbId: customer.id,
         name: customer.name,
         email: customer.email,
@@ -155,7 +155,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
     }
 
-    const dbId = parseInt(customerId.replace("CUST-", ""));
+    const dbId = customerId.startsWith("CUST-") ? customerId.replace("CUST-", "") : customerId;
 
     const customer = await prisma.user.findUnique({
       where: { id: dbId },

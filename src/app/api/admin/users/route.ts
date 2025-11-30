@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
+
+interface SessionUser {
+  id: string;
+  role?: string;
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!session || session.user?.role !== "ADMIN") {
+    if (!session || (session.user as SessionUser)?.role !== "ADMIN") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
@@ -74,9 +81,11 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!session || session.user?.role !== "ADMIN") {
+    if (!session || (session.user as SessionUser)?.role !== "ADMIN") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
@@ -91,7 +100,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Invalid role" }, { status: 400 });
     }
 
-    if (parseInt(session.user.id) === userId) {
+    if (session.user.id === userId) {
       return NextResponse.json({ success: false, message: "Cannot change your own role" }, { status: 400 });
     }
 
@@ -108,7 +117,7 @@ export async function PUT(request: NextRequest) {
 
     await prisma.securityLog.create({
       data: {
-        userId: parseInt(session.user.id),
+        userId: session.user.id,
         action: "USER_ROLE_CHANGED",
         description: `Changed user ${updatedUser.email} role to ${role}`,
         ipAddress: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || null,
@@ -129,14 +138,16 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!session || session.user?.role !== "ADMIN") {
+    if (!session || (session.user as SessionUser)?.role !== "ADMIN") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const userId = parseInt(searchParams.get("userId") || "");
+    const userId = searchParams.get("userId") || "";
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -147,7 +158,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, message: "User not found" }, { status: 404 });
     }
 
-    if (parseInt(session.user.id) === userId) {
+    if (session.user.id === userId) {
       return NextResponse.json({ success: false, message: "Cannot delete your own account" }, { status: 400 });
     }
 
@@ -157,7 +168,7 @@ export async function DELETE(request: NextRequest) {
 
     await prisma.securityLog.create({
       data: {
-        userId: parseInt(session.user.id),
+        userId: session.user.id,
         action: "USER_DELETED",
         description: `Deleted user ${user.email}`,
         ipAddress: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || null,

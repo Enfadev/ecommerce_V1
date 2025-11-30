@@ -31,12 +31,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Get user profile from server (JWT from httpOnly cookie or NextAuth session)
   const refreshUser = async () => {
     try {
       setIsLoading(true);
 
-      const nextAuthCheck = await fetch("/api/auth/session", {
+      const sessionCheck = await fetch("/api/auth/session", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -44,18 +43,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      if (nextAuthCheck.ok) {
-        const nextAuthData = await nextAuthCheck.json();
-        if (nextAuthData.authenticated && nextAuthData.user) {
+      if (sessionCheck.ok) {
+        const sessionData = await sessionCheck.json();
+        if (sessionData.authenticated && sessionData.user) {
           setUser({
-            id: nextAuthData.user.id,
-            name: nextAuthData.user.name,
-            email: nextAuthData.user.email,
-            role: nextAuthData.user.role,
-            phoneNumber: nextAuthData.user.phoneNumber,
-            address: nextAuthData.user.address,
-            dateOfBirth: nextAuthData.user.dateOfBirth,
-            avatar: nextAuthData.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(nextAuthData.user.name)}&background=6366f1&color=fff`,
+            id: sessionData.user.id,
+            name: sessionData.user.name,
+            email: sessionData.user.email,
+            role: sessionData.user.role,
+            phoneNumber: sessionData.user.phoneNumber,
+            address: sessionData.user.address,
+            dateOfBirth: sessionData.user.dateOfBirth,
+            avatar: sessionData.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(sessionData.user.name)}&background=6366f1&color=fff`,
           });
           return;
         }
@@ -214,8 +213,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async (): Promise<void> => {
     try {
       if (typeof window !== "undefined") {
-        const { signOut: nextAuthSignOut } = await import("next-auth/react");
-        await nextAuthSignOut({ redirect: false });
+        const { signOut: betterAuthSignOut } = await import("@/lib/auth-client");
+        await betterAuthSignOut();
       }
 
       await fetch("/api/logout", {

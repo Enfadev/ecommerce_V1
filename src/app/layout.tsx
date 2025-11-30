@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { NextAuthProvider } from "../components/auth/NextAuthProvider";
 import { AuthProvider } from "@/components/contexts/auth-context";
 import { DynamicFavicon } from "@/components/ui/DynamicFavicon";
 import { getSystemSettingsWithFallback } from "@/lib/system-settings";
@@ -67,12 +66,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`} suppressHydrationWarning>
-        <NextAuthProvider>
-          <AuthProvider>
-            <DynamicFavicon />
-            <div className="flex-1 flex flex-col">{children}</div>
-          </AuthProvider>
-        </NextAuthProvider>
+        <AuthProvider>
+          <DynamicFavicon />
+          <div className="flex-1 flex flex-col">{children}</div>
+        </AuthProvider>
       </body>
     </html>
   );

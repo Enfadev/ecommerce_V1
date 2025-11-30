@@ -1,6 +1,6 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 
 interface GoogleSignInButtonProps {
@@ -9,9 +9,10 @@ interface GoogleSignInButtonProps {
 }
 
 export function GoogleSignInButton({ className, disabled }: GoogleSignInButtonProps) {
-  const handleGoogleSignIn = () => {
-    signIn("google", { 
-      callbackUrl: "/" 
+  const handleGoogleSignIn = async () => {
+    await signIn.social({ 
+      provider: "google",
+      callbackURL: "/" 
     });
   };
 

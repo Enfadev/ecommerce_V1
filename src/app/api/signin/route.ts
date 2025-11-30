@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     const token = await signJWT({
-      id: user.id.toString(),
+      id: user.id,
       email: user.email,
       role: user.role,
     });
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const response = NextResponse.json({
       user: {
         ...userData,
-        id: userData.id.toString(),
+        id: userData.id,
       },
       message: "Sign in successful",
     });

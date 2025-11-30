@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
       select: {
         id: true,
         name: true,
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       user: {
         ...user,
-        id: user.id.toString(),
+        id: user.id,
       },
       debug: {
         fromMiddleware: !!request.headers.get("x-user-id"),
@@ -91,7 +91,7 @@ export async function PUT(request: NextRequest) {
     const { name, phoneNumber, address, dateOfBirth, image } = body;
 
     const updatedUser = await prisma.user.update({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
       data: {
         ...(name && { name }),
         ...(phoneNumber && { phoneNumber }),
@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest) {
       message: "Profile updated successfully",
       user: {
         ...updatedUser,
-        id: updatedUser.id.toString(),
+        id: updatedUser.id,
       },
     });
   } catch (error) {

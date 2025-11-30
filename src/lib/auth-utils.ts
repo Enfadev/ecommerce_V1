@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { verifyJWT } from "@/lib/jwt";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./auth";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 interface SessionUserWithRole {
   id?: string;
@@ -11,15 +11,16 @@ interface SessionUserWithRole {
   role?: "ADMIN" | "USER";
 }
 
-export async function getUserIdFromRequest(request: NextRequest): Promise<number | null> {
+export async function getUserIdFromRequest(request: NextRequest): Promise<string | null> {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     if (session?.user?.id) {
-      const userId = Number(session.user.id);
-      return userId;
+      return session.user.id;
     }
   } catch (error) {
-    console.log("NextAuth session check failed:", error);
+    console.log("Better Auth session check failed:", error);
   }
 
   try {
@@ -27,8 +28,7 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<number
     if (token) {
       const payload = await verifyJWT(token);
       if (payload?.id) {
-        const userId = Number(payload.id);
-        return userId;
+        return String(payload.id);
       }
     }
   } catch (error) {
@@ -38,17 +38,19 @@ export async function getUserIdFromRequest(request: NextRequest): Promise<number
   return null;
 }
 
-export async function getUserFromRequest(request: NextRequest): Promise<{ id: number; role: string } | null> {
+export async function getUserFromRequest(request: NextRequest): Promise<{ id: string; role: string } | null> {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     if (session?.user?.id) {
       return {
-        id: Number(session.user.id),
+        id: session.user.id,
         role: (session.user as SessionUserWithRole).role || "USER"
       };
     }
   } catch (error) {
-    console.log("NextAuth session check failed:", error);
+    console.log("Better Auth session check failed:", error);
   }
 
   try {
@@ -57,7 +59,7 @@ export async function getUserFromRequest(request: NextRequest): Promise<{ id: nu
       const payload = await verifyJWT(token);
       if (payload?.id) {
         return {
-          id: Number(payload.id),
+          id: String(payload.id),
           role: payload.role || "USER"
         };
       }

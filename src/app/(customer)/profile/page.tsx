@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { ProfileAvatar } from "@/components/ui/profile-avatar";
@@ -396,221 +395,197 @@ export default function ProfilePage() {
         </Card>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Settings Tabs */}
-          <div className="lg:col-span-2">
-            <Tabs defaultValue="profile" className="space-y-6">
-              <TabsList className="bg-gray-800 border-gray-700">
-                <TabsTrigger value="profile" className="data-[state=active]:bg-gray-700">
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
-                </TabsTrigger>
-                <TabsTrigger value="security" className="data-[state=active]:bg-gray-700">
-                  <Shield className="h-4 w-4 mr-2" />
-                  Security
-                </TabsTrigger>
-              </TabsList>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Edit Profile Card */}
+          <div>
+            <Card className="bg-gray-800/80 border-gray-700 h-full">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Edit Profile
+                </CardTitle>
+                <CardDescription className="text-gray-400">Update your profile information</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...profileForm}>
+                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-200">Full Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Full name" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-              {/* Profile Tab */}
-              <TabsContent value="profile">
-                <Card className="bg-gray-800/80 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Edit3 className="h-5 w-5" />
-                      Edit Profile
-                    </CardTitle>
-                    <CardDescription className="text-gray-400">Update your profile information</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Form {...profileForm}>
-                      <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={profileForm.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Full Name</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Full name" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                      <FormField
+                        control={profileForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-200">Email</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="email@example.com" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                          <FormField
-                            control={profileForm.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Email</FormLabel>
-                                <FormControl>
-                                  <Input type="email" placeholder="email@example.com" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={profileForm.control}
+                        name="phoneNumber"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-200">Phone Number</FormLabel>
+                            <FormControl>
+                              <Input placeholder="+1 234 567 8900" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={profileForm.control}
-                            name="phoneNumber"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Phone Number</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="+1 234 567 8900" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                      <FormField
+                        control={profileForm.control}
+                        name="dateOfBirth"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-200">Date of Birth</FormLabel>
+                            <FormControl>
+                              <Input type="date" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                          <FormField
-                            control={profileForm.control}
-                            name="dateOfBirth"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-gray-200">Date of Birth</FormLabel>
-                                <FormControl>
-                                  <Input type="date" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                    <FormField
+                      control={profileForm.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-200">Address</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="Your complete address" className="bg-gray-700/50 border-gray-600 text-white resize-none" rows={3} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                        <FormField
-                          control={profileForm.control}
-                          name="address"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">Address</FormLabel>
-                              <FormControl>
-                                <Textarea placeholder="Your complete address" className="bg-gray-700/50 border-gray-600 text-white resize-none" rows={3} {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                    <div className="space-y-2">
+                      <label className="text-gray-200 text-sm font-medium">Avatar Image</label>
+                      <div className="flex items-center gap-2 flex-col sm:flex-row">
+                        <input
+                          id="avatar-upload-form"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="bg-gray-700/50 border border-gray-600 text-white rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700 flex-1 w-full"
+                          aria-label="Upload avatar image"
                         />
-
-                        <div className="space-y-2">
-                          <label className="text-gray-200 text-sm font-medium">Avatar Image</label>
-                          <div className="flex items-center gap-4">
-                            <input
-                              id="avatar-upload-form"
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageUpload}
-                              className="bg-gray-700/50 border border-gray-600 text-white rounded-md p-2 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
-                              aria-label="Upload avatar image"
-                            />
-                            <label htmlFor="avatar-upload-form" className="sr-only">Upload avatar image</label>
-                            <Button type="button" variant="outline" size="sm" onClick={generateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700">
-                              Generate Avatar
-                            </Button>
-                            {user.avatar && user.avatar.startsWith("/uploads/") && (
-                              <Button type="button" variant="destructive" size="sm" onClick={deleteAvatar}>
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete Avatar
-                              </Button>
-                            )}
-                          </div>
-                          <p className="text-gray-400 text-xs">Upload an image, generate an avatar based on your name, or delete current uploaded image</p>
-                        </div>
-
-                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-                          <Save className="h-4 w-4 mr-2 text-white" />
-                          <span className="text-white font-medium">Save Changes</span>
+                        <label htmlFor="avatar-upload-form" className="sr-only">Upload avatar image</label>
+                        <Button type="button" variant="outline" size="sm" onClick={generateAvatar} className="border-gray-600 text-gray-300 hover:bg-gray-700 w-full sm:w-auto">
+                          Generate Avatar
                         </Button>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                        {user.avatar && user.avatar.startsWith("/uploads/") && (
+                          <Button type="button" variant="destructive" size="sm" onClick={deleteAvatar} className="w-full sm:w-auto">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </Button>
+                        )}
+                      </div>
+                      <p className="text-gray-400 text-xs">Upload an image, generate an avatar based on your name, or delete current uploaded image</p>
+                    </div>
 
-              {/* Security Tab */}
-              <TabsContent value="security">
-                <Card className="bg-gray-800/80 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Shield className="h-5 w-5" />
-                      Account Security
-                    </CardTitle>
-                    <CardDescription className="text-gray-400">Manage your password and account security</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Form {...passwordForm}>
-                      <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
-                        <FormField
-                          control={passwordForm.control}
-                          name="currentPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">Current Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={passwordForm.control}
-                          name="newPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">New Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={passwordForm.control}
-                          name="confirmPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-gray-200">Confirm New Password</FormLabel>
-                              <FormControl>
-                                <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
-                          <Shield className="h-4 w-4 mr-2" />
-                          Change Password
-                        </Button>
-
-                        <Separator className="bg-gray-600" />
-
-                        <Button variant="destructive" className="w-full" onClick={handleSignOut}>
-                          <LogOut className="h-4 w-4 mr-2" />
-                          Sign Out
-                        </Button>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                      <Save className="h-4 w-4 mr-2 text-white" />
+                      <span className="text-white font-medium">Save Changes</span>
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Account Security Card */}
+          <div>
+            <Card className="bg-gray-800/80 border-gray-700 h-full">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Account Security
+                </CardTitle>
+                <CardDescription className="text-gray-400">Manage your password and security</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...passwordForm}>
+                  <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
+                    <FormField
+                      control={passwordForm.control}
+                      name="currentPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-200">Current Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
+                    <FormField
+                      control={passwordForm.control}
+                      name="newPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-200">New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
+                    <FormField
+                      control={passwordForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-200">Confirm New Password</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="••••••••" className="bg-gray-700/50 border-gray-600 text-white" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
+                      <Shield className="h-4 w-4 mr-2" />
+                      Change Password
+                    </Button>
+
+                    <Button variant="destructive" className="w-full" onClick={handleSignOut}>
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
           </div>
         </div>
 

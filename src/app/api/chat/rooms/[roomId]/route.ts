@@ -179,7 +179,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ ro
     });
 
     try {
-      const broadcastUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/chat/sse`;
+      const broadcastUrl = `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/api/chat/sse`;
       await fetch(broadcastUrl, {
         method: "POST",
         headers: {

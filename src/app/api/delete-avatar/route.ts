@@ -19,7 +19,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(decoded.id) },
+      where: { id: decoded.id },
       select: { id: true, image: true, name: true },
     });
 
@@ -67,7 +67,7 @@ export async function DELETE(request: NextRequest) {
       message: "Avatar deleted successfully",
       user: {
         ...updatedUser,
-        id: updatedUser.id.toString(),
+        id: updatedUser.id,
       },
     });
   } catch (error) {

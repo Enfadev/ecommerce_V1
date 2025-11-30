@@ -31,7 +31,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
       select: {
         id: true,
         password: true,
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest) {
     const hashedNewPassword = await bcrypt.hash(newPassword, 12);
 
     await prisma.user.update({
-      where: { id: parseInt(userId) },
+      where: { id: userId },
       data: {
         password: hashedNewPassword,
         updatedAt: new Date(),
