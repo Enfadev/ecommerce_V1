@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const PLACEHOLDER_HERO = "/placeholder-hero.svg";
 
 interface HeroCarouselImageProps {
   src: string;
@@ -10,7 +12,13 @@ interface HeroCarouselImageProps {
 }
 
 export function HeroCarouselImage({ src, alt, className }: HeroCarouselImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
+  const validSrc = src && src.trim() !== "" ? src : PLACEHOLDER_HERO;
+  const [imgSrc, setImgSrc] = useState(validSrc);
 
-  return <Image src={imgSrc} alt={alt} fill className={className} onError={() => setImgSrc("/placeholder.jpg")} priority sizes="100vw" style={{ objectFit: "cover" }} />;
+  useEffect(() => {
+    const newValidSrc = src && src.trim() !== "" ? src : PLACEHOLDER_HERO;
+    setImgSrc(newValidSrc);
+  }, [src]);
+
+  return <Image src={imgSrc} alt={alt} fill className={className} onError={() => setImgSrc(PLACEHOLDER_HERO)} priority sizes="100vw" style={{ objectFit: "cover" }} />;
 }

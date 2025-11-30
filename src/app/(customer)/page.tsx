@@ -150,8 +150,8 @@ export default async function Home() {
     heroDescription: "Discover amazing products at great prices",
     heroSlides: [
       {
-        imageUrl: "/hero1.jpg",
-        alt: "Hero carousel image 1",
+        imageUrl: "/placeholder-hero.svg",
+        alt: "Hero carousel image placeholder",
       },
     ],
     features: [
@@ -170,7 +170,9 @@ export default async function Home() {
 
   const pageData = homePageData || defaultData;
 
-  const heroSlides = Array.isArray(pageData.heroSlides) ? pageData.heroSlides : defaultData.heroSlides;
+  const rawHeroSlides = Array.isArray(pageData.heroSlides) ? pageData.heroSlides : defaultData.heroSlides;
+  const heroSlides = (rawHeroSlides as HeroSlide[]).filter((slide) => slide.imageUrl && slide.imageUrl.trim() !== "");
+  const validHeroSlides = heroSlides.length > 0 ? heroSlides : defaultData.heroSlides;
 
   const features = Array.isArray(pageData.features) ? pageData.features : defaultData.features;
 
@@ -180,7 +182,7 @@ export default async function Home() {
       <section className="relative overflow-hidden rounded-2xl">
         <Carousel className="w-full">
           <CarouselContent>
-            {(heroSlides as HeroSlide[]).map((slide: HeroSlide, index: number) => (
+            {validHeroSlides.map((slide: HeroSlide, index: number) => (
               <CarouselItem key={index}>
                 <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden rounded-2xl">
                   <HeroCarouselImage src={slide.imageUrl} alt={slide.alt || `Hero carousel image ${index + 1}`} className="w-full h-full object-cover" />
@@ -190,14 +192,14 @@ export default async function Home() {
           </CarouselContent>
 
           {/* Navigation Arrows */}
-          {heroSlides.length > 1 && (
+          {validHeroSlides.length > 1 && (
             <>
               <CarouselPrevious className="absolute left-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
               <CarouselNext className="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300" />
 
               {/* Dot Indicators */}
               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
-                {(heroSlides as HeroSlide[]).map((_, index) => (
+                {validHeroSlides.map((_, index) => (
                   <button key={index} className="w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300" aria-label={`Go to slide ${index + 1}`} />
                 ))}
               </div>

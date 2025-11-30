@@ -12,16 +12,8 @@ async function seedPageData() {
     heroDescription: "Discover amazing products with the best deals and fast shipping across Indonesia",
     heroSlides: [
       {
-        imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&h=1080&fit=crop",
-        alt: "Flash sale up to 70% off",
-      },
-      {
-        imageUrl: "https://images.unsplash.com/photo-1607083206968-13611e3d76db?w=1920&h=1080&fit=crop",
-        alt: "Free shipping across Indonesia",
-      },
-      {
-        imageUrl: "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1920&h=1080&fit=crop",
-        alt: "Special cashback for new members",
+        imageUrl: "/placeholder-hero.svg",
+        alt: "Hero image placeholder - Upload your banner",
       },
     ],
     features: [
